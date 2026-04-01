@@ -61,7 +61,11 @@ export default function WelcomePage() {
   }, [])
 
   return (
-    <div className="page page--welcome">
+    <Link
+      to="/schedule"
+      className="page page--welcome welcome__whole-tap"
+      aria-label="Tap anywhere to start — open your schedule"
+    >
       <div className="page__badge" aria-hidden>
         1
       </div>
@@ -73,13 +77,11 @@ export default function WelcomePage() {
         <p className="welcome__weather">{weather}</p>
       </div>
       <div className="welcome__actions">
-        <Link to="/schedule" className="welcome__cta">
-          Tap to start
-        </Link>
+        <span className="welcome__cta">Tap to start</span>
         <p className="welcome__hints muted">
           Your schedule and tools — parents use a separate booking link you share.
         </p>
       </div>
-    </div>
+    </Link>
   )
 }
