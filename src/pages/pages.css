@@ -1,3 +1,9 @@
+/* Wraps home → schedule → hub for swipe / horizontal scroll navigation */
+.caregiver-flow-layout {
+  min-height: 100%;
+  min-height: 100dvh;
+}
+
 /* Shared “screen” layout: mobile-first, minimal scroll */
 
 .page {
@@ -70,6 +76,27 @@
   text-align: center;
 }
 
+/* Whole screen is one tap target to /schedule; keeps “Tap to start” as the visual cue */
+.welcome__whole-tap {
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+  -webkit-tap-highlight-color: rgba(196, 92, 42, 0.12);
+}
+
+.welcome__whole-tap:visited {
+  color: inherit;
+}
+
+.welcome__whole-tap:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.welcome__whole-tap:active {
+  opacity: 0.97;
+}
+
 .welcome__body {
   flex: 1;
   display: flex;
@@ -108,27 +135,16 @@
   display: flex;
   flex-direction: column;
   gap: 12px;
-  align-items: stretch;
+  align-items: center;
 }
 
+/* Plain text cue — full screen is still the tap target */
 .welcome__cta {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 56px;
-  padding: 14px 20px;
-  border-radius: 12px;
-  background: var(--accent);
-  color: #fff;
+  margin: 0;
   font-size: 1.125rem;
   font-weight: 700;
-  text-decoration: none;
-  box-shadow: 0 2px 8px rgba(196, 92, 42, 0.25);
-}
-
-.welcome__cta:hover,
-.welcome__cta:active {
-  filter: brightness(1.06);
+  color: var(--accent);
+  pointer-events: none;
 }
 
 .welcome__hints {
@@ -675,6 +691,133 @@
   filter: brightness(1.08);
 }
 
+/* ——— Weekly receipt ——— */
+.page--receipt {
+  justify-content: flex-start;
+  overflow-y: auto;
+}
+
+.receipt__head {
+  flex-shrink: 0;
+  margin-bottom: 8px;
+}
+
+.receipt__title {
+  margin: 6px 0 0;
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.receipt__lede {
+  margin: 8px 0 0;
+  font-size: 0.9rem;
+  line-height: 1.45;
+}
+
+.receipt__form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  width: 100%;
+  max-width: 420px;
+  margin-top: 8px;
+}
+
+.receipt__week-hint {
+  margin: -8px 0 0;
+  font-size: 0.85rem;
+}
+
+.receipt__math {
+  margin-top: 22px;
+  padding: 16px;
+  border-radius: 14px;
+  border: 2px solid var(--line);
+  background: #fffefb;
+  width: 100%;
+  max-width: 420px;
+}
+
+.receipt__math-title {
+  margin: 0 0 10px;
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.receipt__lines {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 0.9rem;
+}
+
+.receipt__lines li {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: baseline;
+}
+
+.receipt__lines li span:first-child {
+  flex: 1;
+  min-width: 0;
+}
+
+.receipt__rate {
+  margin: 12px 0 0;
+  font-size: 0.88rem;
+}
+
+.receipt__total {
+  margin: 10px 0 0;
+  font-size: 1.05rem;
+}
+
+.receipt__actions {
+  margin-top: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+  max-width: 420px;
+  align-items: stretch;
+}
+
+.receipt__venmo {
+  text-align: center;
+  text-decoration: none;
+}
+
+.receipt__venmo-hint {
+  margin: 0;
+  font-size: 0.88rem;
+}
+
+.receipt__copy {
+  align-self: flex-start;
+}
+
+.receipt__copied {
+  font-size: 0.85rem;
+}
+
+.receipt__preview {
+  margin: 8px 0 0;
+  padding: 12px;
+  border-radius: 10px;
+  background: var(--paper2);
+  border: 1px solid var(--line);
+  font-size: 0.78rem;
+  line-height: 1.45;
+  white-space: pre-wrap;
+  word-break: break-word;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
 /* ——— Placeholder ——— */
 .page--placeholder {
   justify-content: flex-start;
@@ -935,6 +1078,70 @@
   margin: 0 0 6px;
   font-size: 0.8125rem;
   line-height: 1.4;
+}
+
+/* About today + meals today in one field */
+.journal__about-bundle {
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: #fff;
+  overflow: hidden;
+  padding: 0;
+}
+
+.journal__about-bundle:focus-within {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
+.journal__about-bundle > .field-block__label {
+  display: block;
+  padding: 10px 12px 6px;
+  margin: 0;
+}
+
+.journal__about-notes {
+  border: none;
+  border-radius: 0;
+  border-bottom: 1px solid var(--line);
+  resize: vertical;
+}
+
+.journal__about-notes:focus {
+  outline: none;
+  box-shadow: none;
+}
+
+.journal__about-meals {
+  padding: 10px 12px 12px;
+}
+
+.field-block__label--sub {
+  font-size: 0.65rem;
+  margin-bottom: 4px;
+}
+
+.journal__about-meals .journal__hint {
+  margin-bottom: 8px;
+}
+
+.meals-today-field--nested {
+  margin-bottom: 0;
+  border: none;
+  border-radius: 0;
+}
+
+.meals-today-field--nested:focus-within {
+  outline: none;
+}
+
+.meals-today-field--nested .meals-inline-host {
+  border-radius: 8px;
+  border: 1px solid var(--line);
+}
+
+.meals-today-field--nested .meals-today-ideas {
+  border-radius: 0 0 8px 8px;
 }
 
 .journal__nap-row {
