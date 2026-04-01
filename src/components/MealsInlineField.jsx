@@ -10,12 +10,14 @@ export default function MealsInlineField({
   onChange,
   placeholder,
   'aria-label': ariaLabel,
+  'aria-labelledby': ariaLabelledby,
   suggestions = [],
+  className = '',
 }) {
   const chunks = useMemo(() => splitMealsTextForRendering(value), [value])
 
   return (
-    <div className="meals-today-field">
+    <div className={`meals-today-field ${className}`.trim()}>
       <div className="meals-inline-host">
         <div className="meals-inline-inner">
           <div className="meals-inline-mirror" aria-hidden>
@@ -46,7 +48,8 @@ export default function MealsInlineField({
             value={value}
             onChange={(e) => onChange(e.target.value)}
             placeholder={placeholder}
-            aria-label={ariaLabel}
+            aria-label={ariaLabelledby ? undefined : ariaLabel}
+            aria-labelledby={ariaLabelledby}
             aria-describedby={suggestions.length ? 'meals-today-ideas-hint' : undefined}
             spellCheck="true"
             autoComplete="off"
