@@ -1,5 +1,4 @@
 /** One-way miles from Deerfield Dr, Moraga (approximate — tune in this file). */
-export const START_POINT_LABEL = 'Deerfield Dr, Moraga'
 export const MILE_RATE = 0.54
 
 /** region: oakland → monospace | moraga → italic | lafayette → bold + monospace */
@@ -41,6 +40,12 @@ export const PLACES = [
     milesOneWay: 2.5,
   },
   {
+    id: 'moraga-commons',
+    label: 'Moraga Commons (park)',
+    region: 'moraga',
+    milesOneWay: 2.5,
+  },
+  {
     id: 'laf-lib',
     label: 'Lafayette Library',
     region: 'lafayette',
@@ -55,10 +60,6 @@ export const PLACES = [
 ]
 
 export const PLACE_BY_ID = Object.fromEntries(PLACES.map((p) => [p.id, p]))
-
-export const PLACE_SUGGESTIONS = PLACES.map(
-  (p) => `${p.label} — ~${p.milesOneWay} mi one-way from ${START_POINT_LABEL}`
-)
 
 export function placesGroupedForSelect() {
   const groups = { oakland: [], moraga: [], lafayette: [] }
