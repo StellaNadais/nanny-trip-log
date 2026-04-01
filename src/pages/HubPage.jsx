@@ -35,8 +35,8 @@ export default function HubPage() {
         <div className="hub-card hub-card--empty" aria-hidden />
       </div>
 
-      <Link to="/trip-log" className="hub__report">
-        Weekly report
+      <Link to="/receipt" className="hub__report">
+        Weekly receipt
       </Link>
     </div>
   )
