@@ -6,18 +6,6 @@ import { getMealHealthSuggestions } from '../utils/mealSuggestions'
 import { countByCategory, parseMealsToParts } from '../utils/parseMeals'
 import { toISODateLocal } from '../utils/dates'
 
-const POOP_PALETTE = [
-  { hex: '#f7f6f2', label: 'Pale / white' },
-  { hex: '#ede6d8', label: 'Cream' },
-  { hex: '#f2e8b8', label: 'Light yellow' },
-  { hex: '#e6cf5c', label: 'Yellow' },
-  { hex: '#c4b84a', label: 'Yellow-green' },
-  { hex: '#7d8f3e', label: 'Olive / mud green' },
-  { hex: '#4d5c2e', label: 'Dark green-brown' },
-  { hex: '#8b6a45', label: 'Tan brown' },
-  { hex: '#4a3326', label: 'Brown' },
-]
-
 function formatJournalDate(iso) {
   if (!iso) return ''
   return new Date(iso + 'T12:00:00').toLocaleDateString(undefined, {
@@ -35,8 +23,6 @@ export default function KidJournalPage() {
   const [mealsText, setMealsText] = useState('')
   const [morningNap, setMorningNap] = useState('')
   const [afternoonNap, setAfternoonNap] = useState('')
-  const [poop, setPoop] = useState('')
-  const [poopColor, setPoopColor] = useState('')
   const [flash, setFlash] = useState('')
   const [suggestionClock, setSuggestionClock] = useState(() => Date.now())
 
@@ -52,26 +38,18 @@ export default function KidJournalPage() {
 
   function submit(e) {
     e.preventDefault()
-    if (poop === 'yes' && !poopColor) {
-      setFlash('Pick a color for poop, or choose No.')
-      return
-    }
     addEntry({
       dateISO,
       dayNotes,
       mealsText,
       morningNap,
       afternoonNap,
-      poop: poop || 'no',
-      poopColor: poop === 'yes' ? poopColor : null,
     })
     setFlash('Journal entry saved.')
     setDayNotes('')
     setMealsText('')
     setMorningNap('')
     setAfternoonNap('')
-    setPoop('')
-    setPoopColor('')
   }
 
   const sorted = useMemo(() => {
@@ -161,59 +139,6 @@ export default function KidJournalPage() {
           </label>
         </div>
 
-        <fieldset className="poop-field">
-          <legend className="field-block__label">Poop</legend>
-          <div className="poop-yesno" role="group" aria-label="Poop today">
-            <button
-              type="button"
-              className={`poop-yesno__btn ${poop === 'yes' ? 'poop-yesno__btn--on' : ''}`}
-              onClick={() => setPoop('yes')}
-            >
-              Yes
-            </button>
-            <button
-              type="button"
-              className={`poop-yesno__btn ${poop === 'no' ? 'poop-yesno__btn--on' : ''}`}
-              onClick={() => {
-                setPoop('no')
-                setPoopColor('')
-              }}
-            >
-              No
-            </button>
-          </div>
-          {poop === 'yes' ? (
-            <div className="poop-colors">
-              <span className="poop-colors__label muted">
-                Tap the shade that matches — 💩 sits on each color
-              </span>
-              <div className="poop-colors__grid" role="listbox" aria-label="Stool color">
-                {POOP_PALETTE.map((sw) => (
-                  <button
-                    key={sw.hex}
-                    type="button"
-                    role="option"
-                    aria-selected={poopColor === sw.hex}
-                    title={sw.label}
-                    className={`poop-swatch ${poopColor === sw.hex ? 'poop-swatch--on' : ''}`}
-                    style={{ background: sw.hex }}
-                    onClick={() => setPoopColor(sw.hex)}
-                  >
-                    <span className="poop-swatch__emoji" aria-hidden>
-                      💩
-                    </span>
-                  </button>
-                ))}
-              </div>
-              {poopColor ? (
-                <p className="poop-colors__picked muted">
-                  Selected: {POOP_PALETTE.find((s) => s.hex === poopColor)?.label ?? poopColor}
-                </p>
-              ) : null}
-            </div>
-          ) : null}
-        </fieldset>
-
         {flash ? (
           <p className={`journal__flash ${flash.includes('saved') ? 'journal__flash--ok' : ''}`} role="status">
             {flash}
@@ -248,21 +173,7 @@ export default function KidJournalPage() {
                     </p>
                   ) : null}
                   <p className="journal__history-meta muted">
-                    Nap AM: {row.morningNap || '—'} · PM: {row.afternoonNap || '—'} · Poop:{' '}
-                    {row.poop === 'yes' ? (
-                      <>
-                        yes
-                        {row.poopColor ? (
-                          <span
-                            className="journal__poop-dot"
-                            style={{ background: row.poopColor }}
-                            title="Color logged"
-                          />
-                        ) : null}
-                      </>
-                    ) : (
-                      'no'
-                    )}
+                    Nap AM: {row.morningNap || '—'} · PM: {row.afternoonNap || '—'}
                   </p>
                 </li>
               )
