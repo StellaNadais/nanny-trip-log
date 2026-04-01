@@ -4,12 +4,7 @@ import { loadState, saveState } from '../utils/storage'
 
 function emptyDay() {
   return {
-    wake: '',
-    dropoff: '',
-    nap: '',
-    meals: '',
-    activities: '',
-    health: '',
+    tripLog: '',
     notes: '',
   }
 }
@@ -34,7 +29,6 @@ function readInitial() {
       saved?.daysByIso && typeof saved.daysByIso === 'object'
         ? saved.daysByIso
         : {},
-    todos: Array.isArray(saved?.todos) ? saved.todos : [],
     expenses: Array.isArray(saved?.expenses) ? saved.expenses : [],
   }
 }
@@ -45,7 +39,6 @@ export function useTripLog() {
   const [weekStart, setWeekStart] = useState(initial.weekStart)
   const [weekMeta, setWeekMeta] = useState(initial.weekMeta)
   const [daysByIso, setDaysByIso] = useState(initial.daysByIso)
-  const [todos, setTodos] = useState(initial.todos)
   const [expenses, setExpenses] = useState(initial.expenses)
 
   const weekKey = useMemo(() => toISODateLocal(weekStart), [weekStart])
@@ -54,11 +47,10 @@ export function useTripLog() {
     saveState({
       weekMeta,
       daysByIso,
-      todos,
       expenses,
       lastWeekKey: weekKey,
     })
-  }, [weekMeta, daysByIso, todos, expenses, weekKey])
+  }, [weekMeta, daysByIso, expenses, weekKey])
 
   const ensureDay = useCallback((iso) => {
     setDaysByIso((prev) => {
@@ -82,22 +74,6 @@ export function useTripLog() {
     if (!isoDateString) return
     const d = new Date(isoDateString + 'T12:00:00')
     setWeekStart(startOfWeekMonday(d))
-  }, [])
-
-  const addTodo = useCallback((text) => {
-    const t = text.trim()
-    if (!t) return
-    setTodos((prev) => [...prev, { id: uid(), text: t, done: false }])
-  }, [])
-
-  const toggleTodo = useCallback((id) => {
-    setTodos((prev) =>
-      prev.map((x) => (x.id === id ? { ...x, done: !x.done } : x))
-    )
-  }, [])
-
-  const removeTodo = useCallback((id) => {
-    setTodos((prev) => prev.filter((x) => x.id !== id))
   }, [])
 
   const addExpense = useCallback((label, amountStr) => {
@@ -124,10 +100,6 @@ export function useTripLog() {
     updateDay,
     shiftWeek,
     setWeekFromPicker,
-    todos,
-    addTodo,
-    toggleTodo,
-    removeTodo,
     expenses,
     addExpense,
     removeExpense,
