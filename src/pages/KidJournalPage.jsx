@@ -105,30 +105,36 @@ export default function KidJournalPage() {
           />
         </label>
 
-        <label className="field-block">
-          <span className="field-block__label">About today</span>
+        <div className="field-block journal__about-bundle">
+          <span className="field-block__label" id="kid-journal-about-label">
+            About today
+          </span>
           <textarea
-            className="input input--area"
+            id="kid-journal-day-notes"
+            className="input input--area journal__about-notes"
             rows={4}
             value={dayNotes}
             onChange={(e) => setDayNotes(e.target.value)}
             placeholder="Mood, play, outings, anything parents should know…"
+            aria-labelledby="kid-journal-about-label"
           />
-        </label>
-
-        <div className="field-block">
-          <span className="field-block__label">Meals today</span>
-          <p className="journal__hint muted">
-            Type foods here; use commas or new lines between items. Text colors match food groups as you go.
-          </p>
-          <MealsInlineField
-            id="kid-journal-meals"
-            value={mealsText}
-            onChange={setMealsText}
-            placeholder="e.g. oatmeal, banana, milk, carrots, chicken, rice, yogurt"
-            aria-label="Meals today"
-            suggestions={mealSuggestions}
-          />
+          <div className="journal__about-meals">
+            <span className="field-block__label field-block__label--sub" id="kid-journal-meals-label">
+              Meals today
+            </span>
+            <p className="journal__hint muted">
+              Use commas or new lines between foods; colors match food groups as you type.
+            </p>
+            <MealsInlineField
+              id="kid-journal-meals"
+              value={mealsText}
+              onChange={setMealsText}
+              placeholder="e.g. oatmeal, banana, milk, carrots, chicken, rice, yogurt"
+              aria-labelledby="kid-journal-meals-label"
+              suggestions={mealSuggestions}
+              className="meals-today-field--nested"
+            />
+          </div>
         </div>
 
         <div className="journal__nap-row">
