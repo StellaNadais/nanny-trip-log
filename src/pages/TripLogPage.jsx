@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { addDays, formatWeekRange, toISODateLocal } from '../utils/dates'
 import { useTripLog } from '../hooks/useTripLog'
 import { DayStrip } from '../components/DayStrip'
@@ -19,8 +19,6 @@ export default function TripLogPage() {
   const log = useTripLog()
   const [tab, setTab] = useState('log')
   const [dayOffset, setDayOffset] = useState(0)
-  const [submitFlash, setSubmitFlash] = useState('')
-
   const selectedIso = useMemo(
     () => toISODateLocal(addDays(log.weekStart, dayOffset)),
     [log.weekStart, dayOffset]
@@ -33,31 +31,28 @@ export default function TripLogPage() {
     [log.weekStart, log.daysByIso]
   )
 
-  function submitWeekToReceipt() {
-    const { totalMiles, reimbursement, breakdown } = computeWeekTripMileage(
-      log.weekStart,
-      log.daysByIso
-    )
-    const weekLabel = formatWeekRange(log.weekStart)
-    saveReceiptSettings({
-      mileageByWeek: {
-        [log.weekKey]: {
-          totalMiles,
-          reimbursement,
-          breakdown,
-          weekLabel,
-          updatedAt: Date.now(),
+  useEffect(() => {
+    const t = window.setTimeout(() => {
+      const { totalMiles, reimbursement, breakdown } = computeWeekTripMileage(
+        log.weekStart,
+        log.daysByIso
+      )
+      const weekLabel = formatWeekRange(log.weekStart)
+      saveReceiptSettings({
+        mileageByWeek: {
+          [log.weekKey]: {
+            totalMiles,
+            reimbursement,
+            breakdown,
+            weekLabel,
+            updatedAt: Date.now(),
+          },
         },
-      },
-    })
-    notifyReceiptMileageUpdated()
-    setSubmitFlash(
-      totalMiles > 0
-        ? `Saved ${totalMiles} mi → $${reimbursement.toFixed(2)} on weekly receipt (${weekLabel}).`
-        : `Saved (no outing tokens this week). Open Weekly receipt for ${weekLabel}.`
-    )
-    window.setTimeout(() => setSubmitFlash(''), 5000)
-  }
+      })
+      notifyReceiptMileageUpdated()
+    }, 450)
+    return () => window.clearTimeout(t)
+  }, [log.weekStart, log.weekKey, log.daysByIso])
 
   return (
     <div className="app">
@@ -127,16 +122,13 @@ export default function TripLogPage() {
             </div>
             <div className="trip-log__submit-bar">
               <p className="trip-log__submit-preview muted">
-                This week (preview): {weekPreview.totalMiles.toFixed(1)} mi round-trip · @ $
-                {MILE_RATE}/mi = <strong>${weekPreview.reimbursement.toFixed(2)}</strong>
+                This week: {weekPreview.totalMiles.toFixed(1)} mi round-trip · @ ${MILE_RATE}/mi ={' '}
+                <strong>${weekPreview.reimbursement.toFixed(2)}</strong> — syncs to Weekly receipt as
+                you type.
               </p>
-              <button type="button" className="btn btn--primary trip-log__submit" onClick={submitWeekToReceipt}>
-                Submit week to receipt
-              </button>
-              <Link to="/receipt" className="trip-log__receipt-link">
+              <Link to="/receipt" className="trip-log__receipt-link trip-log__receipt-link--solo">
                 Open weekly receipt →
               </Link>
-              {submitFlash ? <p className="trip-log__flash muted">{submitFlash}</p> : null}
             </div>
           </>
         )}

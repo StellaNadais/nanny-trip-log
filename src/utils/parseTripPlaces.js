@@ -1,56 +1,95 @@
 import { addDays, toISODateLocal } from './dates'
-import { MILE_RATE, PLACE_BY_ID } from '../data/tripPlaces'
+import { MILE_RATE, PLACE_BY_ID, PLACES } from '../data/tripPlaces'
 
-const TOKEN_SOURCE = '«p:([a-z0-9-]+)»'
+const TOKEN_RE = /^«p:([a-z0-9-]+)»/
 
-export function splitTripLogForMirror(text) {
+/** Letter, digit, or apostrophe (e.g. Children's) counts as “word” interior. */
+function isWordChar(c) {
+  return c !== undefined && /[a-zA-Z0-9']/.test(c)
+}
+
+function boundaryBefore(text, i) {
+  return i === 0 || !isWordChar(text[i - 1])
+}
+
+function boundaryAfter(text, end) {
+  return end >= text.length || !isWordChar(text[end])
+}
+
+const PLACES_BY_LABEL_LEN = [...PLACES].sort((a, b) => b.label.length - a.label.length)
+
+/**
+ * Scan text into chunks for mirror + mileage (non-overlapping; tokens take priority at «).
+ */
+export function scanTripLogChunks(text) {
   const s = String(text || '')
   const chunks = []
-  let last = 0
-  let m
-  const re = new RegExp(TOKEN_SOURCE, 'g')
-  while ((m = re.exec(s)) !== null) {
-    if (m.index > last) {
-      chunks.push({ type: 'text', value: s.slice(last, m.index) })
+  let i = 0
+  while (i < s.length) {
+    if (s[i] === '«') {
+      const rest = s.slice(i)
+      const tm = rest.match(TOKEN_RE)
+      if (tm) {
+        const full = tm[0]
+        const id = tm[1]
+        chunks.push({
+          type: 'token',
+          value: full,
+          place: PLACE_BY_ID[id] || null,
+        })
+        i += full.length
+        continue
+      }
     }
-    const id = m[1]
-    chunks.push({
-      type: 'place',
-      id,
-      place: PLACE_BY_ID[id] || null,
-    })
-    last = m.index + m[0].length
-  }
-  if (last < s.length) {
-    chunks.push({ type: 'text', value: s.slice(last) })
+
+    let matched = null
+    for (const p of PLACES_BY_LABEL_LEN) {
+      const L = p.label.length
+      if (i + L > s.length) continue
+      if (s.slice(i, i + L).toLowerCase() !== p.label.toLowerCase()) continue
+      if (!boundaryBefore(s, i) || !boundaryAfter(s, i + L)) continue
+      matched = p
+      break
+    }
+
+    if (matched) {
+      chunks.push({
+        type: 'place',
+        value: s.slice(i, i + matched.label.length),
+        place: matched,
+      })
+      i += matched.label.length
+      continue
+    }
+
+    const prev = chunks[chunks.length - 1]
+    if (prev && prev.type === 'text') {
+      prev.value += s[i]
+    } else {
+      chunks.push({ type: 'text', value: s[i] })
+    }
+    i += 1
   }
   return chunks
 }
 
-export function extractPlaceIdsFromText(text) {
-  const s = String(text || '')
-  const ids = []
-  let m
-  const re = new RegExp(TOKEN_SOURCE, 'g')
-  while ((m = re.exec(s)) !== null) {
-    ids.push(m[1])
-  }
-  return ids
+export function splitTripLogForMirror(text) {
+  return scanTripLogChunks(text)
 }
 
 /**
- * Round-trip miles per token occurrence; reimbursement at MILE_RATE.
+ * Round-trip miles per matched place (typed name or legacy «p:id» token).
  */
 export function computeTripMileageForText(text) {
-  const ids = extractPlaceIdsFromText(text)
+  const chunks = scanTripLogChunks(text)
   let totalMiles = 0
   const rows = []
-  for (const id of ids) {
-    const p = PLACE_BY_ID[id]
-    if (!p) continue
-    const milesRt = p.milesOneWay * 2
-    totalMiles += milesRt
-    rows.push({ placeId: id, label: p.label, miles: milesRt })
+  for (const c of chunks) {
+    if ((c.type === 'place' || c.type === 'token') && c.place) {
+      const milesRt = c.place.milesOneWay * 2
+      totalMiles += milesRt
+      rows.push({ placeId: c.place.id, label: c.place.label, miles: milesRt })
+    }
   }
   const reimbursement = Math.round(totalMiles * MILE_RATE * 100) / 100
   return { totalMiles, reimbursement, rows }
@@ -62,8 +101,8 @@ export function computeWeekTripMileage(weekStart, daysByIso) {
   for (let i = 0; i < 7; i++) {
     const iso = toISODateLocal(addDays(weekStart, i))
     const day = daysByIso?.[iso]
-    const text = day?.tripLog || ''
-    const { totalMiles: dayMiles, rows } = computeTripMileageForText(text)
+    const t = day?.tripLog || ''
+    const { totalMiles: dayMiles, rows } = computeTripMileageForText(t)
     if (dayMiles > 0) {
       totalMiles += dayMiles
       breakdown.push({ iso, rows })

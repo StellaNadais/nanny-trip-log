@@ -349,8 +349,8 @@ export default function WeeklyReceiptPage() {
           </p>
         ) : (
           <p className="receipt__mileage-sync muted">
-            No trip log submit yet for this week — use <Link to="/trip-log">Trip log</Link> → Submit
-            week to receipt.
+            No trip log mileage for this week yet — type place names in{' '}
+            <Link to="/trip-log">Trip log</Link> (they sync here automatically).
           </p>
         )}
 

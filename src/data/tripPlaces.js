@@ -60,22 +60,3 @@ export const PLACES = [
 ]
 
 export const PLACE_BY_ID = Object.fromEntries(PLACES.map((p) => [p.id, p]))
-
-export function placesGroupedForSelect() {
-  const groups = { oakland: [], moraga: [], lafayette: [] }
-  for (const p of PLACES) {
-    groups[p.region].push(p)
-  }
-  return ['oakland', 'moraga', 'lafayette']
-    .map((region) => ({
-      region,
-      label:
-        region === 'oakland'
-          ? 'Oakland'
-          : region === 'moraga'
-            ? 'Moraga'
-            : 'Lafayette',
-      places: groups[region],
-    }))
-    .filter((g) => g.places.length > 0)
-}
