@@ -1,11 +1,15 @@
 /** One-way miles from Deerfield Dr, Moraga (approximate — tune in this file). */
 export const MILE_RATE = 0.54
 
-/** region: oakland → monospace | moraga → italic | lafayette → bold + monospace */
+/**
+ * region: oakland → monospace | moraga → italic | lafayette → bold + monospace
+ * aliases: optional shorter phrases matched in diary-style text (case-insensitive, word boundaries)
+ */
 export const PLACES = [
   {
     id: 'oak-omca',
     label: 'Oakland Museum of California (OMCA)',
+    aliases: ['OMCA'],
     region: 'oakland',
     milesOneWay: 16,
   },
@@ -18,42 +22,49 @@ export const PLACES = [
   {
     id: 'oak-fairy',
     label: "Children's Fairyland",
+    aliases: ['Fairyland'],
     region: 'oakland',
     milesOneWay: 17,
   },
   {
     id: 'oak-chabot',
     label: 'Chabot Space & Science Center',
+    aliases: ['Chabot'],
     region: 'oakland',
     milesOneWay: 12,
   },
   {
     id: 'moraga-lib',
     label: 'Moraga Library',
+    aliases: ['Moraga library'],
     region: 'moraga',
     milesOneWay: 3,
   },
   {
     id: 'moraga-rheem',
     label: 'Rheem Valley (shops / errands)',
+    aliases: ['Rheem Valley'],
     region: 'moraga',
     milesOneWay: 2.5,
   },
   {
     id: 'moraga-commons',
     label: 'Moraga Commons (park)',
+    aliases: ['Moraga Commons'],
     region: 'moraga',
     milesOneWay: 2.5,
   },
   {
     id: 'laf-lib',
     label: 'Lafayette Library',
+    aliases: ['Laf Library', 'Lafayette library'],
     region: 'lafayette',
     milesOneWay: 6,
   },
   {
     id: 'laf-music',
     label: 'Music class (Lamorinda / Lafayette)',
+    aliases: ['Lamorinda'],
     region: 'lafayette',
     milesOneWay: 6,
   },
