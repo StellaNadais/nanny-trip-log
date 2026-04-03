@@ -1,53 +1,11 @@
 import { useId, useMemo } from 'react'
 import { MILE_RATE } from '../data/tripPlaces'
 import { computeTripMileageForText, splitTripLogForMirror } from '../utils/parseTripPlaces'
-
-function placeClass(region) {
-  if (region === 'oakland') return 'trip-place--oakland'
-  if (region === 'moraga') return 'trip-place--moraga'
-  if (region === 'lafayette') return 'trip-place--lafayette'
-  return 'trip-place--unknown'
-}
-
-/** Split plain text runs so commas / breaks match meals “delim” styling. */
-function mirrorNodesFromChunks(chunks) {
-  const nodes = []
-  let k = 0
-  for (const c of chunks) {
-    if (c.type === 'text') {
-      const parts = c.value.split(/([,;.\n]+)/)
-      for (const part of parts) {
-        if (!part) continue
-        if (/^[,;.\n]+$/.test(part)) {
-          nodes.push(
-            <span key={k++} className="meals-inline-delim">
-              {part}
-            </span>
-          )
-        } else {
-          nodes.push(<span key={k++}>{part}</span>)
-        }
-      }
-      continue
-    }
-    const cls = [
-      'trip-place',
-      c.place ? 'trip-place--counted' : '',
-      c.place ? placeClass(c.place.region) : 'trip-place--unknown',
-    ]
-      .filter(Boolean)
-      .join(' ')
-    nodes.push(
-      <span key={k++} className={cls}>
-        {c.value}
-      </span>
-    )
-  }
-  return nodes
-}
+import { mirrorNodesFromChunks } from './placeMirrorNodes'
 
 /**
  * Same pattern as meals: mirror highlights + footer strip with live feedback.
+ * variant journal: nested in Kid journal "About today"; softer copy.
  */
 export default function TripPlacesField({
   id,
@@ -55,6 +13,8 @@ export default function TripPlacesField({
   onChange,
   placeholder = '',
   'aria-labelledby': ariaLabelledby,
+  variant = 'trip',
+  nestedInAbout = false,
 }) {
   const mileageHintId = useId()
   const chunks = useMemo(() => splitTripLogForMirror(value), [value])
@@ -62,8 +22,12 @@ export default function TripPlacesField({
   const mirrorChildren = useMemo(() => mirrorNodesFromChunks(chunks), [chunks])
   const tally = mileage.rows.length
 
+  const isJournal = variant === 'journal'
+
   return (
-    <div className="meals-today-field trip-places-as-meals">
+    <div
+      className={`meals-today-field trip-places-as-meals${nestedInAbout ? ' trip-places-as-meals--about-nested' : ''}`}
+    >
       <div className="meals-inline-host">
         <div className="meals-inline-inner">
           <div className="meals-inline-mirror" aria-hidden>
@@ -90,12 +54,24 @@ export default function TripPlacesField({
       </div>
 
       <div className="trip-places-foot" id={mileageHintId} aria-live="polite">
-        <span className="trip-places-foot__title">Mileage & receipt</span>
+        <span className="trip-places-foot__title">
+          {isJournal ? 'Outings in this note · mileage' : 'Mileage & receipt'}
+        </span>
         {tally === 0 ? (
           <p className="trip-places-foot__body muted">
-            Highlighted, styled names are counted. Finish typing a full saved place name — Oakland
-            (code), Moraga (italic), Lafayette (bold + code) — then this day’s miles roll into{' '}
-            <strong>Weekly receipt</strong> automatically.
+            {isJournal ? (
+              <>
+                Type a natural sentence — when a saved place name appears (e.g. <strong>Laf Library</strong>
+                , <strong>Moraga Library</strong>), it highlights and counts toward this day&apos;s miles on{' '}
+                <strong>Weekly receipt</strong> with Trip log.
+              </>
+            ) : (
+              <>
+                Highlighted, styled names are counted. Finish typing a full saved place name — Oakland
+                (code), Moraga (italic), Lafayette (bold + code) — then this day&apos;s miles roll into{' '}
+                <strong>Weekly receipt</strong> automatically.
+              </>
+            )}
           </p>
         ) : (
           <p className="trip-places-foot__body">

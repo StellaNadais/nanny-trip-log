@@ -322,8 +322,8 @@ export default function WeeklyReceiptPage() {
         </Link>
         <h1 className="receipt__title">Weekly receipt</h1>
         <p className="receipt__lede muted">
-          $31/hour + $5/hr per extra child. Trip log mileage, receipt photos, and manual parking /
-          tolls / Fastrak add to this total.
+          $31/hour + $5/hr per extra child. Trip log + Kid journal “About today” outings, receipt
+          photos, and manual parking / tolls / Fastrak add to this total.
         </p>
       </header>
 
@@ -349,8 +349,9 @@ export default function WeeklyReceiptPage() {
           </p>
         ) : (
           <p className="receipt__mileage-sync muted">
-            No trip log mileage for this week yet — type place names in{' '}
-            <Link to="/trip-log">Trip log</Link> (they sync here automatically).
+            No mileage for this week yet — type place names in{' '}
+            <Link to="/journal">Kid journal</Link> (About today) or Trip log; they sync here
+            automatically.
           </p>
         )}
 

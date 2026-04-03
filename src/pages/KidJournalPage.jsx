@@ -1,10 +1,32 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
+import { DayStrip } from '../components/DayStrip'
 import MealsInlineField from '../components/MealsInlineField'
+import TripPlacesField from '../components/TripPlacesField'
+import { placeMirrorChildrenFromText } from '../components/placeMirrorNodes'
 import { useKidJournal } from '../hooks/useKidJournal'
 import { getMealHealthSuggestions } from '../utils/mealSuggestions'
 import { countByCategory, parseMealsToParts } from '../utils/parseMeals'
-import { toISODateLocal } from '../utils/dates'
+import { addDays, formatWeekRange, startOfWeekMonday, toISODateLocal } from '../utils/dates'
+import { computeWeekTripMileage } from '../utils/parseTripPlaces'
+import { notifyReceiptMileageUpdated, saveReceiptSettings } from '../utils/receiptStorage'
+import { loadKidJournalEntries } from '../utils/kidJournalStorage'
+import { loadState } from '../utils/storage'
+
+function loadDraftFromLatest(iso) {
+  const ent = loadKidJournalEntries()
+  const forDay = ent.filter((e) => e.dateISO === iso)
+  const latest = [...forDay].sort((a, b) => (b.savedAt || '').localeCompare(a.savedAt || ''))[0]
+  if (!latest) {
+    return { dayNotes: '', mealsText: '', morningNap: '', afternoonNap: '' }
+  }
+  return {
+    dayNotes: latest.dayNotes ?? '',
+    mealsText: latest.mealsText ?? '',
+    morningNap: latest.morningNap ?? '',
+    afternoonNap: latest.afternoonNap ?? '',
+  }
+}
 
 function formatJournalDate(iso) {
   if (!iso) return ''
@@ -16,9 +38,28 @@ function formatJournalDate(iso) {
   })
 }
 
+function initialDayOffsetForWeek(mondayDate) {
+  const monIso = toISODateLocal(mondayDate)
+  const todayIso = toISODateLocal(new Date())
+  const diff = Math.round(
+    (new Date(todayIso + 'T12:00:00') - new Date(monIso + 'T12:00:00')) / 86400000
+  )
+  return Math.max(0, Math.min(6, diff))
+}
+
 export default function KidJournalPage() {
   const { entries, addEntry } = useKidJournal()
-  const [dateISO, setDateISO] = useState(() => toISODateLocal(new Date()))
+  const [journalWeekStart, setJournalWeekStart] = useState(() => startOfWeekMonday(new Date()))
+  const [dayOffset, setDayOffset] = useState(() =>
+    initialDayOffsetForWeek(startOfWeekMonday(new Date()))
+  )
+
+  const weekKey = useMemo(() => toISODateLocal(journalWeekStart), [journalWeekStart])
+  const dateISO = useMemo(
+    () => toISODateLocal(addDays(journalWeekStart, dayOffset)),
+    [journalWeekStart, dayOffset]
+  )
+
   const [dayNotes, setDayNotes] = useState('')
   const [mealsText, setMealsText] = useState('')
   const [morningNap, setMorningNap] = useState('')
@@ -31,10 +72,49 @@ export default function KidJournalPage() {
     return () => clearInterval(id)
   }, [])
 
+  useEffect(() => {
+    const d = loadDraftFromLatest(dateISO)
+    setDayNotes(d.dayNotes)
+    setMealsText(d.mealsText)
+    setMorningNap(d.morningNap)
+    setAfternoonNap(d.afternoonNap)
+  }, [dateISO])
+
+  useEffect(() => {
+    const t = window.setTimeout(() => {
+      const saved = loadState()
+      const daysByIso = saved?.daysByIso && typeof saved.daysByIso === 'object' ? saved.daysByIso : {}
+      const draft = { [dateISO]: dayNotes }
+      const { totalMiles, reimbursement, breakdown } = computeWeekTripMileage(
+        journalWeekStart,
+        daysByIso,
+        entries,
+        draft
+      )
+      saveReceiptSettings({
+        mileageByWeek: {
+          [weekKey]: {
+            totalMiles,
+            reimbursement,
+            breakdown,
+            weekLabel: formatWeekRange(journalWeekStart),
+            updatedAt: Date.now(),
+          },
+        },
+      })
+      notifyReceiptMileageUpdated()
+    }, 450)
+    return () => window.clearTimeout(t)
+  }, [journalWeekStart, weekKey, dateISO, dayNotes, entries])
+
   const mealParts = useMemo(() => parseMealsToParts(mealsText), [mealsText])
   const mealSuggestions = useMemo(() => {
     return getMealHealthSuggestions(countByCategory(mealParts), new Date(suggestionClock))
   }, [mealParts, suggestionClock])
+
+  function shiftJournalWeek(delta) {
+    setJournalWeekStart((w) => addDays(w, delta * 7))
+  }
 
   function submit(e) {
     e.preventDefault()
@@ -46,10 +126,13 @@ export default function KidJournalPage() {
       afternoonNap,
     })
     setFlash('Journal entry saved.')
-    setDayNotes('')
-    setMealsText('')
-    setMorningNap('')
-    setAfternoonNap('')
+    window.setTimeout(() => {
+      const d = loadDraftFromLatest(dateISO)
+      setDayNotes(d.dayNotes)
+      setMealsText(d.mealsText)
+      setMorningNap(d.morningNap)
+      setAfternoonNap(d.afternoonNap)
+    }, 100)
   }
 
   const sorted = useMemo(() => {
@@ -71,30 +154,51 @@ export default function KidJournalPage() {
         </h1>
       </header>
 
-      <form className="journal__form" onSubmit={submit}>
-        <label className="field-block">
-          <span className="field-block__label">Date</span>
-          <input
-            type="date"
-            className="input input--line"
-            value={dateISO}
-            onChange={(e) => setDateISO(e.target.value)}
-            required
-          />
-        </label>
+      <div className="journal__week-picker">
+        <div className="trip-log__week-tools">
+          <button
+            type="button"
+            className="btn btn--ghost trip-log__week-btn"
+            onClick={() => shiftJournalWeek(-1)}
+          >
+            ← Previous week
+          </button>
+          <button
+            type="button"
+            className="btn btn--ghost trip-log__week-btn"
+            onClick={() => shiftJournalWeek(1)}
+          >
+            Next week →
+          </button>
+        </div>
+        <p className="journal__week-range muted" aria-live="polite">
+          {formatWeekRange(journalWeekStart)}
+        </p>
+        <DayStrip
+          weekStart={journalWeekStart}
+          selectedIso={dateISO}
+          onSelect={(iso) => {
+            const a = new Date(weekKey + 'T12:00:00')
+            const b = new Date(iso + 'T12:00:00')
+            const diff = Math.round((b - a) / 86400000)
+            setDayOffset(Math.max(0, Math.min(6, diff)))
+          }}
+        />
+      </div>
 
+      <form className="journal__form" onSubmit={submit}>
         <div className="field-block journal__about-bundle">
           <span className="field-block__label" id="kid-journal-about-label">
             About today
           </span>
-          <textarea
+          <TripPlacesField
             id="kid-journal-day-notes"
-            className="input input--area journal__about-notes"
-            rows={4}
             value={dayNotes}
-            onChange={(e) => setDayNotes(e.target.value)}
+            onChange={setDayNotes}
             placeholder="Mood, play, outings, anything parents should know…"
             aria-labelledby="kid-journal-about-label"
+            variant="journal"
+            nestedInAbout
           />
           <div className="journal__about-meals">
             <span className="field-block__label field-block__label--sub" id="kid-journal-meals-label">
@@ -161,7 +265,11 @@ export default function KidJournalPage() {
               return (
                 <li key={row.id} className="journal__history-row">
                   <div className="journal__history-date">{formatJournalDate(row.dateISO)}</div>
-                  {row.dayNotes ? <p className="journal__history-notes">{row.dayNotes}</p> : null}
+                  {row.dayNotes ? (
+                    <p className="journal__history-notes journal__history-notes--places">
+                      {placeMirrorChildrenFromText(row.dayNotes)}
+                    </p>
+                  ) : null}
                   {parts.length > 0 ? (
                     <p className="journal__history-meals">
                       {parts.map((p, i) => (

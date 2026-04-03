@@ -24,8 +24,8 @@ export function DayLogPanel({ iso, day, onChange, ensureDay }) {
             Outings & locations
           </span>
           <p className="trip-log__type-hint muted">
-            Same idea as <strong>Meals today</strong> in the journal: the colored / styled text is
-            what counts — check the panel under the field for this day’s mileage on the receipt.
+            Same as <strong>About today</strong> in Kid journal: styled text counts toward mileage on
+            Weekly receipt (Trip log + journal combined per day).
           </p>
           <TripPlacesField
             id={tripFieldId}

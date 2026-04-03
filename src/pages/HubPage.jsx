@@ -3,9 +3,8 @@ import { Link } from 'react-router-dom'
 const CARDS = [
   { to: '/shift', label: 'Shift', code: 'A' },
   { to: '/journal', label: 'Kid Journal', code: 'B' },
-  { to: '/trip-log', label: 'Trip log', code: 'C' },
-  { to: '/notes', label: 'Internal notes', code: 'D' },
-  { to: '/deck', label: 'More', code: 'E', stacked: true },
+  { to: '/notes', label: 'Internal notes', code: 'C' },
+  { to: '/deck', label: 'More', code: 'D', stacked: true },
 ]
 
 export default function HubPage() {
@@ -32,6 +31,7 @@ export default function HubPage() {
             <span className="hub-card__code">{c.code}</span>
           </Link>
         ))}
+        <div className="hub-card hub-card--empty" aria-hidden />
         <div className="hub-card hub-card--empty" aria-hidden />
       </div>
 

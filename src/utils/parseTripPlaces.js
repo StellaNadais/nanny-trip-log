@@ -3,6 +3,19 @@ import { MILE_RATE, PLACE_BY_ID, PLACES } from '../data/tripPlaces'
 
 const TOKEN_RE = /^«p:([a-z0-9-]+)»/
 
+function buildPlacePhrasesSorted() {
+  const out = []
+  for (const p of PLACES) {
+    out.push({ phrase: p.label, place: p })
+    for (const a of p.aliases || []) {
+      if (a && typeof a === 'string') out.push({ phrase: a, place: p })
+    }
+  }
+  return out.sort((a, b) => b.phrase.length - a.phrase.length)
+}
+
+const PLACE_PHRASES_SORTED = buildPlacePhrasesSorted()
+
 /** Letter, digit, or apostrophe (e.g. Children's) counts as “word” interior. */
 function isWordChar(c) {
   return c !== undefined && /[a-zA-Z0-9']/.test(c)
@@ -15,8 +28,6 @@ function boundaryBefore(text, i) {
 function boundaryAfter(text, end) {
   return end >= text.length || !isWordChar(text[end])
 }
-
-const PLACES_BY_LABEL_LEN = [...PLACES].sort((a, b) => b.label.length - a.label.length)
 
 /**
  * Scan text into chunks for mirror + mileage (non-overlapping; tokens take priority at «).
@@ -42,23 +53,25 @@ export function scanTripLogChunks(text) {
       }
     }
 
-    let matched = null
-    for (const p of PLACES_BY_LABEL_LEN) {
-      const L = p.label.length
+    let matchedPhrase = null
+    let matchedPlace = null
+    for (const { phrase, place } of PLACE_PHRASES_SORTED) {
+      const L = phrase.length
       if (i + L > s.length) continue
-      if (s.slice(i, i + L).toLowerCase() !== p.label.toLowerCase()) continue
+      if (s.slice(i, i + L).toLowerCase() !== phrase.toLowerCase()) continue
       if (!boundaryBefore(s, i) || !boundaryAfter(s, i + L)) continue
-      matched = p
+      matchedPhrase = phrase
+      matchedPlace = place
       break
     }
 
-    if (matched) {
+    if (matchedPlace && matchedPhrase) {
       chunks.push({
         type: 'place',
-        value: s.slice(i, i + matched.label.length),
-        place: matched,
+        value: s.slice(i, i + matchedPhrase.length),
+        place: matchedPlace,
       })
-      i += matched.label.length
+      i += matchedPhrase.length
       continue
     }
 
@@ -78,7 +91,7 @@ export function splitTripLogForMirror(text) {
 }
 
 /**
- * Round-trip miles per matched place (typed name or legacy «p:id» token).
+ * Round-trip miles per matched place (typed name, alias, or legacy «p:id» token).
  */
 export function computeTripMileageForText(text) {
   const chunks = scanTripLogChunks(text)
@@ -95,14 +108,30 @@ export function computeTripMileageForText(text) {
   return { totalMiles, reimbursement, rows }
 }
 
-export function computeWeekTripMileage(weekStart, daysByIso) {
+function dayNotesConcatForDate(journalEntries, iso) {
+  if (!Array.isArray(journalEntries) || !iso) return ''
+  return journalEntries
+    .filter((e) => e.dateISO === iso)
+    .map((e) => e.dayNotes || '')
+    .filter(Boolean)
+    .join('\n')
+}
+
+/**
+ * @param draftDayNotesByIso optional map iso -> string; overrides saved journal notes for those days (live typing)
+ */
+export function computeWeekTripMileage(weekStart, daysByIso, journalEntries = [], draftDayNotesByIso = null) {
   const breakdown = []
   let totalMiles = 0
   for (let i = 0; i < 7; i++) {
     const iso = toISODateLocal(addDays(weekStart, i))
-    const day = daysByIso?.[iso]
-    const t = day?.tripLog || ''
-    const { totalMiles: dayMiles, rows } = computeTripMileageForText(t)
+    const trip = daysByIso?.[iso]?.tripLog || ''
+    let notes = dayNotesConcatForDate(journalEntries, iso)
+    if (draftDayNotesByIso && Object.prototype.hasOwnProperty.call(draftDayNotesByIso, iso)) {
+      notes = draftDayNotesByIso[iso] ?? ''
+    }
+    const combined = [trip, notes].filter(Boolean).join('\n')
+    const { totalMiles: dayMiles, rows } = computeTripMileageForText(combined)
     if (dayMiles > 0) {
       totalMiles += dayMiles
       breakdown.push({ iso, rows })

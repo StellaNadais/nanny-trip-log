@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom'
 import { useEffect, useMemo, useState } from 'react'
 import { addDays, formatWeekRange, toISODateLocal } from '../utils/dates'
+import { useKidJournal } from '../hooks/useKidJournal'
 import { useTripLog } from '../hooks/useTripLog'
 import { DayStrip } from '../components/DayStrip'
 import { DayLogPanel } from '../components/DayLogPanel'
@@ -17,6 +18,7 @@ const TABS = [
 
 export default function TripLogPage() {
   const log = useTripLog()
+  const { entries: journalEntries } = useKidJournal()
   const [tab, setTab] = useState('log')
   const [dayOffset, setDayOffset] = useState(0)
   const selectedIso = useMemo(
@@ -27,15 +29,16 @@ export default function TripLogPage() {
   const day = log.daysByIso[selectedIso]
 
   const weekPreview = useMemo(
-    () => computeWeekTripMileage(log.weekStart, log.daysByIso),
-    [log.weekStart, log.daysByIso]
+    () => computeWeekTripMileage(log.weekStart, log.daysByIso, journalEntries),
+    [log.weekStart, log.daysByIso, journalEntries]
   )
 
   useEffect(() => {
     const t = window.setTimeout(() => {
       const { totalMiles, reimbursement, breakdown } = computeWeekTripMileage(
         log.weekStart,
-        log.daysByIso
+        log.daysByIso,
+        journalEntries
       )
       const weekLabel = formatWeekRange(log.weekStart)
       saveReceiptSettings({
@@ -52,7 +55,7 @@ export default function TripLogPage() {
       notifyReceiptMileageUpdated()
     }, 450)
     return () => window.clearTimeout(t)
-  }, [log.weekStart, log.weekKey, log.daysByIso])
+  }, [log.weekStart, log.weekKey, log.daysByIso, journalEntries])
 
   return (
     <div className="app">
