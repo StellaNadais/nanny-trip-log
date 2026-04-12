@@ -9,6 +9,11 @@ import {
 import { fileToCompressedDataUrl } from '../utils/receiptImage'
 import { formatWeekRange, startOfWeekMonday, toISODateLocal } from '../utils/dates'
 import { MILE_RATE } from '../data/tripPlaces'
+import {
+  buildWeekSummaryText,
+  downloadTextFile,
+  weekSummaryFilename,
+} from '../utils/buildWeekSummaryText'
 
 const BASE_RATE = 31
 const EXTRA_CHILD_PER_HOUR = 5
@@ -50,6 +55,28 @@ function buildVenmoUrl(handle, amount, note) {
   return `https://venmo.com/${encodeURIComponent(user)}?${params.toString()}`
 }
 
+/**
+ * `sms:` draft: full receipt text plus optional Venmo pay link (tappable in Messages).
+ * Body is capped so the `sms:` URL stays within common mobile limits.
+ */
+const SMS_BODY_MAX = 2800
+
+function buildForwardReceiptSmsHref(receiptText, venmoUrl, venmoHandle) {
+  const receipt = String(receiptText || '').trim()
+  const handle = venmoUrl ? normalizeVenmo(venmoHandle) : ''
+  const footer = venmoUrl
+    ? `\n\n────────\nTap to pay on Venmo:\n${venmoUrl}${handle ? `\n@${handle}` : ''}`
+    : ''
+  const reserve = footer.length + 40
+  const maxReceipt = Math.max(200, SMS_BODY_MAX - reserve)
+  let main = receipt
+  if (main.length > maxReceipt) {
+    main = `${main.slice(0, maxReceipt).trimEnd()}\n…(trimmed for text — open app for full receipt)`
+  }
+  const body = main + footer
+  return `sms:?body=${encodeURIComponent(body)}`
+}
+
 function categoryLabel(id) {
   return MANUAL_CATEGORIES.find((c) => c.id === id)?.label ?? id
 }
@@ -61,14 +88,14 @@ function emptyExtras() {
 export default function WeeklyReceiptPage() {
   const initialSettings = useMemo(() => loadReceiptSettings(), [])
   const [venmoHandle, setVenmoHandle] = useState(initialSettings.venmoHandle)
-  const [hours, setHours] = useState('')
+  const [hours, setHours] = useState('45')
   const [numChildren, setNumChildren] = useState('1')
   const [weekOf, setWeekOf] = useState(() => toISODateLocal(startOfWeekMonday(new Date())))
-  const [copied, setCopied] = useState('')
   const [mileageRev, setMileageRev] = useState(0)
   const [extras, setExtras] = useState(emptyExtras)
   const [photoErr, setPhotoErr] = useState('')
-  const [receiptOpen, setReceiptOpen] = useState(false)
+  const [receiptOpen, setReceiptOpen] = useState(true)
+  const [printedAt, setPrintedAt] = useState('')
   const [manualOpen, setManualOpen] = useState(false)
   const [manualCat, setManualCat] = useState('parking_ticket')
   const [manualAmt, setManualAmt] = useState('')
@@ -85,6 +112,10 @@ export default function WeeklyReceiptPage() {
     window.addEventListener(RECEIPT_MILEAGE_EVENT, bump)
     return () => window.removeEventListener(RECEIPT_MILEAGE_EVENT, bump)
   }, [])
+
+  useEffect(() => {
+    if (receiptOpen) setPrintedAt(new Date().toLocaleString())
+  }, [receiptOpen])
 
   useEffect(() => {
     const s = loadReceiptSettings()
@@ -200,6 +231,11 @@ export default function WeeklyReceiptPage() {
     manualTotal,
   ])
 
+  const forwardReceiptSmsHref = useMemo(
+    () => buildForwardReceiptSmsHref(receiptText, venmoUrl, venmoHandle),
+    [receiptText, venmoUrl, venmoHandle]
+  )
+
   const thermalRows = useMemo(() => {
     const rows = []
     if (hoursValid) {
@@ -243,14 +279,13 @@ export default function WeeklyReceiptPage() {
     saveReceiptSettings({ venmoHandle: v })
   }
 
-  async function copyReceipt() {
-    try {
-      await navigator.clipboard.writeText(receiptText)
-      setCopied('Copied!')
-      setTimeout(() => setCopied(''), 2000)
-    } catch {
-      setCopied('Copy failed')
-    }
+  function downloadWeekSummaryFile() {
+    const body = buildWeekSummaryText({
+      weekMondayIso: receiptWeekKey,
+      weekLabel,
+      receiptText,
+    })
+    downloadTextFile(weekSummaryFilename(receiptWeekKey), body)
   }
 
   async function onPickPhoto(e) {
@@ -308,8 +343,6 @@ export default function WeeklyReceiptPage() {
     }))
   }
 
-  const hasReceiptContent =
-    hoursValid || mileReimb > 0 || manualTotal > 0 || extras.photos.length > 0
   const showSummary =
     hoursValid || mileReimb > 0 || manualTotal > 0 || extras.photos.length > 0
   const showVenmoActions = combinedTotal > 0
@@ -322,8 +355,9 @@ export default function WeeklyReceiptPage() {
         </Link>
         <h1 className="receipt__title">Weekly receipt</h1>
         <p className="receipt__lede muted">
-          $31/hour + $5/hr per extra child. Trip log + Kid journal “About today” outings, receipt
-          photos, and manual parking / tolls / Fastrak add to this total.
+          The <strong>register-tape receipt</strong> opens as a popup (old-school thermal style).
+          Fill the form below, then use <strong>Download week summary (.txt)</strong> for a plain-text
+          file: each day’s trip log + journal + this week’s receipt block.
         </p>
       </header>
 
@@ -480,8 +514,12 @@ export default function WeeklyReceiptPage() {
             className="input input--line"
             value={hours}
             onChange={(e) => setHours(e.target.value)}
-            placeholder="e.g. 32.5"
+            placeholder="e.g. 45"
           />
+          <p className="muted receipt__hours-hint">
+            Base wage is <strong>${BASE_RATE}/hr</strong> for the first child (e.g.{' '}
+            <strong>45 hr → ${(BASE_RATE * 45).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</strong> before mileage & reimbursements).
+          </p>
         </label>
 
         <label className="field-block">
@@ -515,13 +553,22 @@ export default function WeeklyReceiptPage() {
           type="button"
           className="btn btn--primary receipt__open-ticket"
           onClick={() => setReceiptOpen(true)}
-          disabled={!hasReceiptContent}
         >
-          View print-style receipt
+          Show register-tape receipt
         </button>
-        {!hasReceiptContent ? (
-          <p className="muted receipt__popup-hint">Add hours, mileage, photos, or manual lines first.</p>
-        ) : null}
+        <a
+          href={forwardReceiptSmsHref}
+          className="btn receipt__forward-sms"
+          aria-label="Open Messages with the receipt and Venmo link in the draft"
+        >
+          Forward receipt to text
+        </a>
+        <button type="button" className="btn receipt__download-summary" onClick={downloadWeekSummaryFile}>
+          Download week summary (.txt)
+        </button>
+        <p className="muted receipt__popup-hint">
+          Receipt popup opens when you land here; close it to edit hours and extras.
+        </p>
       </div>
 
       <section className="receipt__math" aria-live="polite">
@@ -583,15 +630,24 @@ export default function WeeklyReceiptPage() {
               rel="noopener noreferrer"
               className="btn btn--primary receipt__venmo"
             >
-              Pay with Venmo (${combinedTotal.toFixed(2)})
+              Venmo payment (${combinedTotal.toFixed(2)})
             </a>
           ) : (
-            <p className="muted receipt__venmo-hint">Add your Venmo username to open a pay link.</p>
+            <p className="muted receipt__venmo-hint">Add your Venmo username for a pay link in texts and below.</p>
           )}
-          <button type="button" className="btn receipt__copy" onClick={copyReceipt}>
-            Copy receipt text
+          <a
+            href={forwardReceiptSmsHref}
+            className="btn receipt__forward-sms"
+            aria-label="Open Messages with the receipt and optional Venmo pay link"
+          >
+            Forward receipt to text
+          </a>
+          <p className="muted receipt__sms-hint">
+            Opens Messages (or your SMS app) with the full receipt typed out{venmoUrl ? ', plus a tappable Venmo link at the bottom' : ''}. Pick who to send it to.
+          </p>
+          <button type="button" className="btn receipt__download-summary" onClick={downloadWeekSummaryFile}>
+            Download week summary (.txt)
           </button>
-          {copied ? <span className="receipt__copied muted">{copied}</span> : null}
           <pre className="receipt__preview" aria-label="Receipt preview">
             {receiptText}
           </pre>
@@ -602,6 +658,7 @@ export default function WeeklyReceiptPage() {
         open={receiptOpen}
         onClose={() => setReceiptOpen(false)}
         weekLabel={weekLabel}
+        printedAt={printedAt ? `Printed: ${printedAt}` : ''}
         rows={thermalRows}
         photos={extras.photos}
         totalCentsDisplay={`$${combinedTotal.toFixed(2)}`}
@@ -615,16 +672,34 @@ export default function WeeklyReceiptPage() {
                 rel="noopener noreferrer"
                 className="btn btn--primary receipt-modal__venmo"
               >
-                Pay with Venmo (${combinedTotal.toFixed(2)})
+                Venmo payment (${combinedTotal.toFixed(2)})
               </a>
             ) : null}
-            <button type="button" className="btn receipt-modal__copy" onClick={copyReceipt}>
-              Copy receipt text
+            <a
+              href={forwardReceiptSmsHref}
+              className="btn receipt-modal__forward-sms"
+              aria-label="Open Messages with the receipt and optional Venmo pay link"
+            >
+              Forward receipt to text
+            </a>
+            <button type="button" className="btn receipt-modal__download" onClick={downloadWeekSummaryFile}>
+              Download week summary (.txt)
             </button>
-            {copied ? <span className="receipt-modal__copied muted">{copied}</span> : null}
           </>
         ) : (
-          <p className="muted receipt-modal__zero">Total is $0.00 — add hours or expenses for payment.</p>
+          <>
+            <p className="muted receipt-modal__zero">Total is $0.00 — add hours or expenses for payment.</p>
+            <a
+              href={forwardReceiptSmsHref}
+              className="btn receipt-modal__forward-sms"
+              aria-label="Open Messages with the receipt text"
+            >
+              Forward receipt to text
+            </a>
+            <button type="button" className="btn receipt-modal__download" onClick={downloadWeekSummaryFile}>
+              Download week summary (.txt)
+            </button>
+          </>
         )}
       </ReceiptThermalModal>
     </div>

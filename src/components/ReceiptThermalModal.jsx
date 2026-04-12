@@ -7,6 +7,7 @@ export default function ReceiptThermalModal({
   open,
   onClose,
   weekLabel,
+  printedAt,
   rows,
   photos,
   totalCentsDisplay,
@@ -27,14 +28,22 @@ export default function ReceiptThermalModal({
     <div className="receipt-modal" role="dialog" aria-modal="true" aria-labelledby="receipt-thermal-title">
       <button type="button" className="receipt-modal__backdrop" aria-label="Close receipt" onClick={onClose} />
       <div className="receipt-modal__sheet">
-        <div className="receipt-ticket">
+        <div className="receipt-ticket receipt-ticket--vintage">
           <div className="receipt-ticket__jagged receipt-ticket__jagged--top" aria-hidden />
           <div className="receipt-ticket__inner">
+            <p className="receipt-ticket__kicker" aria-hidden>
+              ========================================
+            </p>
             <p className="receipt-ticket__title" id="receipt-thermal-title">
               NANNY CARE
             </p>
-            <p className="receipt-ticket__sub">Weekly receipt</p>
+            <p className="receipt-ticket__sub">Weekly receipt · register tape</p>
             <p className="receipt-ticket__meta">{weekLabel}</p>
+            {printedAt ? <p className="receipt-ticket__printed">{printedAt}</p> : null}
+            <p className="receipt-ticket__store" aria-hidden>
+              *** THANK YOU ***<br />
+              NO REFUNDS ON LOVE
+            </p>
             <div className="receipt-ticket__rule" />
             <ul className="receipt-ticket__lines">
               {rows.map((r, i) => (
