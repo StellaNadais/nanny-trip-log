@@ -57,24 +57,26 @@ export default function MealsInlineField({
         </div>
       </div>
 
-      <div
-        className="meals-today-ideas"
-        id="meals-today-ideas-hint"
-        aria-live="polite"
-      >
-        <span className="meals-today-ideas__title">Ideas through the day</span>
-        <p className="meals-today-ideas__disclaimer muted">
-          General nutrition reminders for planning—not medical advice. Follow family and pediatric
-          guidance.
-        </p>
-        <ul className="meals-today-ideas__list">
-          {suggestions.map((line, i) => (
-            <li key={i} className="meals-today-ideas__item">
-              {line}
-            </li>
-          ))}
-        </ul>
-      </div>
+      <details className="meals-today-ideas-details" id="meals-today-ideas-hint" aria-live="polite">
+        <summary className="meals-today-ideas__summary">Ideas through the day</summary>
+        <div className="meals-today-ideas__panel">
+          <p className="meals-today-ideas__disclaimer muted">
+            General nutrition reminders for planning—not medical advice. Follow family and pediatric
+            guidance.
+          </p>
+          {suggestions.length > 0 ? (
+            <ul className="meals-today-ideas__list">
+              {suggestions.map((line, i) => (
+                <li key={i} className="meals-today-ideas__item">
+                  {line}
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="meals-today-ideas__empty muted">No extra ideas for this mix yet.</p>
+          )}
+        </div>
+      </details>
     </div>
   )
 }

@@ -11,6 +11,7 @@ import WeeklyReceiptPage from './pages/WeeklyReceiptPage'
 import ShiftPage from './pages/ShiftPage'
 import KidJournalPage from './pages/KidJournalPage'
 import InternalNotesPage from './pages/InternalNotesPage'
+import OutingsPage from './pages/OutingsPage'
 import PlaceholderPage from './pages/PlaceholderPage'
 import CaregiverFlowLayout from './layouts/CaregiverFlowLayout'
 import './App.css'
@@ -32,8 +33,9 @@ export default function App() {
             <Route path="/receipt" element={<WeeklyReceiptPage />} />
             <Route path="/shift" element={<ShiftPage />} />
             <Route path="/journal" element={<KidJournalPage />} />
+            <Route path="/outings" element={<OutingsPage />} />
             <Route path="/notes" element={<InternalNotesPage />} />
-            <Route path="/deck" element={<PlaceholderPage slug="deck" />} />
+            <Route path="/events" element={<PlaceholderPage slug="events" />} />
           </Routes>
         </BookingsProvider>
       </KidJournalProvider>

@@ -1,9 +1,11 @@
 import { addDays, toISODateLocal } from './dates'
 import { MILE_RATE, PLACE_BY_ID, PLACES } from '../data/tripPlaces'
+import { loadOutingsPlaces } from './outingsStorage'
+import { outingRecordToPlace } from './outingsPlaceModel'
 
 const TOKEN_RE = /^«p:([a-z0-9-]+)»/
 
-function buildPlacePhrasesSorted() {
+function buildBuiltInPhrasesSorted() {
   const out = []
   for (const p of PLACES) {
     out.push({ phrase: p.label, place: p })
@@ -11,10 +13,36 @@ function buildPlacePhrasesSorted() {
       if (a && typeof a === 'string') out.push({ phrase: a, place: p })
     }
   }
-  return out.sort((a, b) => b.phrase.length - a.phrase.length)
+  return out
 }
 
-const PLACE_PHRASES_SORTED = buildPlacePhrasesSorted()
+function buildCustomPhrasesSorted() {
+  const out = []
+  for (const r of loadOutingsPlaces()) {
+    const p = outingRecordToPlace(r)
+    if (!p) continue
+    out.push({ phrase: p.label, place: p })
+    for (const a of p.aliases || []) {
+      if (a) out.push({ phrase: a, place: p })
+    }
+  }
+  return out
+}
+
+function getPlacePhrasesSorted() {
+  return [...buildBuiltInPhrasesSorted(), ...buildCustomPhrasesSorted()].sort(
+    (a, b) => b.phrase.length - a.phrase.length
+  )
+}
+
+function getMergedPlaceById() {
+  const m = { ...PLACE_BY_ID }
+  for (const r of loadOutingsPlaces()) {
+    const p = outingRecordToPlace(r)
+    if (p) m[p.id] = p
+  }
+  return m
+}
 
 /** Letter, digit, or apostrophe (e.g. Children's) counts as “word” interior. */
 function isWordChar(c) {
@@ -35,6 +63,8 @@ function boundaryAfter(text, end) {
 export function scanTripLogChunks(text) {
   const s = String(text || '')
   const chunks = []
+  const placeById = getMergedPlaceById()
+  const placePhrasesSorted = getPlacePhrasesSorted()
   let i = 0
   while (i < s.length) {
     if (s[i] === '«') {
@@ -46,7 +76,7 @@ export function scanTripLogChunks(text) {
         chunks.push({
           type: 'token',
           value: full,
-          place: PLACE_BY_ID[id] || null,
+          place: placeById[id] || null,
         })
         i += full.length
         continue
@@ -55,7 +85,7 @@ export function scanTripLogChunks(text) {
 
     let matchedPhrase = null
     let matchedPlace = null
-    for (const { phrase, place } of PLACE_PHRASES_SORTED) {
+    for (const { phrase, place } of placePhrasesSorted) {
       const L = phrase.length
       if (i + L > s.length) continue
       if (s.slice(i, i + L).toLowerCase() !== phrase.toLowerCase()) continue

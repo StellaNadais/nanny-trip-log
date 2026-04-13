@@ -3,15 +3,16 @@ import { Link } from 'react-router-dom'
 const CARDS = [
   { to: '/shift', label: 'Shift', code: 'A' },
   { to: '/journal', label: 'Kid Journal', code: 'B' },
-  { to: '/notes', label: 'Internal notes', code: 'C' },
-  { to: '/deck', label: 'More', code: 'D', stacked: true },
+  { to: '/outings', label: 'Outings', code: 'C' },
+  { to: '/notes', label: 'Internal notes', code: 'D' },
+  { to: '/events', label: 'Events', code: 'E', stacked: true },
 ]
 
 export default function HubPage() {
   return (
     <div className="page page--hub">
       <div className="page__badge" aria-hidden>
-        3
+        5
       </div>
       <header className="hub__head">
         <Link to="/schedule" className="page-back page-back--ghost">
@@ -31,7 +32,6 @@ export default function HubPage() {
             <span className="hub-card__code">{c.code}</span>
           </Link>
         ))}
-        <div className="hub-card hub-card--empty" aria-hidden />
         <div className="hub-card hub-card--empty" aria-hidden />
       </div>
 

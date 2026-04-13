@@ -248,7 +248,8 @@
   }
 }
 
-.field-block:last-child {
+/* Only in trip log day grid should the last field span both columns */
+.day-panel__grid .field-block:last-child {
   grid-column: 1 / -1;
 }
 

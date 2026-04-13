@@ -4,6 +4,7 @@ function placeClass(region) {
   if (region === 'oakland') return 'trip-place--oakland'
   if (region === 'moraga') return 'trip-place--moraga'
   if (region === 'lafayette') return 'trip-place--lafayette'
+  if (region === 'custom') return 'trip-place--custom'
   return 'trip-place--unknown'
 }
 

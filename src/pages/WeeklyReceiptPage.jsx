@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import ReceiptThermalModal from '../components/ReceiptThermalModal'
 import {
@@ -6,7 +6,6 @@ import {
   saveReceiptSettings,
   RECEIPT_MILEAGE_EVENT,
 } from '../utils/receiptStorage'
-import { fileToCompressedDataUrl } from '../utils/receiptImage'
 import { formatWeekRange, startOfWeekMonday, toISODateLocal } from '../utils/dates'
 import { MILE_RATE } from '../data/tripPlaces'
 import {
@@ -26,10 +25,6 @@ const MANUAL_CATEGORIES = [
   { id: 'fastrak', label: 'Fastrak' },
   { id: 'other', label: 'Other' },
 ]
-
-function uid() {
-  return globalThis.crypto?.randomUUID?.() ?? `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`
-}
 
 function normalizeVenmo(s) {
   return String(s || '')
@@ -93,14 +88,8 @@ export default function WeeklyReceiptPage() {
   const [weekOf, setWeekOf] = useState(() => toISODateLocal(startOfWeekMonday(new Date())))
   const [mileageRev, setMileageRev] = useState(0)
   const [extras, setExtras] = useState(emptyExtras)
-  const [photoErr, setPhotoErr] = useState('')
   const [receiptOpen, setReceiptOpen] = useState(true)
   const [printedAt, setPrintedAt] = useState('')
-  const [manualOpen, setManualOpen] = useState(false)
-  const [manualCat, setManualCat] = useState('parking_ticket')
-  const [manualAmt, setManualAmt] = useState('')
-  const [manualNote, setManualNote] = useState('')
-  const fileRef = useRef(null)
 
   const receiptWeekKey = useMemo(
     () => toISODateLocal(startOfWeekMonday(new Date(weekOf + 'T12:00:00'))),
@@ -125,19 +114,7 @@ export default function WeeklyReceiptPage() {
         ? { photos: row.photos, manualLines: row.manualLines }
         : emptyExtras()
     )
-    setPhotoErr('')
-  }, [receiptWeekKey])
-
-  const commitExtras = useCallback((updater) => {
-    setExtras((prev) => {
-      const next = typeof updater === 'function' ? updater(prev) : updater
-      const cur = loadReceiptSettings()
-      saveReceiptSettings({
-        extrasByWeek: { ...cur.extrasByWeek, [receiptWeekKey]: next },
-      })
-      return next
-    })
-  }, [receiptWeekKey])
+  }, [receiptWeekKey, mileageRev])
 
   const mileageEntry = useMemo(() => {
     return loadReceiptSettings().mileageByWeek?.[receiptWeekKey] ?? null
@@ -288,61 +265,6 @@ export default function WeeklyReceiptPage() {
     downloadTextFile(weekSummaryFilename(receiptWeekKey), body)
   }
 
-  async function onPickPhoto(e) {
-    const f = e.target.files?.[0]
-    e.target.value = ''
-    if (!f) return
-    setPhotoErr('')
-    try {
-      const dataUrl = await fileToCompressedDataUrl(f)
-      commitExtras((prev) => {
-        if (prev.photos.length >= 8) {
-          setPhotoErr('Max 8 receipt photos per week.')
-          return prev
-        }
-        setPhotoErr('')
-        return { ...prev, photos: [...prev.photos, { id: uid(), dataUrl }] }
-      })
-    } catch {
-      setPhotoErr('Could not add photo. Try a smaller image.')
-    }
-  }
-
-  function removePhoto(id) {
-    commitExtras((prev) => ({
-      ...prev,
-      photos: prev.photos.filter((p) => p.id !== id),
-    }))
-  }
-
-  function addManualLine(e) {
-    e.preventDefault()
-    const amt = parseFloat(manualAmt)
-    if (!Number.isFinite(amt) || amt < 0) return
-    commitExtras((prev) => ({
-      ...prev,
-      manualLines: [
-        ...prev.manualLines,
-        {
-          id: uid(),
-          category: manualCat,
-          note: manualNote.trim(),
-          amount: Math.round(amt * 100) / 100,
-        },
-      ],
-    }))
-    setManualAmt('')
-    setManualNote('')
-    setManualOpen(false)
-  }
-
-  function removeManualLine(id) {
-    commitExtras((prev) => ({
-      ...prev,
-      manualLines: prev.manualLines.filter((m) => m.id !== id),
-    }))
-  }
-
   const showSummary =
     hoursValid || mileReimb > 0 || manualTotal > 0 || extras.photos.length > 0
   const showVenmoActions = combinedTotal > 0
@@ -356,8 +278,8 @@ export default function WeeklyReceiptPage() {
         <h1 className="receipt__title">Weekly receipt</h1>
         <p className="receipt__lede muted">
           The <strong>register-tape receipt</strong> opens as a popup (old-school thermal style).
-          Fill the form below, then use <strong>Download week summary (.txt)</strong> for a plain-text
-          file: each day’s trip log + journal + this week’s receipt block.
+          Receipt photos and parking / tolls are managed on <Link to="/outings">Outings</Link>. Use{' '}
+          <strong>Download week summary (.txt)</strong> for trip log + journal + this receipt block.
         </p>
       </header>
 
@@ -384,125 +306,10 @@ export default function WeeklyReceiptPage() {
         ) : (
           <p className="receipt__mileage-sync muted">
             No mileage for this week yet — type place names in{' '}
-            <Link to="/journal">Kid journal</Link> (About today) or Trip log; they sync here
-            automatically.
+            <Link to="/journal">Kid journal</Link> or Trip log, or add locations on{' '}
+            <Link to="/outings">Outings</Link>; they sync here automatically.
           </p>
         )}
-
-        <div className="receipt__capture-block">
-          <span className="field-block__label">Receipt photos</span>
-          <p className="receipt__capture-hint muted">
-            Take or choose photos of receipts; they appear on the print-style receipt.
-          </p>
-          <input
-            ref={fileRef}
-            type="file"
-            accept="image/*"
-            capture="environment"
-            className="sr-only"
-            onChange={onPickPhoto}
-          />
-          <button
-            type="button"
-            className="btn btn--primary receipt__pic-btn"
-            onClick={() => fileRef.current?.click()}
-          >
-            Take / add receipt photo
-          </button>
-          {photoErr ? <p className="receipt__photo-err muted">{photoErr}</p> : null}
-          {extras.photos.length > 0 ? (
-            <ul className="receipt__thumb-list">
-              {extras.photos.map((p) => (
-                <li key={p.id} className="receipt__thumb-item">
-                  <img src={p.dataUrl} alt="" className="receipt__thumb" />
-                  <button
-                    type="button"
-                    className="btn btn--ghost receipt__thumb-remove"
-                    onClick={() => removePhoto(p.id)}
-                  >
-                    Remove
-                  </button>
-                </li>
-              ))}
-            </ul>
-          ) : null}
-        </div>
-
-        <div className="receipt__manual-block">
-          <button
-            type="button"
-            className="btn receipt__manual-toggle"
-            onClick={() => setManualOpen((o) => !o)}
-            aria-expanded={manualOpen}
-          >
-            {manualOpen ? 'Hide' : 'Enter manually'} — parking, tolls, Fastrak…
-          </button>
-          {manualOpen ? (
-            <form className="receipt__manual-form" onSubmit={addManualLine}>
-              <label className="field-block">
-                <span className="field-block__label">Type</span>
-                <select
-                  className="input input--line"
-                  value={manualCat}
-                  onChange={(e) => setManualCat(e.target.value)}
-                >
-                  {MANUAL_CATEGORIES.map((c) => (
-                    <option key={c.id} value={c.id}>
-                      {c.label}
-                    </option>
-                  ))}
-                </select>
-              </label>
-              <label className="field-block">
-                <span className="field-block__label">Amount ($)</span>
-                <input
-                  type="number"
-                  inputMode="decimal"
-                  min="0"
-                  step="0.01"
-                  className="input input--line"
-                  value={manualAmt}
-                  onChange={(e) => setManualAmt(e.target.value)}
-                  placeholder="0.00"
-                  required
-                />
-              </label>
-              <label className="field-block">
-                <span className="field-block__label">Note (optional)</span>
-                <input
-                  type="text"
-                  className="input input--line"
-                  value={manualNote}
-                  onChange={(e) => setManualNote(e.target.value)}
-                  placeholder="e.g. garage on Oak"
-                />
-              </label>
-              <button type="submit" className="btn btn--primary">
-                Add to receipt
-              </button>
-            </form>
-          ) : null}
-          {extras.manualLines.length > 0 ? (
-            <ul className="receipt__manual-list">
-              {extras.manualLines.map((m) => (
-                <li key={m.id} className="receipt__manual-row">
-                  <span>
-                    {categoryLabel(m.category)}
-                    {m.note ? ` · ${m.note}` : ''}
-                  </span>
-                  <span className="receipt__manual-row-amt">${Number(m.amount).toFixed(2)}</span>
-                  <button
-                    type="button"
-                    className="btn btn--ghost receipt__manual-remove"
-                    onClick={() => removeManualLine(m.id)}
-                  >
-                    ×
-                  </button>
-                </li>
-              ))}
-            </ul>
-          ) : null}
-        </div>
 
         <label className="field-block">
           <span className="field-block__label">Hours this week</span>
@@ -567,14 +374,18 @@ export default function WeeklyReceiptPage() {
           Download week summary (.txt)
         </button>
         <p className="muted receipt__popup-hint">
-          Receipt popup opens when you land here; close it to edit hours and extras.
+          Receipt popup opens when you land here. Edit receipt photos & parking on{' '}
+          <Link to="/outings">Outings</Link>.
         </p>
       </div>
 
       <section className="receipt__math" aria-live="polite">
         <h2 className="receipt__math-title">Totals</h2>
         {!showSummary ? (
-          <p className="muted">Enter hours, trip log mileage, photos, or manual expenses to build your receipt.</p>
+          <p className="muted">
+            Enter hours, trip log mileage, or add receipt extras on <Link to="/outings">Outings</Link> to build your
+            receipt.
+          </p>
         ) : (
           <>
             {hoursValid ? (

@@ -53,37 +53,40 @@ export default function TripPlacesField({
         </div>
       </div>
 
-      <div className="trip-places-foot" id={mileageHintId} aria-live="polite">
-        <span className="trip-places-foot__title">
-          {isJournal ? 'Outings in this note · mileage' : 'Mileage & receipt'}
-        </span>
-        {tally === 0 ? (
-          <p className="trip-places-foot__body muted">
-            {isJournal ? (
-              <>
-                Type a natural sentence — when a saved place name appears (e.g. <strong>Laf Library</strong>
-                , <strong>Moraga Library</strong>), it highlights and counts toward this day&apos;s miles on{' '}
-                <strong>Weekly receipt</strong> with Trip log.
-              </>
-            ) : (
-              <>
-                Highlighted, styled names are counted. Finish typing a full saved place name — Oakland
-                (code), Moraga (italic), Lafayette (bold + code) — then this day&apos;s miles roll into{' '}
-                <strong>Weekly receipt</strong> automatically.
-              </>
-            )}
-          </p>
-        ) : (
-          <p className="trip-places-foot__body">
-            <strong className="trip-places-foot__stat">{tally}</strong>{' '}
-            {tally === 1 ? 'trip' : 'trips'} counted ·{' '}
-            <strong className="trip-places-foot__stat">{mileage.totalMiles.toFixed(1)}</strong> mi
-            round-trip ·{' '}
-            <strong className="trip-places-foot__stat">${mileage.reimbursement.toFixed(2)}</strong>{' '}
-            @ ${MILE_RATE}/mi — <span className="trip-places-foot__sync">on Weekly receipt</span>
-          </p>
-        )}
-      </div>
+      <details className="trip-places-foot-details" id={mileageHintId} aria-live="polite">
+        <summary className="trip-places-foot__summary">
+          {isJournal ? 'Outings & mileage' : 'Mileage & receipt'}
+          <span className="trip-places-foot__summary-hint muted"> — info</span>
+        </summary>
+        <div className="trip-places-foot">
+          {tally === 0 ? (
+            <p className="trip-places-foot__body muted">
+              {isJournal ? (
+                <>
+                  Type a natural sentence — when a saved place name appears (e.g. <strong>Laf Library</strong>
+                  , <strong>Moraga Library</strong>), it highlights and counts toward this day&apos;s miles on{' '}
+                  <strong>Weekly receipt</strong> with Trip log.
+                </>
+              ) : (
+                <>
+                  Highlighted, styled names are counted. Finish typing a full saved place name — Oakland
+                  (code), Moraga (italic), Lafayette (bold + code) — then this day&apos;s miles roll into{' '}
+                  <strong>Weekly receipt</strong> automatically.
+                </>
+              )}
+            </p>
+          ) : (
+            <p className="trip-places-foot__body">
+              <strong className="trip-places-foot__stat">{tally}</strong>{' '}
+              {tally === 1 ? 'trip' : 'trips'} counted ·{' '}
+              <strong className="trip-places-foot__stat">{mileage.totalMiles.toFixed(1)}</strong> mi
+              round-trip ·{' '}
+              <strong className="trip-places-foot__stat">${mileage.reimbursement.toFixed(2)}</strong>{' '}
+              @ ${MILE_RATE}/mi — <span className="trip-places-foot__sync">on Weekly receipt</span>
+            </p>
+          )}
+        </div>
+      </details>
     </div>
   )
 }

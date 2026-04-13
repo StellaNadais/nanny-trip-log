@@ -67,7 +67,6 @@ export function buildWeekSummaryText({ weekMondayIso, weekLabel, receiptText }) 
       if (e.mealsText) lines.push(`      Meals: ${e.mealsText}`)
       const nap = [e.morningNap, e.afternoonNap].filter(Boolean).join(' · ')
       if (nap) lines.push(`      Naps: ${nap}`)
-      if (e.pottyToday) lines.push(`      Potty/poop: ${e.pottyToday}`)
     }
     if (!tripLog && !dayNotes && jrows.length === 0) {
       lines.push('    (no trip log or journal for this date)')

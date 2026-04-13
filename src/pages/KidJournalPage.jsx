@@ -3,22 +3,33 @@ import { Link } from 'react-router-dom'
 import { DayStrip } from '../components/DayStrip'
 import MealsInlineField from '../components/MealsInlineField'
 import TripPlacesField from '../components/TripPlacesField'
-import { placeMirrorChildrenFromText } from '../components/placeMirrorNodes'
 import { useKidJournal } from '../hooks/useKidJournal'
 import { getMealHealthSuggestions } from '../utils/mealSuggestions'
 import { countByCategory, parseMealsToParts } from '../utils/parseMeals'
 import { addDays, formatWeekRange, startOfWeekMonday, toISODateLocal } from '../utils/dates'
 import { computeWeekTripMileage } from '../utils/parseTripPlaces'
 import { notifyReceiptMileageUpdated, saveReceiptSettings } from '../utils/receiptStorage'
+import { OUTINGS_UPDATED_EVENT } from '../utils/outingsStorage'
 import { loadKidJournalEntries } from '../utils/kidJournalStorage'
 import { loadState } from '../utils/storage'
+import JournalDayReceiptModal from '../components/JournalDayReceiptModal'
+import {
+  buildJournalDayExportText,
+  downloadJournalDayFile,
+  journalDayFilename,
+} from '../utils/journalDayExport'
 
 function loadDraftFromLatest(iso) {
   const ent = loadKidJournalEntries()
   const forDay = ent.filter((e) => e.dateISO === iso)
   const latest = [...forDay].sort((a, b) => (b.savedAt || '').localeCompare(a.savedAt || ''))[0]
   if (!latest) {
-    return { dayNotes: '', mealsText: '', morningNap: '', afternoonNap: '' }
+    return {
+      dayNotes: '',
+      mealsText: '',
+      morningNap: '',
+      afternoonNap: '',
+    }
   }
   return {
     dayNotes: latest.dayNotes ?? '',
@@ -65,11 +76,19 @@ export default function KidJournalPage() {
   const [morningNap, setMorningNap] = useState('')
   const [afternoonNap, setAfternoonNap] = useState('')
   const [flash, setFlash] = useState('')
+  const [journalReceiptOpen, setJournalReceiptOpen] = useState(false)
   const [suggestionClock, setSuggestionClock] = useState(() => Date.now())
+  const [outingsRev, setOutingsRev] = useState(0)
 
   useEffect(() => {
     const id = setInterval(() => setSuggestionClock(Date.now()), 5 * 60 * 1000)
     return () => clearInterval(id)
+  }, [])
+
+  useEffect(() => {
+    const bump = () => setOutingsRev((r) => r + 1)
+    window.addEventListener(OUTINGS_UPDATED_EVENT, bump)
+    return () => window.removeEventListener(OUTINGS_UPDATED_EVENT, bump)
   }, [])
 
   useEffect(() => {
@@ -105,12 +124,21 @@ export default function KidJournalPage() {
       notifyReceiptMileageUpdated()
     }, 450)
     return () => window.clearTimeout(t)
-  }, [journalWeekStart, weekKey, dateISO, dayNotes, entries])
+  }, [journalWeekStart, weekKey, dateISO, dayNotes, entries, outingsRev])
 
   const mealParts = useMemo(() => parseMealsToParts(mealsText), [mealsText])
   const mealSuggestions = useMemo(() => {
     return getMealHealthSuggestions(countByCategory(mealParts), new Date(suggestionClock))
   }, [mealParts, suggestionClock])
+
+  const hasSavedForSelectedDay = useMemo(
+    () => entries.some((e) => e.dateISO === dateISO),
+    [entries, dateISO]
+  )
+
+  useEffect(() => {
+    if (!hasSavedForSelectedDay) setJournalReceiptOpen(false)
+  }, [dateISO, hasSavedForSelectedDay])
 
   function shiftJournalWeek(delta) {
     setJournalWeekStart((w) => addDays(w, delta * 7))
@@ -125,7 +153,7 @@ export default function KidJournalPage() {
       morningNap,
       afternoonNap,
     })
-    setFlash('Journal entry saved.')
+    setFlash('Journal saved.')
     window.setTimeout(() => {
       const d = loadDraftFromLatest(dateISO)
       setDayNotes(d.dayNotes)
@@ -135,13 +163,23 @@ export default function KidJournalPage() {
     }, 100)
   }
 
-  const sorted = useMemo(() => {
-    return [...entries].sort((a, b) => {
-      const d = (b.dateISO ?? '').localeCompare(a.dateISO ?? '')
-      if (d !== 0) return d
-      return (b.savedAt ?? '').localeCompare(a.savedAt ?? '')
-    })
-  }, [entries])
+  const journalDateLabel = formatJournalDate(dateISO)
+
+  function journalDayExportPayload() {
+    return {
+      dateISO,
+      dateLabel: journalDateLabel,
+      dayNotes,
+      mealsText,
+      morningNap,
+      afternoonNap,
+    }
+  }
+
+  function downloadJournalOfTheDay() {
+    const text = buildJournalDayExportText(journalDayExportPayload())
+    downloadJournalDayFile(journalDayFilename(dateISO), text)
+  }
 
   return (
     <div className="page page--kid-journal">
@@ -220,7 +258,7 @@ export default function KidJournalPage() {
         </div>
 
         <div className="journal__nap-row">
-          <label className="field-block">
+          <label className="field-block journal__nap-cell">
             <span className="field-block__label">Morning nap</span>
             <input
               type="text"
@@ -231,7 +269,7 @@ export default function KidJournalPage() {
             />
           </label>
 
-          <label className="field-block">
+          <label className="field-block journal__nap-cell">
             <span className="field-block__label">Afternoon nap</span>
             <input
               type="text"
@@ -250,45 +288,39 @@ export default function KidJournalPage() {
         ) : null}
 
         <button type="submit" className="btn btn--primary journal__submit">
-          Save journal entry
+          Save journal
         </button>
+
+        <div className="journal__day-slip-actions">
+          <button
+            type="button"
+            className="btn btn--ghost journal__day-slip-btn"
+            disabled={!hasSavedForSelectedDay}
+            title={
+              hasSavedForSelectedDay
+                ? 'Open the journal slip for this day'
+                : 'Save journal first to view the slip'
+            }
+            onClick={() => setJournalReceiptOpen(true)}
+          >
+            Show journal
+          </button>
+          {!hasSavedForSelectedDay ? (
+            <p className="muted journal__show-journal-hint">Save journal once for this day to open the slip.</p>
+          ) : null}
+        </div>
       </form>
 
-      {sorted.length > 0 ? (
-        <section className="journal__history" aria-labelledby="journal-history-title">
-          <h2 id="journal-history-title" className="journal__history-title">
-            Recent entries
-          </h2>
-          <ul className="journal__history-list">
-            {sorted.slice(0, 12).map((row) => {
-              const parts = parseMealsToParts(row.mealsText ?? '')
-              return (
-                <li key={row.id} className="journal__history-row">
-                  <div className="journal__history-date">{formatJournalDate(row.dateISO)}</div>
-                  {row.dayNotes ? (
-                    <p className="journal__history-notes journal__history-notes--places">
-                      {placeMirrorChildrenFromText(row.dayNotes)}
-                    </p>
-                  ) : null}
-                  {parts.length > 0 ? (
-                    <p className="journal__history-meals">
-                      {parts.map((p, i) => (
-                        <span key={`${row.id}-m-${i}`}>
-                          {i > 0 ? ', ' : null}
-                          <span style={{ color: p.color }}>{p.segment}</span>
-                        </span>
-                      ))}
-                    </p>
-                  ) : null}
-                  <p className="journal__history-meta muted">
-                    Nap AM: {row.morningNap || '—'} · PM: {row.afternoonNap || '—'}
-                  </p>
-                </li>
-              )
-            })}
-          </ul>
-        </section>
-      ) : null}
+      <JournalDayReceiptModal
+        open={journalReceiptOpen}
+        onClose={() => setJournalReceiptOpen(false)}
+        dateLabel={journalDateLabel}
+        dayNotes={dayNotes}
+        mealsText={mealsText}
+        morningNap={morningNap}
+        afternoonNap={afternoonNap}
+        onDownload={downloadJournalOfTheDay}
+      />
     </div>
   )
 }

@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom'
 
 const TITLES = {
-  deck: { title: 'More', code: 'E' },
+  events: { title: 'Events', code: 'E' },
 }
 
 export default function PlaceholderPage({ slug }) {

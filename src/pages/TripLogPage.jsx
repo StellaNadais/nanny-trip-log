@@ -9,6 +9,7 @@ import { ExpensePanel } from '../components/ExpensePanel'
 import { computeWeekTripMileage } from '../utils/parseTripPlaces'
 import { MILE_RATE } from '../data/tripPlaces'
 import { notifyReceiptMileageUpdated, saveReceiptSettings } from '../utils/receiptStorage'
+import { OUTINGS_UPDATED_EVENT } from '../utils/outingsStorage'
 import '../App.css'
 
 const TABS = [
@@ -21,6 +22,13 @@ export default function TripLogPage() {
   const { entries: journalEntries } = useKidJournal()
   const [tab, setTab] = useState('log')
   const [dayOffset, setDayOffset] = useState(0)
+  const [outingsRev, setOutingsRev] = useState(0)
+
+  useEffect(() => {
+    const bump = () => setOutingsRev((r) => r + 1)
+    window.addEventListener(OUTINGS_UPDATED_EVENT, bump)
+    return () => window.removeEventListener(OUTINGS_UPDATED_EVENT, bump)
+  }, [])
   const selectedIso = useMemo(
     () => toISODateLocal(addDays(log.weekStart, dayOffset)),
     [log.weekStart, dayOffset]
@@ -30,7 +38,7 @@ export default function TripLogPage() {
 
   const weekPreview = useMemo(
     () => computeWeekTripMileage(log.weekStart, log.daysByIso, journalEntries),
-    [log.weekStart, log.daysByIso, journalEntries]
+    [log.weekStart, log.daysByIso, journalEntries, outingsRev]
   )
 
   useEffect(() => {
@@ -55,7 +63,7 @@ export default function TripLogPage() {
       notifyReceiptMileageUpdated()
     }, 450)
     return () => window.clearTimeout(t)
-  }, [log.weekStart, log.weekKey, log.daysByIso, journalEntries])
+  }, [log.weekStart, log.weekKey, log.daysByIso, journalEntries, outingsRev])
 
   return (
     <div className="app">
