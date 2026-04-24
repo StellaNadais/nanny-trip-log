@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
+import { DayStrip } from '../components/DayStrip'
 import {
   loadReceiptSettings,
   saveReceiptSettings,
@@ -7,7 +8,15 @@ import {
   RECEIPT_MILEAGE_EVENT,
 } from '../utils/receiptStorage'
 import { fileToCompressedDataUrl } from '../utils/receiptImage'
-import { formatWeekRange, startOfWeekMonday, toISODateLocal } from '../utils/dates'
+import { addDays, formatWeekRange, startOfWeekMonday, toISODateLocal } from '../utils/dates'
+import { MILE_RATE } from '../data/tripPlaces'
+import {
+  loadOutingsPlaces,
+  saveOutingsPlaces,
+  notifyOutingsUpdated,
+  OUTINGS_UPDATED_EVENT,
+} from '../utils/outingsStorage'
+import { refreshAllTripMileageCache } from '../utils/refreshTripMileageCache'
 
 const MANUAL_CATEGORIES = [
   { id: 'parking_ticket', label: 'Parking ticket' },
@@ -30,8 +39,20 @@ function emptyExtras() {
   return { photos: [], manualLines: [] }
 }
 
+function initialDayOffsetForWeek(mondayDate) {
+  const monIso = toISODateLocal(mondayDate)
+  const todayIso = toISODateLocal(new Date())
+  const diff = Math.round(
+    (new Date(todayIso + 'T12:00:00') - new Date(monIso + 'T12:00:00')) / 86400000
+  )
+  return Math.max(0, Math.min(6, diff))
+}
+
 export default function OutingsPage() {
-  const [weekOf, setWeekOf] = useState(() => toISODateLocal(startOfWeekMonday(new Date())))
+  const [outingWeekStart, setOutingWeekStart] = useState(() => startOfWeekMonday(new Date()))
+  const [dayOffset, setDayOffset] = useState(() =>
+    initialDayOffsetForWeek(startOfWeekMonday(new Date()))
+  )
   const [extras, setExtras] = useState(emptyExtras)
   const [photoErr, setPhotoErr] = useState('')
   const [manualOpen, setManualOpen] = useState(false)
@@ -39,25 +60,44 @@ export default function OutingsPage() {
   const [manualAmt, setManualAmt] = useState('')
   const [manualNote, setManualNote] = useState('')
   const [mileageRev, setMileageRev] = useState(0)
+  const [customPlaces, setCustomPlaces] = useState(() => loadOutingsPlaces())
+  const [placeLabel, setPlaceLabel] = useState('')
+  const [placeNickname, setPlaceNickname] = useState('')
+  const [placeMiles, setPlaceMiles] = useState('')
+  const [placeFormErr, setPlaceFormErr] = useState('')
   const fileRef = useRef(null)
 
-  const receiptWeekKey = useMemo(
-    () => toISODateLocal(startOfWeekMonday(new Date(weekOf + 'T12:00:00'))),
-    [weekOf]
+  const weekKey = useMemo(() => toISODateLocal(outingWeekStart), [outingWeekStart])
+  const dateISO = useMemo(
+    () => toISODateLocal(addDays(outingWeekStart, dayOffset)),
+    [outingWeekStart, dayOffset]
   )
 
-  const weekLabel = useMemo(() => {
-    try {
-      return formatWeekRange(startOfWeekMonday(new Date(weekOf + 'T12:00:00')))
-    } catch {
-      return weekOf
-    }
-  }, [weekOf])
+  const receiptWeekKey = weekKey
+
+  const weekLabel = useMemo(() => formatWeekRange(outingWeekStart), [outingWeekStart])
+
+  function shiftOutingWeek(delta) {
+    setOutingWeekStart((w) => addDays(w, delta * 7))
+  }
 
   useEffect(() => {
     const bump = () => setMileageRev((r) => r + 1)
     window.addEventListener(RECEIPT_MILEAGE_EVENT, bump)
     return () => window.removeEventListener(RECEIPT_MILEAGE_EVENT, bump)
+  }, [])
+
+  useEffect(() => {
+    const sync = () => setCustomPlaces(loadOutingsPlaces())
+    window.addEventListener(OUTINGS_UPDATED_EVENT, sync)
+    return () => window.removeEventListener(OUTINGS_UPDATED_EVENT, sync)
+  }, [])
+
+  const commitCustomPlaces = useCallback((next) => {
+    saveOutingsPlaces(next)
+    setCustomPlaces(next)
+    notifyOutingsUpdated()
+    refreshAllTripMileageCache()
   }, [])
 
   useEffect(() => {
@@ -147,6 +187,38 @@ export default function OutingsPage() {
     }))
   }
 
+  function addCustomPlace(e) {
+    e.preventDefault()
+    const label = placeLabel.trim()
+    const nickname = placeNickname.trim()
+    const miles = parseFloat(placeMiles, 10)
+    if (!label) {
+      setPlaceFormErr('Add a location name.')
+      return
+    }
+    if (!Number.isFinite(miles) || miles < 0) {
+      setPlaceFormErr('Enter one-way miles (0 or more).')
+      return
+    }
+    setPlaceFormErr('')
+    commitCustomPlaces([
+      ...customPlaces,
+      {
+        id: uid(),
+        label,
+        nickname,
+        milesOneWay: Math.round(miles * 100) / 100,
+      },
+    ])
+    setPlaceLabel('')
+    setPlaceNickname('')
+    setPlaceMiles('')
+  }
+
+  function removeCustomPlace(id) {
+    commitCustomPlaces(customPlaces.filter((p) => p.id !== id))
+  }
+
   return (
     <div className="page page--outings">
       <header className="outings__head">
@@ -162,22 +234,47 @@ export default function OutingsPage() {
         </p>
       </header>
 
+      <div className="journal__week-picker outings__week-picker">
+        <div className="trip-log__week-tools">
+          <button
+            type="button"
+            className="btn btn--ghost trip-log__week-btn"
+            onClick={() => shiftOutingWeek(-1)}
+          >
+            ← Previous week
+          </button>
+          <button
+            type="button"
+            className="btn btn--ghost trip-log__week-btn"
+            onClick={() => shiftOutingWeek(1)}
+          >
+            Next week →
+          </button>
+        </div>
+        <p className="journal__week-range muted" aria-live="polite">
+          {weekLabel}
+        </p>
+        <DayStrip
+          weekStart={outingWeekStart}
+          selectedIso={dateISO}
+          onSelect={(iso) => {
+            const a = new Date(weekKey + 'T12:00:00')
+            const b = new Date(iso + 'T12:00:00')
+            const diff = Math.round((b - a) / 86400000)
+            setDayOffset(Math.max(0, Math.min(6, diff)))
+          }}
+        />
+        <p className="muted outings__week-hint">
+          Receipt extras apply to the <strong>whole week</strong> above (same calendar as Kid journal). The highlighted
+          day is for navigation only.
+        </p>
+      </div>
+
       <section className="outings__section outings__section--receipt outings__section--solo" aria-labelledby="outings-receipt-heading">
         <h2 id="outings-receipt-heading" className="outings__section-title">
           Receipt extras (weekly)
         </h2>
         <p className="muted outings__hint">Applies to the same week on Weekly receipt totals.</p>
-
-        <label className="field-block">
-          <span className="field-block__label">Week (Monday)</span>
-          <input
-            type="date"
-            className="input input--line"
-            value={weekOf}
-            onChange={(e) => setWeekOf(e.target.value)}
-          />
-        </label>
-        <p className="muted outings__week-hint">{weekLabel}</p>
 
         <div className="receipt__capture-block outings__capture">
           <span className="field-block__label">Receipt photos</span>
