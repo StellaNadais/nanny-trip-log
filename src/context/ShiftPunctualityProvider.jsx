@@ -51,11 +51,11 @@ export function ShiftPunctualityProvider({ children }) {
       const vac = countByKindYear(prev, year, 'vacation')
       const sick = countByKindYear(prev, year, 'sick')
       if (payload.kind === 'vacation' && vac >= MAX_VACATION_DAYS_PER_YEAR) {
-        err = `Vacation / PTO limit reached (${MAX_VACATION_DAYS_PER_YEAR} days per year) for ${year}.`
+        err = `Paid vacation limit reached (${MAX_VACATION_DAYS_PER_YEAR} days per year) for ${year}.`
         return prev
       }
       if (payload.kind === 'sick' && sick >= MAX_SICK_DAYS_PER_YEAR) {
-        err = `Sick day limit reached (${MAX_SICK_DAYS_PER_YEAR} days per year) for ${year}.`
+        err = `Paid sick days limit reached (${MAX_SICK_DAYS_PER_YEAR} days per year) for ${year}.`
         return prev
       }
       return [

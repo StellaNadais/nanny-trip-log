@@ -1,12 +1,9 @@
-/** Monday-first: 0 = Mon … 6 = Sun */
-export function mondayIndex(d) {
-  return (d.getDay() + 6) % 7
-}
+/** Sunday-first week: column order Sun … Sat */
 
 export function monthGrid(year, monthIndex) {
   const first = new Date(year, monthIndex, 1)
   const last = new Date(year, monthIndex + 1, 0)
-  const pad = mondayIndex(first)
+  const pad = first.getDay() // 0 = Sunday → empty cells before the 1st
   const daysInMonth = last.getDate()
   const cells = []
   for (let i = 0; i < pad; i += 1) cells.push(null)
@@ -15,7 +12,7 @@ export function monthGrid(year, monthIndex) {
   return cells
 }
 
-export const WEEKDAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+export const WEEKDAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
 
 export function isSameDay(a, b) {
   return (

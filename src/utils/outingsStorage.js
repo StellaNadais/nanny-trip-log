@@ -8,13 +8,18 @@ export function loadOutingsPlaces() {
     if (!raw) return []
     const data = JSON.parse(raw)
     if (!Array.isArray(data)) return []
-    return data.filter(
-      (r) =>
-        r &&
-        typeof r.id === 'string' &&
-        typeof r.label === 'string' &&
-        typeof r.milesOneWay === 'number'
-    )
+    return data
+      .filter(
+        (r) =>
+          r &&
+          typeof r.id === 'string' &&
+          typeof r.label === 'string' &&
+          typeof r.milesOneWay === 'number'
+      )
+      .map((r) => ({
+        ...r,
+        nickname: typeof r.nickname === 'string' ? r.nickname : '',
+      }))
   } catch {
     return []
   }

@@ -1,21 +1,37 @@
 :root {
   --ink: #2c2824;
   --ink-muted: #5c534a;
-  --paper: #faf7f2;
-  --paper2: #f0ebe3;
-  --line: #d8d0c4;
-  --accent: #c45c2a;
-  --accent-soft: rgba(196, 92, 42, 0.12);
+  /* White surfaces; subtle gray for hovers / chrome */
+  --paper: #ffffff;
+  --paper2: #ececec;
+  --line: #d0d0d0;
+  --accent: #5c67d8;
+  --accent-soft: rgba(92, 103, 216, 0.14);
   --radius: 10px;
-  --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
-  /* 16px+ on phones avoids iOS auto-zoom on input focus */
+  /* Vertical rainbow for left / right viewport edges */
+  --rainbow-edge: linear-gradient(
+    180deg,
+    hsl(355, 82%, 56%) 0%,
+    hsl(32, 88%, 58%) 12%,
+    hsl(48, 92%, 56%) 24%,
+    hsl(88, 48%, 46%) 38%,
+    hsl(198, 72%, 52%) 52%,
+    hsl(258, 52%, 58%) 66%,
+    hsl(310, 58%, 58%) 80%,
+    hsl(355, 82%, 56%) 100%
+  );
+  /* Preschool show vibe: soft rounded & very legible (Nunito) */
+  --font: 'Nunito', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  /* 16px+ avoids iOS zoom on focused inputs */
   font-family: var(--font);
   font-size: 16px;
-  line-height: 1.45;
+  font-weight: 400;
+  line-height: 1.55;
+  letter-spacing: 0.01em;
   color: var(--ink);
-  background: var(--paper2);
+  background: var(--paper);
   -webkit-font-smoothing: antialiased;
-  -webkit-tap-highlight-color: rgba(196, 92, 42, 0.15);
+  -webkit-tap-highlight-color: rgba(92, 103, 216, 0.18);
 }
 
 *,
@@ -26,12 +42,55 @@
 
 html {
   height: 100%;
+  background: var(--paper);
 }
 
 body {
   margin: 0;
   min-height: 100%;
   min-height: 100dvh;
+  background: var(--paper);
+  position: relative;
+  /* Inset main column so fixed rainbow strips stay visible on the left/right */
+  padding-left: max(8px, env(safe-area-inset-left, 0px));
+  padding-right: max(8px, env(safe-area-inset-right, 0px));
+  box-sizing: border-box;
+}
+
+@media (min-width: 600px) {
+  body {
+    padding-left: max(10px, env(safe-area-inset-left, 0px));
+    padding-right: max(10px, env(safe-area-inset-right, 0px));
+  }
+}
+
+/* Rainbow strips — fixed behind main column (see #root z-index) */
+body::before,
+body::after {
+  content: '';
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  width: 8px;
+  z-index: 0;
+  pointer-events: none;
+  background: var(--rainbow-edge);
+  background-size: 100% 180%;
+}
+
+body::before {
+  left: 0;
+}
+
+body::after {
+  right: 0;
+}
+
+@media (min-width: 600px) {
+  body::before,
+  body::after {
+    width: 10px;
+  }
 }
 
 #root {
@@ -40,6 +99,8 @@ body {
   min-height: 100%;
   min-height: 100dvh;
   margin: 0;
+  position: relative;
+  z-index: 1;
 }
 
 @media (min-width: 600px) {

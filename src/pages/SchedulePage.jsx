@@ -12,6 +12,19 @@ function dateISOFromParts(y, m, dayNum) {
   return toISODateLocal(new Date(y, m, dayNum))
 }
 
+function formatCareWindow(careStart, careEnd) {
+  if (!careStart || !careEnd) return null
+  const fmt = (hm) => {
+    const [h, m] = hm.split(':').map(Number)
+    if (!Number.isFinite(h) || !Number.isFinite(m)) return hm
+    return new Date(2000, 0, 1, h, m).toLocaleTimeString(undefined, {
+      hour: 'numeric',
+      minute: '2-digit',
+    })
+  }
+  return `${fmt(careStart)} – ${fmt(careEnd)}`
+}
+
 /**
  * Caregiver schedule (page 2): upcoming care after families book via /book.
  */
@@ -173,6 +186,18 @@ export default function SchedulePage() {
               <li key={b.id} className="schedule-day-detail__item">
                 <strong>{b.familyName}</strong>
                 <span className="muted">{b.contact}</span>
+                {formatCareWindow(b.careStart, b.careEnd) ? (
+                  <span className="schedule-day-detail__meta muted">
+                    {formatCareWindow(b.careStart, b.careEnd)}
+                    {b.kidCount != null
+                      ? ` · ${b.kidCount} ${b.kidCount === 1 ? 'child' : 'children'}`
+                      : ''}
+                  </span>
+                ) : b.kidCount != null ? (
+                  <span className="schedule-day-detail__meta muted">
+                    {b.kidCount} {b.kidCount === 1 ? 'child' : 'children'}
+                  </span>
+                ) : null}
                 {b.notes ? <p className="schedule-day-detail__notes">{b.notes}</p> : null}
               </li>
             ))}
@@ -201,6 +226,13 @@ export default function SchedulePage() {
                 <div className="book-upcoming__body">
                   <strong>{b.familyName}</strong>
                   <span className="muted">{b.contact}</span>
+                  {formatCareWindow(b.careStart, b.careEnd) || b.kidCount != null ? (
+                    <span className="book-upcoming__meta muted">
+                      {[formatCareWindow(b.careStart, b.careEnd), b.kidCount != null ? `${b.kidCount} ${b.kidCount === 1 ? 'child' : 'children'}` : null]
+                        .filter(Boolean)
+                        .join(' · ')}
+                    </span>
+                  ) : null}
                   {b.notes ? <p className="book-upcoming__notes">{b.notes}</p> : null}
                 </div>
               </li>

@@ -88,7 +88,7 @@ export default function ShiftPage() {
           Shift <span className="placeholder__code">(A)</span>
         </h1>
         <p className="muted shift__lede">
-          Log when you arrived and left. Internal notes shows your punctuality over time. Track vacation / PTO and
+          Log when you arrived and left. Internal notes shows your punctuality over time. Track paid vacation and paid
           sick days below (annual limits apply).
         </p>
       </header>
@@ -150,22 +150,22 @@ export default function ShiftPage() {
 
       <details className="shift__time-off-details">
         <summary className="shift__time-off-summary">
-          <span className="shift__time-off-summary-title">Vacation & sick days</span>
+          <span className="shift__time-off-summary-title">Paid vacation & paid sick days</span>
           <span className="shift__time-off-summary-stats muted">
-            {yearForTimeOff}: {vacationUsed}/{MAX_VACATION_DAYS_PER_YEAR} vac · {sickUsed}/{MAX_SICK_DAYS_PER_YEAR}{' '}
-            sick
+            {yearForTimeOff}: {vacationUsed}/{MAX_VACATION_DAYS_PER_YEAR} paid vacation · {sickUsed}/
+            {MAX_SICK_DAYS_PER_YEAR} paid sick
           </span>
         </summary>
 
         <div className="shift__time-off-panel">
         <p className="muted shift__time-off-lede">
-          Per calendar year: up to <strong>{MAX_VACATION_DAYS_PER_YEAR}</strong> vacation / PTO days and{' '}
-          <strong>{MAX_SICK_DAYS_PER_YEAR}</strong> sick days. Pick a date below to see counts for that year.
+          Per calendar year: up to <strong>{MAX_VACATION_DAYS_PER_YEAR}</strong> paid vacation days and{' '}
+          <strong>{MAX_SICK_DAYS_PER_YEAR}</strong> paid sick days. Pick a date below to see counts for that year.
         </p>
 
         <div className="shift__time-off-meters" aria-live="polite">
           <div className="shift__meter">
-            <span className="shift__meter-label">Vacation / PTO ({yearForTimeOff})</span>
+            <span className="shift__meter-label">Paid vacation ({yearForTimeOff})</span>
             <span className="shift__meter-count">
               {vacationUsed} / {MAX_VACATION_DAYS_PER_YEAR}
             </span>
@@ -179,7 +179,7 @@ export default function ShiftPage() {
             </div>
           </div>
           <div className="shift__meter">
-            <span className="shift__meter-label">Sick ({yearForTimeOff})</span>
+            <span className="shift__meter-label">Paid sick days ({yearForTimeOff})</span>
             <span className="shift__meter-count">
               {sickUsed} / {MAX_SICK_DAYS_PER_YEAR}
             </span>
@@ -214,14 +214,14 @@ export default function ShiftPage() {
                 className={`time-chip ${timeOffKind === 'vacation' ? 'time-chip--on' : ''}`}
                 onClick={() => setTimeOffKind('vacation')}
               >
-                Vacation / PTO
+                Paid vacation
               </button>
               <button
                 type="button"
                 className={`time-chip ${timeOffKind === 'sick' ? 'time-chip--on' : ''}`}
                 onClick={() => setTimeOffKind('sick')}
               >
-                Sick day
+                Paid sick days
               </button>
             </div>
           </fieldset>
@@ -246,7 +246,7 @@ export default function ShiftPage() {
               <li key={row.id} className="shift__time-off-row">
                 <span className="shift__time-off-date">{formatDayLabel(row.dateISO)}</span>
                 <span className={`shift__time-off-tag ${row.kind === 'sick' ? 'shift__time-off-tag--sick' : ''}`}>
-                  {row.kind === 'vacation' ? 'Vacation / PTO' : 'Sick'}
+                  {row.kind === 'vacation' ? 'Paid vacation' : 'Paid sick days'}
                 </span>
                 <button type="button" className="btn btn--ghost shift__time-off-remove" onClick={() => removeTimeOffEntry(row.id)}>
                   Remove
@@ -255,7 +255,9 @@ export default function ShiftPage() {
             ))}
           </ul>
         ) : (
-          <p className="muted shift__time-off-empty">No vacation or sick days logged for {yearForTimeOff} yet.</p>
+          <p className="muted shift__time-off-empty">
+            No paid vacation or paid sick days logged for {yearForTimeOff} yet.
+          </p>
         )}
         </div>
       </details>

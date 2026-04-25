@@ -12,6 +12,7 @@ export default function JournalDayReceiptModal({
   mealsText,
   morningNap,
   afternoonNap,
+  handwrittenPhotoDataUrl,
   onDownload,
 }) {
   useEffect(() => {
@@ -24,6 +25,7 @@ export default function JournalDayReceiptModal({
   }, [open, onClose])
 
   const mealParts = useMemo(() => parseMealsToParts(mealsText ?? ''), [mealsText])
+  const showHandwrittenPhoto = Boolean(String(handwrittenPhotoDataUrl || '').trim())
 
   if (!open) return null
 
@@ -53,6 +55,18 @@ export default function JournalDayReceiptModal({
               <p className="journal-day-modal__body">
                 {(dayNotes || '').trim() ? dayNotes : '—'}
               </p>
+              {showHandwrittenPhoto ? (
+                <div className="journal-day-modal__handwritten-wrap">
+                  <p className="journal-day-modal__section-hdr journal-day-modal__section-hdr--handwritten">
+                    Handwritten journal
+                  </p>
+                  <img
+                    src={handwrittenPhotoDataUrl}
+                    alt=""
+                    className="journal-day-modal__handwritten-img"
+                  />
+                </div>
+              ) : null}
               <div className="journal-day-modal__rule" />
               <p className="journal-day-modal__section-hdr">Meals</p>
               {mealParts.length > 0 ? (

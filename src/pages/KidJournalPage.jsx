@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { DayStrip } from '../components/DayStrip'
 import MealsInlineField from '../components/MealsInlineField'
@@ -18,6 +18,7 @@ import {
   downloadJournalDayFile,
   journalDayFilename,
 } from '../utils/journalDayExport'
+import { fileToCompressedDataUrl } from '../utils/receiptImage'
 
 function loadDraftFromLatest(iso) {
   const ent = loadKidJournalEntries()
@@ -29,6 +30,7 @@ function loadDraftFromLatest(iso) {
       mealsText: '',
       morningNap: '',
       afternoonNap: '',
+      handwrittenPhotoDataUrl: '',
     }
   }
   return {
@@ -36,6 +38,7 @@ function loadDraftFromLatest(iso) {
     mealsText: latest.mealsText ?? '',
     morningNap: latest.morningNap ?? '',
     afternoonNap: latest.afternoonNap ?? '',
+    handwrittenPhotoDataUrl: latest.handwrittenPhotoDataUrl ?? '',
   }
 }
 
@@ -75,6 +78,9 @@ export default function KidJournalPage() {
   const [mealsText, setMealsText] = useState('')
   const [morningNap, setMorningNap] = useState('')
   const [afternoonNap, setAfternoonNap] = useState('')
+  const [handwrittenPhotoDataUrl, setHandwrittenPhotoDataUrl] = useState('')
+  const [handwrittenPhotoErr, setHandwrittenPhotoErr] = useState('')
+  const handwrittenFileRef = useRef(null)
   const [flash, setFlash] = useState('')
   const [journalReceiptOpen, setJournalReceiptOpen] = useState(false)
   const [suggestionClock, setSuggestionClock] = useState(() => Date.now())
@@ -97,6 +103,8 @@ export default function KidJournalPage() {
     setMealsText(d.mealsText)
     setMorningNap(d.morningNap)
     setAfternoonNap(d.afternoonNap)
+    setHandwrittenPhotoDataUrl(d.handwrittenPhotoDataUrl)
+    setHandwrittenPhotoErr('')
   }, [dateISO])
 
   useEffect(() => {
@@ -152,6 +160,7 @@ export default function KidJournalPage() {
       mealsText,
       morningNap,
       afternoonNap,
+      handwrittenPhotoDataUrl: handwrittenPhotoDataUrl || '',
     })
     setFlash('Journal saved.')
     window.setTimeout(() => {
@@ -160,7 +169,21 @@ export default function KidJournalPage() {
       setMealsText(d.mealsText)
       setMorningNap(d.morningNap)
       setAfternoonNap(d.afternoonNap)
+      setHandwrittenPhotoDataUrl(d.handwrittenPhotoDataUrl)
     }, 100)
+  }
+
+  async function onHandwrittenPhotoChange(e) {
+    const f = e.target.files?.[0]
+    e.target.value = ''
+    if (!f) return
+    setHandwrittenPhotoErr('')
+    try {
+      const url = await fileToCompressedDataUrl(f, 1000, 0.72)
+      setHandwrittenPhotoDataUrl(url)
+    } catch {
+      setHandwrittenPhotoErr('Could not use that image.')
+    }
   }
 
   const journalDateLabel = formatJournalDate(dateISO)
@@ -173,6 +196,7 @@ export default function KidJournalPage() {
       mealsText,
       morningNap,
       afternoonNap,
+      handwrittenPhotoDataUrl,
     }
   }
 
@@ -226,9 +250,58 @@ export default function KidJournalPage() {
 
       <form className="journal__form" onSubmit={submit}>
         <div className="field-block journal__about-bundle">
-          <span className="field-block__label" id="kid-journal-about-label">
-            About today
-          </span>
+          <div className="journal__about-head">
+            <span className="field-block__label" id="kid-journal-about-label">
+              About today
+            </span>
+            <input
+              ref={handwrittenFileRef}
+              type="file"
+              accept="image/*"
+              capture="environment"
+              className="sr-only"
+              tabIndex={-1}
+              onChange={onHandwrittenPhotoChange}
+            />
+            <button
+              type="button"
+              className="journal__handwritten-pic-btn"
+              title="Photo of handwritten journal"
+              aria-label="Add photo of handwritten journal"
+              onClick={() => handwrittenFileRef.current?.click()}
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"
+                />
+                <circle cx="12" cy="13" r="4" stroke="currentColor" strokeWidth="2" fill="none" />
+              </svg>
+            </button>
+          </div>
+          {handwrittenPhotoErr ? (
+            <p className="journal__handwritten-err muted" role="status">
+              {handwrittenPhotoErr}
+            </p>
+          ) : null}
+          {handwrittenPhotoDataUrl ? (
+            <div className="journal__handwritten-preview">
+              <img src={handwrittenPhotoDataUrl} alt="Handwritten journal" />
+              <button
+                type="button"
+                className="btn btn--ghost journal__handwritten-remove"
+                onClick={() => {
+                  setHandwrittenPhotoDataUrl('')
+                  setHandwrittenPhotoErr('')
+                }}
+              >
+                Remove photo
+              </button>
+            </div>
+          ) : null}
           <TripPlacesField
             id="kid-journal-day-notes"
             value={dayNotes}
@@ -319,6 +392,7 @@ export default function KidJournalPage() {
         mealsText={mealsText}
         morningNap={morningNap}
         afternoonNap={afternoonNap}
+        handwrittenPhotoDataUrl={handwrittenPhotoDataUrl}
         onDownload={downloadJournalOfTheDay}
       />
     </div>

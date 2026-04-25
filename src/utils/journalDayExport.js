@@ -5,7 +5,9 @@ export function buildJournalDayExportText({
   mealsText,
   morningNap,
   afternoonNap,
+  handwrittenPhotoDataUrl,
 }) {
+  const hasHandwrittenPhoto = Boolean(String(handwrittenPhotoDataUrl || '').trim())
   const lines = [
     'KID JOURNAL',
     dateLabel,
@@ -13,6 +15,9 @@ export function buildJournalDayExportText({
     '',
     '--- About today ---',
     String(dayNotes || '').trim() || '(empty)',
+    ...(hasHandwrittenPhoto
+      ? ['(Handwritten journal photo is saved in the app — not embedded in this file.)']
+      : []),
     '',
     '--- Meals ---',
     String(mealsText || '').trim() || '(empty)',

@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import ReceiptThermalModal from '../components/ReceiptThermalModal'
+import ReceiptThermalTicket from '../components/ReceiptThermalTicket'
 import {
   loadReceiptSettings,
   saveReceiptSettings,
@@ -80,6 +81,55 @@ function emptyExtras() {
   return { photos: [], manualLines: [] }
 }
 
+function IconForwardSms({ className }) {
+  return (
+    <svg
+      className={className}
+      xmlns="http://www.w3.org/2000/svg"
+      width="22"
+      height="22"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden
+    >
+      <polyline points="15 14 20 9 15 4" />
+      <path d="M4 20v-7a4 4 0 0 1 4-4h12" />
+    </svg>
+  )
+}
+
+function IconDownload({ className }) {
+  return (
+    <svg
+      className={className}
+      xmlns="http://www.w3.org/2000/svg"
+      width="22"
+      height="22"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden
+    >
+      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+      <polyline points="7 10 12 15 17 10" />
+      <line x1="12" y1="15" x2="12" y2="3" />
+    </svg>
+  )
+}
+
+/** Shown on hover / focus for icon buttons (also duplicated on native title). */
+const ICON_TIP_FORWARD =
+  "Forward: opens Messages with this receipt in the draft (Venmo pay link at the bottom when you've added your handle)."
+const ICON_TIP_DOWNLOAD =
+  'Download: saves a .txt week summary — trip log, kid journal, and this receipt block.'
+
 export default function WeeklyReceiptPage() {
   const initialSettings = useMemo(() => loadReceiptSettings(), [])
   const [venmoHandle, setVenmoHandle] = useState(initialSettings.venmoHandle)
@@ -89,7 +139,7 @@ export default function WeeklyReceiptPage() {
   const [mileageRev, setMileageRev] = useState(0)
   const [extras, setExtras] = useState(emptyExtras)
   const [receiptOpen, setReceiptOpen] = useState(true)
-  const [printedAt, setPrintedAt] = useState('')
+  const [printedAt, setPrintedAt] = useState(() => new Date().toLocaleString())
 
   const receiptWeekKey = useMemo(
     () => toISODateLocal(startOfWeekMonday(new Date(weekOf + 'T12:00:00'))),
@@ -251,6 +301,22 @@ export default function WeeklyReceiptPage() {
     extras.manualLines,
   ])
 
+  const receiptFingerprint = useMemo(
+    () =>
+      [
+        receiptWeekKey,
+        combinedTotal.toFixed(2),
+        thermalRows.map((r) => `${r.desc}|${r.amt}`).join('\u00A6'),
+        extras.photos.length,
+        mileageRev,
+      ].join('::'),
+    [receiptWeekKey, combinedTotal, thermalRows, extras.photos.length, mileageRev]
+  )
+
+  useEffect(() => {
+    setPrintedAt(new Date().toLocaleString())
+  }, [receiptFingerprint])
+
   function persistVenmo(v) {
     setVenmoHandle(v)
     saveReceiptSettings({ venmoHandle: v })
@@ -277,9 +343,10 @@ export default function WeeklyReceiptPage() {
         </Link>
         <h1 className="receipt__title">Weekly receipt</h1>
         <p className="receipt__lede muted">
-          The <strong>register-tape receipt</strong> opens as a popup (old-school thermal style).
-          Receipt photos and parking / tolls are managed on <Link to="/outings">Outings</Link>. Use{' '}
-          <strong>Download week summary (.txt)</strong> for trip log + journal + this receipt block.
+          The <strong>register-tape receipt</strong> opens as a popup — use <strong>Screenshot view</strong> inside it
+          for a plain background, or scroll to <strong>Screenshot-ready receipt</strong> below. Receipt extras are on{' '}
+          <Link to="/outings">Outings</Link>. <strong>Download week summary (.txt)</strong> includes trip log + journal +
+          this block.
         </p>
       </header>
 
@@ -363,19 +430,30 @@ export default function WeeklyReceiptPage() {
         >
           Show register-tape receipt
         </button>
-        <a
-          href={forwardReceiptSmsHref}
-          className="btn receipt__forward-sms"
-          aria-label="Open Messages with the receipt and Venmo link in the draft"
-        >
-          Forward receipt to text
-        </a>
-        <button type="button" className="btn receipt__download-summary" onClick={downloadWeekSummaryFile}>
-          Download week summary (.txt)
-        </button>
+        <div className="receipt__icon-row">
+          <a
+            href={forwardReceiptSmsHref}
+            className="btn btn--ghost receipt__icon-btn"
+            data-tooltip={ICON_TIP_FORWARD}
+            aria-label="Open Messages with the receipt and Venmo link in the draft"
+            title={ICON_TIP_FORWARD}
+          >
+            <IconForwardSms />
+          </a>
+          <button
+            type="button"
+            className="btn btn--ghost receipt__icon-btn"
+            data-tooltip={ICON_TIP_DOWNLOAD}
+            onClick={downloadWeekSummaryFile}
+            aria-label="Download week summary as a text file"
+            title={ICON_TIP_DOWNLOAD}
+          >
+            <IconDownload />
+          </button>
+        </div>
         <p className="muted receipt__popup-hint">
-          Receipt popup opens when you land here. Edit receipt photos & parking on{' '}
-          <Link to="/outings">Outings</Link>.
+          Receipt popup opens when you land here — tap <strong>Screenshot view</strong> to hide buttons for a clean
+          capture. Edit photos & parking on <Link to="/outings">Outings</Link>.
         </p>
       </div>
 
@@ -432,6 +510,27 @@ export default function WeeklyReceiptPage() {
         )}
       </section>
 
+      {showSummary ? (
+        <section className="receipt__shutter" aria-labelledby="receipt-shutter-heading">
+          <h2 id="receipt-shutter-heading" className="receipt__shutter-title">
+            Screenshot-ready receipt
+          </h2>
+          <p className="muted receipt__shutter-hint">
+            Plain white frame — capture this block to text or email parents. Same totals as the register-tape popup.
+          </p>
+          <div className="receipt__shutter-pad">
+            <ReceiptThermalTicket
+              weekLabel={weekLabel}
+              printedAt={printedAt ? `Printed: ${printedAt}` : ''}
+              rows={thermalRows}
+              photos={extras.photos}
+              totalCentsDisplay={`$${combinedTotal.toFixed(2)}`}
+              wrapId="receipt-screenshot-on-page"
+            />
+          </div>
+        </section>
+      ) : null}
+
       {showVenmoActions ? (
         <section className="receipt__actions">
           {venmoUrl ? (
@@ -446,19 +545,31 @@ export default function WeeklyReceiptPage() {
           ) : (
             <p className="muted receipt__venmo-hint">Add your Venmo username for a pay link in texts and below.</p>
           )}
-          <a
-            href={forwardReceiptSmsHref}
-            className="btn receipt__forward-sms"
-            aria-label="Open Messages with the receipt and optional Venmo pay link"
-          >
-            Forward receipt to text
-          </a>
+          <div className="receipt__icon-row">
+            <a
+              href={forwardReceiptSmsHref}
+              className="btn btn--ghost receipt__icon-btn"
+              data-tooltip={ICON_TIP_FORWARD}
+              aria-label="Open Messages with the receipt and optional Venmo pay link"
+              title={ICON_TIP_FORWARD}
+            >
+              <IconForwardSms />
+            </a>
+            <button
+              type="button"
+              className="btn btn--ghost receipt__icon-btn"
+              data-tooltip={ICON_TIP_DOWNLOAD}
+              onClick={downloadWeekSummaryFile}
+              aria-label="Download week summary as a text file"
+              title={ICON_TIP_DOWNLOAD}
+            >
+              <IconDownload />
+            </button>
+          </div>
           <p className="muted receipt__sms-hint">
-            Opens Messages (or your SMS app) with the full receipt typed out{venmoUrl ? ', plus a tappable Venmo link at the bottom' : ''}. Pick who to send it to.
+            Icons: send receipt to Messages{venmoUrl ? ' (includes Venmo link in the draft)' : ''}, or download the full
+            week summary (.txt).
           </p>
-          <button type="button" className="btn receipt__download-summary" onClick={downloadWeekSummaryFile}>
-            Download week summary (.txt)
-          </button>
           <pre className="receipt__preview" aria-label="Receipt preview">
             {receiptText}
           </pre>
@@ -486,30 +597,52 @@ export default function WeeklyReceiptPage() {
                 Venmo payment (${combinedTotal.toFixed(2)})
               </a>
             ) : null}
-            <a
-              href={forwardReceiptSmsHref}
-              className="btn receipt-modal__forward-sms"
-              aria-label="Open Messages with the receipt and optional Venmo pay link"
-            >
-              Forward receipt to text
-            </a>
-            <button type="button" className="btn receipt-modal__download" onClick={downloadWeekSummaryFile}>
-              Download week summary (.txt)
-            </button>
+            <div className="receipt-modal__icon-row">
+              <a
+                href={forwardReceiptSmsHref}
+                className="btn btn--ghost receipt-modal__icon-btn"
+                data-tooltip={ICON_TIP_FORWARD}
+                aria-label="Open Messages with the receipt and optional Venmo pay link"
+                title={ICON_TIP_FORWARD}
+              >
+                <IconForwardSms />
+              </a>
+              <button
+                type="button"
+                className="btn btn--ghost receipt-modal__icon-btn"
+                data-tooltip={ICON_TIP_DOWNLOAD}
+                onClick={downloadWeekSummaryFile}
+                aria-label="Download week summary as a text file"
+                title={ICON_TIP_DOWNLOAD}
+              >
+                <IconDownload />
+              </button>
+            </div>
           </>
         ) : (
           <>
             <p className="muted receipt-modal__zero">Total is $0.00 — add hours or expenses for payment.</p>
-            <a
-              href={forwardReceiptSmsHref}
-              className="btn receipt-modal__forward-sms"
-              aria-label="Open Messages with the receipt text"
-            >
-              Forward receipt to text
-            </a>
-            <button type="button" className="btn receipt-modal__download" onClick={downloadWeekSummaryFile}>
-              Download week summary (.txt)
-            </button>
+            <div className="receipt-modal__icon-row">
+              <a
+                href={forwardReceiptSmsHref}
+                className="btn btn--ghost receipt-modal__icon-btn"
+                data-tooltip={ICON_TIP_FORWARD}
+                aria-label="Open Messages with the receipt text"
+                title={ICON_TIP_FORWARD}
+              >
+                <IconForwardSms />
+              </a>
+              <button
+                type="button"
+                className="btn btn--ghost receipt-modal__icon-btn"
+                data-tooltip={ICON_TIP_DOWNLOAD}
+                onClick={downloadWeekSummaryFile}
+                aria-label="Download week summary as a text file"
+                title={ICON_TIP_DOWNLOAD}
+              >
+                <IconDownload />
+              </button>
+            </div>
           </>
         )}
       </ReceiptThermalModal>
