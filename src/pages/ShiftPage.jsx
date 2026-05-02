@@ -53,10 +53,6 @@ export default function ShiftPage() {
 
   function submit(e) {
     e.preventDefault()
-    if (!arrival || !end) {
-      setFlash('Pick arrival and end times.')
-      return
-    }
     addEntry({
       dateISO: shiftDate,
       arrival,
@@ -105,37 +101,41 @@ export default function ShiftPage() {
           />
         </label>
 
-        <fieldset className="time-pick">
-          <legend className="time-pick__legend">Arrival</legend>
-          <div className="time-pick__chips" role="group" aria-label="Arrival time">
+        <label className="field-block">
+          <span className="field-block__label">Arrival</span>
+          <select
+            className="input input--line"
+            value={arrival}
+            onChange={(e) => setArrival(e.target.value)}
+            required
+            aria-label="Arrival time"
+          >
+            <option value="">Select arrival…</option>
             {ARRIVAL_TIMES.map((t) => (
-              <button
-                key={t}
-                type="button"
-                className={`time-chip ${arrival === t ? 'time-chip--on' : ''}`}
-                onClick={() => setArrival(t)}
-              >
+              <option key={t} value={t}>
                 {t}
-              </button>
+              </option>
             ))}
-          </div>
-        </fieldset>
+          </select>
+        </label>
 
-        <fieldset className="time-pick">
-          <legend className="time-pick__legend">End of shift</legend>
-          <div className="time-pick__chips" role="group" aria-label="End of shift time">
+        <label className="field-block">
+          <span className="field-block__label">End of shift</span>
+          <select
+            className="input input--line"
+            value={end}
+            onChange={(e) => setEnd(e.target.value)}
+            required
+            aria-label="End of shift time"
+          >
+            <option value="">Select end time…</option>
             {END_TIMES.map((t) => (
-              <button
-                key={t}
-                type="button"
-                className={`time-chip ${end === t ? 'time-chip--on' : ''}`}
-                onClick={() => setEnd(t)}
-              >
+              <option key={t} value={t}>
                 {t}
-              </button>
+              </option>
             ))}
-          </div>
-        </fieldset>
+          </select>
+        </label>
 
         {flash ? (
           <p className={`shift__flash ${flash.startsWith('Saved') ? 'shift__flash--ok' : ''}`} role="status">

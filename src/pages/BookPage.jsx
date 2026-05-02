@@ -4,6 +4,7 @@ import { EVENT_LOCATIONS, groupFamilyEventsByLocation } from '../data/familyEven
 import { toISODateLocal, addDays } from '../utils/dates'
 import { monthGrid, WEEKDAYS, isSameDay } from '../utils/calendarMonth'
 import { useBookings } from '../hooks/useBookings'
+import { bookingOccupiesCalendarSlot } from '../utils/bookingCalendar'
 import { careIntervalValid, expandBookingCalendarDates } from '../utils/bookingRange'
 
 function todayISO() {
@@ -18,28 +19,13 @@ const DEFAULT_CARE_START = '09:00'
 const DEFAULT_CARE_END = '17:00'
 const BOOK_END_DATE_SPAN_DAYS = 90
 
+/** Hover tooltip on “Book a gig” (styled bubble; copy matches user-requested wording). */
+const BOOK_GIG_HEADING_TIP =
+  'Tap a day to request a gig: set when the nanny’s shift starts and when it ends (including overnight). Then add your family details.'
+
 function phoneLooksReachable(value) {
   const digits = value.replace(/\D/g, '')
   return digits.length >= 7
-}
-
-function formatStayPickerDate(iso) {
-  if (!iso) return ''
-  return new Date(`${iso}T12:00:00`).toLocaleDateString(undefined, {
-    weekday: 'short',
-    month: 'short',
-    day: 'numeric',
-  })
-}
-
-function formatTimeShort(hm) {
-  if (!hm) return ''
-  const [h, m] = hm.split(':').map(Number)
-  if (!Number.isFinite(h) || !Number.isFinite(m)) return hm
-  return new Date(2000, 0, 1, h, m).toLocaleTimeString(undefined, {
-    hour: 'numeric',
-    minute: '2-digit',
-  })
 }
 
 /**
@@ -55,6 +41,7 @@ export default function BookPage() {
   const [bookModalOpen, setBookModalOpen] = useState(false)
   const [careStart, setCareStart] = useState(DEFAULT_CARE_START)
   const [careEnd, setCareEnd] = useState(DEFAULT_CARE_END)
+  const [careStartDateISO, setCareStartDateISO] = useState(() => toISODateLocal(new Date()))
   const [careEndDateISO, setCareEndDateISO] = useState(() => toISODateLocal(new Date()))
   const [kidCount, setKidCount] = useState('')
   const [familyName, setFamilyName] = useState('')
@@ -69,6 +56,7 @@ export default function BookPage() {
   const bookingsByDate = useMemo(() => {
     const map = {}
     for (const b of bookings) {
+      if (!bookingOccupiesCalendarSlot(b)) continue
       for (const iso of expandBookingCalendarDates(b)) {
         if (!map[iso]) map[iso] = []
         map[iso].push(b)
@@ -86,33 +74,40 @@ export default function BookPage() {
 
   const selectedISO = useMemo(() => toISODateLocal(selected), [selected])
 
-  const selectedIsPast = selectedISO < todayISO()
+  const selectedBookings = bookingsByDate[careStartDateISO] ?? []
+  const careStartIsPast = careStartDateISO < todayISO()
+
+  useEffect(() => {
+    if (!bookModalOpen) return
+    setSelected(new Date(`${careStartDateISO}T12:00:00`))
+  }, [bookModalOpen, careStartDateISO])
+
+  const careDateHeadline = useMemo(() => {
+    const opts = { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' }
+    const a = new Date(`${careStartDateISO}T12:00:00`).toLocaleDateString(undefined, opts)
+    const b = new Date(`${careEndDateISO}T12:00:00`).toLocaleDateString(undefined, opts)
+    if (careStartDateISO === careEndDateISO) return a
+    return `${a} → ${b}`
+  }, [careStartDateISO, careEndDateISO])
+
+  const careSpanSummary = useMemo(() => {
+    const d0 = new Date(`${careStartDateISO}T12:00:00`)
+    const d1 = new Date(`${careEndDateISO}T12:00:00`)
+    const diff = Math.round((d1 - d0) / 86400000)
+    if (diff === 0) return 'Same-day gig window'
+    if (diff === 1) return 'Overnight gig · spans 2 days on the calendar'
+    return `${diff + 1} calendar days · this gig includes ${diff} overnight${diff === 1 ? '' : 's'}`
+  }, [careStartDateISO, careEndDateISO])
 
   const careEndDateMax = useMemo(
-    () => toISODateLocal(addDays(new Date(`${selectedISO}T12:00:00`), BOOK_END_DATE_SPAN_DAYS)),
-    [selectedISO]
+    () => toISODateLocal(addDays(new Date(`${careStartDateISO}T12:00:00`), BOOK_END_DATE_SPAN_DAYS)),
+    [careStartDateISO]
   )
-
-  const stayNights = useMemo(() => {
-    const a = new Date(`${selectedISO}T12:00:00`)
-    const b = new Date(`${careEndDateISO}T12:00:00`)
-    return Math.max(0, Math.round((b - a) / 86400000))
-  }, [selectedISO, careEndDateISO])
 
   const timeOk = useMemo(
-    () => careIntervalValid(selectedISO, careStart, careEndDateISO, careEnd),
-    [selectedISO, careStart, careEndDateISO, careEnd]
+    () => careIntervalValid(careStartDateISO, careStart, careEndDateISO, careEnd),
+    [careStartDateISO, careStart, careEndDateISO, careEnd]
   )
-
-  const staySummaryLine = useMemo(() => {
-    if (!timeOk) return null
-    const endT = formatTimeShort(careEnd)
-    if (stayNights === 0) {
-      return `Same day · ends ${endT}`
-    }
-    return `${stayNights} night${stayNights === 1 ? '' : 's'} · check-out ${formatStayPickerDate(careEndDateISO)} · ${endT}`
-  }, [timeOk, stayNights, careEndDateISO, careEnd])
-
   const kidsOk = useMemo(() => {
     const k = Number(kidCount)
     return kidCount !== '' && Number.isInteger(k) && k >= 1 && k <= 20
@@ -123,6 +118,7 @@ export default function BookPage() {
   function resetBookingModal(startISO) {
     setCareStart(DEFAULT_CARE_START)
     setCareEnd(DEFAULT_CARE_END)
+    setCareStartDateISO(startISO)
     setCareEndDateISO(startISO)
     setKidCount('')
     setFamilyName('')
@@ -162,10 +158,11 @@ export default function BookPage() {
 
   function submitBooking(e) {
     e.preventDefault()
-    if (selectedIsPast) return
+    if (careStartIsPast) return
     if (!timeOk || !kidsOk || !nameOk || !phoneOk) return
+    const start = careStartDateISO
     addBooking({
-      dateISO: selectedISO,
+      dateISO: start,
       careEndDateISO,
       familyName: familyName.trim(),
       contact: phone.trim(),
@@ -175,7 +172,7 @@ export default function BookPage() {
       notes: requestNotes.trim(),
     })
     closeBookingModal()
-    resetBookingModal(selectedISO)
+    resetBookingModal(start)
     setBookToast('Request sent! Your caregiver will follow up.')
     window.setTimeout(() => setBookToast(''), 5000)
   }
@@ -183,12 +180,20 @@ export default function BookPage() {
   return (
     <div className="page page--calendar page--book page--parents-only">
       <header className="calendar__head calendar__head--book">
-        <h1 className="calendar__title">Book care</h1>
-        <p className="calendar__subtitle muted">
-          Tap the <strong>start date</strong>, then set start and end times. End date can be later for overnight or
-          multi-day care. A dot means there is already a request that day.
+        <p className="book-parents-banner" role="note">
+          This page is for parents and families only.
         </p>
-        <p className="book-parents-note muted">This page is for parents and families only.</p>
+        <h1
+          className="calendar__title calendar__title--book-tip"
+          id="book-page-heading"
+          aria-describedby="book-page-intro"
+          data-tooltip={BOOK_GIG_HEADING_TIP}
+        >
+          Book a gig
+        </h1>
+        <p id="book-page-intro" className="sr-only">
+          {BOOK_GIG_HEADING_TIP} Dots show days that already have a request.
+        </p>
       </header>
 
       <div className="book-legend" role="group" aria-label="Calendar legend">
@@ -199,7 +204,7 @@ export default function BookPage() {
           <span className="book-legend__dot book-legend__dot--today" aria-hidden /> Today
         </span>
         <span className="book-legend__item book-legend__item--hours">
-          <strong>Overnight / multi-day:</strong> pick an end date after the start day if care crosses midnight.
+          <strong>Shift length:</strong> choose end date and time after start for overnight or multi-day nanny gigs.
         </span>
       </div>
 
@@ -282,8 +287,7 @@ export default function BookPage() {
       </div>
 
       <p className="book-request-hint muted">
-        Request form: start time on the day you chose, end date and time (can be the next day for overnight), children,
-        contact info, optional notes.
+        Pick a start day on the calendar, then set gig start and end date-times in the form.
       </p>
 
       {bookModalOpen ? (
@@ -302,11 +306,13 @@ export default function BookPage() {
           <div className="book-modal__sheet">
             <div className="book-modal__head">
               <div className="book-modal__head-text">
+                <p className="book-modal__eyebrow">Gig request</p>
                 <h2 id="book-modal-title" className="book-modal__title">
-                  Book your dates
+                  Request a nanny gig
                 </h2>
-                <p className="book-modal__tagline muted">
-                  Check-in and check-out — like reserving a hotel. Times are when care starts and ends.
+                <p className="book-modal__date">{careDateHeadline}</p>
+                <p className="book-modal__sub muted">
+                  When does the gig start, and when does it end? You can cover evenings and overnights.
                 </p>
               </div>
               <button
@@ -321,72 +327,60 @@ export default function BookPage() {
 
             {selectedBookings.length > 0 ? (
               <p className="book-modal__note muted">
-                This date already has {selectedBookings.length} request
-                {selectedBookings.length > 1 ? 's' : ''}. Submit only if your caregiver approved shared care.
+                This start day already has {selectedBookings.length} request
+                {selectedBookings.length > 1 ? 's' : ''}. Submit only if your caregiver approved overlapping gigs.
               </p>
             ) : null}
 
             <form className="book-modal__form" onSubmit={submitBooking}>
-              <div className="book-modal__stay-card" role="group" aria-label="Check-in and check-out">
-                <div className="book-modal__stay-split">
-                  <div className="book-modal__stay-pillar">
-                    <span className="book-modal__stay-kicker">Check-in</span>
-                    <label className="book-modal__stay-field">
-                      <span className="book-modal__stay-field-label">Date</span>
-                      <input
-                        type="date"
-                        className="input input--line book-modal__stay-date-control"
-                        value={selectedISO}
-                        min={todayISO()}
-                        max={careEndDateMax}
-                        onChange={(e) => {
-                          const v = e.target.value
-                          if (!v) return
-                          setSelected(new Date(`${v}T12:00:00`))
-                          setCareEndDateISO((end) => (end < v ? v : end))
-                        }}
-                        required
-                      />
-                    </label>
-                    <label className="book-modal__stay-field">
-                      <span className="book-modal__stay-field-label">From</span>
+              <div className="book-modal__hotel-card" aria-label="Gig start and end">
+                <div className="book-modal__hotel-dates">
+                  <div className="book-modal__hotel-col">
+                    <span className="book-modal__hotel-kicker">Gig starts</span>
+                    <input
+                      type="date"
+                      className="input input--line book-modal__hotel-date"
+                      value={careStartDateISO}
+                      onChange={(e) => {
+                        const v = e.target.value
+                        if (!v) return
+                        setCareStartDateISO(v)
+                        setCareEndDateISO((prev) => (prev < v ? v : prev))
+                      }}
+                      required
+                    />
+                    <label className="book-modal__hotel-time-label">
+                      <span>Start time</span>
                       <input
                         type="time"
-                        className="input input--line book-modal__stay-time-control"
+                        className="input input--line"
                         value={careStart}
                         onChange={(e) => setCareStart(e.target.value)}
                         required
                       />
                     </label>
                   </div>
-
-                  <div className="book-modal__stay-bridge" aria-hidden>
-                    <span className="book-modal__stay-bridge-icon">→</span>
-                  </div>
-
-                  <div className="book-modal__stay-pillar">
-                    <span className="book-modal__stay-kicker">Check-out</span>
-                    <label className="book-modal__stay-field">
-                      <span className="book-modal__stay-field-label">Date</span>
-                      <input
-                        type="date"
-                        className="input input--line book-modal__stay-date-control"
-                        value={careEndDateISO}
-                        min={selectedISO}
-                        max={careEndDateMax}
-                        onChange={(e) => {
-                          let v = e.target.value
-                          if (!v || v < selectedISO) v = selectedISO
-                          setCareEndDateISO(v)
-                        }}
-                        required
-                      />
-                    </label>
-                    <label className="book-modal__stay-field">
-                      <span className="book-modal__stay-field-label">Until</span>
+                  <div className="book-modal__hotel-rail" aria-hidden />
+                  <div className="book-modal__hotel-col">
+                    <span className="book-modal__hotel-kicker">Gig ends</span>
+                    <input
+                      type="date"
+                      className="input input--line book-modal__hotel-date"
+                      value={careEndDateISO}
+                      min={careStartDateISO}
+                      max={careEndDateMax}
+                      onChange={(e) => {
+                        let v = e.target.value
+                        if (!v || v < careStartDateISO) v = careStartDateISO
+                        setCareEndDateISO(v)
+                      }}
+                      required
+                    />
+                    <label className="book-modal__hotel-time-label">
+                      <span>End time</span>
                       <input
                         type="time"
-                        className="input input--line book-modal__stay-time-control"
+                        className="input input--line"
                         value={careEnd}
                         onChange={(e) => setCareEnd(e.target.value)}
                         required
@@ -394,113 +388,95 @@ export default function BookPage() {
                     </label>
                   </div>
                 </div>
-                {staySummaryLine && timeOk ? (
-                  <p className="book-modal__stay-summary">{staySummaryLine}</p>
-                ) : null}
-                {!timeOk && careStart && careEnd && careEndDateISO ? (
-                  <p className="book-modal__hint book-modal__hint--warn book-modal__stay-warn">
-                    Check-out date and time must be after check-in.
+                <p className="book-modal__hotel-summary muted">{careSpanSummary}</p>
+                {!timeOk && careStart && careEnd && careStartDateISO && careEndDateISO ? (
+                  <p className="book-modal__hint book-modal__hint--warn book-modal__hotel-warn">
+                    End date and time must be after the gig starts.
                   </p>
                 ) : null}
               </div>
 
-              {timeOk ? (
-                <div className="book-modal__section">
-                  <span className="book-modal__step">2</span>
-                  <label className="field-block book-modal__field-grow">
-                    <span className="field-block__label">Number of children</span>
-                    <input
-                      type="number"
-                      className="input input--line"
-                      min={1}
-                      max={20}
-                      step={1}
-                      value={kidCount}
-                      onChange={(e) => setKidCount(e.target.value)}
-                      placeholder="e.g. 2"
-                      inputMode="numeric"
-                    />
-                  </label>
-                </div>
-              ) : null}
+              <div className="book-modal__block">
+                <span className="book-modal__block-title">Children on this gig</span>
+                <label className="field-block book-modal__field-grow">
+                  <span className="field-block__label">How many</span>
+                  <input
+                    type="number"
+                    className="input input--line"
+                    min={1}
+                    max={20}
+                    step={1}
+                    value={kidCount}
+                    onChange={(e) => setKidCount(e.target.value)}
+                    placeholder="e.g. 2"
+                    inputMode="numeric"
+                  />
+                </label>
+              </div>
 
-              {timeOk && kidsOk ? (
-                <div className="book-modal__section">
-                  <span className="book-modal__step">3</span>
-                  <label className="field-block book-modal__field-grow">
-                    <span className="field-block__label">Family / parent name</span>
-                    <input
-                      type="text"
-                      className="input input--line"
-                      value={familyName}
-                      onChange={(e) => setFamilyName(e.target.value)}
-                      placeholder="Your name"
-                      autoComplete="name"
-                    />
-                  </label>
-                </div>
-              ) : null}
+              <div className="book-modal__block">
+                <span className="book-modal__block-title">Contact</span>
+                <label className="field-block book-modal__field-grow">
+                  <span className="field-block__label">Family / parent name</span>
+                  <input
+                    type="text"
+                    className="input input--line"
+                    value={familyName}
+                    onChange={(e) => setFamilyName(e.target.value)}
+                    placeholder="Your name"
+                    autoComplete="name"
+                  />
+                </label>
+                <label className="field-block book-modal__field-grow">
+                  <span className="field-block__label">Phone</span>
+                  <input
+                    type="tel"
+                    className="input input--line"
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
+                    placeholder="Your phone number"
+                    autoComplete="tel"
+                  />
+                </label>
+                {phone.trim() && !phoneOk ? (
+                  <p className="book-modal__hint book-modal__hint--warn">
+                    Enter a phone number with at least 7 digits.
+                  </p>
+                ) : null}
+              </div>
 
-              {timeOk && kidsOk && nameOk ? (
-                <div className="book-modal__section">
-                  <span className="book-modal__step">4</span>
-                  <label className="field-block book-modal__field-grow">
-                    <span className="field-block__label">Phone number (so your caregiver can reach you)</span>
-                    <input
-                      type="tel"
-                      className="input input--line"
-                      value={phone}
-                      onChange={(e) => setPhone(e.target.value)}
-                      placeholder="Your phone number"
-                      autoComplete="tel"
-                    />
-                  </label>
-                  {phone.trim() && !phoneOk ? (
-                    <p className="book-modal__hint book-modal__hint--warn">Enter a phone number with at least 7 digits.</p>
-                  ) : null}
-                </div>
-              ) : null}
+              <div className="book-modal__block">
+                <span className="book-modal__block-title">Notes for caregiver</span>
+                <label className="field-block book-modal__field-grow">
+                  <span className="field-block__label">Notes (optional)</span>
+                  <textarea
+                    className="input input--area book-modal__notes"
+                    value={requestNotes}
+                    onChange={(e) => setRequestNotes(e.target.value)}
+                    placeholder="Diet, routines, pickup plans, second parent contact…"
+                    rows={3}
+                    maxLength={2000}
+                    autoComplete="off"
+                  />
+                </label>
+              </div>
 
-              {timeOk && kidsOk && nameOk && phoneOk ? (
-                <div className="book-modal__section">
-                  <span className="book-modal__step">5</span>
-                  <label className="field-block book-modal__field-grow">
-                    <span className="field-block__label">Notes for your caregiver (optional)</span>
-                    <textarea
-                      className="input input--area book-modal__notes"
-                      value={requestNotes}
-                      onChange={(e) => setRequestNotes(e.target.value)}
-                      placeholder="e.g. early pickup, allergies, backup contact…"
-                      rows={3}
-                      maxLength={2000}
-                      autoComplete="off"
-                    />
-                  </label>
-                </div>
-              ) : null}
-
-              {selectedIsPast ? (
+              {careStartIsPast ? (
                 <p className="book-modal__hint book-modal__hint--warn">
-                  This date has passed. Close and choose today or a future day.
+                  Gig start date has passed. Close and pick today or a future day on the calendar.
                 </p>
               ) : null}
 
               <div className="book-modal__actions">
-                <button
-                  type="button"
-                  className="btn btn--ghost"
-                  onClick={closeBookingModal}
-                >
+                <button type="button" className="btn btn--ghost" onClick={closeBookingModal}>
                   Cancel
                 </button>
                 <button
                   type="submit"
                   className="btn btn--primary"
-                  disabled={
-                    selectedIsPast || !timeOk || !kidsOk || !nameOk || !phoneOk
-                  }
+                  disabled={careStartIsPast || !timeOk || !kidsOk || !nameOk || !phoneOk}
                 >
-                  Request these dates
+                  Send request
                 </button>
               </div>
             </form>

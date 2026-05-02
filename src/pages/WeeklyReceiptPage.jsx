@@ -195,7 +195,7 @@ export default function WeeklyReceiptPage() {
     }
   }, [weekOf])
 
-  const noteText = `Nanny care — week of ${weekLabel}`
+  const noteText = `Nanny gigs — week of ${weekLabel}`
 
   const venmoUrl = useMemo(
     () => buildVenmoUrl(venmoHandle, combinedTotal, noteText),
@@ -211,7 +211,7 @@ export default function WeeklyReceiptPage() {
           `+$${EXTRA_CHILD_PER_HOUR}/hr × ${extraKids} extra × ${h} hr = $${lineExtra.toFixed(2)}`
         )
       }
-      lines.push(``, `Care subtotal: $${laborTotal.toFixed(2)}`)
+      lines.push(``, `Gig wages subtotal: $${laborTotal.toFixed(2)}`)
     } else {
       lines.push(`(Enter hours above for wage line items.)`, ``)
     }
@@ -266,7 +266,7 @@ export default function WeeklyReceiptPage() {
   const thermalRows = useMemo(() => {
     const rows = []
     if (hoursValid) {
-      rows.push({ desc: `Care @ $${BASE_RATE}/hr × ${h}h`, amt: `$${lineBase.toFixed(2)}` })
+      rows.push({ desc: `Gigs @ $${BASE_RATE}/hr × ${h}h`, amt: `$${lineBase.toFixed(2)}` })
       if (extraKids > 0) {
         rows.push({
           desc: `Extra kids +$${EXTRA_CHILD_PER_HOUR}/hr × ${extraKids} × ${h}h`,
@@ -274,7 +274,7 @@ export default function WeeklyReceiptPage() {
         })
       }
     } else {
-      rows.push({ desc: 'Care wages (add hours)', amt: '—' })
+      rows.push({ desc: 'Gig wages (add hours)', amt: '—' })
     }
     if (mileReimb > 0) {
       rows.push({
@@ -397,7 +397,7 @@ export default function WeeklyReceiptPage() {
         </label>
 
         <label className="field-block">
-          <span className="field-block__label">Children in care</span>
+          <span className="field-block__label">Children on your gigs</span>
           <input
             type="number"
             inputMode="numeric"
@@ -482,11 +482,11 @@ export default function WeeklyReceiptPage() {
                 ) : null}
               </ul>
             ) : (
-              <p className="muted">Care wages: enter hours above.</p>
+              <p className="muted">Gig wages: enter hours above.</p>
             )}
             {hoursValid ? (
               <p className="receipt__rate muted">
-                Care: <strong>${laborTotal.toFixed(2)}</strong> (effective ${rate.toFixed(2)}/hr)
+                Gigs: <strong>${laborTotal.toFixed(2)}</strong> (effective ${rate.toFixed(2)}/hr)
               </p>
             ) : null}
             {mileReimb > 0 ? (

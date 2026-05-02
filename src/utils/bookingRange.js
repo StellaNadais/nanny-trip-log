@@ -58,7 +58,7 @@ function fmtShortDate(iso) {
   })
 }
 
-/** One line for schedule / lists: includes dates when care spans multiple calendar days. */
+/** One line for schedule / lists: includes dates when a gig spans multiple calendar days. */
 export function formatCareBookingWindow(b) {
   if (!b?.careStart || !b?.careEnd) return null
   const endISO = getCareEndDateISO(b)
