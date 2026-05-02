@@ -1,4 +1,4 @@
-/* Wraps home → schedule → hub for swipe / horizontal scroll navigation */
+/* Wraps home → schedule → hub for swipe / horizontal scroll navigation (same 28rem shell as #root; rainbow strips hug this column on wide viewports — see index.css body::before/::after) */
 .caregiver-flow-layout {
   min-height: 100%;
   min-height: 100dvh;
@@ -27,9 +27,9 @@
     max-width: 28rem;
     max-height: none;
     min-height: 100dvh;
-    border-left: 1px solid rgba(212, 203, 184, 0.65);
-    border-right: 1px solid rgba(212, 203, 184, 0.65);
-    box-shadow: 0 0 0 1px rgba(255, 254, 249, 0.6) inset;
+    border-left: 1px solid color-mix(in srgb, var(--line) 88%, transparent);
+    border-right: 1px solid color-mix(in srgb, var(--line) 88%, transparent);
+    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.85) inset;
   }
 }
 
@@ -82,7 +82,7 @@
   text-decoration: none;
   color: inherit;
   cursor: pointer;
-  -webkit-tap-highlight-color: rgba(92, 103, 216, 0.14);
+  -webkit-tap-highlight-color: rgba(92, 45, 110, 0.18);
 }
 
 .welcome__whole-tap:visited {
@@ -180,7 +180,7 @@
   min-height: 0;
   display: flex;
   flex-direction: column;
-  background: #fff;
+  background: var(--surface);
   border: 1px solid var(--line);
   border-radius: 12px;
   padding: 10px;
@@ -230,7 +230,7 @@
 .calendar__cell {
   border: 1px solid var(--line);
   border-radius: 8px;
-  background: #fff;
+  background: var(--surface);
   font: inherit;
   font-size: 0.9375rem;
   font-weight: 600;
@@ -355,8 +355,8 @@
     -45deg,
     var(--accent-soft),
     var(--accent-soft) 2px,
-    #fff 2px,
-    #fff 4px
+    var(--surface) 2px,
+    var(--surface) 4px
   );
   border-color: var(--accent);
 }
@@ -394,13 +394,13 @@
 
 .calendar__cell--weekbusy,
 .calendar__cell--booked {
-  background: linear-gradient(180deg, rgba(92, 103, 216, 0.2) 0%, #fff 58%);
-  border-color: rgba(92, 103, 216, 0.48);
+  background: linear-gradient(180deg, rgba(92, 45, 110, 0.22) 0%, var(--surface) 58%);
+  border-color: rgba(92, 45, 110, 0.5);
 }
 
 .calendar__cell--weekbusy.calendar__cell--selected,
 .calendar__cell--booked.calendar__cell--selected {
-  background: linear-gradient(180deg, rgba(92, 103, 216, 0.26) 0%, var(--accent-soft) 55%);
+  background: linear-gradient(180deg, rgba(92, 45, 110, 0.28) 0%, var(--accent-soft) 55%);
 }
 
 .calendar__cell--past {
@@ -540,7 +540,7 @@
   gap: 2px;
   padding: 8px 10px;
   border: 1px solid var(--line);
-  background: #fff;
+  background: var(--surface);
   font-size: 0.8125rem;
   line-height: 1.35;
 }
@@ -588,7 +588,7 @@
   margin: 0 0 12px;
   padding: 10px 12px;
   border: 1px solid var(--line);
-  background: #fff;
+  background: var(--surface);
 }
 
 .book-request__hours-label {
@@ -684,7 +684,7 @@
   max-width: 400px;
   max-height: min(90vh, 640px);
   overflow-y: auto;
-  background: #fff;
+  background: var(--surface);
   border: 1px solid var(--line);
   border-radius: 14px;
   box-shadow: 0 20px 50px rgba(0, 0, 0, 0.18);
@@ -750,7 +750,7 @@
   justify-content: center;
   border-radius: 50%;
   background: var(--accent);
-  color: #fff;
+  color: var(--surface);
   font-size: 0.75rem;
   font-weight: 800;
 }
@@ -996,7 +996,7 @@
   padding: 14px 10px;
   border-radius: 14px;
   border: 2px solid var(--line);
-  background: #fff;
+  background: var(--surface);
   text-decoration: none;
   color: var(--ink);
   font-weight: 700;
@@ -1043,7 +1043,7 @@
   padding: 12px 16px;
   border-radius: 12px;
   background: var(--ink);
-  color: #fff;
+  color: var(--surface);
   font-weight: 700;
   font-size: 0.95rem;
   text-decoration: none;
@@ -1104,7 +1104,7 @@
   padding: 16px;
   border-radius: 14px;
   border: 2px solid var(--line);
-  background: #fff;
+  background: var(--surface);
   width: 100%;
   max-width: 420px;
 }
@@ -1205,7 +1205,7 @@
   padding: 9px 11px;
   border-radius: 10px;
   background: var(--ink);
-  color: #fff;
+  color: var(--surface);
   font-size: 0.75rem;
   font-weight: 600;
   line-height: 1.4;
@@ -1318,7 +1318,7 @@
   padding: 12px;
   border-radius: 12px;
   border: 1px solid var(--line);
-  background: #fff;
+  background: var(--surface);
 }
 
 .receipt__manual-list {
@@ -1419,7 +1419,7 @@
   max-width: 308px;
   padding: 12px 14px 14px;
   border-radius: 16px;
-  background: #fff;
+  background: var(--surface);
   box-sizing: border-box;
   box-shadow: 0 1px 0 rgba(0, 0, 0, 0.04), inset 0 0 0 1px rgba(45, 40, 35, 0.08);
 }
@@ -1494,7 +1494,7 @@
   display: flex;
   justify-content: center;
   padding: 16px 14px;
-  background: #fff;
+  background: var(--surface);
   border-radius: 14px;
   box-sizing: border-box;
   box-shadow: inset 0 0 0 1px rgba(45, 40, 35, 0.07);
@@ -1514,11 +1514,11 @@
 .receipt-ticket--vintage .receipt-ticket__inner {
   background: repeating-linear-gradient(
       180deg,
-      #faf6ef 0px,
-      #f5f0e8 1px,
-      #faf6ef 2px
+      #ffffff 0px,
+      #f4f2ef 1px,
+      #ffffff 2px
     ),
-    linear-gradient(180deg, #fff 0%, #ebe4d8 100%);
+    linear-gradient(180deg, var(--surface) 0%, #ebe8e4 100%);
   box-shadow: inset 0 0 40px rgba(255, 255, 255, 0.35);
 }
 
@@ -1569,7 +1569,7 @@
 }
 
 .receipt-ticket__inner {
-  background: linear-gradient(180deg, #fff 0%, #f3eee6 100%);
+  background: linear-gradient(180deg, var(--surface) 0%, #f3eee6 100%);
   padding: 16px 18px 18px;
   border-left: 1px solid #c9c2b8;
   border-right: 1px solid #c9c2b8;
@@ -1926,7 +1926,7 @@
 
 .trip-places-foot-details {
   border-top: 1px solid var(--line);
-  background: #fff;
+  background: var(--surface);
 }
 
 .trip-places-foot__summary {
@@ -1991,18 +1991,33 @@
 .page--outings {
   justify-content: flex-start;
   overflow-y: auto;
-  padding-bottom: max(80px, env(safe-area-inset-bottom, 0px));
+  padding-bottom: max(16px, env(safe-area-inset-bottom, 0px));
 }
 
 .outings__head {
   flex-shrink: 0;
   margin-bottom: 8px;
+  position: relative;
+  z-index: 2;
+}
+
+/* Miles control sits next to "Outings"; stays above full-screen scrim (z-210) */
+.outings__title-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px 12px;
+  position: relative;
+  z-index: 230;
+  margin-top: 2px;
 }
 
 .outings__title {
   margin: 6px 0 0;
   font-size: 1.25rem;
   font-weight: 700;
+  flex: 1;
+  min-width: 0;
 }
 
 .outings__lede {
@@ -2025,7 +2040,7 @@
   vertical-align: 0.08em;
 }
 
-/* Mileage: corner tab + expanding panel */
+/* Mileage: tab in header; panel as dropdown; scrim for focus */
 .outings-places-dock__scrim {
   position: fixed;
   inset: 0;
@@ -2048,54 +2063,58 @@
 }
 
 .outings-places-dock {
-  position: fixed;
-  z-index: 220;
-  right: max(10px, env(safe-area-inset-right, 0px));
-  bottom: max(10px, env(safe-area-inset-bottom, 0px));
+  position: relative;
+  z-index: 1;
+  flex: 0 0 auto;
   display: flex;
   flex-direction: column;
   align-items: flex-end;
+  justify-content: flex-start;
   gap: 0;
   pointer-events: none;
 }
 
+/* Tab first, panel below: panel opens *down* from the tab */
 .outings-places-dock__panel,
 .outings-places-dock__tab {
   pointer-events: auto;
 }
 
 .outings-places-dock__panel {
-  order: 1;
-  width: 0;
-  max-width: min(calc(100vw - 24px), 400px);
+  position: absolute;
+  top: 100%;
+  right: 0;
+  left: auto;
+  width: min(400px, calc(100dvw - 2rem));
+  max-width: min(400px, calc(100dvw - 2rem));
   max-height: 0;
   opacity: 0;
-  margin: 0 0 0;
+  margin: 0;
+  margin-top: 0;
   padding: 0;
   overflow: hidden;
-  transform: scale(0.32) translate(14px, 14px);
-  transform-origin: bottom right;
-  background: #fff;
+  transform: translate3d(0, -8px, 0);
+  transform-origin: top right;
+  background: var(--surface);
   border: 1px solid var(--line);
-  border-radius: 18px 18px 8px 18px;
-  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.16);
+  border-radius: 10px 12px 16px 12px;
+  box-shadow: 0 16px 44px rgba(0, 0, 0, 0.14);
   box-sizing: border-box;
+  z-index: 0;
   transition:
-    width 0.32s cubic-bezier(0.34, 1.2, 0.55, 1),
-    max-height 0.38s cubic-bezier(0.32, 1.1, 0.6, 1),
-    opacity 0.2s ease,
-    transform 0.34s cubic-bezier(0.34, 1.2, 0.55, 1),
+    max-height 0.38s cubic-bezier(0.4, 0, 0.2, 1),
+    opacity 0.24s ease,
+    transform 0.32s cubic-bezier(0.4, 0, 0.2, 1),
     padding 0.2s ease,
-    margin 0.2s ease;
+    margin 0.24s ease;
 }
 
 .outings-places-dock--open .outings-places-dock__panel {
-  width: min(calc(100vw - 24px), 400px);
   max-height: min(70vh, 540px);
   opacity: 1;
-  margin-bottom: 8px;
+  margin-top: 8px;
   padding: 14px 14px 16px;
-  transform: scale(1) translate(0, 0);
+  transform: translate3d(0, 0, 0);
   overflow-x: hidden;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
@@ -2108,18 +2127,21 @@
 }
 
 .outings-places-dock__tab {
-  order: 2;
+  position: relative;
+  z-index: 1;
   display: inline-flex;
   flex-direction: column;
+  flex-shrink: 0;
   align-items: center;
   justify-content: center;
   gap: 2px;
   min-width: 58px;
   min-height: 58px;
+  margin-top: 2px;
   padding: 7px 9px 9px;
   border: 1px solid var(--accent);
   border-radius: 16px 16px 6px 16px;
-  background: linear-gradient(160deg, #fff 0%, var(--accent-soft) 120%);
+  background: linear-gradient(160deg, var(--surface) 0%, var(--paper2) 35%, var(--accent-soft) 120%);
   color: var(--ink);
   font: inherit;
   font-size: 0.65rem;
@@ -2128,13 +2150,13 @@
   line-height: 1.1;
   text-transform: uppercase;
   cursor: pointer;
-  box-shadow: 0 6px 22px rgba(92, 103, 216, 0.22);
+  box-shadow: 0 6px 22px rgba(92, 45, 110, 0.24);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .outings-places-dock__tab:hover {
   transform: translateY(-2px);
-  box-shadow: 0 10px 28px rgba(92, 103, 216, 0.3);
+  box-shadow: 0 10px 28px rgba(92, 45, 110, 0.32);
 }
 
 .outings-places-dock__tab:focus-visible {
@@ -2147,7 +2169,7 @@
   min-height: 50px;
   padding: 0;
   border-radius: 12px;
-  background: #fff;
+  background: var(--surface);
   text-transform: none;
   font-size: 1.25rem;
   font-weight: 300;
@@ -2188,6 +2210,8 @@
 
 .outings__week-picker {
   margin-top: 4px;
+  position: relative;
+  z-index: 0;
 }
 
 .outings__section {
@@ -2225,7 +2249,7 @@
   padding: 10px 12px;
   border: 1px solid var(--line);
   border-radius: var(--radius);
-  background: #fff;
+  background: var(--surface);
   font-size: 0.875rem;
 }
 
@@ -2401,7 +2425,7 @@
   margin: 0;
   padding: 12px 12px 14px;
   border: 1px solid var(--line);
-  background: #fff;
+  background: var(--surface);
 }
 
 .events__item-title {
@@ -2491,7 +2515,7 @@
   padding: 10px 12px;
   border: 2px solid var(--line);
   border-radius: 0;
-  background: #fff;
+  background: var(--surface);
   font: inherit;
   font-size: 1rem;
   font-weight: 600;
@@ -2869,7 +2893,7 @@
 .journal__about-bundle {
   border: 1px solid var(--line);
   border-radius: 10px;
-  background: #fff;
+  background: var(--surface);
   overflow: hidden;
   padding: 0;
 }
@@ -2913,7 +2937,7 @@
 .journal__handwritten-pic-btn:hover {
   color: var(--accent);
   border-color: var(--accent);
-  background: #fff;
+  background: var(--surface);
 }
 
 .journal__handwritten-pic-btn:focus-visible {
@@ -3010,7 +3034,7 @@
 .meals-today-field {
   border-radius: 10px;
   border: 1px solid var(--line);
-  background: #fff;
+  background: var(--surface);
   margin-bottom: 10px;
   overflow: hidden;
 }
@@ -3024,7 +3048,7 @@
   overflow: auto;
   max-height: 10rem;
   border-bottom: 1px solid var(--line);
-  background: #fff;
+  background: var(--surface);
 }
 
 .meals-inline-inner {
@@ -3076,7 +3100,7 @@
 
 .meals-today-ideas-details {
   border-top: 1px solid var(--line);
-  background: #fff;
+  background: var(--surface);
 }
 
 .meals-today-ideas__summary {
@@ -3272,7 +3296,7 @@
 }
 
 .journal-day-modal__inner {
-  background: #fff;
+  background: var(--surface);
   padding: 16px 16px 18px;
   border-left: 1px solid #c9c2b8;
   border-right: 1px solid #c9c2b8;

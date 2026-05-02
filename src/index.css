@@ -1,24 +1,33 @@
 :root {
-  --ink: #2c2824;
-  --ink-muted: #5c534a;
-  /* White surfaces; subtle gray for hovers / chrome */
+  /* Core text & surfaces (white column on seafoam) */
+  --ink: #2a2630;
+  --ink-muted: #5c5660;
   --paper: #ffffff;
-  --paper2: #ececec;
-  --line: #d0d0d0;
-  --accent: #5c67d8;
-  --accent-soft: rgba(92, 103, 216, 0.14);
-  --radius: 10px;
-  /* Vertical rainbow for left / right viewport edges */
+  --paper2: #f0f0f0;
+  --surface: #ffffff;
+  --line: #d8d4cf;
+  /* Accents: deep purple (icons, links, primary), gold trim, peach & bubblegum for warmth */
+  --accent: #5c2d6e;
+  --accent-soft: rgba(92, 45, 110, 0.16);
+  --peach: #e8a090;
+  --peach-soft: rgba(232, 160, 144, 0.38);
+  --gold: #e0b14a;
+  --gold-soft: rgba(224, 177, 74, 0.35);
+  --bubblegum: #d97aa8;
+  --seafoam-1: #3d8f88;
+  --seafoam-2: #5cb4ab;
+  --seafoam-3: #8fd4cc;
+  --sky-gradient: linear-gradient(180deg, var(--seafoam-1) 0%, var(--seafoam-2) 45%, var(--seafoam-3) 100%);
+  --radius: 12px;
+  /* Edge strips: purple, peach, gold, seafoam, pink */
   --rainbow-edge: linear-gradient(
     180deg,
-    hsl(355, 82%, 56%) 0%,
-    hsl(32, 88%, 58%) 12%,
-    hsl(48, 92%, 56%) 24%,
-    hsl(88, 48%, 46%) 38%,
-    hsl(198, 72%, 52%) 52%,
-    hsl(258, 52%, 58%) 66%,
-    hsl(310, 58%, 58%) 80%,
-    hsl(355, 82%, 56%) 100%
+    #4a1f5c 0%,
+    #e8a090 20%,
+    #e0b14a 40%,
+    #5cb4ab 62%,
+    #d97aa8 82%,
+    #4a1f5c 100%
   );
   /* Preschool show vibe: soft rounded & very legible (Nunito) */
   --font: 'Nunito', system-ui, -apple-system, 'Segoe UI', sans-serif;
@@ -29,9 +38,9 @@
   line-height: 1.55;
   letter-spacing: 0.01em;
   color: var(--ink);
-  background: var(--paper);
+  background: transparent;
   -webkit-font-smoothing: antialiased;
-  -webkit-tap-highlight-color: rgba(92, 103, 216, 0.18);
+  -webkit-tap-highlight-color: rgba(92, 45, 110, 0.22);
 }
 
 *,
@@ -42,14 +51,14 @@
 
 html {
   height: 100%;
-  background: var(--paper);
+  background: var(--sky-gradient);
 }
 
 body {
   margin: 0;
   min-height: 100%;
   min-height: 100dvh;
-  background: var(--paper);
+  background: transparent;
   position: relative;
   /* Inset main column so fixed rainbow strips stay visible on the left/right */
   padding-left: max(8px, env(safe-area-inset-left, 0px));
@@ -64,31 +73,43 @@ body {
   }
 }
 
-/* Rainbow strips — fixed behind main column (see #root z-index) */
+/* Rainbow strips — align with the centered #root / caregiver flow column (28rem) on desktop; viewport edges on phones */
 body::before,
 body::after {
   content: '';
   position: fixed;
   top: 0;
   bottom: 0;
-  width: 8px;
   z-index: 0;
   pointer-events: none;
   background: var(--rainbow-edge);
   background-size: 100% 180%;
 }
 
+/* Narrow: at screen edges (full-bleed column) */
 body::before {
   left: 0;
+  right: auto;
+  width: 8px;
 }
 
 body::after {
+  left: auto;
   right: 0;
+  width: 8px;
 }
 
 @media (min-width: 600px) {
-  body::before,
+  /* Hug the app column: strips sit in the margin just outside the 28rem shell (home → schedule → hub, etc.) */
+  body::before {
+    right: auto;
+    width: 10px;
+    left: max(0px, calc(50% - 14rem - 10px));
+  }
+
   body::after {
+    left: min(calc(100vw - 10px), max(0px, calc(50% + 14rem)));
+    right: auto;
     width: 10px;
   }
 }

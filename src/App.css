@@ -17,9 +17,9 @@
   .app {
     max-height: none;
     min-height: 100dvh;
-    border-left: 1px solid rgba(212, 203, 184, 0.65);
-    border-right: 1px solid rgba(212, 203, 184, 0.65);
-    box-shadow: 0 0 0 1px rgba(255, 254, 249, 0.6) inset;
+    border-left: 1px solid color-mix(in srgb, var(--line) 85%, transparent);
+    border-right: 1px solid color-mix(in srgb, var(--line) 85%, transparent);
+    box-shadow: 0 0 0 1px color-mix(in srgb, var(--surface) 88%, #e8e8e7) inset;
   }
 }
 
@@ -28,7 +28,7 @@
   padding: max(10px, env(safe-area-inset-top, 0px)) max(14px, env(safe-area-inset-right, 0px)) 10px
     max(14px, env(safe-area-inset-left, 0px));
   border-bottom: 1px solid var(--line);
-  background: linear-gradient(180deg, #fff 0%, var(--paper) 100%);
+  background: linear-gradient(180deg, #ffffff 0%, var(--paper) 100%);
 }
 
 .app__title-row {
@@ -84,7 +84,7 @@
   width: 100%;
   border: 1px solid var(--line);
   border-radius: 8px;
-  background: #fff;
+  background: var(--surface);
   color: var(--ink);
 }
 
@@ -183,7 +183,7 @@
   padding: 8px max(10px, env(safe-area-inset-right, 0px)) 8px max(10px, env(safe-area-inset-left, 0px));
   flex-shrink: 0;
   border-bottom: 1px solid var(--line);
-  background: #fff;
+  background: var(--surface);
 }
 
 .day-chip {
@@ -197,7 +197,7 @@
   padding: 6px 2px;
   border: 1px solid var(--line);
   border-radius: 0;
-  background: #fff;
+  background: var(--surface);
   cursor: pointer;
   font: inherit;
   color: var(--ink-muted);
@@ -275,7 +275,7 @@
   border: 1px solid var(--line);
   border-radius: 8px;
   padding: 12px 12px;
-  background: #fff;
+  background: var(--surface);
   width: 100%;
 }
 
@@ -348,7 +348,7 @@
   padding: 10px 16px;
   border-radius: 0;
   border: 1px solid var(--line);
-  background: #fff;
+  background: var(--surface);
   color: var(--ink);
   cursor: pointer;
 }
@@ -364,12 +364,13 @@
 .btn--primary {
   background: var(--accent);
   border-color: var(--accent);
-  color: #fff;
+  color: var(--surface);
 }
 
 .btn--primary:hover,
 .btn--primary:active {
-  filter: brightness(1.05);
+  filter: brightness(1.08);
+  box-shadow: 0 0 0 1px var(--gold);
 }
 
 .btn--ghost {
