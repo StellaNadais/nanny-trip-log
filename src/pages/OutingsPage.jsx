@@ -235,137 +235,137 @@ export default function OutingsPage() {
         <Link to="/hub" className="page-back page-back--ghost">
           ← Hub
         </Link>
-        <h1 className="outings__title">
-          Outings <span className="placeholder__code">(C)</span>
-        </h1>
+        <div className="outings__title-row">
+          <h1 className="outings__title">
+            Outings <span className="placeholder__code">(C)</span>
+          </h1>
+          <div className={`outings-places-dock ${placesDockOpen ? 'outings-places-dock--open' : ''}`}>
+            <button
+              type="button"
+              className="outings-places-dock__tab"
+              onClick={() => setPlacesDockOpen((o) => !o)}
+              aria-expanded={placesDockOpen}
+              aria-controls="outings-places-panel"
+            >
+              {placesDockOpen ? (
+                <span className="outings-places-dock__tab-x" aria-hidden>
+                  ×
+                </span>
+              ) : (
+                <>
+                  <span className="outings-places-dock__tab-ico" aria-hidden>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <circle cx="12" cy="10" r="3" />
+                      <path d="M12 21.7C17.3 17 20 13 20 10a8 8 0 1 0-16 0c0 3 2.7 6.9 8 11.7z" />
+                    </svg>
+                  </span>
+                  <span className="outings-places-dock__tab-lbl">Miles</span>
+                </>
+              )}
+            </button>
+            <div
+              className="outings-places-dock__panel"
+              id="outings-places-panel"
+              role="region"
+              aria-hidden={!placesDockOpen}
+              aria-labelledby="outings-places-heading"
+            >
+              <h2 id="outings-places-heading" className="outings-places-dock__title">
+                Mileage locations
+              </h2>
+              <p className="muted outings__hint">
+                Use the full name and/or a short nickname. Matching words in journal or trip log add{' '}
+                <strong>round-trip</strong> miles (one-way × 2). Names are matched as whole words, case-insensitive.
+              </p>
+              {customPlaces.length > 0 ? (
+                <ul className="outings__places-list">
+                  {customPlaces.map((p) => (
+                    <li key={p.id} className="outings__place-row">
+                      <div className="outings__place-main">
+                        <strong className="outings__place-label">{p.label}</strong>
+                        {p.nickname ? (
+                          <span className="muted outings__place-nick">“{p.nickname}”</span>
+                        ) : null}
+                        <span className="outings__place-miles muted">
+                          {p.milesOneWay} mi one-way · {p.milesOneWay * 2} mi round trip
+                        </span>
+                      </div>
+                      <button
+                        type="button"
+                        className="btn btn--ghost outings__place-remove"
+                        onClick={() => removeCustomPlace(p.id)}
+                      >
+                        Remove
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p className="muted outings__places-empty">No custom locations yet — add one below.</p>
+              )}
+              <form className="outings__places-form" onSubmit={addCustomPlace}>
+                <label className="field-block">
+                  <span className="field-block__label">Location name</span>
+                  <input
+                    type="text"
+                    className="input input--line"
+                    value={placeLabel}
+                    onChange={(e) => setPlaceLabel(e.target.value)}
+                    placeholder="e.g. Golden Gate Park"
+                    autoComplete="off"
+                  />
+                </label>
+                <label className="field-block">
+                  <span className="field-block__label">Nickname (optional)</span>
+                  <input
+                    type="text"
+                    className="input input--line"
+                    value={placeNickname}
+                    onChange={(e) => setPlaceNickname(e.target.value)}
+                    placeholder="e.g. GGP — also counts in journal"
+                    autoComplete="off"
+                  />
+                </label>
+                <label className="field-block">
+                  <span className="field-block__label">Miles one-way</span>
+                  <input
+                    type="number"
+                    inputMode="decimal"
+                    min="0"
+                    step="0.1"
+                    className="input input--line"
+                    value={placeMiles}
+                    onChange={(e) => setPlaceMiles(e.target.value)}
+                    placeholder="0"
+                  />
+                </label>
+                {placeFormErr ? (
+                  <p className="outings__places-err muted" role="status">
+                    {placeFormErr}
+                  </p>
+                ) : null}
+                <button type="submit" className="btn btn--primary">
+                  Add location
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+        {placesDockOpen ? (
+          <button
+            type="button"
+            className="outings-places-dock__scrim"
+            aria-label="Close mileage locations"
+            onClick={() => setPlacesDockOpen(false)}
+          />
+        ) : null}
         <p className="outings__lede muted">
-          <strong className="outings__lede-miles">Mileage</strong> — tap the <strong>Miles</strong> tab in the
-          lower-right to add custom locations. Journal & trip log text counts toward the{' '}
+          <strong className="outings__lede-miles">Mileage</strong> — tap the <strong>Miles</strong> control next to the
+          title to add custom locations. Journal & trip log text counts toward the{' '}
           <Link to="/receipt">Weekly receipt</Link> (${MILE_RATE}/mi round trip). <strong>Receipt extras</strong>{' '}
           (photos, parking, tolls…) are per week below.
         </p>
       </header>
-
-      {placesDockOpen ? (
-        <button
-          type="button"
-          className="outings-places-dock__scrim"
-          aria-label="Close mileage locations"
-          onClick={() => setPlacesDockOpen(false)}
-        />
-      ) : null}
-
-      <div className={`outings-places-dock ${placesDockOpen ? 'outings-places-dock--open' : ''}`}>
-        <div
-          className="outings-places-dock__panel"
-          id="outings-places-panel"
-          role="region"
-          aria-hidden={!placesDockOpen}
-          aria-labelledby="outings-places-heading"
-        >
-          <h2 id="outings-places-heading" className="outings-places-dock__title">
-            Mileage locations
-          </h2>
-          <p className="muted outings__hint">
-            Use the full name and/or a short nickname. Matching words in journal or trip log add{' '}
-            <strong>round-trip</strong> miles (one-way × 2). Names are matched as whole words, case-insensitive.
-          </p>
-          {customPlaces.length > 0 ? (
-            <ul className="outings__places-list">
-              {customPlaces.map((p) => (
-                <li key={p.id} className="outings__place-row">
-                  <div className="outings__place-main">
-                    <strong className="outings__place-label">{p.label}</strong>
-                    {p.nickname ? (
-                      <span className="muted outings__place-nick">“{p.nickname}”</span>
-                    ) : null}
-                    <span className="outings__place-miles muted">
-                      {p.milesOneWay} mi one-way · {p.milesOneWay * 2} mi round trip
-                    </span>
-                  </div>
-                  <button
-                    type="button"
-                    className="btn btn--ghost outings__place-remove"
-                    onClick={() => removeCustomPlace(p.id)}
-                  >
-                    Remove
-                  </button>
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <p className="muted outings__places-empty">No custom locations yet — add one below.</p>
-          )}
-          <form className="outings__places-form" onSubmit={addCustomPlace}>
-            <label className="field-block">
-              <span className="field-block__label">Location name</span>
-              <input
-                type="text"
-                className="input input--line"
-                value={placeLabel}
-                onChange={(e) => setPlaceLabel(e.target.value)}
-                placeholder="e.g. Golden Gate Park"
-                autoComplete="off"
-              />
-            </label>
-            <label className="field-block">
-              <span className="field-block__label">Nickname (optional)</span>
-              <input
-                type="text"
-                className="input input--line"
-                value={placeNickname}
-                onChange={(e) => setPlaceNickname(e.target.value)}
-                placeholder="e.g. GGP — also counts in journal"
-                autoComplete="off"
-              />
-            </label>
-            <label className="field-block">
-              <span className="field-block__label">Miles one-way</span>
-              <input
-                type="number"
-                inputMode="decimal"
-                min="0"
-                step="0.1"
-                className="input input--line"
-                value={placeMiles}
-                onChange={(e) => setPlaceMiles(e.target.value)}
-                placeholder="0"
-              />
-            </label>
-            {placeFormErr ? (
-              <p className="outings__places-err muted" role="status">
-                {placeFormErr}
-              </p>
-            ) : null}
-            <button type="submit" className="btn btn--primary">
-              Add location
-            </button>
-          </form>
-        </div>
-        <button
-          type="button"
-          className="outings-places-dock__tab"
-          onClick={() => setPlacesDockOpen((o) => !o)}
-          aria-expanded={placesDockOpen}
-          aria-controls="outings-places-panel"
-        >
-          {placesDockOpen ? (
-            <span className="outings-places-dock__tab-x" aria-hidden>
-              ×
-            </span>
-          ) : (
-            <>
-              <span className="outings-places-dock__tab-ico" aria-hidden>
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <circle cx="12" cy="10" r="3" />
-                  <path d="M12 21.7C17.3 17 20 13 20 10a8 8 0 1 0-16 0c0 3 2.7 6.9 8 11.7z" />
-                </svg>
-              </span>
-              <span className="outings-places-dock__tab-lbl">Miles</span>
-            </>
-          )}
-        </button>
-      </div>
 
       <div className="journal__week-picker outings__week-picker">
         <div className="trip-log__week-tools">

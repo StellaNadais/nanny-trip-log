@@ -15,6 +15,7 @@ import { loadState } from '../utils/storage'
 import JournalDayReceiptModal from '../components/JournalDayReceiptModal'
 import {
   buildJournalDayExportText,
+  buildJournalDaySmsHref,
   downloadJournalDayFile,
   journalDayFilename,
 } from '../utils/journalDayExport'
@@ -187,6 +188,28 @@ export default function KidJournalPage() {
   }
 
   const journalDateLabel = formatJournalDate(dateISO)
+
+  const forwardJournalSmsHref = useMemo(
+    () =>
+      buildJournalDaySmsHref({
+        dateISO,
+        dateLabel: journalDateLabel,
+        dayNotes,
+        mealsText,
+        morningNap,
+        afternoonNap,
+        handwrittenPhotoDataUrl,
+      }),
+    [
+      dateISO,
+      journalDateLabel,
+      dayNotes,
+      mealsText,
+      morningNap,
+      afternoonNap,
+      handwrittenPhotoDataUrl,
+    ]
+  )
 
   function journalDayExportPayload() {
     return {
@@ -365,19 +388,44 @@ export default function KidJournalPage() {
         </button>
 
         <div className="journal__day-slip-actions">
-          <button
-            type="button"
-            className="btn btn--ghost journal__day-slip-btn"
-            disabled={!hasSavedForSelectedDay}
-            title={
-              hasSavedForSelectedDay
-                ? 'Open the journal slip for this day'
-                : 'Save journal first to view the slip'
-            }
-            onClick={() => setJournalReceiptOpen(true)}
-          >
-            Show journal
-          </button>
+          <div className="journal__day-slip-tools">
+            <button
+              type="button"
+              className="btn btn--ghost journal__day-slip-btn journal__day-slip-btn--main"
+              disabled={!hasSavedForSelectedDay}
+              title={
+                hasSavedForSelectedDay
+                  ? 'Open the journal slip for this day'
+                  : 'Save journal first to view the slip'
+              }
+              onClick={() => setJournalReceiptOpen(true)}
+            >
+              Show journal
+            </button>
+            <a
+              href={forwardJournalSmsHref}
+              className="btn btn--ghost receipt__icon-btn journal__day-slip-forward"
+              data-tooltip="Open Messages with this day’s journal in the draft (same as .txt download)"
+              aria-label="Open Messages with this day’s journal in the draft"
+              title="Forward as text message"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="22"
+                height="22"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                aria-hidden
+              >
+                <polyline points="15 14 20 9 15 4" />
+                <path d="M4 20v-7a4 4 0 0 1 4-4h12" />
+              </svg>
+            </a>
+          </div>
           {!hasSavedForSelectedDay ? (
             <p className="muted journal__show-journal-hint">Save journal once for this day to open the slip.</p>
           ) : null}
@@ -394,6 +442,7 @@ export default function KidJournalPage() {
         afternoonNap={afternoonNap}
         handwrittenPhotoDataUrl={handwrittenPhotoDataUrl}
         onDownload={downloadJournalOfTheDay}
+        forwardSmsHref={forwardJournalSmsHref}
       />
     </div>
   )

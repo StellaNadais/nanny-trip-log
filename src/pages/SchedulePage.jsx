@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { toISODateLocal } from '../utils/dates'
 import { monthGrid, WEEKDAYS, isSameDay } from '../utils/calendarMonth'
 import { useBookings } from '../hooks/useBookings'
+import { expandBookingCalendarDates, formatCareBookingWindow, bookingEndMs } from '../utils/bookingRange'
 
 function todayISO() {
   return toISODateLocal(new Date())
@@ -10,19 +11,6 @@ function todayISO() {
 
 function dateISOFromParts(y, m, dayNum) {
   return toISODateLocal(new Date(y, m, dayNum))
-}
-
-function formatCareWindow(careStart, careEnd) {
-  if (!careStart || !careEnd) return null
-  const fmt = (hm) => {
-    const [h, m] = hm.split(':').map(Number)
-    if (!Number.isFinite(h) || !Number.isFinite(m)) return hm
-    return new Date(2000, 0, 1, h, m).toLocaleTimeString(undefined, {
-      hour: 'numeric',
-      minute: '2-digit',
-    })
-  }
-  return `${fmt(careStart)} – ${fmt(careEnd)}`
 }
 
 /**
@@ -43,21 +31,23 @@ export default function SchedulePage() {
   const bookingsByDate = useMemo(() => {
     const map = {}
     for (const b of bookings) {
-      const d = b.dateISO
-      if (!d) continue
-      if (!map[d]) map[d] = []
-      map[d].push(b)
+      for (const iso of expandBookingCalendarDates(b)) {
+        if (!map[iso]) map[iso] = []
+        map[iso].push(b)
+      }
     }
     return map
   }, [bookings])
 
   const upcoming = useMemo(() => {
-    const t = todayISO()
+    const now = Date.now()
     return [...bookings]
-      .filter((b) => b.dateISO && b.dateISO >= t)
+      .filter((b) => b.dateISO && bookingEndMs(b) >= now)
       .sort((a, b) => {
-        const c = a.dateISO.localeCompare(b.dateISO)
-        return c !== 0 ? c : (a.createdAt ?? '').localeCompare(b.createdAt ?? '')
+        const a0 = new Date(`${a.dateISO}T${a.careStart || '00:00'}:00`).getTime()
+        const b0 = new Date(`${b.dateISO}T${b.careStart || '00:00'}:00`).getTime()
+        if (a0 !== b0) return a0 - b0
+        return (a.createdAt ?? '').localeCompare(b.createdAt ?? '')
       })
   }, [bookings])
 
@@ -186,9 +176,9 @@ export default function SchedulePage() {
               <li key={b.id} className="schedule-day-detail__item">
                 <strong>{b.familyName}</strong>
                 <span className="muted">{b.contact}</span>
-                {formatCareWindow(b.careStart, b.careEnd) ? (
+                {formatCareBookingWindow(b) ? (
                   <span className="schedule-day-detail__meta muted">
-                    {formatCareWindow(b.careStart, b.careEnd)}
+                    {formatCareBookingWindow(b)}
                     {b.kidCount != null
                       ? ` · ${b.kidCount} ${b.kidCount === 1 ? 'child' : 'children'}`
                       : ''}
@@ -226,9 +216,9 @@ export default function SchedulePage() {
                 <div className="book-upcoming__body">
                   <strong>{b.familyName}</strong>
                   <span className="muted">{b.contact}</span>
-                  {formatCareWindow(b.careStart, b.careEnd) || b.kidCount != null ? (
+                  {formatCareBookingWindow(b) || b.kidCount != null ? (
                     <span className="book-upcoming__meta muted">
-                      {[formatCareWindow(b.careStart, b.careEnd), b.kidCount != null ? `${b.kidCount} ${b.kidCount === 1 ? 'child' : 'children'}` : null]
+                      {[formatCareBookingWindow(b), b.kidCount != null ? `${b.kidCount} ${b.kidCount === 1 ? 'child' : 'children'}` : null]
                         .filter(Boolean)
                         .join(' · ')}
                     </span>

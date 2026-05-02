@@ -32,6 +32,18 @@ export function buildJournalDayExportText({
   return lines.join('\n')
 }
 
+/** Cap body length so `sms:` URLs stay within common mobile limits. */
+export const JOURNAL_SMS_BODY_MAX = 2800
+
+export function buildJournalDaySmsHref(payload) {
+  const raw = buildJournalDayExportText(payload)
+  let body = String(raw || '').trim()
+  if (body.length > JOURNAL_SMS_BODY_MAX) {
+    body = `${body.slice(0, JOURNAL_SMS_BODY_MAX).trimEnd()}\n…(trimmed for text — open app for full journal)`
+  }
+  return `sms:?body=${encodeURIComponent(body)}`
+}
+
 export function journalDayFilename(dateISO) {
   return `journal-${dateISO || 'day'}.txt`
 }

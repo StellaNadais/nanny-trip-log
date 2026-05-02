@@ -1,6 +1,53 @@
 import { useEffect, useMemo } from 'react'
 import { parseMealsToParts } from '../utils/parseMeals'
 
+const JOURNAL_ICON_TIP_FORWARD =
+  'Open Messages with this day’s journal in the draft (same text as download).'
+const JOURNAL_ICON_TIP_DOWNLOAD = 'Download this day’s journal as a .txt file.'
+
+function IconForwardSms({ className }) {
+  return (
+    <svg
+      className={className}
+      xmlns="http://www.w3.org/2000/svg"
+      width="22"
+      height="22"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden
+    >
+      <polyline points="15 14 20 9 15 4" />
+      <path d="M4 20v-7a4 4 0 0 1 4-4h12" />
+    </svg>
+  )
+}
+
+function IconDownload({ className }) {
+  return (
+    <svg
+      className={className}
+      xmlns="http://www.w3.org/2000/svg"
+      width="22"
+      height="22"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden
+    >
+      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+      <polyline points="7 10 12 15 17 10" />
+      <line x1="12" y1="15" x2="12" y2="3" />
+    </svg>
+  )
+}
+
 /**
  * Receipt-style journal popup with rainbow frame.
  */
@@ -14,6 +61,7 @@ export default function JournalDayReceiptModal({
   afternoonNap,
   handwrittenPhotoDataUrl,
   onDownload,
+  forwardSmsHref,
 }) {
   useEffect(() => {
     if (!open) return
@@ -97,11 +145,32 @@ export default function JournalDayReceiptModal({
           </div>
         </div>
         <div className="journal-day-modal__actions">
-          {onDownload ? (
-            <button type="button" className="btn btn--primary journal-day-modal__download" onClick={onDownload}>
-              Download journal (.txt)
-            </button>
-          ) : null}
+          <div className="receipt__icon-row journal-day-modal__icon-row">
+            <a
+              href={forwardSmsHref}
+              className="btn btn--ghost receipt__icon-btn"
+              data-tooltip={JOURNAL_ICON_TIP_FORWARD}
+              aria-label="Open Messages with this day’s journal in the draft"
+              title={JOURNAL_ICON_TIP_FORWARD}
+            >
+              <IconForwardSms />
+            </a>
+            {onDownload ? (
+              <button
+                type="button"
+                className="btn btn--ghost receipt__icon-btn"
+                data-tooltip={JOURNAL_ICON_TIP_DOWNLOAD}
+                onClick={onDownload}
+                aria-label="Download journal as a text file"
+                title={JOURNAL_ICON_TIP_DOWNLOAD}
+              >
+                <IconDownload />
+              </button>
+            ) : null}
+          </div>
+          <p className="muted journal-day-modal__sms-hint">
+            Forward uses the same wording as the .txt file; photos are not attached.
+          </p>
           <button type="button" className="btn btn--ghost journal-day-modal__close" onClick={onClose}>
             Close
           </button>
