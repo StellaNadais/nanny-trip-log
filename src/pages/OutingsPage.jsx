@@ -78,6 +78,12 @@ export default function OutingsPage() {
 
   const weekLabel = useMemo(() => formatWeekRange(outingWeekStart), [outingWeekStart])
 
+  const outingsHeadingTip = useMemo(
+    () =>
+      `Mileage — tap the Miles control next to the title to add custom locations. Journal & trip log text counts toward the Weekly receipt ($${MILE_RATE}/mi round trip). Receipt extras (photos, parking, tolls…) are per week below.`,
+    []
+  )
+
   function shiftOutingWeek(delta) {
     setOutingWeekStart((w) => addDays(w, delta * 7))
   }
@@ -236,7 +242,12 @@ export default function OutingsPage() {
           ← Hub
         </Link>
         <div className="outings__title-row">
-          <h1 className="outings__title">
+          <h1
+            className="outings__title outings__title--hover-tip"
+            id="outings-page-heading"
+            aria-describedby="outings-page-intro"
+            data-tooltip={outingsHeadingTip}
+          >
             Outings <span className="placeholder__code">(C)</span>
           </h1>
           <div className={`outings-places-dock ${placesDockOpen ? 'outings-places-dock--open' : ''}`}>
@@ -359,11 +370,8 @@ export default function OutingsPage() {
             onClick={() => setPlacesDockOpen(false)}
           />
         ) : null}
-        <p className="outings__lede muted">
-          <strong className="outings__lede-miles">Mileage</strong> — tap the <strong>Miles</strong> control next to the
-          title to add custom locations. Journal & trip log text counts toward the{' '}
-          <Link to="/receipt">Weekly receipt</Link> (${MILE_RATE}/mi round trip). <strong>Receipt extras</strong>{' '}
-          (photos, parking, tolls…) are per week below.
+        <p id="outings-page-intro" className="sr-only">
+          {outingsHeadingTip}
         </p>
       </header>
 

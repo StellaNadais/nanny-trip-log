@@ -1,8 +1,9 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { toISODateLocal } from '../utils/dates'
 import { monthGrid, WEEKDAYS, isSameDay } from '../utils/calendarMonth'
 import { useBookings } from '../hooks/useBookings'
+import { bookingOccupiesCalendarSlot } from '../utils/bookingCalendar'
 import { expandBookingCalendarDates, formatCareBookingWindow, bookingEndMs } from '../utils/bookingRange'
 
 function todayISO() {
@@ -13,16 +14,23 @@ function dateISOFromParts(y, m, dayNum) {
   return toISODateLocal(new Date(y, m, dayNum))
 }
 
+function gigResponseStatus(b) {
+  if (b.responseStatus === 'accepted' || b.responseStatus === 'declined') return b.responseStatus
+  return 'pending'
+}
+
+const SCHEDULE_HEADING_TIP =
+  'After families submit requests through the parent-only link you share, those dates show on the calendar. Tap Dates next to the title to review requests — accept or decline each one.'
+
 /**
- * Caregiver schedule (page 2): upcoming care after families book via /book.
+ * Caregiver schedule (page 2): requested dates after families book via /book.
  */
 export default function SchedulePage() {
-  const { bookings } = useBookings()
+  const { bookings, patchBooking, removeBooking } = useBookings()
   const today = new Date()
   const [cursor, setCursor] = useState(
     () => new Date(today.getFullYear(), today.getMonth(), 1)
   )
-  const [selected, setSelected] = useState(() => new Date(today))
 
   const y = cursor.getFullYear()
   const m = cursor.getMonth()
@@ -31,6 +39,7 @@ export default function SchedulePage() {
   const bookingsByDate = useMemo(() => {
     const map = {}
     for (const b of bookings) {
+      if (!bookingOccupiesCalendarSlot(b)) continue
       for (const iso of expandBookingCalendarDates(b)) {
         if (!map[iso]) map[iso] = []
         map[iso].push(b)
@@ -51,26 +60,67 @@ export default function SchedulePage() {
       })
   }, [bookings])
 
+  const acceptedUpcoming = useMemo(() => {
+    const now = Date.now()
+    return [...bookings]
+      .filter((b) => b.responseStatus === 'accepted' && b.dateISO && bookingEndMs(b) >= now)
+      .sort((a, b) => {
+        const a0 = new Date(`${a.dateISO}T${a.careStart || '00:00'}:00`).getTime()
+        const b0 = new Date(`${b.dateISO}T${b.careStart || '00:00'}:00`).getTime()
+        if (a0 !== b0) return a0 - b0
+        return (a.createdAt ?? '').localeCompare(b.createdAt ?? '')
+      })
+  }, [bookings])
+
+  const [carouselIndex, setCarouselIndex] = useState(0)
+  const [enterAnim, setEnterAnim] = useState(null)
+  const [requestsDockOpen, setRequestsDockOpen] = useState(false)
+
+  useEffect(() => {
+    if (upcoming.length === 0) {
+      setCarouselIndex(0)
+      return
+    }
+    setCarouselIndex((i) => Math.min(i, upcoming.length - 1))
+  }, [upcoming.length])
+
+  useEffect(() => {
+    if (!enterAnim) return
+    const t = window.setTimeout(() => setEnterAnim(null), 320)
+    return () => window.clearTimeout(t)
+  }, [carouselIndex, enterAnim])
+
+  const currentGig = upcoming.length > 0 ? upcoming[carouselIndex] : null
+  const gigStatus = currentGig ? gigResponseStatus(currentGig) : 'pending'
+
+  function goNextGig() {
+    if (upcoming.length <= 1) return
+    setEnterAnim('next')
+    setCarouselIndex((i) => (i + 1) % upcoming.length)
+  }
+
+  function goPrevGig() {
+    if (upcoming.length <= 1) return
+    setEnterAnim('prev')
+    setCarouselIndex((i) => (i - 1 + upcoming.length) % upcoming.length)
+  }
+
+  function deleteCurrentGig() {
+    if (!currentGig) return
+    if (
+      !window.confirm(
+        'Delete this gig request? It will be removed from your calendar, the parent booking page, and upcoming gigs.'
+      )
+    ) {
+      return
+    }
+    removeBooking(currentGig.id)
+  }
+
   const title = cursor.toLocaleDateString(undefined, {
     month: 'long',
     year: 'numeric',
   })
-
-  const selectedISO = useMemo(() => toISODateLocal(selected), [selected])
-
-  const selectedLabel = selected.toLocaleDateString(undefined, {
-    weekday: 'long',
-    month: 'long',
-    day: 'numeric',
-    year: 'numeric',
-  })
-
-  const selectedBookings = bookingsByDate[selectedISO] ?? []
-
-  function pickDay(dayNum) {
-    if (dayNum == null) return
-    setSelected(new Date(y, m, dayNum))
-  }
 
   function prevMonth() {
     setCursor(new Date(y, m - 1, 1))
@@ -89,9 +139,179 @@ export default function SchedulePage() {
         <Link to="/" className="page-back page-back--ghost">
           ← Home
         </Link>
-        <h1 className="schedule__title">Schedule</h1>
-        <p className="schedule__lede muted">
-          After families submit requests through the parent-only link you share, those dates show up here.
+        <div className="schedule__title-row">
+          <h1
+            className="schedule__title schedule__title--hover-tip"
+            id="schedule-page-heading"
+            aria-describedby="schedule-page-intro"
+            data-tooltip={SCHEDULE_HEADING_TIP}
+          >
+            Schedule
+          </h1>
+          <div className={`schedule-requests-dock ${requestsDockOpen ? 'schedule-requests-dock--open' : ''}`}>
+            <button
+              type="button"
+              className="schedule-requests-dock__tab"
+              onClick={() => setRequestsDockOpen((o) => !o)}
+              aria-expanded={requestsDockOpen}
+              aria-controls="schedule-requests-panel"
+            >
+              {requestsDockOpen ? (
+                <span className="schedule-requests-dock__tab-x" aria-hidden>
+                  ×
+                </span>
+              ) : (
+                <>
+                  <span className="schedule-requests-dock__tab-ico" aria-hidden>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="20"
+                      height="20"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+                      <line x1="16" y1="2" x2="16" y2="6" />
+                      <line x1="8" y1="2" x2="8" y2="6" />
+                      <line x1="3" y1="10" x2="21" y2="10" />
+                    </svg>
+                  </span>
+                  <span className="schedule-requests-dock__tab-lbl">Dates</span>
+                </>
+              )}
+            </button>
+            <div
+              className="schedule-requests-dock__panel"
+              id="schedule-requests-panel"
+              role="region"
+              aria-hidden={!requestsDockOpen}
+              aria-labelledby="schedule-requested-dates-title"
+            >
+              <h2 id="schedule-requested-dates-title" className="schedule-requests-dock__title">
+                Requested dates
+              </h2>
+              {upcoming.length === 0 ? (
+                <p className="muted">No requested dates yet. Share your parent booking link when you’re ready.</p>
+              ) : (
+                <div className="schedule-upcoming-carousel">
+                  <div className="schedule-upcoming-carousel__nav" aria-label="Browse requested dates">
+                    <button
+                      type="button"
+                      className="btn btn--ghost schedule-upcoming-carousel__arrow"
+                      onClick={goPrevGig}
+                      disabled={upcoming.length <= 1}
+                      aria-label="Previous request"
+                    >
+                      ‹
+                    </button>
+                    <span className="schedule-upcoming-carousel__count muted">
+                      {carouselIndex + 1} / {upcoming.length}
+                    </span>
+                    <button
+                      type="button"
+                      className="btn btn--ghost schedule-upcoming-carousel__arrow"
+                      onClick={goNextGig}
+                      disabled={upcoming.length <= 1}
+                      aria-label="Next request"
+                    >
+                      ›
+                    </button>
+                  </div>
+
+                  <div className="schedule-upcoming-carousel__window">
+                    <div
+                      className={`schedule-upcoming-card book-upcoming__row ${enterAnim === 'next' ? 'schedule-upcoming-card--enter-next' : ''} ${enterAnim === 'prev' ? 'schedule-upcoming-card--enter-prev' : ''}`}
+                      key={currentGig.id}
+                    >
+                      <time className="book-upcoming__date" dateTime={currentGig.dateISO}>
+                        {new Date(currentGig.dateISO + 'T12:00:00').toLocaleDateString(undefined, {
+                          weekday: 'short',
+                          month: 'short',
+                          day: 'numeric',
+                          year: 'numeric',
+                        })}
+                      </time>
+                      <div className="book-upcoming__body">
+                        <strong>{currentGig.familyName}</strong>
+                        <span className="muted">{currentGig.contact}</span>
+                        {formatCareBookingWindow(currentGig) || currentGig.kidCount != null ? (
+                          <span className="book-upcoming__meta muted">
+                            {[formatCareBookingWindow(currentGig), currentGig.kidCount != null ? `${currentGig.kidCount} ${currentGig.kidCount === 1 ? 'child' : 'children'}` : null]
+                              .filter(Boolean)
+                              .join(' · ')}
+                          </span>
+                        ) : null}
+                        {currentGig.notes ? <p className="book-upcoming__notes">{currentGig.notes}</p> : null}
+
+                        <div className="schedule-upcoming-card__actions">
+                          {gigStatus === 'pending' ? (
+                            <>
+                              <button
+                                type="button"
+                                className="btn btn--primary schedule-upcoming-card__btn"
+                                onClick={() => patchBooking(currentGig.id, { responseStatus: 'accepted' })}
+                              >
+                                Accept
+                              </button>
+                              <button
+                                type="button"
+                                className="btn btn--ghost schedule-upcoming-card__btn"
+                                onClick={() => patchBooking(currentGig.id, { responseStatus: 'declined' })}
+                              >
+                                Decline
+                              </button>
+                            </>
+                          ) : gigStatus === 'accepted' ? (
+                            <p className="schedule-upcoming-card__status schedule-upcoming-card__status--accepted muted">
+                              Accepted
+                            </p>
+                          ) : (
+                            <>
+                              <p className="schedule-upcoming-card__status schedule-upcoming-card__status--declined muted">
+                                Declined
+                              </p>
+                              <button
+                                type="button"
+                                className="btn btn--ghost schedule-upcoming-card__btn schedule-upcoming-card__undo"
+                                onClick={() => patchBooking(currentGig.id, { responseStatus: undefined })}
+                              >
+                                Undo decline
+                              </button>
+                            </>
+                          )}
+                        </div>
+                        <div className="schedule-upcoming-card__delete-row">
+                          <button
+                            type="button"
+                            className="btn btn--ghost schedule-upcoming-card__delete"
+                            onClick={deleteCurrentGig}
+                            aria-label="Delete this gig request"
+                          >
+                            Delete gig
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+        {requestsDockOpen ? (
+          <button
+            type="button"
+            className="schedule-requests-dock__scrim"
+            aria-label="Close requested dates"
+            onClick={() => setRequestsDockOpen(false)}
+          />
+        ) : null}
+        <p id="schedule-page-intro" className="sr-only">
+          {SCHEDULE_HEADING_TIP}
         </p>
       </header>
 
@@ -121,7 +341,7 @@ export default function SchedulePage() {
             </span>
           ))}
         </div>
-        <div className="calendar__grid calendar__grid--book" role="grid" aria-label="Care schedule">
+        <div className="calendar__grid calendar__grid--book" role="grid" aria-label="Gig schedule">
           {cells.map((dayNum, i) => {
             if (dayNum == null) {
               return (
@@ -135,18 +355,15 @@ export default function SchedulePage() {
             const iso = dateISOFromParts(y, m, dayNum)
             const dayBookings = bookingsByDate[iso] ?? []
             const isBooked = dayBookings.length > 0
-            const isSel = isSameDay(selected, new Date(y, m, dayNum))
             const isToday = isSameDay(today, new Date(y, m, dayNum))
             const isPast = iso < todayISO()
 
             return (
-              <button
+              <div
                 key={i}
-                type="button"
                 role="gridcell"
                 aria-label={`${dayNum}${isBooked ? `, ${dayBookings.length} booking${dayBookings.length > 1 ? 's' : ''}` : ''}`}
-                className={`calendar__cell ${isSel ? 'calendar__cell--selected' : ''} ${isToday ? 'calendar__cell--today' : ''} ${isBooked ? 'calendar__cell--booked' : ''} ${isPast ? 'calendar__cell--past' : ''}`}
-                onClick={() => pickDay(dayNum)}
+                className={`calendar__cell ${isToday ? 'calendar__cell--today' : ''} ${isBooked ? 'calendar__cell--booked' : ''} ${isPast ? 'calendar__cell--past' : ''}`}
               >
                 <span className="calendar__cell-num">{dayNum}</span>
                 {isBooked ? (
@@ -158,53 +375,20 @@ export default function SchedulePage() {
                     )}
                   </span>
                 ) : null}
-              </button>
+              </div>
             )
           })}
         </div>
       </div>
 
-      <section className="schedule-day-detail" aria-labelledby="schedule-day-title">
-        <h2 id="schedule-day-title" className="schedule-day-detail__title">
-          {selectedLabel}
-        </h2>
-        {selectedBookings.length === 0 ? (
-          <p className="muted">No care booked this day.</p>
-        ) : (
-          <ul className="schedule-day-detail__list">
-            {selectedBookings.map((b) => (
-              <li key={b.id} className="schedule-day-detail__item">
-                <strong>{b.familyName}</strong>
-                <span className="muted">{b.contact}</span>
-                {formatCareBookingWindow(b) ? (
-                  <span className="schedule-day-detail__meta muted">
-                    {formatCareBookingWindow(b)}
-                    {b.kidCount != null
-                      ? ` · ${b.kidCount} ${b.kidCount === 1 ? 'child' : 'children'}`
-                      : ''}
-                  </span>
-                ) : b.kidCount != null ? (
-                  <span className="schedule-day-detail__meta muted">
-                    {b.kidCount} {b.kidCount === 1 ? 'child' : 'children'}
-                  </span>
-                ) : null}
-                {b.notes ? <p className="schedule-day-detail__notes">{b.notes}</p> : null}
-              </li>
-            ))}
-          </ul>
-        )}
-      </section>
-
-      <section className="book-upcoming schedule-upcoming" aria-labelledby="schedule-upcoming-title">
-        <h2 id="schedule-upcoming-title" className="book-upcoming__title">
-          Upcoming care
-        </h2>
-        {upcoming.length === 0 ? (
-          <p className="muted">No upcoming dates yet. Share your parent booking link when you’re ready.</p>
-        ) : (
-          <ul className="book-upcoming__list">
-            {upcoming.map((b) => (
-              <li key={b.id} className="book-upcoming__row">
+      {acceptedUpcoming.length > 0 ? (
+        <section className="schedule-accepted-gigs" aria-labelledby="schedule-accepted-gigs-title">
+          <h2 id="schedule-accepted-gigs-title" className="schedule-accepted-gigs__title">
+            Upcoming gigs
+          </h2>
+          <ul className="schedule-accepted-gigs__list">
+            {acceptedUpcoming.map((b) => (
+              <li key={b.id} className="book-upcoming__row schedule-accepted-gigs__row">
                 <time className="book-upcoming__date" dateTime={b.dateISO}>
                   {new Date(b.dateISO + 'T12:00:00').toLocaleDateString(undefined, {
                     weekday: 'short',
@@ -228,8 +412,8 @@ export default function SchedulePage() {
               </li>
             ))}
           </ul>
-        )}
-      </section>
+        </section>
+      ) : null}
 
       <div className="calendar__footer schedule__footer">
         <Link to="/hub" className="btn btn--primary calendar__next">
