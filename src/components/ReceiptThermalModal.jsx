@@ -8,6 +8,7 @@ export default function ReceiptThermalModal({
   open,
   onClose,
   weekLabel,
+  tapeSubtitle,
   printedAt,
   rows,
   photos,
@@ -51,6 +52,7 @@ export default function ReceiptThermalModal({
           <ReceiptThermalTicket
             titleId="receipt-thermal-title"
             weekLabel={weekLabel}
+            tapeSubtitle={tapeSubtitle}
             printedAt={printedAt}
             rows={rows}
             photos={photos}

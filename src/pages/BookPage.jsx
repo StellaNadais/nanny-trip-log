@@ -94,7 +94,7 @@ export default function BookPage() {
     const d0 = new Date(`${careStartDateISO}T12:00:00`)
     const d1 = new Date(`${careEndDateISO}T12:00:00`)
     const diff = Math.round((d1 - d0) / 86400000)
-    if (diff === 0) return 'Same-day gig window'
+    if (diff === 0) return null
     if (diff === 1) return 'Overnight gig · spans 2 days on the calendar'
     return `${diff + 1} calendar days · this gig includes ${diff} overnight${diff === 1 ? '' : 's'}`
   }, [careStartDateISO, careEndDateISO])
@@ -388,7 +388,9 @@ export default function BookPage() {
                     </label>
                   </div>
                 </div>
-                <p className="book-modal__hotel-summary muted">{careSpanSummary}</p>
+                {careSpanSummary ? (
+                  <p className="book-modal__hotel-summary muted">{careSpanSummary}</p>
+                ) : null}
                 {!timeOk && careStart && careEnd && careStartDateISO && careEndDateISO ? (
                   <p className="book-modal__hint book-modal__hint--warn book-modal__hotel-warn">
                     End date and time must be after the gig starts.

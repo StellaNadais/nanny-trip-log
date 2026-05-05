@@ -38,6 +38,28 @@ export function bookingEndMs(b) {
   return new Date(`${d}T${t}:00`).getTime()
 }
 
+/** Calendar nights at the family’s house (difference in start vs end dates). Mon→Wed = 2. */
+export function bookingOvernightNightCount(b) {
+  const start = b?.dateISO
+  const end = getCareEndDateISO(b)
+  if (!start || !end) return 0
+  const t0 = new Date(`${start}T12:00:00`).getTime()
+  const t1 = new Date(`${end}T12:00:00`).getTime()
+  if (!Number.isFinite(t0) || !Number.isFinite(t1) || t1 <= t0) return 0
+  return Math.round((t1 - t0) / 86400000)
+}
+
+/** Calendar nights at the family’s house (difference in start vs end dates). Mon→Wed = 2. */
+export function bookingOvernightNightCount(b) {
+  const start = b?.dateISO
+  const end = getCareEndDateISO(b)
+  if (!start || !end) return 0
+  const t0 = new Date(`${start}T12:00:00`).getTime()
+  const t1 = new Date(`${end}T12:00:00`).getTime()
+  if (!Number.isFinite(t0) || !Number.isFinite(t1) || t1 <= t0) return 0
+  return Math.round((t1 - t0) / 86400000)
+}
+
 function fmtTime(hm) {
   if (!hm || typeof hm !== 'string') return ''
   const [h, m] = hm.split(':').map(Number)

@@ -20,7 +20,7 @@ function gigResponseStatus(b) {
 }
 
 const SCHEDULE_HEADING_TIP =
-  'After families submit requests through the parent-only link you share, those dates show on the calendar. Tap Dates next to the title to review requests — accept or decline each one.'
+  'After families submit requests through the parent-only link you share, those dates show on the calendar. Tap Requests next to the title to review requests — accept or decline each one.'
 
 /**
  * Caregiver schedule (page 2): requested dates after families book via /book.
@@ -155,6 +155,11 @@ export default function SchedulePage() {
               onClick={() => setRequestsDockOpen((o) => !o)}
               aria-expanded={requestsDockOpen}
               aria-controls="schedule-requests-panel"
+              aria-label={
+                upcoming.length > 0
+                  ? `Open requests (${upcoming.length} pending)`
+                  : 'Open requests'
+              }
             >
               {requestsDockOpen ? (
                 <span className="schedule-requests-dock__tab-x" aria-hidden>
@@ -180,7 +185,12 @@ export default function SchedulePage() {
                       <line x1="3" y1="10" x2="21" y2="10" />
                     </svg>
                   </span>
-                  <span className="schedule-requests-dock__tab-lbl">Dates</span>
+                  <span className="schedule-requests-dock__tab-lbl">Requests</span>
+                  {upcoming.length > 0 ? (
+                    <span className="schedule-requests-dock__badge" aria-hidden>
+                      {upcoming.length > 99 ? '99+' : upcoming.length}
+                    </span>
+                  ) : null}
                 </>
               )}
             </button>

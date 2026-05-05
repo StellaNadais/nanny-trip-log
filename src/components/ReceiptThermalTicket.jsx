@@ -3,6 +3,7 @@
  */
 export default function ReceiptThermalTicket({
   weekLabel,
+  tapeSubtitle = 'Weekly receipt · register tape',
   printedAt,
   rows,
   photos,
@@ -23,7 +24,7 @@ export default function ReceiptThermalTicket({
         <p className="receipt-ticket__title" id={titleId || undefined}>
           NANNY CARE
         </p>
-        <p className="receipt-ticket__sub">Weekly receipt · register tape</p>
+        <p className="receipt-ticket__sub">{tapeSubtitle}</p>
         <p className="receipt-ticket__meta">{weekLabel}</p>
         {printedAt ? <p className="receipt-ticket__printed">{printedAt}</p> : null}
         <p className="receipt-ticket__store" aria-hidden>

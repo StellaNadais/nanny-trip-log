@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
 import ReceiptThermalModal from '../components/ReceiptThermalModal'
 import ReceiptThermalTicket from '../components/ReceiptThermalTicket'
 import {
@@ -14,9 +14,16 @@ import {
   downloadTextFile,
   weekSummaryFilename,
 } from '../utils/buildWeekSummaryText'
+import { useBookings } from '../hooks/useBookings'
+import {
+  bookingOvernightNightCount,
+  expandBookingCalendarDates,
+} from '../utils/bookingRange'
+import { isWeeklyReceiptBusinessHours } from '../utils/receiptWindowMode'
 
 const BASE_RATE = 31
 const EXTRA_CHILD_PER_HOUR = 5
+const OVERNIGHT_RATE = 165
 
 const MANUAL_CATEGORIES = [
   { id: 'parking_ticket', label: 'Parking ticket' },
@@ -131,11 +138,21 @@ const ICON_TIP_DOWNLOAD =
   'Download: saves a .txt week summary — trip log, kid journal, and this receipt block.'
 
 export default function WeeklyReceiptPage() {
+  const [searchParams, setSearchParams] = useSearchParams()
+  const paramGig = searchParams.get('gigDate')
+  const gigReceiptMode = !isWeeklyReceiptBusinessHours(new Date())
+  const { bookings } = useBookings()
+
   const initialSettings = useMemo(() => loadReceiptSettings(), [])
   const [venmoHandle, setVenmoHandle] = useState(initialSettings.venmoHandle)
   const [hours, setHours] = useState('45')
   const [numChildren, setNumChildren] = useState('1')
   const [weekOf, setWeekOf] = useState(() => toISODateLocal(startOfWeekMonday(new Date())))
+  const [gigDateISO, setGigDateISO] = useState(() => {
+    if (paramGig && /^\d{4}-\d{2}-\d{2}$/.test(paramGig)) return paramGig
+    return toISODateLocal(new Date())
+  })
+  const [overnightNights, setOvernightNights] = useState('0')
   const [mileageRev, setMileageRev] = useState(0)
   const [extras, setExtras] = useState(emptyExtras)
   const [receiptOpen, setReceiptOpen] = useState(true)
@@ -145,6 +162,31 @@ export default function WeeklyReceiptPage() {
     () => toISODateLocal(startOfWeekMonday(new Date(weekOf + 'T12:00:00'))),
     [weekOf]
   )
+
+  useEffect(() => {
+    if (!gigReceiptMode) return
+    const mon = toISODateLocal(startOfWeekMonday(new Date(gigDateISO + 'T12:00:00')))
+    setWeekOf(mon)
+  }, [gigReceiptMode, gigDateISO])
+
+  const matchedGig = useMemo(() => {
+    if (!gigReceiptMode || !gigDateISO) return null
+    return (
+      bookings.find(
+        (b) =>
+          b.responseStatus === 'accepted' &&
+          b.dateISO &&
+          expandBookingCalendarDates(b).includes(gigDateISO)
+      ) ?? null
+    )
+  }, [bookings, gigReceiptMode, gigDateISO])
+
+  useEffect(() => {
+    if (!gigReceiptMode) return
+    setOvernightNights(
+      matchedGig ? String(bookingOvernightNightCount(matchedGig)) : '0'
+    )
+  }, [gigReceiptMode, gigDateISO, matchedGig?.id])
 
   useEffect(() => {
     const bump = () => setMileageRev((r) => r + 1)
@@ -185,7 +227,9 @@ export default function WeeklyReceiptPage() {
       extras.manualLines.reduce((s, row) => s + (Number.isFinite(row.amount) ? row.amount : 0), 0),
     [extras.manualLines]
   )
-  const combinedTotal = laborTotal + mileReimb + manualTotal
+  const overnightNum = Math.max(0, parseInt(overnightNights, 10) || 0)
+  const overnightTotal = gigReceiptMode ? overnightNum * OVERNIGHT_RATE : 0
+  const combinedTotal = laborTotal + mileReimb + manualTotal + overnightTotal
 
   const weekLabel = useMemo(() => {
     try {
@@ -195,7 +239,38 @@ export default function WeeklyReceiptPage() {
     }
   }, [weekOf])
 
-  const noteText = `Nanny gigs — week of ${weekLabel}`
+  const thermalMetaLine = useMemo(() => {
+    if (!gigReceiptMode) return weekLabel
+    try {
+      const gd = new Date(gigDateISO + 'T12:00:00').toLocaleDateString(undefined, {
+        weekday: 'short',
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric',
+      })
+      return `Gig date: ${gd}`
+    } catch {
+      return `Gig date: ${gigDateISO}`
+    }
+  }, [gigReceiptMode, weekLabel, gigDateISO])
+
+  const tapeSubtitle = gigReceiptMode
+    ? 'Receipt · register tape'
+    : 'Weekly receipt · register tape'
+
+  const noteText = useMemo(() => {
+    if (!gigReceiptMode) return `Nanny gigs — week of ${weekLabel}`
+    try {
+      const gd = new Date(gigDateISO + 'T12:00:00').toLocaleDateString(undefined, {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric',
+      })
+      return `Nanny gig — ${gd}`
+    } catch {
+      return `Nanny gig — ${gigDateISO}`
+    }
+  }, [gigReceiptMode, weekLabel, gigDateISO])
 
   const venmoUrl = useMemo(
     () => buildVenmoUrl(venmoHandle, combinedTotal, noteText),
@@ -203,7 +278,10 @@ export default function WeeklyReceiptPage() {
   )
 
   const receiptText = useMemo(() => {
-    const lines = [`Weekly nanny receipt`, `Week: ${weekLabel}`, `Children: ${n}`, ``]
+    const head = gigReceiptMode
+      ? [`Nanny receipt (gig)`, `Gig date: ${gigDateISO}`, `Mileage & extras week: ${weekLabel}`, `Children: ${n}`, ``]
+      : [`Weekly nanny receipt`, `Week: ${weekLabel}`, `Children: ${n}`, ``]
+    const lines = [...head]
     if (hoursValid) {
       lines.push(`$${BASE_RATE}/hr × ${h} hr (base) = $${lineBase.toFixed(2)}`)
       if (extraKids > 0) {
@@ -214,6 +292,12 @@ export default function WeeklyReceiptPage() {
       lines.push(``, `Gig wages subtotal: $${laborTotal.toFixed(2)}`)
     } else {
       lines.push(`(Enter hours above for wage line items.)`, ``)
+    }
+    if (gigReceiptMode && overnightTotal > 0) {
+      lines.push(
+        `Overnight at family’s house: ${overnightNum} night(s) × $${OVERNIGHT_RATE} = $${overnightTotal.toFixed(2)}`,
+        ``
+      )
     }
     if (mileageEntry && mileReimb > 0) {
       lines.push(
@@ -240,7 +324,11 @@ export default function WeeklyReceiptPage() {
     }
     return lines.join('\n')
   }, [
+    gigReceiptMode,
+    gigDateISO,
     weekLabel,
+    overnightNum,
+    overnightTotal,
     n,
     hoursValid,
     h,
@@ -289,8 +377,17 @@ export default function WeeklyReceiptPage() {
         amt: `$${Number(m.amount).toFixed(2)}`,
       })
     }
+    if (gigReceiptMode && overnightTotal > 0) {
+      rows.push({
+        desc: `Overnight @ family’s (${overnightNum} nt × $${OVERNIGHT_RATE})`,
+        amt: `$${overnightTotal.toFixed(2)}`,
+      })
+    }
     return rows
   }, [
+    gigReceiptMode,
+    overnightNum,
+    overnightTotal,
     hoursValid,
     h,
     lineBase,
@@ -305,12 +402,23 @@ export default function WeeklyReceiptPage() {
     () =>
       [
         receiptWeekKey,
+        gigDateISO,
+        gigReceiptMode ? String(overnightNum) : '0',
         combinedTotal.toFixed(2),
         thermalRows.map((r) => `${r.desc}|${r.amt}`).join('\u00A6'),
         extras.photos.length,
         mileageRev,
       ].join('::'),
-    [receiptWeekKey, combinedTotal, thermalRows, extras.photos.length, mileageRev]
+    [
+      receiptWeekKey,
+      gigDateISO,
+      gigReceiptMode,
+      overnightNum,
+      combinedTotal,
+      thermalRows,
+      extras.photos.length,
+      mileageRev,
+    ]
   )
 
   useEffect(() => {
@@ -332,7 +440,11 @@ export default function WeeklyReceiptPage() {
   }
 
   const showSummary =
-    hoursValid || mileReimb > 0 || manualTotal > 0 || extras.photos.length > 0
+    hoursValid ||
+    mileReimb > 0 ||
+    manualTotal > 0 ||
+    extras.photos.length > 0 ||
+    (gigReceiptMode && overnightTotal > 0)
   const showVenmoActions = combinedTotal > 0
 
   return (
@@ -341,26 +453,55 @@ export default function WeeklyReceiptPage() {
         <Link to="/hub" className="page-back page-back--ghost">
           ← Hub
         </Link>
-        <h1 className="receipt__title">Weekly receipt</h1>
+        <h1 className="receipt__title">{gigReceiptMode ? 'Receipt' : 'Weekly receipt'}</h1>
         <p className="receipt__lede muted">
           The <strong>register-tape receipt</strong> opens as a popup — use <strong>Screenshot view</strong> inside it
           for a plain background, or scroll to <strong>Screenshot-ready receipt</strong> below. Receipt extras are on{' '}
           <Link to="/outings">Outings</Link>. <strong>Download week summary (.txt)</strong> includes trip log + journal +
           this block.
+          {gigReceiptMode ? (
+            <>
+              {' '}
+              After hours or on weekends this page is for <strong>one gig day</strong> (mileage & extras still use the
+              calendar week that contains that date).
+            </>
+          ) : null}
         </p>
       </header>
 
       <div className="receipt__form">
-        <label className="field-block">
-          <span className="field-block__label">Week (Monday of week)</span>
-          <input
-            type="date"
-            className="input input--line"
-            value={weekOf}
-            onChange={(e) => setWeekOf(e.target.value)}
-          />
-        </label>
-        <p className="receipt__week-hint muted">{weekLabel}</p>
+        {gigReceiptMode ? (
+          <label className="field-block">
+            <span className="field-block__label">Gig date</span>
+            <input
+              type="date"
+              className="input input--line"
+              value={gigDateISO}
+              onChange={(e) => {
+                const v = e.target.value
+                setGigDateISO(v)
+                if (v) setSearchParams({ gigDate: v }, { replace: true })
+              }}
+            />
+            <p className="receipt__week-hint muted">
+              Week for mileage & receipt extras: <strong>{weekLabel}</strong>
+              {matchedGig ? ' · Matched an accepted booking for this date (overnights filled in below).' : null}
+            </p>
+          </label>
+        ) : (
+          <>
+            <label className="field-block">
+              <span className="field-block__label">Week (Monday of week)</span>
+              <input
+                type="date"
+                className="input input--line"
+                value={weekOf}
+                onChange={(e) => setWeekOf(e.target.value)}
+              />
+            </label>
+            <p className="receipt__week-hint muted">{weekLabel}</p>
+          </>
+        )}
 
         {mileageEntry ? (
           <p className="receipt__mileage-sync muted">
@@ -379,7 +520,7 @@ export default function WeeklyReceiptPage() {
         )}
 
         <label className="field-block">
-          <span className="field-block__label">Hours this week</span>
+          <span className="field-block__label">{gigReceiptMode ? 'Hours this gig' : 'Hours this week'}</span>
           <input
             type="number"
             inputMode="decimal"
@@ -395,6 +536,25 @@ export default function WeeklyReceiptPage() {
             <strong>45 hr → ${(BASE_RATE * 45).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</strong> before mileage & reimbursements).
           </p>
         </label>
+
+        {gigReceiptMode ? (
+          <label className="field-block">
+            <span className="field-block__label">Overnights at family&apos;s house</span>
+            <input
+              type="number"
+              inputMode="numeric"
+              min="0"
+              step="1"
+              className="input input--line"
+              value={overnightNights}
+              onChange={(e) => setOvernightNights(e.target.value)}
+            />
+            <p className="muted receipt__hours-hint">
+              <strong>${OVERNIGHT_RATE}/night</strong> when you stay overnight at the family&apos;s home — adjust the count
+              if needed.
+            </p>
+          </label>
+        ) : null}
 
         <label className="field-block">
           <span className="field-block__label">Children on your gigs</span>
@@ -500,6 +660,12 @@ export default function WeeklyReceiptPage() {
                 Parking / tolls / other: <strong>${manualTotal.toFixed(2)}</strong>
               </p>
             ) : null}
+            {gigReceiptMode && overnightTotal > 0 ? (
+              <p className="muted">
+                Overnight at family&apos;s: <strong>${overnightTotal.toFixed(2)}</strong> ({overnightNum} night
+                {overnightNum === 1 ? '' : 's'} × ${OVERNIGHT_RATE})
+              </p>
+            ) : null}
             {extras.photos.length > 0 ? (
               <p className="muted">{extras.photos.length} receipt photo(s) on file</p>
             ) : null}
@@ -520,7 +686,8 @@ export default function WeeklyReceiptPage() {
           </p>
           <div className="receipt__shutter-pad">
             <ReceiptThermalTicket
-              weekLabel={weekLabel}
+              weekLabel={thermalMetaLine}
+              tapeSubtitle={tapeSubtitle}
               printedAt={printedAt ? `Printed: ${printedAt}` : ''}
               rows={thermalRows}
               photos={extras.photos}
@@ -579,7 +746,8 @@ export default function WeeklyReceiptPage() {
       <ReceiptThermalModal
         open={receiptOpen}
         onClose={() => setReceiptOpen(false)}
-        weekLabel={weekLabel}
+        weekLabel={thermalMetaLine}
+        tapeSubtitle={tapeSubtitle}
         printedAt={printedAt ? `Printed: ${printedAt}` : ''}
         rows={thermalRows}
         photos={extras.photos}
