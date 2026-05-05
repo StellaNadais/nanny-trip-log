@@ -1,4 +1,7 @@
 import { Link } from 'react-router-dom'
+import { useMemo } from 'react'
+import { useBookings } from '../hooks/useBookings'
+import { receiptNavLabel, receiptPagePath } from '../utils/receiptHref'
 
 const CARDS = [
   { to: '/shift', label: 'Shift', code: 'A' },
@@ -9,6 +12,10 @@ const CARDS = [
 ]
 
 export default function HubPage() {
+  const { bookings } = useBookings()
+  const receiptTo = useMemo(() => receiptPagePath(bookings), [bookings])
+  const receiptLabel = receiptNavLabel()
+
   return (
     <div className="page page--hub">
       <div className="page__badge" aria-hidden>
@@ -35,8 +42,8 @@ export default function HubPage() {
         <div className="hub-card hub-card--empty" aria-hidden />
       </div>
 
-      <Link to="/receipt" className="hub__report">
-        Weekly receipt
+      <Link to={receiptTo} className="hub__report">
+        {receiptLabel}
       </Link>
     </div>
   )

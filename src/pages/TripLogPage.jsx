@@ -10,6 +10,9 @@ import { computeWeekTripMileage } from '../utils/parseTripPlaces'
 import { MILE_RATE } from '../data/tripPlaces'
 import { notifyReceiptMileageUpdated, saveReceiptSettings } from '../utils/receiptStorage'
 import { OUTINGS_UPDATED_EVENT } from '../utils/outingsStorage'
+import { useBookings } from '../hooks/useBookings'
+import { isWeeklyReceiptBusinessHours } from '../utils/receiptWindowMode'
+import { receiptOpenLinkText, receiptPagePath } from '../utils/receiptHref'
 import '../App.css'
 
 const TABS = [
@@ -20,6 +23,7 @@ const TABS = [
 export default function TripLogPage() {
   const log = useTripLog()
   const { entries: journalEntries } = useKidJournal()
+  const { bookings } = useBookings()
   const [tab, setTab] = useState('log')
   const [dayOffset, setDayOffset] = useState(0)
   const [outingsRev, setOutingsRev] = useState(0)
@@ -33,6 +37,15 @@ export default function TripLogPage() {
     () => toISODateLocal(addDays(log.weekStart, dayOffset)),
     [log.weekStart, dayOffset]
   )
+
+  const receiptTo = useMemo(
+    () => receiptPagePath(bookings, { gigDateISO: selectedIso }),
+    [bookings, selectedIso]
+  )
+  const receiptLinkLabel = receiptOpenLinkText()
+  const tripLogReceiptPhrase = isWeeklyReceiptBusinessHours()
+    ? 'Weekly receipt'
+    : 'Receipt'
 
   const day = log.daysByIso[selectedIso]
 
@@ -134,11 +147,10 @@ export default function TripLogPage() {
             <div className="trip-log__submit-bar">
               <p className="trip-log__submit-preview muted">
                 This week: {weekPreview.totalMiles.toFixed(1)} mi round-trip · @ ${MILE_RATE}/mi ={' '}
-                <strong>${weekPreview.reimbursement.toFixed(2)}</strong> — syncs to Weekly receipt as
-                you type.
+                <strong>${weekPreview.reimbursement.toFixed(2)}</strong> — syncs to {tripLogReceiptPhrase} as you type.
               </p>
-              <Link to="/receipt" className="trip-log__receipt-link trip-log__receipt-link--solo">
-                Open weekly receipt →
+              <Link to={receiptTo} className="trip-log__receipt-link trip-log__receipt-link--solo">
+                {receiptLinkLabel}
               </Link>
             </div>
           </>

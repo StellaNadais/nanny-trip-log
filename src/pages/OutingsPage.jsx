@@ -17,6 +17,8 @@ import {
   OUTINGS_UPDATED_EVENT,
 } from '../utils/outingsStorage'
 import { refreshAllTripMileageCache } from '../utils/refreshTripMileageCache'
+import { useBookings } from '../hooks/useBookings'
+import { receiptOpenLinkText, receiptPagePath } from '../utils/receiptHref'
 
 const MANUAL_CATEGORIES = [
   { id: 'parking_ticket', label: 'Parking ticket' },
@@ -49,6 +51,7 @@ function initialDayOffsetForWeek(mondayDate) {
 }
 
 export default function OutingsPage() {
+  const { bookings } = useBookings()
   const [outingWeekStart, setOutingWeekStart] = useState(() => startOfWeekMonday(new Date()))
   const [dayOffset, setDayOffset] = useState(() =>
     initialDayOffsetForWeek(startOfWeekMonday(new Date()))
@@ -73,6 +76,12 @@ export default function OutingsPage() {
     () => toISODateLocal(addDays(outingWeekStart, dayOffset)),
     [outingWeekStart, dayOffset]
   )
+
+  const receiptTo = useMemo(
+    () => receiptPagePath(bookings, { gigDateISO: dateISO }),
+    [bookings, dateISO]
+  )
+  const receiptLinkLabel = receiptOpenLinkText()
 
   const receiptWeekKey = weekKey
 
@@ -527,8 +536,8 @@ export default function OutingsPage() {
           ) : null}
         </p>
 
-        <Link to="/receipt" className="btn btn--ghost outings__to-receipt">
-          Open weekly receipt →
+        <Link to={receiptTo} className="btn btn--ghost outings__to-receipt">
+          {receiptLinkLabel}
         </Link>
       </section>
     </div>
