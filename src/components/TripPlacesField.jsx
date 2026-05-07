@@ -64,13 +64,14 @@ export default function TripPlacesField({
               {isJournal ? (
                 <>
                   Type a natural sentence — when a saved place name appears (e.g. <strong>Laf Library</strong>
-                  , <strong>Moraga Library</strong>), it highlights and counts toward this day&apos;s miles on{' '}
-                  <strong>Weekly receipt</strong> with Trip log.
+                  , <strong>Moraga Library</strong>), it highlights and counts. Use <strong>then</strong> or{' '}
+                  <strong>+</strong> between two names for one outing (e.g. Moraga Library then Lamorinda) so miles aren’t
+                  double-counted as separate round trips. Totals show on <strong>Weekly receipt</strong> with Trip log.
                 </>
               ) : (
                 <>
-                  Highlighted, styled names are counted. Finish typing a full saved place name — Oakland
-                  (code), Moraga (italic), Lafayette (bold + code) — then this day&apos;s miles roll into{' '}
+                  Highlighted names count. Chain with <strong>then</strong> or <strong>+</strong> when you go place to
+                  place before home. Finish typing a full saved place — then this day&apos;s miles roll into{' '}
                   <strong>Weekly receipt</strong> automatically.
                 </>
               )}

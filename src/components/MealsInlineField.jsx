@@ -24,7 +24,9 @@ export default function MealsInlineField({
             {chunks.length === 0 ? (
               value === '' ? (
                 '\u00a0'
-              ) : null
+              ) : (
+                <span className="meals-inline-food meals-inline-food--plain">{value}</span>
+              )
             ) : (
               chunks.map((c, i) => {
                 if (c.type === 'delim') {
@@ -35,7 +37,7 @@ export default function MealsInlineField({
                   )
                 }
                 return (
-                  <span key={i} style={{ color: c.color }}>
+                  <span key={i} className="meals-inline-food" style={{ color: c.color }}>
                     {c.value}
                   </span>
                 )

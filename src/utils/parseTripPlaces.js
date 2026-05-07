@@ -5,6 +5,19 @@ import { outingRecordToPlace } from './outingsPlaceModel'
 
 const TOKEN_RE = /^«p:([a-z0-9-]+)»/
 
+/** True when text between two place matches links them (home → A → B → home style). */
+export function isConnectorGapBetweenPlaces(gap) {
+  if (gap == null) return false
+  const g = String(gap)
+  if (!g.trim()) return false
+  if (/\bthen\b/i.test(g)) return true
+  if (/\s\+\s/.test(g)) return true
+  const t = g.trim()
+  if (/^\+\s*/.test(t)) return true
+  if (/\+\s*$/.test(t)) return true
+  return false
+}
+
 function buildBuiltInPhrasesSorted() {
   const out = []
   for (const p of PLACES) {
@@ -73,10 +86,13 @@ export function scanTripLogChunks(text) {
       if (tm) {
         const full = tm[0]
         const id = tm[1]
+        const start = i
         chunks.push({
           type: 'token',
           value: full,
           place: placeById[id] || null,
+          start,
+          end: start + full.length,
         })
         i += full.length
         continue
@@ -96,20 +112,26 @@ export function scanTripLogChunks(text) {
     }
 
     if (matchedPlace && matchedPhrase) {
+      const start = i
+      const len = matchedPhrase.length
       chunks.push({
         type: 'place',
-        value: s.slice(i, i + matchedPhrase.length),
+        value: s.slice(i, i + len),
         place: matchedPlace,
+        start,
+        end: start + len,
       })
-      i += matchedPhrase.length
+      i += len
       continue
     }
 
+    const start = i
     const prev = chunks[chunks.length - 1]
     if (prev && prev.type === 'text') {
       prev.value += s[i]
+      prev.end = i + 1
     } else {
-      chunks.push({ type: 'text', value: s[i] })
+      chunks.push({ type: 'text', value: s[i], start, end: i + 1 })
     }
     i += 1
   }
@@ -121,18 +143,65 @@ export function splitTripLogForMirror(text) {
 }
 
 /**
- * Round-trip miles per matched place (typed name, alias, or legacy «p:id» token).
+ * Miles for one “run” of stops from home: first leg + between-stop hops (|Δ one-way|) + return home.
+ */
+export function runMilesForPlaceChain(places) {
+  if (!places || places.length === 0) return 0
+  const ow = (p) => (Number.isFinite(p?.milesOneWay) ? Math.max(0, p.milesOneWay) : 0)
+  let m = ow(places[0])
+  for (let i = 1; i < places.length; i++) {
+    m += Math.abs(ow(places[i]) - ow(places[i - 1]))
+  }
+  m += ow(places[places.length - 1])
+  return m
+}
+
+/**
+ * Mileage from place names / tokens, grouped by "then" or "+" between consecutive matches.
+ * Unlinked matches each count as their own home → place → home run (2× one-way).
  */
 export function computeTripMileageForText(text) {
-  const chunks = scanTripLogChunks(text)
+  const s = String(text || '')
+  const chunks = scanTripLogChunks(s)
+  /** @type {{ place: object, start: number, end: number }[]} */
+  const hits = []
+  for (const c of chunks) {
+    if ((c.type === 'place' || c.type === 'token') && c.place && typeof c.start === 'number') {
+      hits.push({ place: c.place, start: c.start, end: c.end })
+    }
+  }
+  if (hits.length === 0) {
+    return { totalMiles: 0, reimbursement: 0, rows: [] }
+  }
+
+  const groups = []
+  let i = 0
+  while (i < hits.length) {
+    const group = [hits[i]]
+    let last = hits[i]
+    let j = i + 1
+    while (j < hits.length) {
+      const gap = s.slice(last.end, hits[j].start)
+      if (!isConnectorGapBetweenPlaces(gap)) break
+      group.push(hits[j])
+      last = hits[j]
+      j++
+    }
+    groups.push(group)
+    i = j
+  }
+
   let totalMiles = 0
   const rows = []
-  for (const c of chunks) {
-    if ((c.type === 'place' || c.type === 'token') && c.place) {
-      const milesRt = c.place.milesOneWay * 2
-      totalMiles += milesRt
-      rows.push({ placeId: c.place.id, label: c.place.label, miles: milesRt })
-    }
+  for (const g of groups) {
+    const places = g.map((h) => h.place)
+    const miles = runMilesForPlaceChain(places)
+    totalMiles += miles
+    rows.push({
+      placeId: places.map((p) => p.id).join('|'),
+      label: places.map((p) => p.label).join(' → '),
+      miles,
+    })
   }
   const reimbursement = Math.round(totalMiles * MILE_RATE * 100) / 100
   return { totalMiles, reimbursement, rows }

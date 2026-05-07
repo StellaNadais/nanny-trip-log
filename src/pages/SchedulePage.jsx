@@ -5,6 +5,8 @@ import { monthGrid, WEEKDAYS, isSameDay } from '../utils/calendarMonth'
 import { useBookings } from '../hooks/useBookings'
 import { bookingOccupiesCalendarSlot } from '../utils/bookingCalendar'
 import { expandBookingCalendarDates, formatCareBookingWindow, bookingEndMs } from '../utils/bookingRange'
+import { isWeeklyReceiptBusinessHours } from '../utils/receiptWindowMode'
+import { receiptPagePath } from '../utils/receiptHref'
 
 function todayISO() {
   return toISODateLocal(new Date())
@@ -72,6 +74,8 @@ export default function SchedulePage() {
       })
   }, [bookings])
 
+  const quickReceiptTo = useMemo(() => receiptPagePath(bookings), [bookings])
+
   const [carouselIndex, setCarouselIndex] = useState(0)
   const [enterAnim, setEnterAnim] = useState(null)
   const [requestsDockOpen, setRequestsDockOpen] = useState(false)
@@ -131,14 +135,15 @@ export default function SchedulePage() {
   }
 
   return (
-    <div className="page page--calendar page--schedule">
+    <div className="page page--calendar page--schedule work-ui">
       <div className="page__badge" aria-hidden>
         2
       </div>
-      <header className="schedule__head">
+      <header className="schedule__head schedule-workspace-head">
         <Link to="/" className="page-back page-back--ghost">
           ← Home
         </Link>
+        <p className="schedule-workspace-head__eyebrow">Scheduling workspace</p>
         <div className="schedule__title-row">
           <h1
             className="schedule__title schedule__title--hover-tip"
@@ -202,7 +207,7 @@ export default function SchedulePage() {
               aria-labelledby="schedule-requested-dates-title"
             >
               <h2 id="schedule-requested-dates-title" className="schedule-requests-dock__title">
-                Requested dates
+                Request queue
               </h2>
               {upcoming.length === 0 ? (
                 <p className="muted">No requested dates yet. Share your parent booking link when you’re ready.</p>
@@ -312,6 +317,10 @@ export default function SchedulePage() {
             </div>
           </div>
         </div>
+        <p className="schedule-workspace-head__sub muted">
+          Families submit through your shared booking link. Open <strong>Requests</strong> to accept or decline each
+          booking; your month view highlights confirmed days.
+        </p>
         {requestsDockOpen ? (
           <button
             type="button"
@@ -325,16 +334,16 @@ export default function SchedulePage() {
         </p>
       </header>
 
-      <div className="book-legend" aria-hidden>
+      <div className="book-legend book-legend--work" aria-hidden>
         <span className="book-legend__item">
-          <span className="book-legend__dot book-legend__dot--booked" /> Booked
+          <span className="book-legend__dot book-legend__dot--booked" /> Has booking
         </span>
         <span className="book-legend__item">
           <span className="book-legend__dot book-legend__dot--today" /> Today
         </span>
       </div>
 
-      <div className="calendar__panel calendar__panel--book">
+      <div className="calendar__panel calendar__panel--book work-ui__calendar-card">
         <div className="calendar__nav">
           <button type="button" className="btn btn--ghost" onClick={prevMonth}>
             ‹
@@ -426,9 +435,17 @@ export default function SchedulePage() {
       ) : null}
 
       <div className="calendar__footer schedule__footer">
-        <Link to="/hub" className="btn btn--primary calendar__next">
+        <Link to="/hub" className="btn btn--primary btn--work-primary calendar__next">
           Continue to tools
         </Link>
+        {!isWeeklyReceiptBusinessHours() ? (
+          <Link
+            to={quickReceiptTo}
+            className="btn btn--ghost schedule__footer-receipt"
+          >
+            Receipt →
+          </Link>
+        ) : null}
       </div>
     </div>
   )

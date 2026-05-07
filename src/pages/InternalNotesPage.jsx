@@ -66,8 +66,9 @@ export default function InternalNotesPage() {
                 <div className="notes__row-main">
                   <span className="notes__date">{formatShiftDate(row.dateISO)}</span>
                   <span className="notes__times">
-                    <span className="notes__tag">In {row.arrival}</span>
-                    <span className="notes__tag">Out {row.end}</span>
+                    {row.arrival ? <span className="notes__tag">In {row.arrival}</span> : null}
+                    {row.end ? <span className="notes__tag">Out {row.end}</span> : null}
+                    {!row.arrival && !row.end ? <span className="notes__tag notes__tag--muted">—</span> : null}
                   </span>
                 </div>
                 <span className="notes__saved muted">Logged {formatSavedAt(row.savedAt)}</span>

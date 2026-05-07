@@ -2,7 +2,7 @@
 export const MILE_RATE = 0.54
 
 /**
- * region: oakland → monospace | moraga → italic | lafayette → bold + monospace
+ * region: oakland | moraga | lafayette | custom — colors on trip highlight layer only
  * aliases: optional shorter phrases matched in diary-style text (case-insensitive, word boundaries)
  */
 export const PLACES = [
@@ -53,6 +53,13 @@ export const PLACES = [
     aliases: ['Moraga Commons'],
     region: 'moraga',
     milesOneWay: 2.5,
+  },
+  {
+    id: 'moraga-learn-play',
+    label: 'Learn and Play School',
+    aliases: ['Learn and Play', 'Learn & Play School', '1695 Canyon'],
+    region: 'moraga',
+    milesOneWay: 3, // 1695 Canyon Rd, Moraga CA 94556 — tune vs your home base
   },
   {
     id: 'laf-lib',

@@ -16,6 +16,7 @@ import EventsPage from './pages/EventsPage'
 import CaregiverFlowLayout from './layouts/CaregiverFlowLayout'
 import './App.css'
 import './pages/pages.css'
+import './pages/work-ui.css'
 
 export default function App() {
   return (

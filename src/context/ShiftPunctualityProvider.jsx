@@ -37,6 +37,34 @@ export function ShiftPunctualityProvider({ children }) {
     ])
   }, [])
 
+  /** Merge arrival/end for the same calendar day (clock-in and clock-out at real time). */
+  const upsertShiftDay = useCallback((partial) => {
+    const { dateISO, arrival, end } = partial
+    if (!dateISO) return
+    setEntries((prev) => {
+      const i = prev.findIndex((e) => e.dateISO === dateISO)
+      const savedAt = new Date().toISOString()
+      if (i >= 0) {
+        const row = { ...prev[i], savedAt }
+        if (arrival !== undefined) row.arrival = arrival
+        if (end !== undefined) row.end = end
+        const next = [...prev]
+        next[i] = row
+        return next
+      }
+      return [
+        {
+          id: newId(),
+          savedAt,
+          dateISO,
+          arrival: arrival ?? '',
+          end: end ?? '',
+        },
+        ...prev,
+      ]
+    })
+  }, [])
+
   /**
    * @returns {string | null} error message, or null on success
    */
@@ -75,7 +103,7 @@ export function ShiftPunctualityProvider({ children }) {
     setTimeOffEntries((prev) => prev.filter((e) => e.id !== id))
   }, [])
 
-  const value = { entries, addEntry, timeOffEntries, addTimeOffEntry, removeTimeOffEntry }
+  const value = { entries, addEntry, upsertShiftDay, timeOffEntries, addTimeOffEntry, removeTimeOffEntry }
 
   return (
     <ShiftPunctualityContext.Provider value={value}>

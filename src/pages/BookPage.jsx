@@ -178,11 +178,12 @@ export default function BookPage() {
   }
 
   return (
-    <div className="page page--calendar page--book page--parents-only">
-      <header className="calendar__head calendar__head--book">
+    <div className="page page--calendar page--book page--parents-only work-ui">
+      <header className="calendar__head calendar__head--book book-workspace-head">
         <p className="book-parents-banner" role="note">
-          This page is for parents and families only.
+          Parent & family portal · this link is not the caregiver app
         </p>
+        <p className="book-workspace-head__eyebrow">Availability request</p>
         <h1
           className="calendar__title calendar__title--book-tip"
           id="book-page-heading"
@@ -191,14 +192,18 @@ export default function BookPage() {
         >
           Book a gig
         </h1>
+        <p className="book-workspace-head__sub muted">
+          Choose a start date, set shift hours (including overnights), and send your details—your caregiver reviews
+          everything in their schedule.
+        </p>
         <p id="book-page-intro" className="sr-only">
           {BOOK_GIG_HEADING_TIP} Dots show days that already have a request.
         </p>
       </header>
 
-      <div className="book-legend" role="group" aria-label="Calendar legend">
+      <div className="book-legend book-legend--work" role="group" aria-label="Calendar legend">
         <span className="book-legend__item">
-          <span className="book-legend__dot book-legend__dot--booked" aria-hidden /> Has request(s)
+          <span className="book-legend__dot book-legend__dot--booked" aria-hidden /> Request on file
         </span>
         <span className="book-legend__item">
           <span className="book-legend__dot book-legend__dot--today" aria-hidden /> Today
@@ -214,7 +219,7 @@ export default function BookPage() {
         </p>
       ) : null}
 
-      <div className="calendar__panel calendar__panel--book">
+      <div className="calendar__panel calendar__panel--book work-ui__calendar-card">
         <div className="calendar__nav">
           <button type="button" className="btn btn--ghost" onClick={prevMonth}>
             ‹
@@ -306,9 +311,9 @@ export default function BookPage() {
           <div className="book-modal__sheet">
             <div className="book-modal__head">
               <div className="book-modal__head-text">
-                <p className="book-modal__eyebrow">Gig request</p>
+                <p className="book-modal__eyebrow">Booking</p>
                 <h2 id="book-modal-title" className="book-modal__title">
-                  Request a nanny gig
+                  Request details
                 </h2>
                 <p className="book-modal__date">{careDateHeadline}</p>
                 <p className="book-modal__sub muted">
@@ -475,10 +480,10 @@ export default function BookPage() {
                 </button>
                 <button
                   type="submit"
-                  className="btn btn--primary"
+                  className="btn btn--primary btn--work-primary"
                   disabled={careStartIsPast || !timeOk || !kidsOk || !nameOk || !phoneOk}
                 >
-                  Send request
+                  Submit request
                 </button>
               </div>
             </form>
@@ -486,10 +491,10 @@ export default function BookPage() {
         </div>
       ) : null}
 
-      <details className="book-events-details">
+      <details className="book-events-details book-events-details--work">
         <summary className="book-events__summary">
-          <span className="book-events__summary-title">Family-friendly events</span>
-          <span className="book-events__summary-hint muted">Moraga & Oakland ideas</span>
+          <span className="book-events__summary-title">Local events</span>
+          <span className="book-events__summary-hint muted">Moraga & Oakland · reference</span>
         </summary>
         <div className="book-events__panel">
           <p className="muted book-events__lede">

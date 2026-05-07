@@ -9,7 +9,7 @@ import {
 } from '../utils/receiptStorage'
 import { fileToCompressedDataUrl } from '../utils/receiptImage'
 import { addDays, formatWeekRange, startOfWeekMonday, toISODateLocal } from '../utils/dates'
-import { MILE_RATE } from '../data/tripPlaces'
+import { MILE_RATE, PLACES } from '../data/tripPlaces'
 import {
   loadOutingsPlaces,
   saveOutingsPlaces,
@@ -64,9 +64,9 @@ export default function OutingsPage() {
   const [manualNote, setManualNote] = useState('')
   const [mileageRev, setMileageRev] = useState(0)
   const [customPlaces, setCustomPlaces] = useState(() => loadOutingsPlaces())
-  const [placeLabel, setPlaceLabel] = useState('')
   const [placeNickname, setPlaceNickname] = useState('')
-  const [placeMiles, setPlaceMiles] = useState('')
+  const [placeRoundTrip, setPlaceRoundTrip] = useState('')
+  const [catalogTemplateId, setCatalogTemplateId] = useState('')
   const [placeFormErr, setPlaceFormErr] = useState('')
   const [placesDockOpen, setPlacesDockOpen] = useState(false)
   const fileRef = useRef(null)
@@ -89,7 +89,7 @@ export default function OutingsPage() {
 
   const outingsHeadingTip = useMemo(
     () =>
-      `Mileage — tap the Miles control next to the title to add custom locations. Journal & trip log text counts toward the Weekly receipt ($${MILE_RATE}/mi round trip). Receipt extras (photos, parking, tolls…) are per week below.`,
+      `Mileage — tap Add places to save locations with round-trip miles from home (catalog quick-fill available). In journal or trip log, chain stops with “then” or + between names to share one trip. Text counts toward the Weekly receipt ($${MILE_RATE}/mi). Receipt extras are per week below.`,
     []
   )
 
@@ -214,15 +214,23 @@ export default function OutingsPage() {
 
   function addCustomPlace(e) {
     e.preventDefault()
-    const label = placeLabel.trim()
-    const nickname = placeNickname.trim()
-    const miles = parseFloat(String(placeMiles).replace(',', '.'))
+    const catalog = catalogTemplateId ? PLACES.find((x) => x.id === catalogTemplateId) : null
+    const nick = placeNickname.trim()
+    let label
+    let nickname = ''
+    if (catalog) {
+      label = catalog.label
+      nickname = nick
+    } else {
+      label = nick
+    }
+    const rt = parseFloat(String(placeRoundTrip).replace(',', '.'))
     if (!label) {
-      setPlaceFormErr('Add a location name.')
+      setPlaceFormErr('Pick a catalog place or enter a name to match in your journal.')
       return
     }
-    if (!Number.isFinite(miles) || miles < 0) {
-      setPlaceFormErr('Enter one-way miles (0 or more).')
+    if (!Number.isFinite(rt) || rt < 0) {
+      setPlaceFormErr('Enter round-trip miles (0 or more).')
       return
     }
     setPlaceFormErr('')
@@ -232,12 +240,12 @@ export default function OutingsPage() {
         id: uid(),
         label,
         nickname,
-        milesOneWay: Math.round(miles * 100) / 100,
+        milesRoundTrip: Math.round(rt * 100) / 100,
       },
     ])
-    setPlaceLabel('')
     setPlaceNickname('')
-    setPlaceMiles('')
+    setPlaceRoundTrip('')
+    setCatalogTemplateId('')
   }
 
   function removeCustomPlace(id) {
@@ -279,7 +287,7 @@ export default function OutingsPage() {
                       <path d="M12 21.7C17.3 17 20 13 20 10a8 8 0 1 0-16 0c0 3 2.7 6.9 8 11.7z" />
                     </svg>
                   </span>
-                  <span className="outings-places-dock__tab-lbl">Miles</span>
+                  <span className="outings-places-dock__tab-lbl">Add places</span>
                 </>
               )}
             </button>
@@ -294,8 +302,10 @@ export default function OutingsPage() {
                 Mileage locations
               </h2>
               <p className="muted outings__hint">
-                Use the full name and/or a short nickname. Matching words in journal or trip log add{' '}
-                <strong>round-trip</strong> miles (one-way × 2). Names are matched as whole words, case-insensitive.
+                Add round-trip miles from the family&apos;s home. Optional catalog row pre-fills distance. In journal or
+                trip log, put <strong>then</strong> or <strong>+</strong> between saved place names when you drive{' '}
+                A → B without returning home — mileage treats it as one trip: out from home, hops between stops (using
+                each place&apos;s saved distance from home), then back home.
               </p>
               {customPlaces.length > 0 ? (
                 <ul className="outings__places-list">
@@ -306,9 +316,7 @@ export default function OutingsPage() {
                         {p.nickname ? (
                           <span className="muted outings__place-nick">“{p.nickname}”</span>
                         ) : null}
-                        <span className="outings__place-miles muted">
-                          {p.milesOneWay} mi one-way · {p.milesOneWay * 2} mi round trip
-                        </span>
+                        <span className="outings__place-miles muted">{p.milesRoundTrip} mi round trip</span>
                       </div>
                       <button
                         type="button"
@@ -325,38 +333,57 @@ export default function OutingsPage() {
               )}
               <form className="outings__places-form" onSubmit={addCustomPlace}>
                 <label className="field-block">
-                  <span className="field-block__label">Location name</span>
-                  <input
-                    type="text"
+                  <span className="field-block__label">Quick fill from catalog (optional)</span>
+                  <select
                     className="input input--line"
-                    value={placeLabel}
-                    onChange={(e) => setPlaceLabel(e.target.value)}
-                    placeholder="e.g. Golden Gate Park"
-                    autoComplete="off"
-                  />
+                    value={catalogTemplateId}
+                    onChange={(e) => {
+                      const id = e.target.value
+                      setCatalogTemplateId(id)
+                      if (!id) return
+                      const p = PLACES.find((x) => x.id === id)
+                      if (p) {
+                        setPlaceRoundTrip(String(Math.round(p.milesOneWay * 2 * 100) / 100))
+                        setPlaceNickname('')
+                      }
+                    }}
+                  >
+                    <option value="">— Choose a place —</option>
+                    {PLACES.map((p) => (
+                      <option key={p.id} value={p.id}>
+                        {p.label} · {p.milesOneWay * 2} mi round trip
+                      </option>
+                    ))}
+                  </select>
                 </label>
                 <label className="field-block">
-                  <span className="field-block__label">Nickname (optional)</span>
+                  <span className="field-block__label">
+                    {catalogTemplateId ? 'Also match nickname (optional)' : 'Place name (matches in journal)'}
+                  </span>
                   <input
                     type="text"
                     className="input input--line"
                     value={placeNickname}
                     onChange={(e) => setPlaceNickname(e.target.value)}
-                    placeholder="e.g. GGP — also counts in journal"
+                    placeholder={
+                      catalogTemplateId
+                        ? 'e.g. short phrase — extra word match'
+                        : 'e.g. Golden Gate Park — must match what you type'
+                    }
                     autoComplete="off"
                   />
                 </label>
                 <label className="field-block">
-                  <span className="field-block__label">Miles one-way</span>
+                  <span className="field-block__label">Round trip miles (from home)</span>
                   <input
                     type="number"
                     inputMode="decimal"
                     min="0"
                     step="0.1"
                     className="input input--line"
-                    value={placeMiles}
-                    onChange={(e) => setPlaceMiles(e.target.value)}
-                    placeholder="0"
+                    value={placeRoundTrip}
+                    onChange={(e) => setPlaceRoundTrip(e.target.value)}
+                    placeholder="e.g. 12"
                   />
                 </label>
                 {placeFormErr ? (
