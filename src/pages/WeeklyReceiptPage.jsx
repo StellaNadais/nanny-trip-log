@@ -514,8 +514,7 @@ export default function WeeklyReceiptPage() {
         ) : (
           <p className="receipt__mileage-sync muted">
             No mileage for this week yet — type place names in{' '}
-            <Link to="/journal">Kid journal</Link> or Trip log, or add locations on{' '}
-            <Link to="/outings">Outings</Link>; they sync here automatically.
+            <Link to="/journal">Kid journal</Link> or <Link to="/trip-log">Trip log</Link>; they sync here automatically.
           </p>
         )}
 
@@ -621,8 +620,8 @@ export default function WeeklyReceiptPage() {
         <h2 className="receipt__math-title">Totals</h2>
         {!showSummary ? (
           <p className="muted">
-            Enter hours, trip log mileage, or add receipt extras on <Link to="/outings">Outings</Link> to build your
-            receipt.
+            Enter hours, trip log / journal text with place names, or add receipt extras on{' '}
+            <Link to="/outings">Outings</Link> to build your receipt.
           </p>
         ) : (
           <>

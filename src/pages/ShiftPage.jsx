@@ -147,8 +147,8 @@ export default function ShiftPage() {
         <p className="muted shift__lede">
           Pick the week and day like Kid journal, tap arrival and end in the circles. Each side has its own{' '}
           <strong>Log</strong> button that only works on that day, within ±5 minutes of the time you chose—so
-          submissions line up with the real clock. Internal notes keeps your history; paid time off opens under the
-          time picks.
+          submissions line up with the real clock. Internal notes keeps your history; paid time off is at the bottom
+          of this page.
         </p>
       </header>
 
@@ -264,7 +264,39 @@ export default function ShiftPage() {
           </p>
         </fieldset>
 
-        <details className="shift__time-off-details shift__time-off-details--below-times">
+        {flash ? (
+          <p
+            className={`shift__flash ${
+              flash.startsWith('Arrival') || flash.startsWith('End saved') || flash.startsWith('Today')
+                ? 'shift__flash--ok'
+                : ''
+            }`}
+            role="status"
+          >
+            {flash}
+          </p>
+        ) : null}
+
+        <div className="shift__submit-row">
+          <button
+            type="button"
+            className={`btn btn--primary shift__submit-btn shift__submit-btn--arrival ${clock.canLogArrival ? 'shift__submit-btn--live' : ''}`}
+            disabled={!clock.canLogArrival}
+            onClick={logArrival}
+          >
+            Log arrival
+          </button>
+          <button
+            type="button"
+            className={`btn btn--primary shift__submit-btn shift__submit-btn--end ${clock.canLogEnd ? 'shift__submit-btn--live' : ''}`}
+            disabled={!clock.canLogEnd}
+            onClick={logEnd}
+          >
+            Log end
+          </button>
+        </div>
+
+        <details className="shift__time-off-details shift__time-off-details--footer">
           <summary className="shift__time-off-summary">
             <span className="shift__time-off-summary-title">Paid vacation & paid sick days</span>
             <span className="shift__time-off-summary-stats muted">
@@ -381,38 +413,6 @@ export default function ShiftPage() {
             )}
           </div>
         </details>
-
-        {flash ? (
-          <p
-            className={`shift__flash ${
-              flash.startsWith('Arrival') || flash.startsWith('End saved') || flash.startsWith('Today')
-                ? 'shift__flash--ok'
-                : ''
-            }`}
-            role="status"
-          >
-            {flash}
-          </p>
-        ) : null}
-
-        <div className="shift__submit-row">
-          <button
-            type="button"
-            className={`btn btn--primary shift__submit-btn shift__submit-btn--arrival ${clock.canLogArrival ? 'shift__submit-btn--live' : ''}`}
-            disabled={!clock.canLogArrival}
-            onClick={logArrival}
-          >
-            Log arrival
-          </button>
-          <button
-            type="button"
-            className={`btn btn--primary shift__submit-btn shift__submit-btn--end ${clock.canLogEnd ? 'shift__submit-btn--live' : ''}`}
-            disabled={!clock.canLogEnd}
-            onClick={logEnd}
-          >
-            Log end
-          </button>
-        </div>
       </div>
 
       <div className="shift__links">

@@ -78,3 +78,29 @@ export const PLACES = [
 ]
 
 export const PLACE_BY_ID = Object.fromEntries(PLACES.map((p) => [p.id, p]))
+
+/**
+ * Exact match (trimmed, case-insensitive) to a frequent location label or alias.
+ * @returns {(typeof PLACES)[number] | null}
+ */
+export function findBuiltInPlaceByNameOrAlias(text) {
+  const q = String(text ?? '').trim().toLowerCase()
+  if (!q) return null
+  for (const p of PLACES) {
+    if (p.label.trim().toLowerCase() === q) return p
+    for (const a of p.aliases || []) {
+      if (String(a).trim().toLowerCase() === q) return p
+    }
+  }
+  return null
+}
+
+/** True if this string is already a built-in frequent location (label or alias). */
+export function isFrequentPlaceNameOrAlias(text) {
+  return findBuiltInPlaceByNameOrAlias(text) != null
+}
+
+export function roundTripMilesForPlace(p) {
+  if (!p || !Number.isFinite(p.milesOneWay)) return 0
+  return Math.round(p.milesOneWay * 2 * 100) / 100
+}

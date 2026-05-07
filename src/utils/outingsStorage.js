@@ -1,4 +1,8 @@
+import { PLACES } from '../data/tripPlaces'
+
 const KEY = 'nanny-outings-places-v1'
+
+export const OUTINGS_UPDATED_EVENT = 'nanny-outings-updated'
 
 /**
  * @typedef {{ id: string, label: string, nickname: string, milesRoundTrip: number }} OutingPlace
@@ -23,13 +27,29 @@ function normalizeRow(r) {
   }
 }
 
+/** Drop custom rows that duplicate app-wide frequent places (now carried in tripPlaces). */
+function pruneCustomPlacesAgainstBuiltIn(places) {
+  const frequentLabels = new Set(PLACES.map((p) => p.label.trim().toLowerCase()))
+  return places.filter((r) => !frequentLabels.has(String(r.label || '').trim().toLowerCase()))
+}
+
 export function loadOutingsPlaces() {
   try {
     const raw = localStorage.getItem(KEY)
     if (!raw) return []
     const data = JSON.parse(raw)
     if (!Array.isArray(data)) return []
-    return data.map(normalizeRow).filter(Boolean)
+    const list = data.map(normalizeRow).filter(Boolean)
+    const pruned = pruneCustomPlacesAgainstBuiltIn(list)
+    if (pruned.length !== list.length) {
+      try {
+        localStorage.setItem(KEY, JSON.stringify(pruned))
+      } catch {
+        /* quota */
+      }
+      window.dispatchEvent(new Event(OUTINGS_UPDATED_EVENT))
+    }
+    return pruned
   } catch {
     return []
   }
@@ -37,14 +57,14 @@ export function loadOutingsPlaces() {
 
 /** @param {OutingPlace[]} places */
 export function saveOutingsPlaces(places) {
+  const list = Array.isArray(places) ? places : []
+  const pruned = pruneCustomPlacesAgainstBuiltIn(list)
   try {
-    localStorage.setItem(KEY, JSON.stringify(places))
+    localStorage.setItem(KEY, JSON.stringify(pruned))
   } catch {
     /* quota */
   }
 }
-
-export const OUTINGS_UPDATED_EVENT = 'nanny-outings-updated'
 
 export function notifyOutingsUpdated() {
   window.dispatchEvent(new Event(OUTINGS_UPDATED_EVENT))

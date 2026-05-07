@@ -79,6 +79,8 @@ export default function SchedulePage() {
   const [carouselIndex, setCarouselIndex] = useState(0)
   const [enterAnim, setEnterAnim] = useState(null)
   const [requestsDockOpen, setRequestsDockOpen] = useState(false)
+  /** Month grid fold: collapsed surfaces upcoming gigs below with a smooth transition. */
+  const [calendarExpanded, setCalendarExpanded] = useState(true)
 
   useEffect(() => {
     if (upcoming.length === 0) {
@@ -334,74 +336,105 @@ export default function SchedulePage() {
         </p>
       </header>
 
-      <div className="book-legend book-legend--work" aria-hidden>
-        <span className="book-legend__item">
-          <span className="book-legend__dot book-legend__dot--booked" /> Has booking
-        </span>
-        <span className="book-legend__item">
-          <span className="book-legend__dot book-legend__dot--today" /> Today
-        </span>
-      </div>
+      <div className="schedule__calendar-fold">
+        <button
+          type="button"
+          className="schedule__calendar-fold__toggle"
+          onClick={() => setCalendarExpanded((v) => !v)}
+          aria-expanded={calendarExpanded}
+          aria-controls="schedule-calendar-fold-body"
+          id="schedule-calendar-fold-label"
+        >
+          <span className="schedule__calendar-fold__chevron" aria-hidden>
+            {calendarExpanded ? '▼' : '▶'}
+          </span>
+          <span className="calendar__month schedule__calendar-fold__month">{title}</span>
+          <span className="schedule__calendar-fold__hint muted">
+            {calendarExpanded ? 'Fold month · upcoming below' : 'Open month view'}
+          </span>
+        </button>
 
-      <div className="calendar__panel calendar__panel--book work-ui__calendar-card">
-        <div className="calendar__nav">
-          <button type="button" className="btn btn--ghost" onClick={prevMonth}>
-            ‹
-          </button>
-          <span className="calendar__month">{title}</span>
-          <button type="button" className="btn btn--ghost" onClick={nextMonth}>
-            ›
-          </button>
-        </div>
-        <div className="calendar__weekdays" aria-hidden>
-          {WEEKDAYS.map((w) => (
-            <span key={w} className="calendar__wd">
-              {w}
-            </span>
-          ))}
-        </div>
-        <div className="calendar__grid calendar__grid--book" role="grid" aria-label="Gig schedule">
-          {cells.map((dayNum, i) => {
-            if (dayNum == null) {
-              return (
-                <div
-                  key={i}
-                  className="calendar__cell calendar__cell--empty"
-                  role="gridcell"
-                />
-              )
-            }
-            const iso = dateISOFromParts(y, m, dayNum)
-            const dayBookings = bookingsByDate[iso] ?? []
-            const isBooked = dayBookings.length > 0
-            const isToday = isSameDay(today, new Date(y, m, dayNum))
-            const isPast = iso < todayISO()
+        <div
+          id="schedule-calendar-fold-body"
+          role="region"
+          aria-labelledby="schedule-calendar-fold-label"
+          className={`schedule__calendar-fold__body ${calendarExpanded ? '' : 'schedule__calendar-fold__body--collapsed'}`}
+        >
+          <div className="schedule__calendar-fold__inner">
+            <div className="book-legend book-legend--work" aria-hidden>
+              <span className="book-legend__item">
+                <span className="book-legend__dot book-legend__dot--booked" /> Has booking
+              </span>
+              <span className="book-legend__item">
+                <span className="book-legend__dot book-legend__dot--today" /> Today
+              </span>
+            </div>
 
-            return (
-              <div
-                key={i}
-                role="gridcell"
-                aria-label={`${dayNum}${isBooked ? `, ${dayBookings.length} booking${dayBookings.length > 1 ? 's' : ''}` : ''}`}
-                className={`calendar__cell ${isToday ? 'calendar__cell--today' : ''} ${isBooked ? 'calendar__cell--booked' : ''} ${isPast ? 'calendar__cell--past' : ''}`}
-              >
-                <span className="calendar__cell-num">{dayNum}</span>
-                {isBooked ? (
-                  <span className="calendar__booked-mark" aria-hidden>
-                    {dayBookings.length > 1 ? (
-                      dayBookings.length
-                    ) : (
-                      <span className="calendar__booked-dot" />
-                    )}
-                  </span>
-                ) : null}
+            <div className="calendar__panel calendar__panel--book work-ui__calendar-card">
+              <div className="calendar__nav">
+                <button type="button" className="btn btn--ghost" onClick={prevMonth}>
+                  ‹
+                </button>
+                <span className="calendar__month">{title}</span>
+                <button type="button" className="btn btn--ghost" onClick={nextMonth}>
+                  ›
+                </button>
               </div>
-            )
-          })}
+              <div className="calendar__weekdays" aria-hidden>
+                {WEEKDAYS.map((w) => (
+                  <span key={w} className="calendar__wd">
+                    {w}
+                  </span>
+                ))}
+              </div>
+              <div className="calendar__grid calendar__grid--book" role="grid" aria-label="Gig schedule">
+                {cells.map((dayNum, i) => {
+                  if (dayNum == null) {
+                    return (
+                      <div
+                        key={i}
+                        className="calendar__cell calendar__cell--empty"
+                        role="gridcell"
+                      />
+                    )
+                  }
+                  const iso = dateISOFromParts(y, m, dayNum)
+                  const dayBookings = bookingsByDate[iso] ?? []
+                  const isBooked = dayBookings.length > 0
+                  const isTodayCell = isSameDay(today, new Date(y, m, dayNum))
+                  const isPast = iso < todayISO()
+
+                  return (
+                    <div
+                      key={i}
+                      role="gridcell"
+                      aria-label={`${dayNum}${isBooked ? `, ${dayBookings.length} booking${dayBookings.length > 1 ? 's' : ''}` : ''}`}
+                      className={`calendar__cell ${isTodayCell ? 'calendar__cell--today' : ''} ${isBooked ? 'calendar__cell--booked' : ''} ${isPast ? 'calendar__cell--past' : ''}`}
+                    >
+                      <span className="calendar__cell-num">{dayNum}</span>
+                      {isBooked ? (
+                        <span className="calendar__booked-mark" aria-hidden>
+                          {dayBookings.length > 1 ? (
+                            dayBookings.length
+                          ) : (
+                            <span className="calendar__booked-dot" />
+                          )}
+                        </span>
+                      ) : null}
+                    </div>
+                  )
+                })}
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
       {acceptedUpcoming.length > 0 ? (
-        <section className="schedule-accepted-gigs" aria-labelledby="schedule-accepted-gigs-title">
+        <section
+          className={`schedule-accepted-gigs ${calendarExpanded ? '' : 'schedule-accepted-gigs--revealed'}`}
+          aria-labelledby="schedule-accepted-gigs-title"
+        >
           <h2 id="schedule-accepted-gigs-title" className="schedule-accepted-gigs__title">
             Upcoming gigs
           </h2>
@@ -435,8 +468,9 @@ export default function SchedulePage() {
       ) : null}
 
       <div className="calendar__footer schedule__footer">
-        <Link to="/hub" className="btn btn--primary btn--work-primary calendar__next">
-          Continue to tools
+        <Link to="/hub" className="schedule__flow-hint schedule__flow-hint--link muted">
+          Swipe left; or scroll down once more when you are already at the bottom; or tap here for Tools. Right arrow
+          key also works.
         </Link>
         {!isWeeklyReceiptBusinessHours() ? (
           <Link

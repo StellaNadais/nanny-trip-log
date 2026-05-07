@@ -1,9 +1,13 @@
-import { useEffect, useId } from 'react'
+import { useEffect, useId, useMemo } from 'react'
 import TripPlacesField from './TripPlacesField'
 
-const fields = [
-  { key: 'notes', label: 'Day notes for parents', rows: 4, hint: 'Evening story, sleep times, mood' },
-]
+/** Merge trip log + notes into one field for editing; persist as notes only so mileage math still runs on the same text. */
+function mergedDayNotes(d) {
+  const t = (d?.tripLog || '').trim()
+  const n = d?.notes || ''
+  if (t && n) return `${t}\n\n${n}`
+  return t || n
+}
 
 export function DayLogPanel({ iso, day, onChange, ensureDay }) {
   useEffect(() => {
@@ -11,43 +15,31 @@ export function DayLogPanel({ iso, day, onChange, ensureDay }) {
   }, [iso, ensureDay])
 
   const d = day || {}
-  const tripFieldId = useId()
-  const tripLabelId = `${tripFieldId}-label`
+  const fieldId = useId()
+  const labelId = `${fieldId}-label`
 
-  const tripLog = d.tripLog || ''
+  const displayValue = useMemo(() => mergedDayNotes(d), [d.tripLog, d.notes])
 
   return (
     <div className="day-panel">
       <div className="day-panel__grid">
         <div className="field-block field-block--trip-log">
-          <span id={tripLabelId} className="field-block__label">
-            Outings & locations
+          <span id={labelId} className="field-block__label">
+            Day notes &amp; outings
           </span>
           <p className="trip-log__type-hint muted">
-            Same as <strong>About today</strong> in Kid journal: styled text counts toward mileage on
-            Weekly receipt (Trip log + journal combined per day).
+            Mood, story, sleep — and <strong>place names</strong> for mileage (same as Kid journal). Use{' '}
+            <strong>then</strong> or <strong>+</strong> between stops for one trip. Weekly receipt totals trip log +
+            journal together per day.
           </p>
           <TripPlacesField
-            id={tripFieldId}
-            value={tripLog}
-            onChange={(v) => onChange(iso, { tripLog: v })}
-            aria-labelledby={tripLabelId}
-            placeholder="e.g. Morning at Moraga Library, afternoon Lafayette Library…"
+            id={fieldId}
+            value={displayValue}
+            onChange={(v) => onChange(iso, { tripLog: '', notes: v })}
+            aria-labelledby={labelId}
+            placeholder="e.g. Great day — morning Moraga Library, afternoon Lafayette Library…"
           />
         </div>
-
-        {fields.map(({ key, label, rows, hint }) => (
-          <label key={key} className="field-block">
-            <span className="field-block__label">{label}</span>
-            <textarea
-              className="input input--area"
-              rows={rows}
-              value={d[key] || ''}
-              placeholder={hint}
-              onChange={(e) => onChange(iso, { [key]: e.target.value })}
-            />
-          </label>
-        ))}
       </div>
     </div>
   )
