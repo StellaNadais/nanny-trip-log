@@ -54,6 +54,22 @@
   border-color: #e2e8f0;
 }
 
+.work-ui .schedule-flip__back-top {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 6px 8px;
+  margin-bottom: 10px;
+}
+
+.work-ui .schedule-flip__back-top .btn--ghost {
+  border-radius: 8px;
+  border: 1px solid transparent;
+  color: #334155;
+  font-weight: 600;
+}
+
+
 .work-ui .calendar__month {
   font-weight: 600;
   font-size: 0.9375rem;
@@ -109,13 +125,21 @@
   color: #2563eb;
 }
 
-.book-workspace-head__eyebrow,
-.schedule-workspace-head__eyebrow {
+.book-workspace-head__eyebrow {
   margin: 0 0 4px;
   font-size: 0.6875rem;
   font-weight: 600;
   letter-spacing: 0.06em;
   text-transform: uppercase;
+  color: #64748b;
+}
+
+.schedule-workspace-head__eyebrow {
+  margin: 0 0 4px;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: none;
   color: #64748b;
 }
 
@@ -332,6 +356,13 @@
   font-size: 1rem;
   font-weight: 600;
   color: #0f172a;
+}
+
+.work-ui .schedule-flip__back-heading {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #0f172a;
+  letter-spacing: -0.02em;
 }
 
 .work-ui .schedule-accepted-gigs {

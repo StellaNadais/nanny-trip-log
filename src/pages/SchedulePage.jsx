@@ -5,8 +5,6 @@ import { monthGrid, WEEKDAYS, isSameDay } from '../utils/calendarMonth'
 import { useBookings } from '../hooks/useBookings'
 import { bookingOccupiesCalendarSlot } from '../utils/bookingCalendar'
 import { expandBookingCalendarDates, formatCareBookingWindow, bookingEndMs } from '../utils/bookingRange'
-import { isWeeklyReceiptBusinessHours } from '../utils/receiptWindowMode'
-import { receiptPagePath } from '../utils/receiptHref'
 
 function todayISO() {
   return toISODateLocal(new Date())
@@ -23,6 +21,11 @@ function gigResponseStatus(b) {
 
 const SCHEDULE_HEADING_TIP =
   'After families submit requests through the parent-only link you share, those dates show on the calendar. Tap Requests next to the title to review requests — accept or decline each one.'
+
+const SCHEDULE_EYEBROW_TOOLTIP =
+  'Families submit through your shared booking link. Open Requests to accept or decline each booking; your month view highlights confirmed days.'
+
+const SCHEDULE_PAGE_INTRO_TEXT = `${SCHEDULE_HEADING_TIP} ${SCHEDULE_EYEBROW_TOOLTIP}`
 
 /**
  * Caregiver schedule (page 2): requested dates after families book via /book.
@@ -74,13 +77,11 @@ export default function SchedulePage() {
       })
   }, [bookings])
 
-  const quickReceiptTo = useMemo(() => receiptPagePath(bookings), [bookings])
-
   const [carouselIndex, setCarouselIndex] = useState(0)
   const [enterAnim, setEnterAnim] = useState(null)
   const [requestsDockOpen, setRequestsDockOpen] = useState(false)
-  /** Month grid fold: collapsed surfaces upcoming gigs below with a smooth transition. */
-  const [calendarExpanded, setCalendarExpanded] = useState(true)
+  /** Schedule “card”: month grid (front) flips to upcoming gigs list (back). */
+  const [scheduleCardListFace, setScheduleCardListFace] = useState(false)
 
   useEffect(() => {
     if (upcoming.length === 0) {
@@ -145,7 +146,13 @@ export default function SchedulePage() {
         <Link to="/" className="page-back page-back--ghost">
           ← Home
         </Link>
-        <p className="schedule-workspace-head__eyebrow">Scheduling workspace</p>
+        <p
+          className="schedule-workspace-head__eyebrow schedule-workspace-head__eyebrow--hover-tip"
+          data-tooltip={SCHEDULE_EYEBROW_TOOLTIP}
+          tabIndex={0}
+        >
+          Scheduling workspace
+        </p>
         <div className="schedule__title-row">
           <h1
             className="schedule__title schedule__title--hover-tip"
@@ -319,10 +326,6 @@ export default function SchedulePage() {
             </div>
           </div>
         </div>
-        <p className="schedule-workspace-head__sub muted">
-          Families submit through your shared booking link. Open <strong>Requests</strong> to accept or decline each
-          booking; your month view highlights confirmed days.
-        </p>
         {requestsDockOpen ? (
           <button
             type="button"
@@ -332,154 +335,159 @@ export default function SchedulePage() {
           />
         ) : null}
         <p id="schedule-page-intro" className="sr-only">
-          {SCHEDULE_HEADING_TIP}
+          {SCHEDULE_PAGE_INTRO_TEXT}
         </p>
       </header>
 
-      <div className="schedule__calendar-fold">
-        <button
-          type="button"
-          className="schedule__calendar-fold__toggle"
-          onClick={() => setCalendarExpanded((v) => !v)}
-          aria-expanded={calendarExpanded}
-          aria-controls="schedule-calendar-fold-body"
-          id="schedule-calendar-fold-label"
-        >
-          <span className="schedule__calendar-fold__chevron" aria-hidden>
-            {calendarExpanded ? '▼' : '▶'}
-          </span>
-          <span className="calendar__month schedule__calendar-fold__month">{title}</span>
-          <span className="schedule__calendar-fold__hint muted">
-            {calendarExpanded ? 'Fold month · upcoming below' : 'Open month view'}
-          </span>
-        </button>
+      <div className="book-legend book-legend--work" aria-hidden>
+        <span className="book-legend__item">
+          <span className="book-legend__dot book-legend__dot--booked" /> Has booking
+        </span>
+        <span className="book-legend__item">
+          <span className="book-legend__dot book-legend__dot--today" /> Today
+        </span>
+      </div>
 
-        <div
-          id="schedule-calendar-fold-body"
-          role="region"
-          aria-labelledby="schedule-calendar-fold-label"
-          className={`schedule__calendar-fold__body ${calendarExpanded ? '' : 'schedule__calendar-fold__body--collapsed'}`}
-        >
-          <div className="schedule__calendar-fold__inner">
-            <div className="book-legend book-legend--work" aria-hidden>
-              <span className="book-legend__item">
-                <span className="book-legend__dot book-legend__dot--booked" /> Has booking
-              </span>
-              <span className="book-legend__item">
-                <span className="book-legend__dot book-legend__dot--today" /> Today
-              </span>
-            </div>
+      <div className="schedule-flip">
+        <div className="schedule-flip__scene">
+          <div
+            className={`schedule-flip__inner${scheduleCardListFace ? ' schedule-flip__inner--list' : ''}`}
+            aria-live="polite"
+          >
+            <div
+              className="schedule-flip__face schedule-flip__face--front calendar__panel calendar__panel--book work-ui__calendar-card"
+              aria-hidden={scheduleCardListFace}
+            >
+              <div className="schedule-flip__calendar-main">
+                <div className="schedule-flip__calendar-top">
+                  <div className="calendar__nav">
+                    <button type="button" className="btn btn--ghost" onClick={prevMonth}>
+                      ‹
+                    </button>
+                    <span className="calendar__month">{title}</span>
+                    <button type="button" className="btn btn--ghost" onClick={nextMonth}>
+                      ›
+                    </button>
+                  </div>
+                </div>
+                <div className="schedule-flip__upcoming-slot">
+                  <button
+                    type="button"
+                    className="schedule-flip__upcoming-strip schedule-flip__upcoming-strip--gigs"
+                    onClick={() => setScheduleCardListFace(true)}
+                    aria-label="Open upcoming gigs list"
+                  >
+                    Upcoming gigs
+                  </button>
+                </div>
+                <div className="calendar__weekdays" aria-hidden>
+                  {WEEKDAYS.map((w) => (
+                    <span key={w} className="calendar__wd">
+                      {w}
+                    </span>
+                  ))}
+                </div>
+                <div className="calendar__grid calendar__grid--book" role="grid" aria-label="Gig schedule">
+                  {cells.map((dayNum, i) => {
+                    if (dayNum == null) {
+                      return (
+                        <div
+                          key={i}
+                          className="calendar__cell calendar__cell--empty"
+                          role="gridcell"
+                        />
+                      )
+                    }
+                    const iso = dateISOFromParts(y, m, dayNum)
+                    const dayBookings = bookingsByDate[iso] ?? []
+                    const isBooked = dayBookings.length > 0
+                    const isTodayCell = isSameDay(today, new Date(y, m, dayNum))
+                    const isPast = iso < todayISO()
 
-            <div className="calendar__panel calendar__panel--book work-ui__calendar-card">
-              <div className="calendar__nav">
-                <button type="button" className="btn btn--ghost" onClick={prevMonth}>
-                  ‹
-                </button>
-                <span className="calendar__month">{title}</span>
-                <button type="button" className="btn btn--ghost" onClick={nextMonth}>
-                  ›
-                </button>
-              </div>
-              <div className="calendar__weekdays" aria-hidden>
-                {WEEKDAYS.map((w) => (
-                  <span key={w} className="calendar__wd">
-                    {w}
-                  </span>
-                ))}
-              </div>
-              <div className="calendar__grid calendar__grid--book" role="grid" aria-label="Gig schedule">
-                {cells.map((dayNum, i) => {
-                  if (dayNum == null) {
                     return (
                       <div
                         key={i}
-                        className="calendar__cell calendar__cell--empty"
                         role="gridcell"
-                      />
+                        aria-label={`${dayNum}${isBooked ? `, ${dayBookings.length} booking${dayBookings.length > 1 ? 's' : ''}` : ''}`}
+                        className={`calendar__cell ${isTodayCell ? 'calendar__cell--today' : ''} ${isBooked ? 'calendar__cell--booked' : ''} ${isPast ? 'calendar__cell--past' : ''}`}
+                      >
+                        <span className="calendar__cell-num">{dayNum}</span>
+                        {isBooked ? (
+                          <span className="calendar__booked-mark" aria-hidden>
+                            {dayBookings.length > 1 ? (
+                              dayBookings.length
+                            ) : (
+                              <span className="calendar__booked-dot" />
+                            )}
+                          </span>
+                        ) : null}
+                      </div>
                     )
-                  }
-                  const iso = dateISOFromParts(y, m, dayNum)
-                  const dayBookings = bookingsByDate[iso] ?? []
-                  const isBooked = dayBookings.length > 0
-                  const isTodayCell = isSameDay(today, new Date(y, m, dayNum))
-                  const isPast = iso < todayISO()
+                  })}
+                </div>
+              </div>
+            </div>
 
-                  return (
-                    <div
-                      key={i}
-                      role="gridcell"
-                      aria-label={`${dayNum}${isBooked ? `, ${dayBookings.length} booking${dayBookings.length > 1 ? 's' : ''}` : ''}`}
-                      className={`calendar__cell ${isTodayCell ? 'calendar__cell--today' : ''} ${isBooked ? 'calendar__cell--booked' : ''} ${isPast ? 'calendar__cell--past' : ''}`}
-                    >
-                      <span className="calendar__cell-num">{dayNum}</span>
-                      {isBooked ? (
-                        <span className="calendar__booked-mark" aria-hidden>
-                          {dayBookings.length > 1 ? (
-                            dayBookings.length
-                          ) : (
-                            <span className="calendar__booked-dot" />
-                          )}
-                        </span>
-                      ) : null}
-                    </div>
-                  )
-                })}
+            <div
+              className="schedule-flip__face schedule-flip__face--back schedule-flip__retro32 calendar__panel calendar__panel--book work-ui__calendar-card"
+              aria-hidden={!scheduleCardListFace}
+            >
+              <div className="schedule-flip__back-top">
+                <button
+                  type="button"
+                  className="btn btn--ghost schedule-flip__back-btn"
+                  onClick={() => setScheduleCardListFace(false)}
+                >
+                  ← Month
+                </button>
+                <h2 id="schedule-accepted-gigs-title" className="schedule-flip__back-heading">
+                  Upcoming gigs
+                </h2>
+              </div>
+              <div className="schedule-flip__list-scroll">
+                {acceptedUpcoming.length === 0 ? (
+                  <p className="muted schedule-flip__list-empty">
+                    No confirmed upcoming gigs yet. Accept requests from the queue to see them here.
+                  </p>
+                ) : (
+                  <ul className="schedule-accepted-gigs__list schedule-accepted-gigs__list--flip">
+                    {acceptedUpcoming.map((b) => (
+                      <li key={b.id} className="book-upcoming__row schedule-accepted-gigs__row">
+                        <time className="book-upcoming__date" dateTime={b.dateISO}>
+                          {new Date(b.dateISO + 'T12:00:00').toLocaleDateString(undefined, {
+                            weekday: 'short',
+                            month: 'short',
+                            day: 'numeric',
+                            year: 'numeric',
+                          })}
+                        </time>
+                        <div className="book-upcoming__body">
+                          <strong>{b.familyName}</strong>
+                          <span className="muted">{b.contact}</span>
+                          {formatCareBookingWindow(b) || b.kidCount != null ? (
+                            <span className="book-upcoming__meta muted">
+                              {[formatCareBookingWindow(b), b.kidCount != null ? `${b.kidCount} ${b.kidCount === 1 ? 'child' : 'children'}` : null]
+                                .filter(Boolean)
+                                .join(' · ')}
+                            </span>
+                          ) : null}
+                          {b.notes ? <p className="book-upcoming__notes">{b.notes}</p> : null}
+                        </div>
+                      </li>
+                    ))}
+                  </ul>
+                )}
               </div>
             </div>
           </div>
         </div>
       </div>
 
-      {acceptedUpcoming.length > 0 ? (
-        <section
-          className={`schedule-accepted-gigs ${calendarExpanded ? '' : 'schedule-accepted-gigs--revealed'}`}
-          aria-labelledby="schedule-accepted-gigs-title"
-        >
-          <h2 id="schedule-accepted-gigs-title" className="schedule-accepted-gigs__title">
-            Upcoming gigs
-          </h2>
-          <ul className="schedule-accepted-gigs__list">
-            {acceptedUpcoming.map((b) => (
-              <li key={b.id} className="book-upcoming__row schedule-accepted-gigs__row">
-                <time className="book-upcoming__date" dateTime={b.dateISO}>
-                  {new Date(b.dateISO + 'T12:00:00').toLocaleDateString(undefined, {
-                    weekday: 'short',
-                    month: 'short',
-                    day: 'numeric',
-                    year: 'numeric',
-                  })}
-                </time>
-                <div className="book-upcoming__body">
-                  <strong>{b.familyName}</strong>
-                  <span className="muted">{b.contact}</span>
-                  {formatCareBookingWindow(b) || b.kidCount != null ? (
-                    <span className="book-upcoming__meta muted">
-                      {[formatCareBookingWindow(b), b.kidCount != null ? `${b.kidCount} ${b.kidCount === 1 ? 'child' : 'children'}` : null]
-                        .filter(Boolean)
-                        .join(' · ')}
-                    </span>
-                  ) : null}
-                  {b.notes ? <p className="book-upcoming__notes">{b.notes}</p> : null}
-                </div>
-              </li>
-            ))}
-          </ul>
-        </section>
-      ) : null}
-
       <div className="calendar__footer schedule__footer">
         <Link to="/hub" className="schedule__flow-hint schedule__flow-hint--link muted">
           Swipe left; or scroll down once more when you are already at the bottom; or tap here for Tools. Right arrow
           key also works.
         </Link>
-        {!isWeeklyReceiptBusinessHours() ? (
-          <Link
-            to={quickReceiptTo}
-            className="btn btn--ghost schedule__footer-receipt"
-          >
-            Receipt →
-          </Link>
-        ) : null}
       </div>
     </div>
   )

@@ -1039,8 +1039,302 @@
 
 /* ——— Schedule (caregiver page 2) ——— */
 .page--schedule {
+  overflow-x: hidden;
   overflow-y: auto;
   max-height: none;
+}
+
+/* Flip “board”: month grid (front) ↔ upcoming gigs list (back) */
+.schedule-flip {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  /* Shared surface for “Upcoming gigs” control + flipped list */
+  --schedule-gigs-gradient: linear-gradient(
+    168deg,
+    #ebe8f5 0%,
+    #e8f4fb 48%,
+    #f2eef8 100%
+  );
+  --schedule-gigs-border: color-mix(in srgb, var(--accent) 20%, var(--line));
+  --schedule-gigs-card: rgba(255, 255, 255, 0.92);
+}
+
+.schedule-flip__scene {
+  flex: 1;
+  min-height: 0;
+  perspective: 1100px;
+  perspective-origin: 50% 45%;
+  display: flex;
+  flex-direction: column;
+}
+
+.schedule-flip__inner {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  width: 100%;
+  transform-style: preserve-3d;
+  transition: transform 0.65s cubic-bezier(0.4, 0.2, 0.2, 1);
+}
+
+.schedule-flip__inner--list {
+  transform: rotateY(180deg);
+}
+
+.schedule-flip__face {
+  position: absolute;
+  inset: 0;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.schedule-flip__face--back {
+  transform: rotateY(180deg);
+}
+
+.schedule-flip__calendar-main {
+  flex: 1;
+  min-height: 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+}
+
+.schedule-flip__calendar-top {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.schedule-flip__calendar-top .calendar__nav {
+  align-self: stretch;
+  width: 100%;
+}
+
+.schedule-flip__upcoming-slot {
+  flex-shrink: 0;
+  width: 100%;
+  padding: 0 0 6px;
+  box-sizing: border-box;
+}
+
+.schedule-flip__upcoming-strip {
+  display: block;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  border: none;
+  border-radius: 0;
+  cursor: pointer;
+  appearance: none;
+  -webkit-tap-highlight-color: transparent;
+  text-align: center;
+  box-sizing: border-box;
+  font: inherit;
+}
+
+/* Upcoming gigs strip — same palette & type as flipped panel */
+.schedule-flip__upcoming-strip--gigs {
+  padding: 10px 14px;
+  font: inherit;
+  font-size: 0.9rem;
+  font-weight: 600;
+  line-height: 1.35;
+  letter-spacing: 0.01em;
+  color: var(--ink);
+  text-transform: none;
+  background: var(--schedule-gigs-gradient);
+  border: 1px solid var(--schedule-gigs-border);
+  border-radius: 10px;
+  box-shadow: 0 1px 3px rgba(42, 38, 48, 0.06);
+}
+
+.schedule-flip__upcoming-strip--gigs:hover {
+  border-color: color-mix(in srgb, var(--accent) 32%, var(--line));
+  color: var(--accent);
+  background: linear-gradient(168deg, #f3f1fa 0%, #f0f7fd 48%, #f7f4fb 100%);
+}
+
+.schedule-flip__upcoming-strip--gigs:active {
+  background: color-mix(in srgb, #e8f4fb 55%, var(--line) 45%);
+}
+
+.schedule-flip__upcoming-strip--gigs:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.schedule-flip__back-top {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+  margin-bottom: 8px;
+}
+
+.schedule-flip__back-btn {
+  grid-column: 1;
+  justify-self: start;
+}
+
+.schedule-flip__back-heading {
+  grid-column: 2;
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 700;
+  text-align: center;
+  justify-self: center;
+}
+
+.schedule-flip__list-scroll {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  padding-right: 4px;
+  margin-right: -4px;
+  touch-action: pan-y;
+}
+
+.schedule-flip__list-empty {
+  margin: 4px 0 0;
+  font-size: 0.9rem;
+  line-height: 1.45;
+}
+
+.schedule-accepted-gigs__list--flip {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.schedule-accepted-gigs__list--flip .schedule-accepted-gigs__row:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+/* Flipped gigs list — matches strip; calm type */
+.schedule-flip__retro32 {
+  font-family: inherit;
+  font-size: 1rem;
+  line-height: 1.5;
+  font-weight: 400;
+  color: var(--ink);
+  background: var(--schedule-gigs-gradient) !important;
+  border: 1px solid var(--schedule-gigs-border) !important;
+  border-radius: 12px !important;
+  box-shadow: 0 2px 10px rgba(42, 38, 48, 0.08) !important;
+}
+
+.schedule-flip__retro32::before {
+  display: none;
+}
+
+.schedule-flip__retro32 > * {
+  position: relative;
+  z-index: 1;
+}
+
+.schedule-flip__retro32 .schedule-flip__back-top {
+  background: var(--schedule-gigs-card) !important;
+  border: 1px solid var(--schedule-gigs-border) !important;
+  border-radius: 10px !important;
+  box-shadow: none !important;
+  padding: 8px 10px !important;
+  margin-bottom: 10px !important;
+}
+
+.schedule-flip__retro32 .schedule-flip__back-heading {
+  font-family: inherit;
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1.3;
+  letter-spacing: 0.01em;
+  color: var(--ink);
+  text-transform: none;
+  text-shadow: none;
+}
+
+.schedule-flip__retro32 .schedule-flip__list-empty {
+  color: var(--ink-muted) !important;
+  font-size: 0.95rem !important;
+  text-shadow: none !important;
+}
+
+.schedule-flip__retro32 .schedule-flip__back-btn {
+  font-family: inherit !important;
+  font-size: 0.85rem !important;
+  font-weight: 600 !important;
+  line-height: 1.35 !important;
+  letter-spacing: 0.01em !important;
+  padding: 8px 12px !important;
+  color: var(--ink) !important;
+  background: #fff !important;
+  border: 1px solid var(--schedule-gigs-border) !important;
+  border-radius: 8px !important;
+  box-shadow: 0 1px 2px rgba(42, 38, 48, 0.06) !important;
+  text-transform: none !important;
+}
+
+.schedule-flip__retro32 .schedule-flip__back-btn:hover {
+  filter: none;
+  background: #fafafa !important;
+  border-color: color-mix(in srgb, var(--accent) 28%, var(--line)) !important;
+  color: var(--accent) !important;
+}
+
+.schedule-flip__retro32 .schedule-flip__back-btn:active {
+  transform: none;
+  box-shadow: inset 0 1px 2px rgba(42, 38, 48, 0.08) !important;
+}
+
+.schedule-flip__retro32 .schedule-flip__list-scroll {
+  padding: 6px 8px 10px 6px;
+}
+
+.schedule-flip__retro32 .schedule-accepted-gigs__list--flip .book-upcoming__row {
+  margin-bottom: 10px;
+  padding: 12px 12px 14px;
+  background: var(--schedule-gigs-card);
+  border: 1px solid var(--schedule-gigs-border);
+  border-radius: 10px;
+  box-shadow: 0 1px 3px rgba(42, 38, 48, 0.05);
+}
+
+.schedule-flip__retro32 .schedule-accepted-gigs__list--flip .book-upcoming__row:last-child {
+  margin-bottom: 0;
+}
+
+.schedule-flip__retro32 .book-upcoming__date {
+  color: var(--accent) !important;
+  text-shadow: none;
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.schedule-flip__retro32 .book-upcoming__body strong {
+  color: var(--ink);
+  text-shadow: none;
+  font-size: 1rem;
+}
+
+.schedule-flip__retro32 .book-upcoming__body .muted,
+.schedule-flip__retro32 .book-upcoming__meta {
+  color: var(--ink-muted) !important;
+  opacity: 1;
+}
+
+.schedule-flip__retro32 .book-upcoming__notes {
+  color: var(--ink-muted) !important;
 }
 
 .schedule__head {
@@ -1102,6 +1396,48 @@
 }
 
 .schedule__title--hover-tip[data-tooltip]:hover::after {
+  opacity: 1;
+  visibility: visible;
+}
+
+.schedule-workspace-head__eyebrow--hover-tip {
+  position: relative;
+  cursor: help;
+  width: fit-content;
+}
+
+.schedule-workspace-head__eyebrow--hover-tip:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.schedule-workspace-head__eyebrow--hover-tip[data-tooltip]::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  left: 0;
+  top: calc(100% + 8px);
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: var(--ink);
+  color: var(--surface);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  line-height: 1.45;
+  text-align: left;
+  white-space: normal;
+  max-width: min(20rem, calc(100vw - 2.5rem));
+  width: max-content;
+  min-width: 0;
+  pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.15s ease, visibility 0.15s ease;
+  z-index: 280;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.18);
+}
+
+.schedule-workspace-head__eyebrow--hover-tip[data-tooltip]:hover::after,
+.schedule-workspace-head__eyebrow--hover-tip[data-tooltip]:focus-visible::after {
   opacity: 1;
   visibility: visible;
 }
@@ -1286,101 +1622,14 @@
     animation: none;
   }
 
-  .schedule__title--hover-tip[data-tooltip]::after {
+  .schedule__title--hover-tip[data-tooltip]::after,
+  .schedule-workspace-head__eyebrow--hover-tip[data-tooltip]::after {
     transition-duration: 0.01ms;
   }
 
-  .schedule__calendar-fold__body {
-    transition: none !important;
+  .schedule-flip__inner {
+    transition-duration: 0.01ms;
   }
-
-  .schedule-accepted-gigs--revealed {
-    transition: none !important;
-  }
-}
-
-.schedule__calendar-fold {
-  width: 100%;
-  max-width: 420px;
-  margin: 0 auto;
-}
-
-.schedule__calendar-fold__toggle {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 8px 12px;
-  width: 100%;
-  margin: 0 0 10px;
-  padding: 10px 12px;
-  border: 1px solid var(--line);
-  border-radius: 12px;
-  background: linear-gradient(180deg, var(--paper2) 0%, var(--surface) 100%);
-  font: inherit;
-  text-align: left;
-  cursor: pointer;
-  color: var(--ink);
-  transition:
-    border-color 0.15s ease,
-    box-shadow 0.2s ease;
-}
-
-.schedule__calendar-fold__toggle:hover,
-.schedule__calendar-fold__toggle:focus-visible {
-  border-color: var(--accent);
-  outline: none;
-  box-shadow: 0 4px 20px color-mix(in srgb, var(--ink) 6%, transparent);
-}
-
-.schedule__calendar-fold__chevron {
-  font-size: 0.65rem;
-  color: var(--ink-muted);
-  width: 1.25rem;
-  text-align: center;
-}
-
-.schedule__calendar-fold__month {
-  font-weight: 700;
-  font-size: 0.98rem;
-  flex: 1 1 auto;
-  min-width: 0;
-}
-
-.schedule__calendar-fold__hint {
-  flex: 1 0 100%;
-  font-size: 0.78rem;
-  line-height: 1.35;
-  margin: 0;
-  padding-left: 1.65rem;
-}
-
-.schedule__calendar-fold__body {
-  display: grid;
-  grid-template-rows: 1fr;
-  transition:
-    grid-template-rows 0.42s cubic-bezier(0.4, 0, 0.2, 1),
-    opacity 0.28s ease;
-  opacity: 1;
-}
-
-.schedule__calendar-fold__body--collapsed {
-  grid-template-rows: 0fr;
-  opacity: 0.86;
-}
-
-.schedule__calendar-fold__inner {
-  overflow: hidden;
-  min-height: 0;
-}
-
-.schedule-accepted-gigs--revealed {
-  margin-top: 10px;
-  padding-top: 12px;
-  transition:
-    margin-top 0.38s cubic-bezier(0.4, 0, 0.2, 1),
-    padding-top 0.38s cubic-bezier(0.4, 0, 0.2, 1),
-    opacity 0.32s ease;
-  opacity: 1;
 }
 
 .schedule-accepted-gigs {
