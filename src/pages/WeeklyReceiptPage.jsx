@@ -455,10 +455,10 @@ export default function WeeklyReceiptPage() {
         </Link>
         <h1 className="receipt__title">{gigReceiptMode ? 'Receipt' : 'Weekly receipt'}</h1>
         <p className="receipt__lede muted">
-          The <strong>register-tape receipt</strong> opens as a popup — use <strong>Screenshot view</strong> inside it
-          for a plain background, or scroll to <strong>Screenshot-ready receipt</strong> below. Receipt extras are on{' '}
-          <Link to="/outings">Outings</Link>. <strong>Download week summary (.txt)</strong> includes trip log + journal +
-          this block.
+          The <strong>register-tape receipt</strong> opens as a popup — use <strong>Clean view for screenshot</strong>{' '}
+          inside it for a plain background, or scroll to <strong>Screenshot-ready receipt</strong> below. Parking, tolls,
+          &amp; other manual lines are on <Link to="/outings">Outings</Link>. <strong>Download week summary (.txt)</strong>{' '}
+          includes trip log + journal + this block.
           {gigReceiptMode ? (
             <>
               {' '}
@@ -611,8 +611,8 @@ export default function WeeklyReceiptPage() {
           </button>
         </div>
         <p className="muted receipt__popup-hint">
-          Receipt popup opens when you land here — tap <strong>Screenshot view</strong> to hide buttons for a clean
-          capture. Edit photos & parking on <Link to="/outings">Outings</Link>.
+          Receipt popup opens when you land here — tap <strong>Clean view for screenshot</strong> to hide buttons for a
+          clean capture. Edit parking &amp; tolls on <Link to="/outings">Outings</Link>.
         </p>
       </div>
 
@@ -620,7 +620,7 @@ export default function WeeklyReceiptPage() {
         <h2 className="receipt__math-title">Totals</h2>
         {!showSummary ? (
           <p className="muted">
-            Enter hours, trip log / journal text with place names, or add receipt extras on{' '}
+            Enter hours, trip log / journal text with place names, or add parking, tolls, &amp; other expenses on{' '}
             <Link to="/outings">Outings</Link> to build your receipt.
           </p>
         ) : (
@@ -759,57 +759,49 @@ export default function WeeklyReceiptPage() {
                 href={venmoUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="btn btn--primary receipt-modal__venmo"
+                className="btn btn--primary receipt-modal__venmo receipt-modal__wide-btn"
               >
-                Venmo payment (${combinedTotal.toFixed(2)})
+                Venmo (${combinedTotal.toFixed(2)})
               </a>
             ) : null}
-            <div className="receipt-modal__icon-row">
-              <a
-                href={forwardReceiptSmsHref}
-                className="btn btn--ghost receipt-modal__icon-btn"
-                data-tooltip={ICON_TIP_FORWARD}
-                aria-label="Open Messages with the receipt and optional Venmo pay link"
-                title={ICON_TIP_FORWARD}
-              >
-                <IconForwardSms />
-              </a>
-              <button
-                type="button"
-                className="btn btn--ghost receipt-modal__icon-btn"
-                data-tooltip={ICON_TIP_DOWNLOAD}
-                onClick={downloadWeekSummaryFile}
-                aria-label="Download week summary as a text file"
-                title={ICON_TIP_DOWNLOAD}
-              >
-                <IconDownload />
-              </button>
-            </div>
+            <a
+              href={forwardReceiptSmsHref}
+              className={`btn receipt-modal__wide-btn ${venmoUrl ? 'receipt-modal__wide-btn--secondary' : 'btn--primary'}`}
+              aria-label="Open Messages with the receipt and optional Venmo pay link"
+            >
+              <IconForwardSms />
+              <span>Send in Messages</span>
+            </a>
+            <button
+              type="button"
+              className="btn receipt-modal__wide-btn receipt-modal__wide-btn--secondary"
+              onClick={downloadWeekSummaryFile}
+              aria-label="Download week summary as a text file"
+            >
+              <IconDownload />
+              <span>Download summary (.txt)</span>
+            </button>
           </>
         ) : (
           <>
             <p className="muted receipt-modal__zero">Total is $0.00 — add hours or expenses for payment.</p>
-            <div className="receipt-modal__icon-row">
-              <a
-                href={forwardReceiptSmsHref}
-                className="btn btn--ghost receipt-modal__icon-btn"
-                data-tooltip={ICON_TIP_FORWARD}
-                aria-label="Open Messages with the receipt text"
-                title={ICON_TIP_FORWARD}
-              >
-                <IconForwardSms />
-              </a>
-              <button
-                type="button"
-                className="btn btn--ghost receipt-modal__icon-btn"
-                data-tooltip={ICON_TIP_DOWNLOAD}
-                onClick={downloadWeekSummaryFile}
-                aria-label="Download week summary as a text file"
-                title={ICON_TIP_DOWNLOAD}
-              >
-                <IconDownload />
-              </button>
-            </div>
+            <a
+              href={forwardReceiptSmsHref}
+              className="btn btn--primary receipt-modal__wide-btn"
+              aria-label="Open Messages with the receipt text"
+            >
+              <IconForwardSms />
+              <span>Send in Messages</span>
+            </a>
+            <button
+              type="button"
+              className="btn receipt-modal__wide-btn receipt-modal__wide-btn--secondary"
+              onClick={downloadWeekSummaryFile}
+              aria-label="Download week summary as a text file"
+            >
+              <IconDownload />
+              <span>Download summary (.txt)</span>
+            </button>
           </>
         )}
       </ReceiptThermalModal>

@@ -142,6 +142,7 @@ export default function TripLogPage() {
                 day={day}
                 ensureDay={log.ensureDay}
                 onChange={log.updateDay}
+                receiptWeekKey={log.weekKey}
               />
             </div>
             <div className="trip-log__submit-bar">

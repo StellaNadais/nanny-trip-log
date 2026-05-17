@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { DayStrip } from '../components/DayStrip'
 import MealsInlineField from '../components/MealsInlineField'
@@ -6,7 +6,13 @@ import TripPlacesField from '../components/TripPlacesField'
 import { useKidJournal } from '../hooks/useKidJournal'
 import { getMealHealthSuggestions } from '../utils/mealSuggestions'
 import { countByCategory, parseMealsToParts } from '../utils/parseMeals'
-import { addDays, formatWeekRange, startOfWeekMonday, toISODateLocal } from '../utils/dates'
+import {
+  addDays,
+  canJournalSaveForwardAt,
+  formatWeekRange,
+  startOfWeekMonday,
+  toISODateLocal,
+} from '../utils/dates'
 import { computeWeekTripMileage } from '../utils/parseTripPlaces'
 import { notifyReceiptMileageUpdated, saveReceiptSettings } from '../utils/receiptStorage'
 import { OUTINGS_UPDATED_EVENT } from '../utils/outingsStorage'
@@ -82,13 +88,18 @@ export default function KidJournalPage() {
   const [handwrittenPhotoDataUrl, setHandwrittenPhotoDataUrl] = useState('')
   const [handwrittenPhotoErr, setHandwrittenPhotoErr] = useState('')
   const handwrittenFileRef = useRef(null)
-  const [flash, setFlash] = useState('')
   const [journalReceiptOpen, setJournalReceiptOpen] = useState(false)
   const [suggestionClock, setSuggestionClock] = useState(() => Date.now())
+  const [journalShareGateNow, setJournalShareGateNow] = useState(() => Date.now())
   const [outingsRev, setOutingsRev] = useState(0)
 
   useEffect(() => {
     const id = setInterval(() => setSuggestionClock(Date.now()), 5 * 60 * 1000)
+    return () => clearInterval(id)
+  }, [])
+
+  useEffect(() => {
+    const id = setInterval(() => setJournalShareGateNow(Date.now()), 30_000)
     return () => clearInterval(id)
   }, [])
 
@@ -140,38 +151,52 @@ export default function KidJournalPage() {
     return getMealHealthSuggestions(countByCategory(mealParts), new Date(suggestionClock))
   }, [mealParts, suggestionClock])
 
-  const hasSavedForSelectedDay = useMemo(
-    () => entries.some((e) => e.dateISO === dateISO),
-    [entries, dateISO]
+  const canJournalSaveForward = useMemo(
+    () => canJournalSaveForwardAt(journalShareGateNow, dateISO),
+    [journalShareGateNow, dateISO]
   )
 
   useEffect(() => {
-    if (!hasSavedForSelectedDay) setJournalReceiptOpen(false)
-  }, [dateISO, hasSavedForSelectedDay])
+    setJournalReceiptOpen(false)
+  }, [dateISO])
+
+  const refreshJournalShareGate = useCallback(() => setJournalShareGateNow(Date.now()), [])
 
   function shiftJournalWeek(delta) {
     setJournalWeekStart((w) => addDays(w, delta * 7))
   }
 
-  function submit(e) {
-    e.preventDefault()
-    addEntry({
-      dateISO,
-      dayNotes,
-      mealsText,
-      morningNap,
-      afternoonNap,
-      handwrittenPhotoDataUrl: handwrittenPhotoDataUrl || '',
-    })
-    setFlash('Journal saved.')
-    window.setTimeout(() => {
-      const d = loadDraftFromLatest(dateISO)
-      setDayNotes(d.dayNotes)
-      setMealsText(d.mealsText)
-      setMorningNap(d.morningNap)
-      setAfternoonNap(d.afternoonNap)
-      setHandwrittenPhotoDataUrl(d.handwrittenPhotoDataUrl)
-    }, 100)
+  function persistJournalIfChanged() {
+    const latest = loadDraftFromLatest(dateISO)
+    const photo = handwrittenPhotoDataUrl || ''
+    const latestPhoto = latest.handwrittenPhotoDataUrl || ''
+    if (
+      dayNotes !== (latest.dayNotes ?? '') ||
+      mealsText !== (latest.mealsText ?? '') ||
+      morningNap !== (latest.morningNap ?? '') ||
+      afternoonNap !== (latest.afternoonNap ?? '') ||
+      photo !== latestPhoto
+    ) {
+      addEntry({
+        dateISO,
+        dayNotes,
+        mealsText,
+        morningNap,
+        afternoonNap,
+        handwrittenPhotoDataUrl: photo,
+      })
+    }
+  }
+
+  function openJournalSlip() {
+    setJournalShareGateNow(Date.now())
+    persistJournalIfChanged()
+    setJournalReceiptOpen(true)
+  }
+
+  function beforeShareOrDownload() {
+    setJournalShareGateNow(Date.now())
+    persistJournalIfChanged()
   }
 
   async function onHandwrittenPhotoChange(e) {
@@ -271,7 +296,12 @@ export default function KidJournalPage() {
         />
       </div>
 
-      <form className="journal__form" onSubmit={submit}>
+      <form
+        className="journal__form"
+        onSubmit={(e) => {
+          e.preventDefault()
+        }}
+      >
         <div className="field-block journal__about-bundle">
           <div className="journal__about-head">
             <span className="field-block__label" id="kid-journal-about-label">
@@ -333,6 +363,7 @@ export default function KidJournalPage() {
             aria-labelledby="kid-journal-about-label"
             variant="journal"
             nestedInAbout
+            receiptWeekKey={weekKey}
           />
           <div className="journal__about-meals">
             <span className="field-block__label field-block__label--sub" id="kid-journal-meals-label">
@@ -377,58 +408,18 @@ export default function KidJournalPage() {
           </label>
         </div>
 
-        {flash ? (
-          <p className={`journal__flash ${flash.includes('saved') ? 'journal__flash--ok' : ''}`} role="status">
-            {flash}
-          </p>
-        ) : null}
-
-        <button type="submit" className="btn btn--primary journal__submit">
-          Save journal
-        </button>
-
-        <div className="journal__day-slip-actions">
-          <div className="journal__day-slip-tools">
-            <button
-              type="button"
-              className="btn btn--ghost journal__day-slip-btn journal__day-slip-btn--main"
-              disabled={!hasSavedForSelectedDay}
-              title={
-                hasSavedForSelectedDay
-                  ? 'Open the journal slip for this day'
-                  : 'Save journal first to view the slip'
-              }
-              onClick={() => setJournalReceiptOpen(true)}
-            >
-              Show journal
-            </button>
-            <a
-              href={forwardJournalSmsHref}
-              className="btn btn--ghost receipt__icon-btn journal__day-slip-forward"
-              data-tooltip="Open Messages with this day’s journal in the draft (same as .txt download)"
-              aria-label="Open Messages with this day’s journal in the draft"
-              title="Forward as text message"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="22"
-                height="22"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                aria-hidden
-              >
-                <polyline points="15 14 20 9 15 4" />
-                <path d="M4 20v-7a4 4 0 0 1 4-4h12" />
-              </svg>
-            </a>
-          </div>
-          {!hasSavedForSelectedDay ? (
-            <p className="muted journal__show-journal-hint">Save journal once for this day to open the slip.</p>
-          ) : null}
+        <div
+          className="journal__day-slip-actions"
+          role="group"
+          aria-label="Journal slip preview"
+        >
+          <button
+            type="button"
+            className="btn btn--primary journal__show-journal-btn"
+            onClick={openJournalSlip}
+          >
+            Show journal
+          </button>
         </div>
       </form>
 
@@ -441,8 +432,11 @@ export default function KidJournalPage() {
         morningNap={morningNap}
         afternoonNap={afternoonNap}
         handwrittenPhotoDataUrl={handwrittenPhotoDataUrl}
-        onDownload={downloadJournalOfTheDay}
         forwardSmsHref={forwardJournalSmsHref}
+        canForward={canJournalSaveForward}
+        onDownload={downloadJournalOfTheDay}
+        onBeforeShareAction={beforeShareOrDownload}
+        onHoldSheetOpen={refreshJournalShareGate}
       />
     </div>
   )

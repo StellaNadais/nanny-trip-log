@@ -43,7 +43,7 @@ export default function InternalNotesPage() {
           ← Hub
         </Link>
         <h1 className="notes__title">
-          Internal notes <span className="placeholder__code">(D)</span>
+          Internal notes <span className="placeholder__code">(E)</span>
         </h1>
         <p className="muted notes__lede">
           Shift times you submit from <strong>Shift</strong> land here so you can see how punctual you are.

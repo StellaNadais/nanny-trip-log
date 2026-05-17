@@ -9,7 +9,7 @@ function mergedDayNotes(d) {
   return t || n
 }
 
-export function DayLogPanel({ iso, day, onChange, ensureDay }) {
+export function DayLogPanel({ iso, day, onChange, ensureDay, receiptWeekKey = '' }) {
   useEffect(() => {
     ensureDay(iso)
   }, [iso, ensureDay])
@@ -38,6 +38,7 @@ export function DayLogPanel({ iso, day, onChange, ensureDay }) {
             onChange={(v) => onChange(iso, { tripLog: '', notes: v })}
             aria-labelledby={labelId}
             placeholder="e.g. Great day — morning Moraga Library, afternoon Lafayette Library…"
+            receiptWeekKey={receiptWeekKey}
           />
         </div>
       </div>

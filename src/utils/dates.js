@@ -45,3 +45,20 @@ export function formatWeekRange(monday) {
   })
   return `${a} – ${b}`
 }
+
+const MS_DAY = 24 * 60 * 60 * 1000
+
+/** Start of the local calendar day after `yyyy-mm-dd` (instant = end of that journal day). */
+export function startOfNextLocalDayMs(dateISO) {
+  const [y, mo, d] = dateISO.split('-').map(Number)
+  return new Date(y, mo - 1, d + 1, 0, 0, 0, 0).getTime()
+}
+
+/** Exclusive upper bound: save / SMS forward allowed while `nowMs` is strictly before this. */
+export function journalSaveForwardDeadlineMs(dateISO) {
+  return startOfNextLocalDayMs(dateISO) + MS_DAY
+}
+
+export function canJournalSaveForwardAt(nowMs, dateISO) {
+  return nowMs < journalSaveForwardDeadlineMs(dateISO)
+}

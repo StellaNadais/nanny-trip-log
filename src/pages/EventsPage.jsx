@@ -12,7 +12,7 @@ export default function EventsPage() {
           ← Hub
         </Link>
         <h1 className="events__title">
-          Events <span className="placeholder__code">(E)</span>
+          Events <span className="placeholder__code">(D)</span>
         </h1>
         <p className="muted events__lede">
           Family-friendly ideas by area. Times and fees change — confirm with each venue before you go.

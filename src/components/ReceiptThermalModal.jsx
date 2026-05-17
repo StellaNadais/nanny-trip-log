@@ -63,26 +63,30 @@ export default function ReceiptThermalModal({
         {captureMode ? (
           <div className="receipt-modal__capture-footer">
             <p className="receipt-modal__capture-hint muted">
-              Use your phone screenshot. Crop to the receipt or capture full screen — plain background.
+              Take a screenshot of the receipt above, then tap Done to bring controls back.
             </p>
-            <button type="button" className="btn btn--primary receipt-modal__capture-done" onClick={() => setCaptureMode(false)}>
+            <button
+              type="button"
+              className="btn btn--primary receipt-modal__capture-done"
+              onClick={() => setCaptureMode(false)}
+            >
               Done
             </button>
           </div>
         ) : (
-          <>
+          <div className="receipt-modal__footer">
             <button
               type="button"
-              className="btn btn--ghost receipt-modal__screenshot-mode"
+              className="btn receipt-modal__screenshot-toggle"
               onClick={() => setCaptureMode(true)}
             >
-              Screenshot view
+              Clean view for screenshot
             </button>
             <div className="receipt-modal__actions">{children}</div>
             <button type="button" className="btn btn--ghost receipt-modal__close-btn" onClick={onClose}>
               Close
             </button>
-          </>
+          </div>
         )}
       </div>
     </div>

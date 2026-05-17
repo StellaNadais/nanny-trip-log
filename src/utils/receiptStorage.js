@@ -1,6 +1,8 @@
 const KEY = 'nanny-receipt-settings-v1'
 
-const defaults = () => ({ venmoHandle: '', mileageByWeek: {}, extrasByWeek: {} })
+const DEFAULT_VENMO_HANDLE = '@stella-nadais'
+
+const defaults = () => ({ venmoHandle: DEFAULT_VENMO_HANDLE, mileageByWeek: {}, extrasByWeek: {} })
 
 export function loadReceiptSettings() {
   try {

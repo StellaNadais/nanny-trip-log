@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { DayStrip } from '../components/DayStrip'
 import {
@@ -7,27 +7,14 @@ import {
   notifyReceiptMileageUpdated,
   RECEIPT_MILEAGE_EVENT,
 } from '../utils/receiptStorage'
-import { fileToCompressedDataUrl } from '../utils/receiptImage'
 import { addDays, formatWeekRange, startOfWeekMonday, toISODateLocal } from '../utils/dates'
 import { MILE_RATE } from '../data/tripPlaces'
 import { useBookings } from '../hooks/useBookings'
+import { categoryLabel, MANUAL_CATEGORIES } from '../data/receiptManualCategories'
 import { receiptOpenLinkText, receiptPagePath } from '../utils/receiptHref'
-
-const MANUAL_CATEGORIES = [
-  { id: 'parking_ticket', label: 'Parking ticket' },
-  { id: 'parking_spot', label: 'Parking spot' },
-  { id: 'ticket_entry', label: 'Ticket / entry' },
-  { id: 'tolls', label: 'Tolls' },
-  { id: 'fastrak', label: 'Fastrak' },
-  { id: 'other', label: 'Other' },
-]
 
 function uid() {
   return globalThis.crypto?.randomUUID?.() ?? `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`
-}
-
-function categoryLabel(id) {
-  return MANUAL_CATEGORIES.find((c) => c.id === id)?.label ?? id
 }
 
 function emptyExtras() {
@@ -50,14 +37,11 @@ export default function OutingsPage() {
     initialDayOffsetForWeek(startOfWeekMonday(new Date()))
   )
   const [extras, setExtras] = useState(emptyExtras)
-  const [photoErr, setPhotoErr] = useState('')
   const [manualOpen, setManualOpen] = useState(false)
   const [manualCat, setManualCat] = useState('parking_ticket')
   const [manualAmt, setManualAmt] = useState('')
   const [manualNote, setManualNote] = useState('')
   const [mileageRev, setMileageRev] = useState(0)
-  const fileRef = useRef(null)
-
   const weekKey = useMemo(() => toISODateLocal(outingWeekStart), [outingWeekStart])
   const dateISO = useMemo(
     () => toISODateLocal(addDays(outingWeekStart, dayOffset)),
@@ -76,7 +60,7 @@ export default function OutingsPage() {
 
   const outingsHeadingTip = useMemo(
     () =>
-      `Mileage — type place names in Kid journal or Trip log; distances are built in (plus any saved extras on this device). Use “then” or + between stops for one trip. Totals sync to Weekly receipt ($${MILE_RATE}/mi). Receipt extras are per week below.`,
+      `Mileage — type place names in Kid journal or Trip log; distances are built in (plus any saved extras on this device). Use “then” or + between stops for one trip. Totals sync to Weekly receipt ($${MILE_RATE}/mi). Parking & tolls entry is per week below.`,
     []
   )
 
@@ -98,7 +82,6 @@ export default function OutingsPage() {
         ? { photos: row.photos, manualLines: row.manualLines }
         : emptyExtras()
     )
-    setPhotoErr('')
   }, [receiptWeekKey, mileageRev])
 
   const commitExtras = useCallback(
@@ -121,33 +104,6 @@ export default function OutingsPage() {
       extras.manualLines.reduce((s, row) => s + (Number.isFinite(row.amount) ? row.amount : 0), 0),
     [extras.manualLines]
   )
-
-  async function onPickPhoto(e) {
-    const f = e.target.files?.[0]
-    e.target.value = ''
-    if (!f) return
-    setPhotoErr('')
-    try {
-      const dataUrl = await fileToCompressedDataUrl(f)
-      commitExtras((prev) => {
-        if (prev.photos.length >= 8) {
-          setPhotoErr('Max 8 receipt photos per week.')
-          return prev
-        }
-        setPhotoErr('')
-        return { ...prev, photos: [...prev.photos, { id: uid(), dataUrl }] }
-      })
-    } catch {
-      setPhotoErr('Could not add photo. Try a smaller image.')
-    }
-  }
-
-  function removePhoto(id) {
-    commitExtras((prev) => ({
-      ...prev,
-      photos: prev.photos.filter((p) => p.id !== id),
-    }))
-  }
 
   function addManualLine(e) {
     e.preventDefault()
@@ -189,7 +145,7 @@ export default function OutingsPage() {
           aria-describedby="outings-page-intro"
           data-tooltip={outingsHeadingTip}
         >
-          Outings <span className="placeholder__code">(C)</span>
+          Outings
         </h1>
         <p id="outings-page-intro" className="sr-only">
           {outingsHeadingTip}
@@ -226,48 +182,15 @@ export default function OutingsPage() {
             setDayOffset(Math.max(0, Math.min(6, diff)))
           }}
         />
-        <p className="muted outings__week-hint">
-          Receipt extras apply to the <strong>whole week</strong> above (same calendar as Kid journal). The highlighted
-          day is for navigation only.
-        </p>
       </div>
 
       <section className="outings__section outings__section--receipt outings__section--solo" aria-labelledby="outings-receipt-heading">
         <h2 id="outings-receipt-heading" className="outings__section-title">
-          Receipt extras (weekly)
+          Parking &amp; other expenses (weekly)
         </h2>
-        <p className="muted outings__hint">Applies to the same week on Weekly receipt totals.</p>
-
-        <div className="receipt__capture-block outings__capture">
-          <span className="field-block__label">Receipt photos</span>
-          <p className="receipt__capture-hint muted">
-            Take or choose photos of receipts; they appear on the print-style weekly receipt.
-          </p>
-          <input
-            ref={fileRef}
-            type="file"
-            accept="image/*"
-            capture="environment"
-            className="sr-only"
-            onChange={onPickPhoto}
-          />
-          <button type="button" className="btn btn--primary receipt__pic-btn" onClick={() => fileRef.current?.click()}>
-            Take / add receipt photo
-          </button>
-          {photoErr ? <p className="receipt__photo-err muted">{photoErr}</p> : null}
-          {extras.photos.length > 0 ? (
-            <ul className="receipt__thumb-list">
-              {extras.photos.map((p) => (
-                <li key={p.id} className="receipt__thumb-item">
-                  <img src={p.dataUrl} alt="" className="receipt__thumb" />
-                  <button type="button" className="btn btn--ghost receipt__thumb-remove" onClick={() => removePhoto(p.id)}>
-                    Remove
-                  </button>
-                </li>
-              ))}
-            </ul>
-          ) : null}
-        </div>
+        <p className="muted outings__hint">
+          Same calendar week as above; totals sync to <Link to={receiptTo}>Weekly receipt</Link>.
+        </p>
 
         <div className="receipt__manual-block outings__manual">
           <button
@@ -340,12 +263,6 @@ export default function OutingsPage() {
         <p className="muted outings__manual-total">
           Manual reimbursements this week:{' '}
           <strong>${manualTotal.toFixed(2)}</strong>
-          {extras.photos.length > 0 ? (
-            <>
-              {' '}
-              · {extras.photos.length} receipt photo(s) on file
-            </>
-          ) : null}
         </p>
 
         <Link to={receiptTo} className="btn btn--ghost outings__to-receipt">
