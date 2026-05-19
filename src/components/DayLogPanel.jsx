@@ -1,4 +1,5 @@
 import { useEffect, useId, useMemo } from 'react'
+import JournalParentMessageIdeas from './JournalParentMessageIdeas'
 import TripPlacesField from './TripPlacesField'
 
 /** Merge trip log + notes into one field for editing; persist as notes only so mileage math still runs on the same text. */
@@ -40,6 +41,7 @@ export function DayLogPanel({ iso, day, onChange, ensureDay, receiptWeekKey = ''
             placeholder="e.g. Great day — morning Moraga Library, afternoon Lafayette Library…"
             receiptWeekKey={receiptWeekKey}
           />
+          <JournalParentMessageIdeas dateISO={iso} variant="trip" />
         </div>
       </div>
     </div>

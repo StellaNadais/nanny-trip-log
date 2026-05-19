@@ -1888,6 +1888,11 @@
     box-shadow 0.15s;
 }
 
+.hub-card:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
 .hub-card:hover,
 .hub-card:active {
   border-color: var(--accent);
@@ -3978,6 +3983,344 @@
   box-sizing: border-box;
 }
 
+/* Internal notes — 3D flip (year chart ↔ punctuality log), same tempo as Schedule */
+.notes-flip {
+  width: 100%;
+  margin-top: 4px;
+  --notes-flip-gradient: linear-gradient(
+    148deg,
+    #ecfdf5 0%,
+    #eff6ff 42%,
+    #faf5ff 100%
+  );
+  --notes-flip-gradient-back: linear-gradient(
+    155deg,
+    #e0f2fe 0%,
+    #f0fdf4 50%,
+    #f5f3ff 100%
+  );
+  --notes-flip-border: color-mix(in srgb, var(--accent) 22%, var(--line));
+}
+
+.notes-flip__scene {
+  perspective: 1100px;
+  perspective-origin: 50% 42%;
+  width: 100%;
+  min-height: min(78vh, 520px);
+}
+
+.notes-flip__inner {
+  position: relative;
+  width: 100%;
+  min-height: min(78vh, 520px);
+  transform-style: preserve-3d;
+  transition: transform 0.7s cubic-bezier(0.4, 0.2, 0.2, 1);
+}
+
+.notes-flip__inner--log {
+  transform: rotateY(180deg);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .notes-flip__inner {
+    transition: none;
+  }
+}
+
+.notes-flip__face {
+  position: absolute;
+  inset: 0;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.notes-flip__face--back {
+  transform: rotateY(180deg);
+}
+
+.notes-flip__card {
+  border-radius: 14px;
+  border: 1px solid var(--notes-flip-border);
+  box-shadow:
+    0 4px 18px color-mix(in srgb, var(--ink) 9%, transparent),
+    inset 0 1px 0 color-mix(in srgb, var(--surface) 90%, transparent);
+}
+
+.notes-flip__card--front {
+  position: relative;
+  padding: 16px 14px 14px;
+  background: var(--notes-flip-gradient);
+  gap: 8px;
+}
+
+.notes-flip__card--front::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(
+    120% 80% at 10% 0%,
+    color-mix(in srgb, #fff 55%, transparent) 0%,
+    transparent 55%
+  );
+  pointer-events: none;
+}
+
+.notes-flip__card--front > * {
+  position: relative;
+  z-index: 1;
+}
+
+.notes-flip__front-top {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  align-items: center;
+  text-align: center;
+}
+
+.notes-flip__eyebrow {
+  margin: 0;
+  font-size: 0.62rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--accent) 38%, var(--ink-muted));
+}
+
+.notes-flip__front-title {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+  line-height: 1.2;
+}
+
+.notes-flip__front-year {
+  margin: 0;
+  font-size: 2.25rem;
+  font-weight: 900;
+  line-height: 1;
+  letter-spacing: -0.04em;
+  background: linear-gradient(
+    120deg,
+    color-mix(in srgb, var(--accent) 85%, #0f766e),
+    color-mix(in srgb, var(--accent) 50%, #5b21b6)
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  opacity: 0.92;
+}
+
+.notes-flip__pill {
+  align-self: center;
+  font-size: 0.62rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--accent);
+  background: color-mix(in srgb, var(--surface) 86%, transparent);
+  border: 1px solid color-mix(in srgb, var(--accent) 28%, var(--line));
+  padding: 6px 12px;
+  border-radius: 999px;
+  line-height: 1.2;
+  box-shadow: 0 1px 2px color-mix(in srgb, var(--ink) 5%, transparent);
+}
+
+.notes-flip__statline {
+  margin: 0;
+  font-size: 0.88rem;
+  font-weight: 600;
+  line-height: 1.45;
+  color: var(--ink-muted);
+  text-align: center;
+  text-wrap: balance;
+  padding: 0 4px;
+}
+
+.notes-flip__chart-shell {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 8px 6px 4px;
+  margin: 4px 0;
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--surface) 88%, transparent);
+  border: 1px solid color-mix(in srgb, var(--line) 85%, transparent);
+}
+
+.notes-flip__strip {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: auto;
+  padding: 12px 14px;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--ink);
+  background: color-mix(in srgb, var(--surface) 92%, transparent);
+  border: 1px solid var(--notes-flip-border);
+  box-shadow: 0 2px 8px color-mix(in srgb, var(--ink) 6%, transparent);
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    border-color 0.15s ease,
+    transform 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.notes-flip__strip:hover {
+  border-color: color-mix(in srgb, var(--accent) 40%, var(--line));
+  color: var(--accent);
+  box-shadow: 0 4px 14px color-mix(in srgb, var(--accent) 12%, transparent);
+}
+
+.notes-flip__strip:active {
+  transform: scale(0.99);
+}
+
+.notes-flip__strip:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.notes-flip__strip-hint {
+  font-size: 0.82rem;
+  font-weight: 800;
+  color: var(--accent);
+  letter-spacing: 0.04em;
+}
+
+.notes-flip__card--back {
+  padding: 12px 12px 14px;
+  background: var(--notes-flip-gradient-back);
+}
+
+.notes-flip__back-top {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+  margin-bottom: 10px;
+}
+
+.notes-flip__back-btn {
+  flex-shrink: 0;
+}
+
+.notes-flip__back-heading {
+  flex: 1;
+  margin: 0;
+  font-size: 1.08rem;
+  font-weight: 800;
+  text-align: center;
+  color: var(--ink);
+  min-width: 0;
+}
+
+.notes-flip__list-scroll {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  padding: 4px 2px 6px;
+  margin-right: -2px;
+  touch-action: pan-y;
+  background: color-mix(in srgb, var(--surface) 90%, transparent);
+  border-radius: 12px;
+  border: 1px solid color-mix(in srgb, var(--line) 88%, transparent);
+}
+
+.notes-flip__list-empty {
+  margin: 12px 10px;
+  font-size: 0.9rem;
+  line-height: 1.45;
+}
+
+.notes__list--flip {
+  padding: 4px 8px 8px;
+}
+
+.notes__row--flip {
+  border-bottom-color: color-mix(in srgb, var(--line) 80%, transparent);
+}
+
+.notes__row--flip:last-child {
+  border-bottom: none;
+  padding-bottom: 6px;
+}
+
+.notes-year-chart-wrap {
+  width: 100%;
+  margin-top: 0;
+}
+
+.notes-year-chart {
+  width: 100%;
+  height: auto;
+  min-height: 88px;
+  max-height: 120px;
+  display: block;
+}
+
+.notes-year-chart__axis {
+  stroke: var(--line);
+  stroke-width: 1;
+}
+
+.notes-year-chart__bar--logged {
+  fill: color-mix(in srgb, var(--ink-muted) 32%, var(--surface));
+}
+
+.notes-year-chart__bar--full {
+  fill: var(--accent);
+  opacity: 0.9;
+}
+
+.notes-year-chart__mo {
+  font-size: 9px;
+  font-weight: 700;
+  fill: var(--ink-muted);
+}
+
+.notes-year-chart__line {
+  stroke: color-mix(in srgb, var(--accent) 45%, var(--ink));
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.notes-year-chart__dot {
+  fill: color-mix(in srgb, var(--accent) 45%, var(--ink));
+}
+
+.notes-year-chart__caption {
+  margin: 8px 0 0;
+  font-size: 0.72rem;
+  font-weight: 600;
+  line-height: 1.4;
+  color: var(--ink-muted);
+  text-wrap: balance;
+}
+
+.notes-year-chart__cap-year {
+  font-weight: 800;
+  color: var(--ink);
+}
+
 .notes__section {
   width: 100%;
   padding-top: 8px;
@@ -4197,6 +4540,139 @@
 .journal__about-notes:focus {
   outline: none;
   box-shadow: none;
+}
+
+/* Parent-text ideas (weekday rhythm + examples) — under outing field in journal & trip log */
+.journal-parent-ideas-details {
+  border-top: 1px solid var(--line);
+  background: var(--surface);
+}
+
+.journal__about-bundle .journal-parent-ideas-details {
+  border-top: 1px solid var(--line);
+}
+
+.journal-parent-ideas-details--trip {
+  border-radius: 0 0 var(--radius) var(--radius);
+}
+
+.journal-parent-ideas__summary {
+  cursor: pointer;
+  list-style: none;
+  padding: 10px 12px;
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--ink-muted);
+  user-select: none;
+}
+
+.journal-parent-ideas__summary::-webkit-details-marker {
+  display: none;
+}
+
+.journal-parent-ideas__summary::after {
+  content: ' ▼';
+  font-size: 0.85em;
+  font-weight: 600;
+  color: var(--ink-muted);
+}
+
+.journal-parent-ideas-details[open] .journal-parent-ideas__summary::after {
+  content: ' ▲';
+}
+
+.journal-parent-ideas__panel {
+  padding: 0 12px 12px;
+  max-height: 22rem;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.journal-parent-ideas__rhythm {
+  margin: 0 0 10px;
+  font-size: 0.78rem;
+  line-height: 1.45;
+}
+
+.journal-parent-ideas__label {
+  margin: 0 0 6px;
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--ink-muted);
+}
+
+.journal-parent-ideas__prompts {
+  margin: 0;
+  padding-left: 1.15rem;
+  font-size: 0.78rem;
+  line-height: 1.45;
+  color: var(--ink);
+}
+
+.journal-parent-ideas__prompts li {
+  margin-bottom: 6px;
+}
+
+.journal-parent-ideas__prompts li:last-child {
+  margin-bottom: 0;
+}
+
+.journal-parent-ideas__examples-nested {
+  margin-top: 12px;
+  border: 1px dashed color-mix(in srgb, var(--accent) 25%, var(--line));
+  border-radius: var(--radius);
+  background: color-mix(in srgb, var(--paper2) 70%, var(--surface));
+  padding: 0;
+  overflow: hidden;
+}
+
+.journal-parent-ideas__examples-summary {
+  cursor: pointer;
+  list-style: none;
+  padding: 10px 12px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--ink);
+  user-select: none;
+}
+
+.journal-parent-ideas__examples-summary::-webkit-details-marker {
+  display: none;
+}
+
+.journal-parent-ideas__examples-summary::after {
+  content: ' ▼';
+  font-size: 0.85em;
+  color: var(--ink-muted);
+}
+
+.journal-parent-ideas__examples-nested[open] .journal-parent-ideas__examples-summary::after {
+  content: ' ▲';
+}
+
+.journal-parent-ideas__examples-body {
+  padding: 0 10px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.journal-parent-ideas__example-block {
+  white-space: pre-wrap;
+  word-break: break-word;
+  font-family: inherit;
+  font-size: 0.74rem;
+  line-height: 1.45;
+  margin: 0;
+  padding: 10px 11px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  color: var(--ink);
 }
 
 .journal__about-meals {

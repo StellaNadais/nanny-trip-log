@@ -6,8 +6,8 @@ import { receiptNavLabel, receiptPagePath } from '../utils/receiptHref'
 const CARDS = [
   { to: '/shift', label: 'Shift', code: 'A' },
   { to: '/journal', label: 'Kid Journal', code: 'B' },
-  { to: '/notes', label: 'Internal notes', code: 'E' },
   { to: '/events', label: 'Events', code: 'D', stacked: true },
+  { to: '/notes', label: 'Internal notes', code: 'E' },
 ]
 
 export default function HubPage() {

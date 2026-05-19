@@ -14,6 +14,7 @@ import InternalNotesPage from './pages/InternalNotesPage'
 import OutingsPage from './pages/OutingsPage'
 import EventsPage from './pages/EventsPage'
 import CaregiverFlowLayout from './layouts/CaregiverFlowLayout'
+import ActivityWhisperOverlay from './components/ActivityWhisperOverlay'
 import './App.css'
 import './pages/pages.css'
 import './pages/work-ui.css'
@@ -23,6 +24,7 @@ export default function App() {
     <ShiftPunctualityProvider>
       <KidJournalProvider>
         <BookingsProvider>
+          <ActivityWhisperOverlay />
           <Routes>
             <Route element={<CaregiverFlowLayout />}>
               <Route path="/" element={<WelcomePage />} />

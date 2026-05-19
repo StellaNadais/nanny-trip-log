@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { DayStrip } from '../components/DayStrip'
 import MealsInlineField from '../components/MealsInlineField'
+import JournalParentMessageIdeas from '../components/JournalParentMessageIdeas'
 import TripPlacesField from '../components/TripPlacesField'
 import { useKidJournal } from '../hooks/useKidJournal'
 import { getMealHealthSuggestions } from '../utils/mealSuggestions'
@@ -365,6 +366,7 @@ export default function KidJournalPage() {
             nestedInAbout
             receiptWeekKey={weekKey}
           />
+          <JournalParentMessageIdeas dateISO={dateISO} variant="journal" />
           <div className="journal__about-meals">
             <span className="field-block__label field-block__label--sub" id="kid-journal-meals-label">
               Meals today

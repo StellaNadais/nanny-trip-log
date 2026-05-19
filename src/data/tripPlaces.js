@@ -56,8 +56,15 @@ export const PLACES = [
   },
   {
     id: 'moraga-learn-play',
-    label: 'Learn and Play School',
-    aliases: ['Learn and Play', 'Learn & Play School', '1695 Canyon'],
+    label: "H's drop off",
+    aliases: [
+      'Learn and Play',
+      'Learn and Play School',
+      'Learn & Play School',
+      "H's drop off",
+      'Hs drop off',
+      '1695 Canyon',
+    ],
     region: 'moraga',
     milesOneWay: 3, // 1695 Canyon Rd, Moraga CA 94556 — tune vs your home base
   },
