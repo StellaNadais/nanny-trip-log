@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { toISODateLocal } from '../utils/dates'
 import { monthGrid, WEEKDAYS, isSameDay } from '../utils/calendarMonth'
 import { useBookings } from '../hooks/useBookings'
+import { useUpcomingGigsThemePlayback } from '../hooks/useUpcomingGigsThemePlayback'
 import { bookingOccupiesCalendarSlot } from '../utils/bookingCalendar'
 import { expandBookingCalendarDates, formatCareBookingWindow, bookingEndMs } from '../utils/bookingRange'
 
@@ -82,6 +83,8 @@ export default function SchedulePage() {
   const [requestsDockOpen, setRequestsDockOpen] = useState(false)
   /** Schedule “card”: month grid (front) flips to upcoming gigs list (back). */
   const [scheduleCardListFace, setScheduleCardListFace] = useState(false)
+
+  useUpcomingGigsThemePlayback(scheduleCardListFace)
 
   useEffect(() => {
     if (upcoming.length === 0) {
