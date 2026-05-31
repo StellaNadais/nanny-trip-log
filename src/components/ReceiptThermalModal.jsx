@@ -13,6 +13,7 @@ export default function ReceiptThermalModal({
   rows,
   photos,
   totalCentsDisplay,
+  backdropClassName = '',
   children,
 }) {
   const [captureMode, setCaptureMode] = useState(false)
@@ -45,7 +46,12 @@ export default function ReceiptThermalModal({
       {captureMode ? (
         <div className="receipt-modal__backdrop receipt-modal__backdrop--capture" aria-hidden />
       ) : (
-        <button type="button" className="receipt-modal__backdrop" aria-label="Close receipt" onClick={onClose} />
+        <button
+          type="button"
+          className={`receipt-modal__backdrop ${backdropClassName}`.trim()}
+          aria-label="Close receipt"
+          onClick={onClose}
+        />
       )}
       <div className="receipt-modal__sheet">
         <div className="receipt-modal__ticket-shell">

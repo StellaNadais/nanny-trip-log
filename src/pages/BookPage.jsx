@@ -6,6 +6,7 @@ import { monthGrid, WEEKDAYS, isSameDay } from '../utils/calendarMonth'
 import { useBookings } from '../hooks/useBookings'
 import { bookingOccupiesCalendarSlot } from '../utils/bookingCalendar'
 import { careIntervalValid, expandBookingCalendarDates } from '../utils/bookingRange'
+import { BOOK_THANKS_LEDE, BOOK_THANKS_SUPPORTERS } from '../data/bookThanks'
 
 function todayISO() {
   return toISODateLocal(new Date())
@@ -521,6 +522,21 @@ export default function BookPage() {
           </Link>
         </div>
       </details>
+
+      <section className="book-thanks" aria-labelledby="book-thanks-heading">
+        <h2 id="book-thanks-heading" className="book-thanks__title">
+          Thank you
+        </h2>
+        <p className="book-thanks__lede">{BOOK_THANKS_LEDE}</p>
+        <ul className="book-thanks__list">
+          {BOOK_THANKS_SUPPORTERS.map((person) => (
+            <li key={person.name} className="book-thanks__item">
+              <strong className="book-thanks__name">{person.name}</strong>
+              <span className="book-thanks__note">{person.note}</span>
+            </li>
+          ))}
+        </ul>
+      </section>
     </div>
   )
 }

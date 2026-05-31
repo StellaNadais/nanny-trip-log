@@ -14,13 +14,48 @@ export const HUB_SHIFT_END_SCORE = Object.freeze({
 
 const MONTH_LETTERS = ['J', 'F', 'M', 'A', 'M', 'J', 'L', 'A', 'S', 'O', 'N', 'D']
 
-function entryPunctualityScore(e) {
+export function entryPunctualityScore(e) {
   const a = HUB_SHIFT_ARRIVAL_SCORE[e?.arrival]
   const b = HUB_SHIFT_END_SCORE[e?.end]
   if (a != null && b != null) return Math.round((a + b) / 2)
   if (a != null) return Math.round(a * 0.92)
   if (b != null) return Math.round(b * 0.92)
   return null
+}
+
+/** Year rollup for Internal notes — average slot score + day counts. */
+export function getYearPunctualitySummary(entries, year = new Date().getFullYear()) {
+  const y = String(year)
+  let scoreSum = 0
+  let scoreCount = 0
+  let logged = 0
+  let full = 0
+
+  for (const e of entries || []) {
+    if (!e?.dateISO?.startsWith(y)) continue
+    logged++
+    if (String(e.arrival || '').trim() && String(e.end || '').trim()) full++
+    const sc = entryPunctualityScore(e)
+    if (sc != null) {
+      scoreSum += sc
+      scoreCount++
+    }
+  }
+
+  const avgScore = scoreCount > 0 ? Math.round(scoreSum / scoreCount) : null
+  let tier = 'empty'
+  if (avgScore != null) {
+    if (avgScore >= 85) tier = 'great'
+    else if (avgScore >= 65) tier = 'ok'
+    else tier = 'low'
+  }
+
+  const line =
+    logged === 0
+      ? 'Log from Shift to see your score.'
+      : `${logged} day${logged === 1 ? '' : 's'} logged · ${full} with in & out`
+
+  return { avgScore, logged, full, tier, line, year }
 }
 
 /**

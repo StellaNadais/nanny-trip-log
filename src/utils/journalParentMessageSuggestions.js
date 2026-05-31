@@ -1,13 +1,13 @@
 /**
- * Typical weekday flow (place names align with trip/journal mileage picks).
+ * Typical weekday flow — place nicknames match trip/journal mileage picks.
  * Keys: getDay() Mon=1 … Fri=5
  */
 export const TYPICAL_WEEKDAY_RHYTHM = Object.freeze({
-  1: "H's drop off → Lafayette Library (storytime) → home for nap → Moraga Commons",
-  2: "H's drop off → Lamorinda (music) → home for nap → Moraga Commons",
-  3: "H's drop off → home → Moraga Commons",
-  4: "H's drop off → home or straight to Moraga Commons for PT → home for nap → walk after nap & snacks",
-  5: "H's drop off → Moraga Commons → home for nap",
+  1: "H's drop off → Lafayette Library (storytime) → home for nap → Commons",
+  2: "H's drop off → music → home for nap → Commons",
+  3: "H's drop off → home → Commons",
+  4: "H's drop off → home or Commons → home for nap → walk after nap & snacks",
+  5: "H's drop off → Commons → home for nap",
 })
 
 /** Short prompts — checklist style for family texts. */
@@ -28,8 +28,8 @@ After drop off we went straight to the park and had lots of fun with all of the 
 
 Poppy ate all of the snacks + pouch except for the grapes. 
 
-If she asks for car crash music, it’s “I love it” by Icona Pop. 
-Ask her about her top 3 fav songs and she’ll tell you her favorites, she’ll be willing to take turns lol or maybe ask for her top 10 and you will have a good playlist. 
+If she asks for car crash music, it's "I love it" by Icona Pop. 
+Ask her about her top 3 fav songs and she'll tell you her favorites, she'll be willing to take turns lol or maybe ask for her top 10 and you will have a good playlist. 
 
 She peed and pooped at the park around 4:20pm.
 She had nanos right before parents were home. 
@@ -41,13 +41,13 @@ Have a good night`,
 
   `We had such a fun day today! 
 
-After dropping Harper off we hangout in the house for a little bit before therapy, she was fussy and not wanting to do much. She was pretty congested in the morning so I’m assuming she was just feeling sick. By 10:30 at the park commons she was already more like herself and her therapy with Katie was really good too. Lots of running on the grass with Lily and Romy.
+After dropping Harper off we hangout in the house for a little bit before therapy, she was fussy and not wanting to do much. She was pretty congested in the morning so I'm assuming she was just feeling sick. By 10:30 at the park commons she was already more like herself and her therapy with Katie was really good too. Lots of running on the grass with Lily and Romy.
 
 Poppy pooped in the morning only. She just had a 50% pee accident. 
 
-Poppy ate lots of strawberries (the one you got from the store today is really sweet and soft the best we’ve ever had), she also had a bar and chicken nuggets. 
+Poppy ate lots of strawberries (the one you got from the store today is really sweet and soft the best we've ever had), she also had a bar and chicken nuggets. 
 
-She’s probably going through a development leap too, lots of questioning and being resistant to listen to our instructions, “no” for everything we suggest lol it’s probably temporary, so funny tho.`,
+She's probably going through a development leap too, lots of questioning and being resistant to listen to our instructions, "no" for everything we suggest lol it's probably temporary, so funny tho.`,
 ])
 
 /**
@@ -62,7 +62,7 @@ export function getTypicalDayRhythmLine(dateISO) {
   if (jsDay >= 1 && jsDay <= 5) {
     return TYPICAL_WEEKDAY_RHYTHM[jsDay]
   }
-  return 'Weekend — your usual spots; type saved place names for mileage (same as weekdays).'
+  return 'Weekend — type saved place nicknames for mileage (same as weekdays).'
 }
 
 /**

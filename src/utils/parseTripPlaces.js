@@ -2,6 +2,9 @@ import { addDays, toISODateLocal } from './dates'
 import { MILE_RATE, PLACE_BY_ID, PLACES } from '../data/tripPlaces'
 import { loadOutingsPlaces } from './outingsStorage'
 import { outingRecordToPlace } from './outingsPlaceModel'
+import { runMilesForPlaceChain, buildTripGraph } from './tripSegmentMiles'
+
+export { runMilesForPlaceChain }
 
 const TOKEN_RE = /^«p:([a-z0-9-]+)»/
 
@@ -143,22 +146,8 @@ export function splitTripLogForMirror(text) {
 }
 
 /**
- * Miles for one “run” of stops from home: first leg + between-stop hops (|Δ one-way|) + return home.
- */
-export function runMilesForPlaceChain(places) {
-  if (!places || places.length === 0) return 0
-  const ow = (p) => (Number.isFinite(p?.milesOneWay) ? Math.max(0, p.milesOneWay) : 0)
-  let m = ow(places[0])
-  for (let i = 1; i < places.length; i++) {
-    m += Math.abs(ow(places[i]) - ow(places[i - 1]))
-  }
-  m += ow(places[places.length - 1])
-  return m
-}
-
-/**
  * Mileage from place names / tokens, grouped by "then" or "+" between consecutive matches.
- * Unlinked matches each count as their own home → place → home run (2× one-way).
+ * Unlinked matches each count as their own home → place → home run.
  */
 export function computeTripMileageForText(text) {
   const s = String(text || '')
@@ -193,9 +182,10 @@ export function computeTripMileageForText(text) {
 
   let totalMiles = 0
   const rows = []
+  const graph = buildTripGraph()
   for (const g of groups) {
     const places = g.map((h) => h.place)
-    const miles = runMilesForPlaceChain(places)
+    const miles = runMilesForPlaceChain(places, graph)
     totalMiles += miles
     rows.push({
       placeId: places.map((p) => p.id).join('|'),

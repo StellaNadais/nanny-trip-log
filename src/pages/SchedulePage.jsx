@@ -488,8 +488,8 @@ export default function SchedulePage() {
 
       <div className="calendar__footer schedule__footer">
         <Link to="/hub" className="schedule__flow-hint schedule__flow-hint--link muted">
-          Swipe left; or scroll down once more when you are already at the bottom; or tap here for Tools. Right arrow
-          key also works.
+          <span className="schedule__flow-hint-mobile">Swipe left for Tools</span>
+          <span className="schedule__flow-hint-desktop">Open Tools →</span>
         </Link>
       </div>
     </div>

@@ -38,7 +38,7 @@ export function DayLogPanel({ iso, day, onChange, ensureDay, receiptWeekKey = ''
             value={displayValue}
             onChange={(v) => onChange(iso, { tripLog: '', notes: v })}
             aria-labelledby={labelId}
-            placeholder="e.g. Great day — morning Moraga Library, afternoon Lafayette Library…"
+            placeholder="e.g. H's drop off then Lamorinda music…"
             receiptWeekKey={receiptWeekKey}
           />
           <JournalParentMessageIdeas dateISO={iso} variant="trip" />

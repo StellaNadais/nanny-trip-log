@@ -2,7 +2,14 @@ const KEY = 'nanny-receipt-settings-v1'
 
 const DEFAULT_VENMO_HANDLE = '@stella-nadais'
 
-const defaults = () => ({ venmoHandle: DEFAULT_VENMO_HANDLE, mileageByWeek: {}, extrasByWeek: {} })
+const defaults = () => ({
+  venmoHandle: DEFAULT_VENMO_HANDLE,
+  hours: '45',
+  numChildren: '1',
+  weekOf: '',
+  mileageByWeek: {},
+  extrasByWeek: {},
+})
 
 export function loadReceiptSettings() {
   try {
@@ -11,6 +18,9 @@ export function loadReceiptSettings() {
     const data = JSON.parse(raw)
     return {
       venmoHandle: typeof data.venmoHandle === 'string' ? data.venmoHandle : '',
+      hours: typeof data.hours === 'string' ? data.hours : '45',
+      numChildren: typeof data.numChildren === 'string' ? data.numChildren : '1',
+      weekOf: typeof data.weekOf === 'string' ? data.weekOf : '',
       mileageByWeek:
         data.mileageByWeek && typeof data.mileageByWeek === 'object'
           ? data.mileageByWeek
@@ -29,6 +39,10 @@ export function saveReceiptSettings(settings) {
   const next = {
     venmoHandle:
       typeof settings.venmoHandle === 'string' ? settings.venmoHandle : cur.venmoHandle,
+    hours: typeof settings.hours === 'string' ? settings.hours : cur.hours,
+    numChildren:
+      typeof settings.numChildren === 'string' ? settings.numChildren : cur.numChildren,
+    weekOf: typeof settings.weekOf === 'string' ? settings.weekOf : cur.weekOf,
     mileageByWeek:
       settings.mileageByWeek !== undefined
         ? { ...cur.mileageByWeek, ...settings.mileageByWeek }

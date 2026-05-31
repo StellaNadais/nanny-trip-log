@@ -1,6 +1,5 @@
 import { useId, useMemo, useState } from 'react'
-import { MILE_RATE } from '../data/tripPlaces'
-import { computeTripMileageForText, splitTripLogForMirror } from '../utils/parseTripPlaces'
+import { splitTripLogForMirror } from '../utils/parseTripPlaces'
 import { mirrorNodesFromChunks } from './placeMirrorNodes'
 import ExtraExpenseModal from './ExtraExpenseModal'
 
@@ -21,12 +20,8 @@ export default function TripPlacesField({
 }) {
   const footRegionId = useId()
   const chunks = useMemo(() => splitTripLogForMirror(value), [value])
-  const mileage = useMemo(() => computeTripMileageForText(value), [value])
   const mirrorChildren = useMemo(() => mirrorNodesFromChunks(chunks), [chunks])
-  const tally = mileage.rows.length
   const [expenseOpen, setExpenseOpen] = useState(false)
-
-  const isJournal = variant === 'journal'
 
   return (
     <div
@@ -57,35 +52,17 @@ export default function TripPlacesField({
         </div>
       </div>
 
-      <details className="trip-places-foot-details" id={footRegionId} aria-live="polite">
-        <summary className="trip-places-foot__summary">
-          {isJournal ? 'Outings & mileage' : 'Mileage & expenses'}
-        </summary>
+      <details className="trip-places-foot-details trip-places-foot-details--expenses" id={footRegionId}>
+        <summary className="trip-places-foot__summary">Add expenses</summary>
         <div className="trip-places-foot-panel">
-          <div className="trip-places-foot">
-            {tally === 0 ? (
-              <p className="trip-places-foot__body muted">
-                Saved place names count toward mileage on <strong>Weekly receipt</strong>. Chain stops with{' '}
-                <strong>then</strong> or <strong>+</strong> so one outing isn’t double-counted.
-              </p>
-            ) : (
-              <p className="trip-places-foot__body">
-                <strong className="trip-places-foot__stat">{tally}</strong>{' '}
-                {tally === 1 ? 'trip' : 'trips'} counted ·{' '}
-                <strong className="trip-places-foot__stat">{mileage.totalMiles.toFixed(1)}</strong> mi round-trip ·{' '}
-                <strong className="trip-places-foot__stat">${mileage.reimbursement.toFixed(2)}</strong>{' '}
-                @ ${MILE_RATE}/mi — <span className="trip-places-foot__sync">on Weekly receipt</span>
-              </p>
-            )}
-          </div>
           {receiptWeekKey ? (
             <div className="trip-places-foot__actions">
               <button
                 type="button"
-                className="btn btn--primary trip-places-foot__expense-btn"
+                className="trip-places-foot__expense-btn"
                 onClick={() => setExpenseOpen(true)}
               >
-                {isJournal ? 'Add parking, tolls…' : 'Add expense to week…'}
+                Add parking, tolls…
               </button>
             </div>
           ) : null}

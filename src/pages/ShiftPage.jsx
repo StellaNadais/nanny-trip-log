@@ -119,8 +119,8 @@ export default function ShiftPage() {
     const pair = Boolean(arrival && end)
     setFlash(
       pair
-        ? "Today's shift is logged—open Internal notes to see in and out."
-        : 'End saved. View history in Internal notes.'
+        ? "Today's shift is logged."
+        : 'End saved.'
     )
   }
 
@@ -145,10 +145,9 @@ export default function ShiftPage() {
           Shift <span className="placeholder__code">(A)</span>
         </h1>
         <p className="muted shift__lede">
-          Pick the week and day like Kid journal, tap arrival and end in the circles. Each side has its own{' '}
-          <strong>Log</strong> button that only works on that day, within ±5 minutes of the time you chose—so
-          submissions line up with the real clock. Internal notes keeps your history; paid time off is at the bottom
-          of this page.
+          Pick the week and day, tap arrival and end in the circles. Each side has its own{' '}
+          <strong>Log</strong> button that only works on that day, within ±5 minutes of the time you chose.
+          Paid time off is at the bottom of this page.
         </p>
       </header>
 

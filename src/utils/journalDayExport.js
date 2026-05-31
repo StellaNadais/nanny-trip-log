@@ -6,8 +6,13 @@ export function buildJournalDayExportText({
   morningNap,
   afternoonNap,
   handwrittenPhotoDataUrl,
+  shoppingItems = [],
 }) {
   const hasHandwrittenPhoto = Boolean(String(handwrittenPhotoDataUrl || '').trim())
+  const shoppingLines =
+    shoppingItems.length === 0
+      ? ['(empty)']
+      : shoppingItems.map((item) => `${item.done ? '[x]' : '[ ]'} ${item.text}`)
   const lines = [
     'KID JOURNAL',
     dateLabel,
@@ -25,6 +30,9 @@ export function buildJournalDayExportText({
     '--- Naps ---',
     `Morning: ${String(morningNap || '').trim() || '—'}`,
     `Afternoon: ${String(afternoonNap || '').trim() || '—'}`,
+    '',
+    '--- Shopping list (this week) ---',
+    ...shoppingLines,
     '',
     '---',
     `Exported ${new Date().toLocaleString()}`,

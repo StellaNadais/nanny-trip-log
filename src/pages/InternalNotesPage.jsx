@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import NotesPunctualityFlip from '../components/NotesPunctualityFlip'
+import NotesPunctualitySummary from '../components/NotesPunctualitySummary'
 
 export default function InternalNotesPage() {
   return (
@@ -12,15 +12,14 @@ export default function InternalNotesPage() {
           Internal notes <span className="placeholder__code">(E)</span>
         </h1>
         <p className="muted notes__lede">
-          Shift times you submit from <strong>Shift</strong> land here — flip the card like{' '}
-          <strong>Schedule</strong> to see your year chart or the full log.
+          A quick read on how punctual your shift logs have been this year.
         </p>
         <Link to="/shift" className="btn btn--primary notes__cta">
           Log a shift
         </Link>
       </header>
 
-      <NotesPunctualityFlip />
+      <NotesPunctualitySummary />
     </div>
   )
 }

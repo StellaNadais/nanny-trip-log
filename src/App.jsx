@@ -1,4 +1,4 @@
-import { Route, Routes } from 'react-router-dom'
+import { Navigate, Route, Routes } from 'react-router-dom'
 import { ShiftPunctualityProvider } from './context/ShiftPunctualityProvider'
 import { KidJournalProvider } from './context/KidJournalProvider'
 import { BookingsProvider } from './context/BookingsProvider'
@@ -6,7 +6,6 @@ import WelcomePage from './pages/WelcomePage'
 import BookPage from './pages/BookPage'
 import SchedulePage from './pages/SchedulePage'
 import HubPage from './pages/HubPage'
-import TripLogPage from './pages/TripLogPage'
 import WeeklyReceiptPage from './pages/WeeklyReceiptPage'
 import ShiftPage from './pages/ShiftPage'
 import KidJournalPage from './pages/KidJournalPage'
@@ -30,7 +29,7 @@ export default function App() {
               <Route path="/hub" element={<HubPage />} />
             </Route>
             <Route path="/book" element={<BookPage />} />
-            <Route path="/trip-log" element={<TripLogPage />} />
+            <Route path="/trip-log" element={<Navigate to="/journal" replace />} />
             <Route path="/receipt" element={<WeeklyReceiptPage />} />
             <Route path="/shift" element={<ShiftPage />} />
             <Route path="/journal" element={<KidJournalPage />} />

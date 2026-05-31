@@ -1,9 +1,13 @@
 import { splitTripLogForMirror } from '../utils/parseTripPlaces'
 
 function placeClass(region) {
-  if (region === 'oakland') return 'trip-place--oakland'
   if (region === 'moraga') return 'trip-place--moraga'
   if (region === 'lafayette') return 'trip-place--lafayette'
+  if (region === 'client') return 'trip-place--client'
+  if (region === 'park') return 'trip-place--park'
+  if (region === 'museum') return 'trip-place--museum'
+  if (region === 'downtown') return 'trip-place--downtown'
+  if (region === 'outing') return 'trip-place--outing'
   if (region === 'custom') return 'trip-place--custom'
   return 'trip-place--unknown'
 }

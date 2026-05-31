@@ -18,25 +18,30 @@ export function nextAcceptedGigDateISO(bookings) {
 }
 
 /**
- * `/receipt` in business hours, else `/receipt?gigDate=…` when a day is known.
+ * Hub with receipt popup open (`?receipt=open`). Gig date in query when after hours.
  * @param {object[]} bookings
  * @param {{ at?: Date, gigDateISO?: string }} [opts]
  */
 export function receiptPagePath(bookings, opts = {}) {
   const at = opts.at ?? new Date()
-  if (isWeeklyReceiptBusinessHours(at)) return '/receipt'
-  const fromOpt = opts.gigDateISO
-  if (fromOpt && /^\d{4}-\d{2}-\d{2}$/.test(fromOpt)) {
-    return `/receipt?gigDate=${encodeURIComponent(fromOpt)}`
+  const params = new URLSearchParams()
+  params.set('receipt', 'open')
+  if (!isWeeklyReceiptBusinessHours(at)) {
+    const fromOpt = opts.gigDateISO
+    if (fromOpt && /^\d{4}-\d{2}-\d{2}$/.test(fromOpt)) {
+      params.set('gigDate', fromOpt)
+    } else {
+      const iso = nextAcceptedGigDateISO(bookings)
+      if (iso) params.set('gigDate', iso)
+    }
   }
-  const iso = nextAcceptedGigDateISO(bookings)
-  return iso ? `/receipt?gigDate=${encodeURIComponent(iso)}` : '/receipt'
+  return `/hub?${params.toString()}`
 }
 
-export function receiptNavLabel(at = new Date()) {
-  return isWeeklyReceiptBusinessHours(at) ? 'Weekly receipt' : 'Receipt'
+export function receiptNavLabel() {
+  return 'Receipt'
 }
 
-export function receiptOpenLinkText(at = new Date()) {
-  return isWeeklyReceiptBusinessHours(at) ? 'Open weekly receipt →' : 'Open receipt →'
+export function receiptOpenLinkText() {
+  return 'Open receipt →'
 }

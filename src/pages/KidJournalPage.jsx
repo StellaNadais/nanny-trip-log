@@ -4,6 +4,7 @@ import { DayStrip } from '../components/DayStrip'
 import MealsInlineField from '../components/MealsInlineField'
 import JournalParentMessageIdeas from '../components/JournalParentMessageIdeas'
 import TripPlacesField from '../components/TripPlacesField'
+import { TodoPanel } from '../components/TodoPanel'
 import { useKidJournal } from '../hooks/useKidJournal'
 import { getMealHealthSuggestions } from '../utils/mealSuggestions'
 import { countByCategory, parseMealsToParts } from '../utils/parseMeals'
@@ -27,6 +28,12 @@ import {
   journalDayFilename,
 } from '../utils/journalDayExport'
 import { fileToCompressedDataUrl } from '../utils/receiptImage'
+import {
+  addShoppingItem,
+  loadShoppingForWeek,
+  removeShoppingItem,
+  toggleShoppingItem,
+} from '../utils/journalShoppingStorage'
 
 function loadDraftFromLatest(iso) {
   const ent = loadKidJournalEntries()
@@ -93,6 +100,11 @@ export default function KidJournalPage() {
   const [suggestionClock, setSuggestionClock] = useState(() => Date.now())
   const [journalShareGateNow, setJournalShareGateNow] = useState(() => Date.now())
   const [outingsRev, setOutingsRev] = useState(0)
+  const [shoppingItems, setShoppingItems] = useState([])
+
+  useEffect(() => {
+    setShoppingItems(loadShoppingForWeek(weekKey))
+  }, [weekKey])
 
   useEffect(() => {
     const id = setInterval(() => setSuggestionClock(Date.now()), 5 * 60 * 1000)
@@ -167,6 +179,18 @@ export default function KidJournalPage() {
     setJournalWeekStart((w) => addDays(w, delta * 7))
   }
 
+  function handleAddShopping(text) {
+    setShoppingItems(addShoppingItem(weekKey, text))
+  }
+
+  function handleToggleShopping(id) {
+    setShoppingItems(toggleShoppingItem(weekKey, id))
+  }
+
+  function handleRemoveShopping(id) {
+    setShoppingItems(removeShoppingItem(weekKey, id))
+  }
+
   function persistJournalIfChanged() {
     const latest = loadDraftFromLatest(dateISO)
     const photo = handwrittenPhotoDataUrl || ''
@@ -225,6 +249,7 @@ export default function KidJournalPage() {
         morningNap,
         afternoonNap,
         handwrittenPhotoDataUrl,
+        shoppingItems,
       }),
     [
       dateISO,
@@ -234,6 +259,7 @@ export default function KidJournalPage() {
       morningNap,
       afternoonNap,
       handwrittenPhotoDataUrl,
+      shoppingItems,
     ]
   )
 
@@ -246,6 +272,7 @@ export default function KidJournalPage() {
       morningNap,
       afternoonNap,
       handwrittenPhotoDataUrl,
+      shoppingItems,
     }
   }
 
@@ -408,6 +435,21 @@ export default function KidJournalPage() {
               placeholder="e.g. 1–3pm or car nap"
             />
           </label>
+        </div>
+
+        <div className="field-block journal__shopping">
+          <span className="field-block__label" id="kid-journal-shopping-label">
+            Shopping list
+          </span>
+          <p className="journal__hint muted">For this week — milk, snacks, supplies…</p>
+          <TodoPanel
+            todos={shoppingItems}
+            onAdd={handleAddShopping}
+            onToggle={handleToggleShopping}
+            onRemove={handleRemoveShopping}
+            placeholder="Add to shopping list…"
+            emptyMessage="Nothing on the list yet."
+          />
         </div>
 
         <div

@@ -1,12 +1,16 @@
 export const MANUAL_CATEGORIES = [
-  { id: 'parking_ticket', label: 'Parking ticket' },
-  { id: 'parking_spot', label: 'Parking spot' },
-  { id: 'ticket_entry', label: 'Ticket / entry' },
-  { id: 'tolls', label: 'Tolls' },
-  { id: 'fastrak', label: 'Fastrak' },
-  { id: 'other', label: 'Other' },
+  { id: 'parking_ticket', label: 'Parking ticket', emoji: '🅿️', tone: 'peach' },
+  { id: 'parking_spot', label: 'Parking spot', emoji: '🚗', tone: 'mint' },
+  { id: 'ticket_entry', label: 'Ticket / entry', emoji: '🎟️', tone: 'lavender' },
+  { id: 'tolls', label: 'Tolls', emoji: '🛣️', tone: 'sky' },
+  { id: 'fastrak', label: 'Fastrak', emoji: '⚡', tone: 'sun' },
+  { id: 'other', label: 'Other', emoji: '✨', tone: 'rose' },
 ]
 
 export function categoryLabel(id) {
   return MANUAL_CATEGORIES.find((c) => c.id === id)?.label ?? id
+}
+
+export function categoryMeta(id) {
+  return MANUAL_CATEGORIES.find((c) => c.id === id) ?? MANUAL_CATEGORIES[MANUAL_CATEGORIES.length - 1]
 }

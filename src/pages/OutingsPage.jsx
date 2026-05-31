@@ -10,7 +10,7 @@ import {
 import { addDays, formatWeekRange, startOfWeekMonday, toISODateLocal } from '../utils/dates'
 import { MILE_RATE } from '../data/tripPlaces'
 import { useBookings } from '../hooks/useBookings'
-import { categoryLabel, MANUAL_CATEGORIES } from '../data/receiptManualCategories'
+import { categoryLabel, categoryMeta, MANUAL_CATEGORIES } from '../data/receiptManualCategories'
 import { receiptOpenLinkText, receiptPagePath } from '../utils/receiptHref'
 
 function uid() {
@@ -42,6 +42,7 @@ export default function OutingsPage() {
   const [manualAmt, setManualAmt] = useState('')
   const [manualNote, setManualNote] = useState('')
   const [mileageRev, setMileageRev] = useState(0)
+
   const weekKey = useMemo(() => toISODateLocal(outingWeekStart), [outingWeekStart])
   const dateISO = useMemo(
     () => toISODateLocal(addDays(outingWeekStart, dayOffset)),
@@ -53,14 +54,12 @@ export default function OutingsPage() {
     [bookings, dateISO]
   )
   const receiptLinkLabel = receiptOpenLinkText()
-
   const receiptWeekKey = weekKey
-
   const weekLabel = useMemo(() => formatWeekRange(outingWeekStart), [outingWeekStart])
 
   const outingsHeadingTip = useMemo(
     () =>
-      `Mileage — type place names in Kid journal or Trip log; distances are built in (plus any saved extras on this device). Use “then” or + between stops for one trip. Totals sync to Weekly receipt ($${MILE_RATE}/mi). Parking & tolls entry is per week below.`,
+      `Add parking, tolls & other reimbursements for this week. Mileage still counts from Kid journal / Trip log ($${MILE_RATE}/mi) — totals land on Weekly receipt.`,
     []
   )
 
@@ -133,6 +132,8 @@ export default function OutingsPage() {
     }))
   }
 
+  const activeCat = categoryMeta(manualCat)
+
   return (
     <div className="page page--outings">
       <header className="outings__head">
@@ -145,7 +146,7 @@ export default function OutingsPage() {
           aria-describedby="outings-page-intro"
           data-tooltip={outingsHeadingTip}
         >
-          Outings
+          Outings <span className="placeholder__code">(C)</span>
         </h1>
         <p id="outings-page-intro" className="sr-only">
           {outingsHeadingTip}
@@ -184,31 +185,49 @@ export default function OutingsPage() {
         />
       </div>
 
-      <section className="outings__section outings__section--receipt outings__section--solo" aria-labelledby="outings-receipt-heading">
-        <h2 id="outings-receipt-heading" className="outings__section-title">
-          Parking &amp; other expenses (weekly)
-        </h2>
-        <p className="muted outings__hint">
-          Same calendar week as above; totals sync to <Link to={receiptTo}>Weekly receipt</Link>.
-        </p>
+      <section
+        className="outings__section outings-expenses"
+        aria-labelledby="outings-expenses-heading"
+      >
+        <div className="outings-expenses__hero">
+          <p className="outings-expenses__eyebrow">This week</p>
+          <h2 id="outings-expenses-heading" className="outings-expenses__title">
+            Add expenses
+          </h2>
+          <p className="outings-expenses__lede">
+            Parking, tolls, Fastrak &amp; more — synced to{' '}
+            <Link to={receiptTo}>Weekly receipt</Link>.
+          </p>
+        </div>
 
-        <div className="receipt__manual-block outings__manual">
+        <div className="outings-expenses__panel">
           <button
             type="button"
-            className="btn receipt__manual-toggle"
+            className={`outings-expenses__add-btn${manualOpen ? ' outings-expenses__add-btn--open' : ''}`}
             onClick={() => setManualOpen((o) => !o)}
             aria-expanded={manualOpen}
           >
-            {manualOpen ? 'Hide' : 'Enter manually'} — parking, tolls, Fastrak…
+            <span className="outings-expenses__add-btn-ico" aria-hidden>
+              {manualOpen ? '−' : '+'}
+            </span>
+            {manualOpen ? 'Close form' : 'Add parking, tolls…'}
           </button>
+
           {manualOpen ? (
-            <form className="receipt__manual-form" onSubmit={addManualLine}>
+            <form
+              className={`outings-expenses__form outings-expenses__form--${activeCat.tone}`}
+              onSubmit={addManualLine}
+            >
               <label className="field-block">
                 <span className="field-block__label">Type</span>
-                <select className="input input--line" value={manualCat} onChange={(e) => setManualCat(e.target.value)}>
+                <select
+                  className="input input--line"
+                  value={manualCat}
+                  onChange={(e) => setManualCat(e.target.value)}
+                >
                   {MANUAL_CATEGORIES.map((c) => (
                     <option key={c.id} value={c.id}>
-                      {c.label}
+                      {c.emoji} {c.label}
                     </option>
                   ))}
                 </select>
@@ -234,36 +253,60 @@ export default function OutingsPage() {
                   className="input input--line"
                   value={manualNote}
                   onChange={(e) => setManualNote(e.target.value)}
-                  placeholder="e.g. garage on Oak"
+                  placeholder="e.g. garage downtown"
                 />
               </label>
-              <button type="submit" className="btn btn--primary">
-                Add to receipt
+              <button type="submit" className="btn btn--primary outings-expenses__submit">
+                Add to week
               </button>
             </form>
           ) : null}
-          {extras.manualLines.length > 0 ? (
-            <ul className="receipt__manual-list">
-              {extras.manualLines.map((m) => (
-                <li key={m.id} className="receipt__manual-row">
-                  <span>
-                    {categoryLabel(m.category)}
-                    {m.note ? ` · ${m.note}` : ''}
-                  </span>
-                  <span className="receipt__manual-row-amt">${Number(m.amount).toFixed(2)}</span>
-                  <button type="button" className="btn btn--ghost receipt__manual-remove" onClick={() => removeManualLine(m.id)}>
-                    ×
-                  </button>
-                </li>
-              ))}
-            </ul>
-          ) : null}
-        </div>
 
-        <p className="muted outings__manual-total">
-          Manual reimbursements this week:{' '}
-          <strong>${manualTotal.toFixed(2)}</strong>
-        </p>
+          {extras.manualLines.length > 0 ? (
+            <ul className="outings-expenses__list" aria-label="Expenses this week">
+              {extras.manualLines.map((m) => {
+                const meta = categoryMeta(m.category)
+                return (
+                  <li
+                    key={m.id}
+                    className={`outings-expenses__chip outings-expenses__chip--${meta.tone}`}
+                  >
+                    <span className="outings-expenses__chip-emoji" aria-hidden>
+                      {meta.emoji}
+                    </span>
+                    <div className="outings-expenses__chip-body">
+                      <span className="outings-expenses__chip-type">{categoryLabel(m.category)}</span>
+                      {m.note ? (
+                        <span className="outings-expenses__chip-note">{m.note}</span>
+                      ) : null}
+                    </div>
+                    <span className="outings-expenses__chip-amt">${Number(m.amount).toFixed(2)}</span>
+                    <button
+                      type="button"
+                      className="outings-expenses__chip-remove"
+                      onClick={() => removeManualLine(m.id)}
+                      aria-label={`Remove ${categoryLabel(m.category)} $${Number(m.amount).toFixed(2)}`}
+                    >
+                      ×
+                    </button>
+                  </li>
+                )
+              })}
+            </ul>
+          ) : (
+            <p className="outings-expenses__empty">
+              <span className="outings-expenses__empty-emoji" aria-hidden>
+                🧾
+              </span>
+              Nothing yet — tap <strong>Add parking, tolls…</strong> when you have a receipt moment.
+            </p>
+          )}
+
+          <div className="outings-expenses__total" aria-live="polite">
+            <span className="outings-expenses__total-label">Week total</span>
+            <span className="outings-expenses__total-amt">${manualTotal.toFixed(2)}</span>
+          </div>
+        </div>
 
         <Link to={receiptTo} className="btn btn--ghost outings__to-receipt">
           {receiptLinkLabel}
