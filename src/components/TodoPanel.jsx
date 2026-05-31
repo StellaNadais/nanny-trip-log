@@ -1,6 +1,13 @@
 import { useState } from 'react'
 
-export function TodoPanel({ todos, onAdd, onToggle, onRemove }) {
+export function TodoPanel({
+  todos,
+  onAdd,
+  onToggle,
+  onRemove,
+  placeholder = 'Add a to-do or reminder…',
+  emptyMessage = 'No items yet — sick days, make-up classes, payment notes…',
+}) {
   const [draft, setDraft] = useState('')
 
   function submit(e) {
@@ -17,17 +24,15 @@ export function TodoPanel({ todos, onAdd, onToggle, onRemove }) {
           className="input input--line"
           value={draft}
           onChange={(e) => setDraft(e.target.value)}
-          placeholder="Add a to-do or reminder…"
-          aria-label="New to-do"
+          placeholder={placeholder}
+          aria-label="New item"
         />
         <button type="submit" className="btn btn--primary">
           Add
         </button>
       </form>
       <ul className="todo-list">
-        {todos.length === 0 && (
-          <li className="muted">No items yet — sick days, make-up classes, payment notes…</li>
-        )}
+        {todos.length === 0 && <li className="muted">{emptyMessage}</li>}
         {todos.map((t) => (
           <li key={t.id} className="todo-row">
             <label className="todo-check">

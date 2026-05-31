@@ -17,8 +17,9 @@
   .app {
     max-height: none;
     min-height: 100dvh;
-    border-left: 1px solid var(--line);
-    border-right: 1px solid var(--line);
+    border-left: 1px solid color-mix(in srgb, var(--line) 85%, transparent);
+    border-right: 1px solid color-mix(in srgb, var(--line) 85%, transparent);
+    box-shadow: 0 0 0 1px color-mix(in srgb, var(--surface) 88%, #e8e8e7) inset;
   }
 }
 
@@ -27,7 +28,7 @@
   padding: max(10px, env(safe-area-inset-top, 0px)) max(14px, env(safe-area-inset-right, 0px)) 10px
     max(14px, env(safe-area-inset-left, 0px));
   border-bottom: 1px solid var(--line);
-  background: linear-gradient(180deg, #fffefb 0%, var(--paper) 100%);
+  background: linear-gradient(180deg, #ffffff 0%, var(--paper) 100%);
 }
 
 .app__title-row {
@@ -83,7 +84,7 @@
   width: 100%;
   border: 1px solid var(--line);
   border-radius: 8px;
-  background: #fff;
+  background: var(--surface);
   color: var(--ink);
 }
 
@@ -182,7 +183,7 @@
   padding: 8px max(10px, env(safe-area-inset-right, 0px)) 8px max(10px, env(safe-area-inset-left, 0px));
   flex-shrink: 0;
   border-bottom: 1px solid var(--line);
-  background: #fffefb;
+  background: var(--surface);
 }
 
 .day-chip {
@@ -195,8 +196,8 @@
   min-width: 0;
   padding: 6px 2px;
   border: 1px solid var(--line);
-  border-radius: 8px;
-  background: #fff;
+  border-radius: 0;
+  background: var(--surface);
   cursor: pointer;
   font: inherit;
   color: var(--ink-muted);
@@ -248,7 +249,8 @@
   }
 }
 
-.field-block:last-child {
+/* Only in trip log day grid should the last field span both columns */
+.day-panel__grid .field-block:last-child {
   grid-column: 1 / -1;
 }
 
@@ -273,7 +275,7 @@
   border: 1px solid var(--line);
   border-radius: 8px;
   padding: 12px 12px;
-  background: #fff;
+  background: var(--surface);
   width: 100%;
 }
 
@@ -344,9 +346,9 @@
   font-size: 0.9375rem;
   min-height: 44px;
   padding: 10px 16px;
-  border-radius: 8px;
+  border-radius: 0;
   border: 1px solid var(--line);
-  background: #fff;
+  background: var(--surface);
   color: var(--ink);
   cursor: pointer;
 }
@@ -362,12 +364,13 @@
 .btn--primary {
   background: var(--accent);
   border-color: var(--accent);
-  color: #fff;
+  color: var(--surface);
 }
 
 .btn--primary:hover,
 .btn--primary:active {
-  filter: brightness(1.05);
+  filter: brightness(1.08);
+  box-shadow: 0 0 0 1px var(--gold);
 }
 
 .btn--ghost {

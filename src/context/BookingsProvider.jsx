@@ -28,7 +28,20 @@ export function BookingsProvider({ children }) {
     setBookings((prev) => prev.filter((b) => b.id !== id))
   }, [])
 
-  const value = { bookings, addBooking, removeBooking }
+  const patchBooking = useCallback((id, updates) => {
+    setBookings((prev) =>
+      prev.map((b) => {
+        if (b.id !== id) return b
+        const next = { ...b, ...updates }
+        if (Object.prototype.hasOwnProperty.call(updates, 'responseStatus') && updates.responseStatus === undefined) {
+          delete next.responseStatus
+        }
+        return next
+      })
+    )
+  }, [])
+
+  const value = { bookings, addBooking, removeBooking, patchBooking }
 
   return (
     <BookingsContext.Provider value={value}>{children}</BookingsContext.Provider>

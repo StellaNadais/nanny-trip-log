@@ -1,43 +1,70 @@
-import { Link } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
+import NannyReceiptPopup from '../components/NannyReceiptPopup'
+import { receiptNavLabel } from '../utils/receiptHref'
 
 const CARDS = [
   { to: '/shift', label: 'Shift', code: 'A' },
   { to: '/journal', label: 'Kid Journal', code: 'B' },
-  { to: '/trip-log', label: 'Trip log', code: 'C' },
-  { to: '/notes', label: 'Internal notes', code: 'D' },
-  { to: '/deck', label: 'More', code: 'E', stacked: true },
+  { to: '/outings', label: 'Outings', code: 'C' },
+  { to: '/events', label: 'Events', code: 'D', stacked: true },
+  { to: '/notes', label: 'Internal notes', code: 'E' },
 ]
 
 export default function HubPage() {
+  const [searchParams, setSearchParams] = useSearchParams()
+  const receiptOpen = searchParams.get('receipt') === 'open'
+  const receiptLabel = receiptNavLabel()
+
+  function openReceipt() {
+    const next = new URLSearchParams(searchParams)
+    next.set('receipt', 'open')
+    setSearchParams(next)
+  }
+
+  function closeReceipt() {
+    const next = new URLSearchParams(searchParams)
+    next.delete('receipt')
+    setSearchParams(next, { replace: true })
+  }
+
   return (
-    <div className="page page--hub">
+    <div className={`page page--hub${receiptOpen ? ' page--hub-receipt-open' : ''}`}>
       <div className="page__badge" aria-hidden>
-        3
+        5
       </div>
-      <header className="hub__head">
-        <Link to="/schedule" className="page-back page-back--ghost">
-          ← Schedule
-        </Link>
-        <h1 className="hub__title">Tools</h1>
-      </header>
-
-      <div className="hub__grid">
-        {CARDS.map((c) => (
-          <Link
-            key={c.to}
-            to={c.to}
-            className={`hub-card ${c.stacked ? 'hub-card--stacked' : ''}`}
-          >
-            <span className="hub-card__label">{c.label}</span>
-            <span className="hub-card__code">{c.code}</span>
+      <div className="hub__stage" aria-hidden={receiptOpen}>
+        <header className="hub__head">
+          <Link to="/schedule" className="page-back page-back--ghost">
+            ← Schedule
           </Link>
-        ))}
-        <div className="hub-card hub-card--empty" aria-hidden />
+          <h1 className="hub__title">Tools</h1>
+        </header>
+
+        <div className="hub__grid">
+          {CARDS.map((c) => (
+            <Link
+              key={c.to}
+              to={c.to}
+              className={`hub-card ${c.stacked ? 'hub-card--stacked' : ''}`}
+              tabIndex={receiptOpen ? -1 : undefined}
+            >
+              <span className="hub-card__label">{c.label}</span>
+              <span className="hub-card__code">{c.code}</span>
+            </Link>
+          ))}
+        </div>
+
+        <button type="button" className="hub__report" onClick={openReceipt} disabled={receiptOpen}>
+          {receiptLabel}
+        </button>
       </div>
 
-      <Link to="/receipt" className="hub__report">
-        Weekly receipt
-      </Link>
+      {receiptOpen ? (
+        <NannyReceiptPopup
+          onClose={closeReceipt}
+          backdropClassName="receipt-modal__backdrop--over-hub"
+        />
+      ) : null}
     </div>
   )
 }

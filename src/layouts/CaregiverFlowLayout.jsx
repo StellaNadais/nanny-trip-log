@@ -1,16 +1,15 @@
 import { useCallback, useEffect, useRef } from 'react'
 import { Outlet, useLocation, useNavigate } from 'react-router-dom'
 
-/** Main caregiver screens: swipe / horizontal scroll / arrow keys move between them. */
+/** Main caregiver screens: home → schedule is tap-only; schedule ↔ hub is swipe (touch) or click. */
 const FLOW_PATHS = ['/', '/schedule', '/hub']
+
+const SWIPE_MIN_PX = 56
 
 export default function CaregiverFlowLayout() {
   const navigate = useNavigate()
   const location = useLocation()
-  const shellRef = useRef(null)
-  const touchStartX = useRef(null)
-  const wheelAccum = useRef(0)
-  const wheelDebounce = useRef(null)
+  const touchStart = useRef(null)
 
   const index = FLOW_PATHS.indexOf(location.pathname)
   const inFlow = index !== -1
@@ -30,7 +29,7 @@ export default function CaregiverFlowLayout() {
     const onKey = (e) => {
       if (e.key === 'ArrowRight') {
         e.preventDefault()
-        goNext()
+        if (location.pathname !== '/') goNext()
       }
       if (e.key === 'ArrowLeft') {
         e.preventDefault()
@@ -39,59 +38,38 @@ export default function CaregiverFlowLayout() {
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
-  }, [inFlow, goNext, goPrev])
-
-  useEffect(() => {
-    const el = shellRef.current
-    if (!el || !inFlow) return undefined
-
-    const onWheel = (e) => {
-      const absX = Math.abs(e.deltaX)
-      const absY = Math.abs(e.deltaY)
-      if (absX < 35 || absX < absY * 1.35) return
-      e.preventDefault()
-      wheelAccum.current += e.deltaX
-      if (wheelDebounce.current) clearTimeout(wheelDebounce.current)
-      wheelDebounce.current = setTimeout(() => {
-        const acc = wheelAccum.current
-        wheelAccum.current = 0
-        if (acc > 48) goNext()
-        else if (acc < -48) goPrev()
-      }, 60)
-    }
-
-    el.addEventListener('wheel', onWheel, { passive: false })
-    return () => {
-      el.removeEventListener('wheel', onWheel)
-      if (wheelDebounce.current) clearTimeout(wheelDebounce.current)
-    }
-  }, [inFlow, goNext, goPrev])
+  }, [inFlow, location.pathname, goNext, goPrev])
 
   function onTouchStart(e) {
     if (!inFlow) return
-    touchStartX.current = e.touches[0].clientX
+    touchStart.current = { x: e.touches[0].clientX, y: e.touches[0].clientY }
   }
 
   function onTouchEnd(e) {
-    if (!inFlow || touchStartX.current == null) return
+    if (!inFlow || touchStart.current == null) return
     const endX = e.changedTouches[0].clientX
-    const delta = touchStartX.current - endX
-    touchStartX.current = null
-    if (Math.abs(delta) < 56) return
-    if (delta > 0) goNext()
-    else goPrev()
+    const endY = e.changedTouches[0].clientY
+    const dx = touchStart.current.x - endX
+    const dy = touchStart.current.y - endY
+    touchStart.current = null
+
+    if (Math.abs(dx) >= Math.abs(dy) && Math.abs(dx) >= SWIPE_MIN_PX) {
+      if (dx > 0) {
+        if (location.pathname !== '/') goNext()
+      } else goPrev()
+    }
   }
 
   return (
     <div
-      ref={shellRef}
       className="caregiver-flow-layout"
       onTouchStart={onTouchStart}
       onTouchEnd={onTouchEnd}
     >
       <p className="sr-only">
-        On home, schedule, and tools you can swipe left or right, or scroll horizontally with a
-        trackpad, to change pages. Arrow keys also work.
+        Home opens your schedule when you tap the screen. From the schedule, swipe left on touch devices or use the
+        Tools link on desktop to open flash cards. From Tools, swipe right or use the Schedule link to go back. Arrow
+        keys also move between schedule and tools; the right arrow does not advance from home.
       </p>
       <Outlet />
     </div>

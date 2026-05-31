@@ -1,7 +1,12 @@
-import { useMemo, useState } from 'react'
-import { toISODateLocal } from '../utils/dates'
+import { useEffect, useMemo, useState } from 'react'
+import { Link } from 'react-router-dom'
+import { EVENT_LOCATIONS, groupFamilyEventsByLocation } from '../data/familyEvents'
+import { toISODateLocal, addDays } from '../utils/dates'
 import { monthGrid, WEEKDAYS, isSameDay } from '../utils/calendarMonth'
 import { useBookings } from '../hooks/useBookings'
+import { bookingOccupiesCalendarSlot } from '../utils/bookingCalendar'
+import { careIntervalValid, expandBookingCalendarDates } from '../utils/bookingRange'
+import { BOOK_THANKS_LEDE, BOOK_THANKS_SUPPORTERS } from '../data/bookThanks'
 
 function todayISO() {
   return toISODateLocal(new Date())
@@ -9,6 +14,19 @@ function todayISO() {
 
 function dateISOFromParts(y, m, dayNum) {
   return toISODateLocal(new Date(y, m, dayNum))
+}
+
+const DEFAULT_CARE_START = '09:00'
+const DEFAULT_CARE_END = '17:00'
+const BOOK_END_DATE_SPAN_DAYS = 90
+
+/** Hover tooltip on “Book a gig” (styled bubble; copy matches user-requested wording). */
+const BOOK_GIG_HEADING_TIP =
+  'Tap a day to request a gig: set when the nanny’s shift starts and when it ends (including overnight). Then add your family details.'
+
+function phoneLooksReachable(value) {
+  const digits = value.replace(/\D/g, '')
+  return digits.length >= 7
 }
 
 /**
@@ -21,10 +39,16 @@ export default function BookPage() {
     () => new Date(today.getFullYear(), today.getMonth(), 1)
   )
   const [selected, setSelected] = useState(() => new Date(today))
+  const [bookModalOpen, setBookModalOpen] = useState(false)
+  const [careStart, setCareStart] = useState(DEFAULT_CARE_START)
+  const [careEnd, setCareEnd] = useState(DEFAULT_CARE_END)
+  const [careStartDateISO, setCareStartDateISO] = useState(() => toISODateLocal(new Date()))
+  const [careEndDateISO, setCareEndDateISO] = useState(() => toISODateLocal(new Date()))
+  const [kidCount, setKidCount] = useState('')
   const [familyName, setFamilyName] = useState('')
-  const [contact, setContact] = useState('')
-  const [notes, setNotes] = useState('')
-  const [formMsg, setFormMsg] = useState('')
+  const [phone, setPhone] = useState('')
+  const [requestNotes, setRequestNotes] = useState('')
+  const [bookToast, setBookToast] = useState('')
 
   const y = cursor.getFullYear()
   const m = cursor.getMonth()
@@ -33,13 +57,16 @@ export default function BookPage() {
   const bookingsByDate = useMemo(() => {
     const map = {}
     for (const b of bookings) {
-      const d = b.dateISO
-      if (!d) continue
-      if (!map[d]) map[d] = []
-      map[d].push(b)
+      if (!bookingOccupiesCalendarSlot(b)) continue
+      for (const iso of expandBookingCalendarDates(b)) {
+        if (!map[iso]) map[iso] = []
+        map[iso].push(b)
+      }
     }
     return map
   }, [bookings])
+
+  const eventsByLocation = useMemo(() => groupFamilyEventsByLocation(), [])
 
   const title = cursor.toLocaleDateString(undefined, {
     month: 'long',
@@ -48,21 +75,79 @@ export default function BookPage() {
 
   const selectedISO = useMemo(() => toISODateLocal(selected), [selected])
 
-  const selectedLabel = selected.toLocaleDateString(undefined, {
-    weekday: 'long',
-    month: 'long',
-    day: 'numeric',
-    year: 'numeric',
-  })
+  const selectedBookings = bookingsByDate[careStartDateISO] ?? []
+  const careStartIsPast = careStartDateISO < todayISO()
 
-  const selectedBookings = bookingsByDate[selectedISO] ?? []
-  const selectedIsPast = selectedISO < todayISO()
+  useEffect(() => {
+    if (!bookModalOpen) return
+    setSelected(new Date(`${careStartDateISO}T12:00:00`))
+  }, [bookModalOpen, careStartDateISO])
 
-  function pickDay(dayNum) {
-    if (dayNum == null) return
-    setSelected(new Date(y, m, dayNum))
-    setFormMsg('')
+  const careDateHeadline = useMemo(() => {
+    const opts = { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' }
+    const a = new Date(`${careStartDateISO}T12:00:00`).toLocaleDateString(undefined, opts)
+    const b = new Date(`${careEndDateISO}T12:00:00`).toLocaleDateString(undefined, opts)
+    if (careStartDateISO === careEndDateISO) return a
+    return `${a} → ${b}`
+  }, [careStartDateISO, careEndDateISO])
+
+  const careSpanSummary = useMemo(() => {
+    const d0 = new Date(`${careStartDateISO}T12:00:00`)
+    const d1 = new Date(`${careEndDateISO}T12:00:00`)
+    const diff = Math.round((d1 - d0) / 86400000)
+    if (diff === 0) return null
+    if (diff === 1) return 'Overnight gig · spans 2 days on the calendar'
+    return `${diff + 1} calendar days · this gig includes ${diff} overnight${diff === 1 ? '' : 's'}`
+  }, [careStartDateISO, careEndDateISO])
+
+  const careEndDateMax = useMemo(
+    () => toISODateLocal(addDays(new Date(`${careStartDateISO}T12:00:00`), BOOK_END_DATE_SPAN_DAYS)),
+    [careStartDateISO]
+  )
+
+  const timeOk = useMemo(
+    () => careIntervalValid(careStartDateISO, careStart, careEndDateISO, careEnd),
+    [careStartDateISO, careStart, careEndDateISO, careEnd]
+  )
+  const kidsOk = useMemo(() => {
+    const k = Number(kidCount)
+    return kidCount !== '' && Number.isInteger(k) && k >= 1 && k <= 20
+  }, [kidCount])
+  const nameOk = familyName.trim().length > 0
+  const phoneOk = phoneLooksReachable(phone)
+
+  function resetBookingModal(startISO) {
+    setCareStart(DEFAULT_CARE_START)
+    setCareEnd(DEFAULT_CARE_END)
+    setCareStartDateISO(startISO)
+    setCareEndDateISO(startISO)
+    setKidCount('')
+    setFamilyName('')
+    setPhone('')
+    setRequestNotes('')
   }
+
+  function openBookingModal(dayNum) {
+    if (dayNum == null) return
+    const dayDate = new Date(y, m, dayNum)
+    const iso = toISODateLocal(dayDate)
+    setSelected(dayDate)
+    resetBookingModal(iso)
+    setBookModalOpen(true)
+  }
+
+  function closeBookingModal() {
+    setBookModalOpen(false)
+  }
+
+  useEffect(() => {
+    if (!bookModalOpen) return
+    const onKey = (e) => {
+      if (e.key === 'Escape') closeBookingModal()
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [bookModalOpen])
 
   function prevMonth() {
     setCursor(new Date(y, m - 1, 1))
@@ -74,48 +159,68 @@ export default function BookPage() {
 
   function submitBooking(e) {
     e.preventDefault()
-    if (selectedIsPast) {
-      setFormMsg('Choose a today-or-future date to request care.')
-      return
-    }
-    const name = familyName.trim()
-    const c = contact.trim()
-    if (!name || !c) {
-      setFormMsg('Please add your family name and a way to reach you (email or phone).')
-      return
-    }
+    if (careStartIsPast) return
+    if (!timeOk || !kidsOk || !nameOk || !phoneOk) return
+    const start = careStartDateISO
     addBooking({
-      dateISO: selectedISO,
-      familyName: name,
-      contact: c,
-      notes: notes.trim(),
+      dateISO: start,
+      careEndDateISO,
+      familyName: familyName.trim(),
+      contact: phone.trim(),
+      kidCount: Number(kidCount),
+      careStart,
+      careEnd,
+      notes: requestNotes.trim(),
     })
-    setFamilyName('')
-    setContact('')
-    setNotes('')
-    setFormMsg('Request sent! Your caregiver will follow up.')
+    closeBookingModal()
+    resetBookingModal(start)
+    setBookToast('Request sent! Your caregiver will follow up.')
+    window.setTimeout(() => setBookToast(''), 5000)
   }
 
   return (
-    <div className="page page--calendar page--book page--parents-only">
-      <header className="calendar__head calendar__head--book">
-        <h1 className="calendar__title">Book care</h1>
-        <p className="calendar__subtitle muted">
-          Pick a date and send a request. Days that already have requests show a dot on the calendar.
+    <div className="page page--calendar page--book page--parents-only work-ui">
+      <header className="calendar__head calendar__head--book book-workspace-head">
+        <p className="book-parents-banner" role="note">
+          Parent & family portal · this link is not the caregiver app
         </p>
-        <p className="book-parents-note muted">This page is for parents and families only.</p>
+        <p className="book-workspace-head__eyebrow">Availability request</p>
+        <h1
+          className="calendar__title calendar__title--book-tip"
+          id="book-page-heading"
+          aria-describedby="book-page-intro"
+          data-tooltip={BOOK_GIG_HEADING_TIP}
+        >
+          Book a gig
+        </h1>
+        <p className="book-workspace-head__sub muted">
+          Choose a start date, set shift hours (including overnights), and send your details—your caregiver reviews
+          everything in their schedule.
+        </p>
+        <p id="book-page-intro" className="sr-only">
+          {BOOK_GIG_HEADING_TIP} Dots show days that already have a request.
+        </p>
       </header>
 
-      <div className="book-legend" aria-hidden>
+      <div className="book-legend book-legend--work" role="group" aria-label="Calendar legend">
         <span className="book-legend__item">
-          <span className="book-legend__dot book-legend__dot--booked" /> Has request(s)
+          <span className="book-legend__dot book-legend__dot--booked" aria-hidden /> Request on file
         </span>
         <span className="book-legend__item">
-          <span className="book-legend__dot book-legend__dot--today" /> Today
+          <span className="book-legend__dot book-legend__dot--today" aria-hidden /> Today
+        </span>
+        <span className="book-legend__item book-legend__item--hours">
+          <strong>Shift length:</strong> choose end date and time after start for overnight or multi-day nanny gigs.
         </span>
       </div>
 
-      <div className="calendar__panel calendar__panel--book">
+      {bookToast ? (
+        <p className="book-toast" role="status">
+          {bookToast}
+        </p>
+      ) : null}
+
+      <div className="calendar__panel calendar__panel--book work-ui__calendar-card">
         <div className="calendar__nav">
           <button type="button" className="btn btn--ghost" onClick={prevMonth}>
             ‹
@@ -150,14 +255,26 @@ export default function BookPage() {
             const isToday = isSameDay(today, new Date(y, m, dayNum))
             const isPast = iso < todayISO()
 
+            const dayDate = new Date(y, m, dayNum)
+            const dateForAria = dayDate.toLocaleDateString(undefined, {
+              weekday: 'long',
+              month: 'long',
+              day: 'numeric',
+              year: 'numeric',
+            })
+            const ariaBits = [
+              dateForAria,
+              isBooked ? `${dayBookings.length} request${dayBookings.length > 1 ? 's' : ''}` : 'No requests yet',
+            ].filter(Boolean)
+
             return (
               <button
                 key={i}
                 type="button"
                 role="gridcell"
-                aria-label={`${dayNum}${isBooked ? `, ${dayBookings.length} request${dayBookings.length > 1 ? 's' : ''}` : ''}`}
+                aria-label={ariaBits.join(', ')}
                 className={`calendar__cell ${isSel ? 'calendar__cell--selected' : ''} ${isToday ? 'calendar__cell--today' : ''} ${isBooked ? 'calendar__cell--booked' : ''} ${isPast ? 'calendar__cell--past' : ''}`}
-                onClick={() => pickDay(dayNum)}
+                onClick={() => openBookingModal(dayNum)}
               >
                 <span className="calendar__cell-num">{dayNum}</span>
                 {isBooked ? (
@@ -175,75 +292,250 @@ export default function BookPage() {
         </div>
       </div>
 
-      <section className="book-request" aria-labelledby="book-request-title">
-        <h2 id="book-request-title" className="book-request__title">
-          Request this date
-        </h2>
-        <p className="book-request__picked muted">{selectedLabel}</p>
-        {selectedBookings.length > 0 ? (
-          <p className="muted book-request__busy">
-            This date already has {selectedBookings.length} request
-            {selectedBookings.length > 1 ? 's' : ''}. You can still submit if your caregiver
-            approved shared care.
-          </p>
-        ) : (
-          <p className="muted book-request__empty">Open day — send a request below.</p>
-        )}
+      <p className="book-request-hint muted">
+        Pick a start day on the calendar, then set gig start and end date-times in the form.
+      </p>
 
-        <form className="book-request__form" onSubmit={submitBooking}>
-          {selectedIsPast ? (
-            <p className="book-request__warn muted">
-              This date has passed. Choose today or a future day.
-            </p>
-          ) : null}
-          <label className="field-block">
-            <span className="field-block__label">Family / parent name</span>
-            <input
-              type="text"
-              className="input input--line"
-              value={familyName}
-              onChange={(e) => setFamilyName(e.target.value)}
-              placeholder="Your name"
-              autoComplete="name"
-            />
-          </label>
-          <label className="field-block">
-            <span className="field-block__label">Email or phone</span>
-            <input
-              type="text"
-              className="input input--line"
-              value={contact}
-              onChange={(e) => setContact(e.target.value)}
-              placeholder="How to reach you"
-              autoComplete="email"
-            />
-          </label>
-          <label className="field-block">
-            <span className="field-block__label">Notes (optional)</span>
-            <textarea
-              className="input input--area"
-              rows={2}
-              value={notes}
-              onChange={(e) => setNotes(e.target.value)}
-              placeholder="Times needed, number of kids, etc."
-            />
-          </label>
-          {formMsg ? (
-            <p
-              className={`book-request__msg ${formMsg.startsWith('Request') ? 'book-request__msg--ok' : ''}`}
-              role="status"
-            >
-              {formMsg}
-            </p>
-          ) : null}
+      {bookModalOpen ? (
+        <div
+          className="book-modal"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="book-modal-title"
+        >
           <button
-            type="submit"
-            className="btn btn--primary book-request__submit"
-            disabled={selectedIsPast}
-          >
-            Submit booking request
-          </button>
-        </form>
+            type="button"
+            className="book-modal__backdrop"
+            aria-label="Close booking form"
+            onClick={closeBookingModal}
+          />
+          <div className="book-modal__sheet">
+            <div className="book-modal__head">
+              <div className="book-modal__head-text">
+                <p className="book-modal__eyebrow">Booking</p>
+                <h2 id="book-modal-title" className="book-modal__title">
+                  Request details
+                </h2>
+                <p className="book-modal__date">{careDateHeadline}</p>
+                <p className="book-modal__sub muted">
+                  When does the gig start, and when does it end? You can cover evenings and overnights.
+                </p>
+              </div>
+              <button
+                type="button"
+                className="btn btn--ghost book-modal__close"
+                aria-label="Close"
+                onClick={closeBookingModal}
+              >
+                ×
+              </button>
+            </div>
+
+            {selectedBookings.length > 0 ? (
+              <p className="book-modal__note muted">
+                This start day already has {selectedBookings.length} request
+                {selectedBookings.length > 1 ? 's' : ''}. Submit only if your caregiver approved overlapping gigs.
+              </p>
+            ) : null}
+
+            <form className="book-modal__form" onSubmit={submitBooking}>
+              <div className="book-modal__hotel-card" aria-label="Gig start and end">
+                <div className="book-modal__hotel-dates">
+                  <div className="book-modal__hotel-col">
+                    <span className="book-modal__hotel-kicker">Gig starts</span>
+                    <input
+                      type="date"
+                      className="input input--line book-modal__hotel-date"
+                      value={careStartDateISO}
+                      onChange={(e) => {
+                        const v = e.target.value
+                        if (!v) return
+                        setCareStartDateISO(v)
+                        setCareEndDateISO((prev) => (prev < v ? v : prev))
+                      }}
+                      required
+                    />
+                    <label className="book-modal__hotel-time-label">
+                      <span>Start time</span>
+                      <input
+                        type="time"
+                        className="input input--line"
+                        value={careStart}
+                        onChange={(e) => setCareStart(e.target.value)}
+                        required
+                      />
+                    </label>
+                  </div>
+                  <div className="book-modal__hotel-rail" aria-hidden />
+                  <div className="book-modal__hotel-col">
+                    <span className="book-modal__hotel-kicker">Gig ends</span>
+                    <input
+                      type="date"
+                      className="input input--line book-modal__hotel-date"
+                      value={careEndDateISO}
+                      min={careStartDateISO}
+                      max={careEndDateMax}
+                      onChange={(e) => {
+                        let v = e.target.value
+                        if (!v || v < careStartDateISO) v = careStartDateISO
+                        setCareEndDateISO(v)
+                      }}
+                      required
+                    />
+                    <label className="book-modal__hotel-time-label">
+                      <span>End time</span>
+                      <input
+                        type="time"
+                        className="input input--line"
+                        value={careEnd}
+                        onChange={(e) => setCareEnd(e.target.value)}
+                        required
+                      />
+                    </label>
+                  </div>
+                </div>
+                {careSpanSummary ? (
+                  <p className="book-modal__hotel-summary muted">{careSpanSummary}</p>
+                ) : null}
+                {!timeOk && careStart && careEnd && careStartDateISO && careEndDateISO ? (
+                  <p className="book-modal__hint book-modal__hint--warn book-modal__hotel-warn">
+                    End date and time must be after the gig starts.
+                  </p>
+                ) : null}
+              </div>
+
+              <div className="book-modal__block">
+                <span className="book-modal__block-title">Children on this gig</span>
+                <label className="field-block book-modal__field-grow">
+                  <span className="field-block__label">How many</span>
+                  <input
+                    type="number"
+                    className="input input--line"
+                    min={1}
+                    max={20}
+                    step={1}
+                    value={kidCount}
+                    onChange={(e) => setKidCount(e.target.value)}
+                    placeholder="e.g. 2"
+                    inputMode="numeric"
+                  />
+                </label>
+              </div>
+
+              <div className="book-modal__block">
+                <span className="book-modal__block-title">Contact</span>
+                <label className="field-block book-modal__field-grow">
+                  <span className="field-block__label">Family / parent name</span>
+                  <input
+                    type="text"
+                    className="input input--line"
+                    value={familyName}
+                    onChange={(e) => setFamilyName(e.target.value)}
+                    placeholder="Your name"
+                    autoComplete="name"
+                  />
+                </label>
+                <label className="field-block book-modal__field-grow">
+                  <span className="field-block__label">Phone</span>
+                  <input
+                    type="tel"
+                    className="input input--line"
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
+                    placeholder="Your phone number"
+                    autoComplete="tel"
+                  />
+                </label>
+                {phone.trim() && !phoneOk ? (
+                  <p className="book-modal__hint book-modal__hint--warn">
+                    Enter a phone number with at least 7 digits.
+                  </p>
+                ) : null}
+              </div>
+
+              <div className="book-modal__block">
+                <span className="book-modal__block-title">Notes for caregiver</span>
+                <label className="field-block book-modal__field-grow">
+                  <span className="field-block__label">Notes (optional)</span>
+                  <textarea
+                    className="input input--area book-modal__notes"
+                    value={requestNotes}
+                    onChange={(e) => setRequestNotes(e.target.value)}
+                    placeholder="Diet, routines, pickup plans, second parent contact…"
+                    rows={3}
+                    maxLength={2000}
+                    autoComplete="off"
+                  />
+                </label>
+              </div>
+
+              {careStartIsPast ? (
+                <p className="book-modal__hint book-modal__hint--warn">
+                  Gig start date has passed. Close and pick today or a future day on the calendar.
+                </p>
+              ) : null}
+
+              <div className="book-modal__actions">
+                <button type="button" className="btn btn--ghost" onClick={closeBookingModal}>
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="btn btn--primary btn--work-primary"
+                  disabled={careStartIsPast || !timeOk || !kidsOk || !nameOk || !phoneOk}
+                >
+                  Submit request
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      ) : null}
+
+      <details className="book-events-details book-events-details--work">
+        <summary className="book-events__summary">
+          <span className="book-events__summary-title">Local events</span>
+          <span className="book-events__summary-hint muted">Moraga & Oakland · reference</span>
+        </summary>
+        <div className="book-events__panel">
+          <p className="muted book-events__lede">
+            Ideas near Moraga & Oakland — confirm times with each place. Your caregiver also has a full list in Tools →
+            Events.
+          </p>
+          <div className="book-events__grid">
+            {EVENT_LOCATIONS.map(({ id, label }) => (
+              <div key={id} className="book-events__col">
+                <h3 className="book-events__loc">{label}</h3>
+                <ul className="book-events__list">
+                  {eventsByLocation[id]?.map((ev) => (
+                    <li key={ev.id} className="book-events__item">
+                      <span className="book-events__item-title">{ev.title}</span>
+                      <span className="book-events__item-place muted">{ev.place}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+          <Link to="/events" className="btn btn--ghost book-events__more">
+            Open full events list
+          </Link>
+        </div>
+      </details>
+
+      <section className="book-thanks" aria-labelledby="book-thanks-heading">
+        <h2 id="book-thanks-heading" className="book-thanks__title">
+          Thank you
+        </h2>
+        <p className="book-thanks__lede">{BOOK_THANKS_LEDE}</p>
+        <ul className="book-thanks__list">
+          {BOOK_THANKS_SUPPORTERS.map((person) => (
+            <li key={person.name} className="book-thanks__item">
+              <strong className="book-thanks__name">{person.name}</strong>
+              <span className="book-thanks__note">{person.note}</span>
+            </li>
+          ))}
+        </ul>
       </section>
     </div>
   )

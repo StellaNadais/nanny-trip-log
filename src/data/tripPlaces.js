@@ -1,62 +1,75 @@
-/** One-way miles from Deerfield Dr, Moraga (approximate — tune in this file). */
+/** Implicit start/end for every trip — not matched in journal text. */
+export const HOME_PLACE_ID = 'home'
+
+/** IRS-style mileage rate. */
 export const MILE_RATE = 0.54
 
-/** region: oakland → monospace | moraga → italic | lafayette → bold + monospace */
+/**
+ * Saved place nicknames only — no addresses or coordinates in code.
+ * region: highlight color in trip/journal mirror only
+ */
 export const PLACES = [
   {
-    id: 'oak-omca',
-    label: 'Oakland Museum of California (OMCA)',
-    region: 'oakland',
-    milesOneWay: 16,
-  },
-  {
-    id: 'oak-cmo',
-    label: "Children's Museum Oakland",
-    region: 'oakland',
-    milesOneWay: 15,
-  },
-  {
-    id: 'oak-fairy',
-    label: "Children's Fairyland",
-    region: 'oakland',
-    milesOneWay: 17,
-  },
-  {
-    id: 'oak-chabot',
-    label: 'Chabot Space & Science Center',
-    region: 'oakland',
-    milesOneWay: 12,
-  },
-  {
-    id: 'moraga-lib',
-    label: 'Moraga Library',
+    id: 'drop-off',
+    label: "H's drop off",
+    aliases: [
+      'Learn and Play',
+      'Learn & Play',
+      'Learn and Play School',
+      'Hs drop off',
+      "H's drop off",
+    ],
     region: 'moraga',
-    milesOneWay: 3,
   },
   {
-    id: 'moraga-rheem',
-    label: 'Rheem Valley (shops / errands)',
-    region: 'moraga',
-    milesOneWay: 2.5,
+    id: 'music',
+    label: 'Lamorinda music',
+    aliases: ['music', 'Lamorinda', 'Lamorinda Music'],
+    region: 'lafayette',
   },
   {
-    id: 'moraga-commons',
-    label: 'Moraga Commons (park)',
-    region: 'moraga',
-    milesOneWay: 2.5,
-  },
-  {
-    id: 'laf-lib',
+    id: 'laf-library',
     label: 'Lafayette Library',
+    aliases: ['Laf Library', 'Lafayette library', 'storytime', 'story time'],
     region: 'lafayette',
-    milesOneWay: 6,
   },
   {
-    id: 'laf-music',
-    label: 'Music class (Lamorinda / Lafayette)',
-    region: 'lafayette',
-    milesOneWay: 6,
+    id: 'commons',
+    label: 'Commons',
+    aliases: ['commons', 'Moraga Commons', 'Moraga commons'],
+    region: 'moraga',
+  },
+  {
+    id: 'hacienda',
+    label: 'Hacienda de las Flores',
+    aliases: ['Hacienda', 'las Flores', 'Hacienda de las Flores'],
+    region: 'moraga',
+  },
+  {
+    id: 'moraga-library',
+    label: 'Moraga Library',
+    aliases: ['Moraga library'],
+    region: 'moraga',
   },
 ]
 
 export const PLACE_BY_ID = Object.fromEntries(PLACES.map((p) => [p.id, p]))
+
+/**
+ * @returns {(typeof PLACES)[number] | null}
+ */
+export function findBuiltInPlaceByNameOrAlias(text) {
+  const q = String(text ?? '').trim().toLowerCase()
+  if (!q) return null
+  for (const p of PLACES) {
+    if (p.label.trim().toLowerCase() === q) return p
+    for (const a of p.aliases || []) {
+      if (String(a).trim().toLowerCase() === q) return p
+    }
+  }
+  return null
+}
+
+export function isFrequentPlaceNameOrAlias(text) {
+  return findBuiltInPlaceByNameOrAlias(text) != null
+}
