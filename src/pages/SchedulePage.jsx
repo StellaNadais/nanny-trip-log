@@ -1,11 +1,15 @@
 import { useEffect, useMemo, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
 import { toISODateLocal } from '../utils/dates'
 import { monthGrid, WEEKDAYS, isSameDay } from '../utils/calendarMonth'
 import { useBookings } from '../hooks/useBookings'
 import { useUpcomingGigsThemePlayback } from '../hooks/useUpcomingGigsThemePlayback'
 import { bookingOccupiesCalendarSlot } from '../utils/bookingCalendar'
 import { expandBookingCalendarDates, formatCareBookingWindow, bookingEndMs } from '../utils/bookingRange'
+import NannyReceiptPopup from '../components/NannyReceiptPopup'
+import { receiptNavLabel } from '../utils/receiptHref'
+import { CAREGIVER_TOOLS } from '../data/caregiverTools'
+import ScheduleCelebrationsFlip from '../components/ScheduleCelebrationsFlip'
 
 function todayISO() {
   return toISODateLocal(new Date())
@@ -33,6 +37,9 @@ const SCHEDULE_PAGE_INTRO_TEXT = `${SCHEDULE_HEADING_TIP} ${SCHEDULE_EYEBROW_TOO
  */
 export default function SchedulePage() {
   const { bookings, patchBooking, removeBooking } = useBookings()
+  const [searchParams, setSearchParams] = useSearchParams()
+  const receiptOpen = searchParams.get('receipt') === 'open'
+  const receiptLabel = receiptNavLabel()
   const today = new Date()
   const [cursor, setCursor] = useState(
     () => new Date(today.getFullYear(), today.getMonth(), 1)
@@ -140,8 +147,23 @@ export default function SchedulePage() {
     setCursor(new Date(y, m + 1, 1))
   }
 
+  function openReceipt() {
+    const next = new URLSearchParams(searchParams)
+    next.set('receipt', 'open')
+    setSearchParams(next)
+  }
+
+  function closeReceipt() {
+    const next = new URLSearchParams(searchParams)
+    next.delete('receipt')
+    setSearchParams(next, { replace: true })
+  }
+
   return (
-    <div className="page page--calendar page--schedule work-ui">
+    <div
+      className={`page page--calendar page--schedule work-ui${receiptOpen ? ' page--schedule-receipt-open' : ''}`}
+    >
+      <div className="schedule__stage" aria-hidden={receiptOpen}>
       <div className="page__badge" aria-hidden>
         2
       </div>
@@ -351,6 +373,8 @@ export default function SchedulePage() {
         </span>
       </div>
 
+      <ScheduleCelebrationsFlip year={y} monthIndex={m} />
+
       <div className="schedule-flip">
         <div className="schedule-flip__scene">
           <div
@@ -485,13 +509,34 @@ export default function SchedulePage() {
           </div>
         </div>
       </div>
-
-      <div className="calendar__footer schedule__footer">
-        <Link to="/hub" className="schedule__flow-hint schedule__flow-hint--link muted">
-          <span className="schedule__flow-hint-mobile">Swipe left for Tools</span>
-          <span className="schedule__flow-hint-desktop">Open Tools →</span>
-        </Link>
       </div>
+
+      <div className="calendar__footer schedule__footer" aria-hidden={receiptOpen}>
+        <nav className="schedule__tools-nav" aria-label="Caregiver tools">
+          {CAREGIVER_TOOLS.map((tool) => (
+            <Link key={tool.to} to={tool.to} className="schedule__tool-link" tabIndex={receiptOpen ? -1 : undefined}>
+              <span className="schedule__tool-code">{tool.code}</span>
+              <span className="schedule__tool-label">{tool.label}</span>
+            </Link>
+          ))}
+        </nav>
+        <button
+          type="button"
+          className="schedule__receipt-btn"
+          onClick={openReceipt}
+          disabled={receiptOpen}
+          tabIndex={receiptOpen ? -1 : undefined}
+        >
+          {receiptLabel}
+        </button>
+      </div>
+
+      {receiptOpen ? (
+        <NannyReceiptPopup
+          onClose={closeReceipt}
+          backdropClassName="receipt-modal__backdrop--over-schedule"
+        />
+      ) : null}
     </div>
   )
 }

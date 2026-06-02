@@ -10,6 +10,7 @@ import {
 } from '../utils/timeOffStorage'
 import { useShiftPunctuality } from '../hooks/useShiftPunctuality'
 import { formatCountdownMs, shiftTimeWindowStatus } from '../utils/shiftTimeWindow'
+import ToolWorkspaceHead from '../components/ToolWorkspaceHead'
 
 const ARRIVAL_TIMES = ['8:00 AM', '8:05 AM', '8:10 AM']
 const END_TIMES = ['5:00 PM', '5:05 PM', '5:10 PM']
@@ -136,22 +137,18 @@ export default function ShiftPage() {
   }
 
   return (
-    <div className="page page--shift">
-      <header className="shift__head">
-        <Link to="/hub" className="page-back page-back--ghost">
-          ← Hub
-        </Link>
-        <h1 className="shift__title">
-          Shift <span className="placeholder__code">(A)</span>
-        </h1>
-        <p className="muted shift__lede">
-          Pick the week and day, tap arrival and end in the circles. Each side has its own{' '}
-          <strong>Log</strong> button that only works on that day, within ±5 minutes of the time you chose.
-          Paid time off is at the bottom of this page.
-        </p>
-      </header>
+    <div className="page page--shift work-ui">
+      <div className="page__badge" aria-hidden>
+        A
+      </div>
+      <ToolWorkspaceHead
+        code="A"
+        eyebrow="Shift workspace"
+        title="Shift"
+        lede="Pick the week and day, then log arrival and end inside each ±5 minute window."
+      />
 
-      <div className="journal__week-picker shift__week-picker">
+      <div className="journal__week-picker work-ui__panel shift__week-picker">
         <div className="trip-log__week-tools">
           <button type="button" className="btn btn--ghost trip-log__week-btn" onClick={() => shiftShiftWeek(-1)}>
             ← Previous week
@@ -416,7 +413,7 @@ export default function ShiftPage() {
 
       <div className="shift__links">
         <Link to="/notes" className="page-back">
-          Open internal notes →
+          Punctuality in internal notes →
         </Link>
       </div>
     </div>

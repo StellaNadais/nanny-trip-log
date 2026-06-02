@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useRef } from 'react'
 import { Outlet, useLocation, useNavigate } from 'react-router-dom'
 
-/** Main caregiver screens: home → schedule is tap-only; schedule ↔ hub is swipe (touch) or click. */
-const FLOW_PATHS = ['/', '/schedule', '/hub']
+/** Home → schedule only (tools are separate pages with Press to start). */
+const FLOW_PATHS = ['/', '/schedule']
 
 const SWIPE_MIN_PX = 56
 
@@ -11,8 +11,7 @@ export default function CaregiverFlowLayout() {
   const location = useLocation()
   const touchStart = useRef(null)
 
-  const index = FLOW_PATHS.indexOf(location.pathname)
-  const inFlow = index !== -1
+  const inFlow = FLOW_PATHS.includes(location.pathname)
 
   const goNext = useCallback(() => {
     const i = FLOW_PATHS.indexOf(location.pathname)
@@ -67,9 +66,8 @@ export default function CaregiverFlowLayout() {
       onTouchEnd={onTouchEnd}
     >
       <p className="sr-only">
-        Home opens your schedule when you tap the screen. From the schedule, swipe left on touch devices or use the
-        Tools link on desktop to open flash cards. From Tools, swipe right or use the Schedule link to go back. Arrow
-        keys also move between schedule and tools; the right arrow does not advance from home.
+        Home opens your schedule when you tap the screen. Each caregiver tool on the schedule has its own page —
+        press to start when you open one. Arrow keys move between home and schedule only.
       </p>
       <Outlet />
     </div>

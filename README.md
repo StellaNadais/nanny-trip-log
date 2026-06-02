@@ -1,6 +1,6 @@
 # Nanny trip log
 
-A mobile-first React app for caregivers: schedule gigs, log kid journals, track shift punctuality, add expenses, and build weekly receipts. Parents book via a separate **`/book`** link you share.
+A mobile-first React app for caregivers: schedule gigs, log kid journals, track shift punctuality, and build weekly receipts. Parents book via a separate **`/book`** link you share.
 
 Data is stored in **localStorage** on this device only — no login, no cloud sync.
 
@@ -11,101 +11,41 @@ npm install
 npm run dev
 ```
 
-Open the URL Vite prints (usually `http://localhost:5173`).
-
 ```bash
-npm run build    # production build
-npm run preview  # serve the build
-npm run lint     # ESLint
+npm run build
+npm run preview
 ```
-
-## Routes
-
-| Path | Who | Purpose |
-|------|-----|---------|
-| `/` | Caregiver | Welcome — tap anywhere to start |
-| `/schedule` | Caregiver | Calendar + booking requests |
-| `/hub` | Caregiver | Tools hub (flash cards) |
-| `/shift` | Caregiver | Shift / punctuality (A) |
-| `/journal` | Caregiver | Kid journal (B) |
-| `/outings` | Caregiver | Weekly expenses (C) |
-| `/events` | Caregiver | Local event ideas (D) |
-| `/notes` | Caregiver | Internal notes (E) |
-| `/book` | Parent | Request dates — share this link |
-| `/receipt` | Caregiver | Redirects to Hub with receipt popup |
-| `/trip-log` | — | Redirects to `/journal` (legacy URL) |
-
-**Hub → receipt:** tap the receipt button at the bottom of Tools. It opens as a popup over the flash cards.
 
 ## Caregiver flow
 
-1. **Welcome** → tap screen → **Schedule**
-2. **Schedule** → swipe left (mobile) or **Open Tools →** (desktop) → **Hub**
-3. Pick a tool card, or open **Receipt** from the Hub footer
-4. **← Schedule** on Hub (or swipe right on mobile) to go back
+1. **Welcome** → tap to start → **Schedule**
+2. On Schedule, open any tool (Shift, Kid journal, Events, Internal notes) or **Receipt**
+3. Each tool shows **Press to start**, then its workspace
+4. **← Schedule** returns from any tool
 
-Arrow keys also move between Welcome → Schedule → Hub (right arrow does not advance from home).
+`/hub` redirects to Schedule (legacy URL).
 
-## Parent flow
+## Routes
 
-1. Open **`/book`** (not linked from the caregiver app)
-2. Pick dates and submit a request
-3. Request appears on the caregiver **Schedule** → accept or decline
+| Path | Purpose |
+|------|---------|
+| `/` | Welcome |
+| `/schedule` | Calendar + tool links + receipt |
+| `/shift` | Arrival / end logging |
+| `/journal` | Kid journal + mileage sync |
+| `/notes` | Punctuality score |
+| `/events` | Local event ideas |
+| `/book` | Parent booking |
+| `/receipt` | Redirects to Schedule with receipt open |
 
-## Smoke-test checklist
+## Journal → receipt mileage
 
-Use this after changes or before sharing a demo.
+1. Use the **week strip** on Kid journal (same week as Receipt).
+2. In **About today**, type outing nicknames (e.g. `home, drop off, music`).
+3. Highlighted nicknames mean mileage is counting for that week.
+4. Open **Receipt** from Schedule to see totals.
 
-### Setup
+## Customizing
 
-- [ ] `npm run build` completes with no errors
-- [ ] App loads at `/` without console errors
-
-### Welcome & navigation
-
-- [ ] Tap welcome screen → lands on `/schedule`
-- [ ] Mobile: swipe left on schedule → `/hub`
-- [ ] Desktop: **Open Tools →** → `/hub`
-- [ ] Hub **← Schedule** (or swipe right) → back to schedule
-
-### Booking (parent)
-
-- [ ] Open `/book` in another tab or incognito
-- [ ] Submit a date request
-- [ ] Request shows on schedule (Requests dock if pending)
-- [ ] Accept → date appears on calendar; decline works
-
-### Hub tools
-
-- [ ] **Shift (A)** — open, log punctuality, back to Hub
-- [ ] **Kid journal (B)** — pick a day, save notes/meals; **Add expenses** opens modal
-- [ ] **Outings (C)** — add parking/tolls; week total updates; link to receipt works
-- [ ] **Events (D)** — lists load
-- [ ] **Internal notes (E)** — open, back to Hub
-
-### Receipt
-
-- [ ] From Hub, open receipt popup
-- [ ] Hub cards blur behind modal; close returns to Hub
-- [ ] Hours / mileage / extras persist after refresh
-- [ ] `/receipt` redirects to Hub with popup open
-
-### Persistence
-
-- [ ] Refresh browser — bookings, journal, and receipt data remain
-- [ ] Clear site data → app starts fresh (expected)
-
-## Customizing content
-
-- **Place nicknames & mileage legs:** `src/data/tripPlaces.js`, `src/data/tripSegments.js`
-- **Thank-you section on Book page:** `src/data/bookThanks.js`
-- **Family events:** `src/data/familyEvents.js`
-
-For a public portfolio, swap real nicknames in `tripPlaces.js` with generic placeholders.
-
-## Limits (by design)
-
-- Single browser / device — no multi-user sync
-- No authentication
-- Weather on welcome needs network (falls back gracefully)
-- Clearing browser storage deletes all data
+- Place nicknames: `src/data/tripPlaces.js`, `src/data/tripSegments.js`
+- Thank-you on Book page: `src/data/bookThanks.js`

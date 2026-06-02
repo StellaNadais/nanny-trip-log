@@ -21,6 +21,8 @@ import { OUTINGS_UPDATED_EVENT } from '../utils/outingsStorage'
 import { loadKidJournalEntries } from '../utils/kidJournalStorage'
 import { loadState } from '../utils/storage'
 import JournalDayReceiptModal from '../components/JournalDayReceiptModal'
+import JournalDayProgress from '../components/JournalDayProgress'
+import ToolWorkspaceHead from '../components/ToolWorkspaceHead'
 import {
   buildJournalDayExportText,
   buildJournalDaySmsHref,
@@ -282,17 +284,39 @@ export default function KidJournalPage() {
   }
 
   return (
-    <div className="page page--kid-journal">
-      <header className="journal__head">
-        <Link to="/hub" className="page-back page-back--ghost">
-          ← Hub
-        </Link>
-        <h1 className="journal__title">
-          Kid journal <span className="placeholder__code">(B)</span>
-        </h1>
-      </header>
+    <div className="page page--kid-journal work-ui">
+      <div className="page__badge" aria-hidden>
+        B
+      </div>
+      <ToolWorkspaceHead
+        code="B"
+        eyebrow="Kid journal workspace"
+        title="Kid journal"
+        lede="Log the day for parents. Outing nicknames in About today sync mileage to your weekly receipt."
+      />
 
-      <div className="journal__week-picker">
+      <section className="journal__mileage-guide work-ui__panel" id="journal-mileage-guide" aria-labelledby="journal-mileage-guide-title">
+        <h2 id="journal-mileage-guide-title" className="journal__mileage-guide-title">
+          Sync mileage with your receipt
+        </h2>
+        <ol className="journal__mileage-guide-steps">
+          <li>
+            Pick the <strong>same week</strong> as on Schedule → Receipt (use the week strip below).
+          </li>
+          <li>
+            In <strong>About today</strong>, type where you went using saved nicknames — e.g.{' '}
+            <em>home, drop off, then music</em> (commas or new lines between stops).
+          </li>
+          <li>
+            When nicknames match, they <strong>highlight</strong> — that means mileage is counting for this week.
+          </li>
+          <li>
+            Open <strong>Receipt</strong> from Schedule to review total miles and reimbursement (updates as you type).
+          </li>
+        </ol>
+      </section>
+
+      <div className="journal__week-picker work-ui__panel">
         <div className="trip-log__week-tools">
           <button
             type="button"
@@ -323,6 +347,8 @@ export default function KidJournalPage() {
           }}
         />
       </div>
+
+      <JournalDayProgress dateISO={dateISO} dateLabel={journalDateLabel} />
 
       <form
         className="journal__form"
@@ -387,11 +413,10 @@ export default function KidJournalPage() {
             id="kid-journal-day-notes"
             value={dayNotes}
             onChange={setDayNotes}
-            placeholder="Mood, play, outings, anything parents should know…"
+            placeholder="e.g. home, drop off, music — use nicknames so miles sync"
             aria-labelledby="kid-journal-about-label"
-            variant="journal"
             nestedInAbout
-            receiptWeekKey={weekKey}
+            describedByExtra="journal-mileage-guide"
           />
           <JournalParentMessageIdeas dateISO={dateISO} variant="journal" />
           <div className="journal__about-meals">

@@ -1100,6 +1100,221 @@
 }
 
 /* Flip “board”: month grid (front) ↔ upcoming gigs list (back) */
+.schedule-celebrations-flip {
+  flex-shrink: 0;
+  width: 100%;
+  margin-bottom: 12px;
+  --schedule-celeb-gradient: linear-gradient(
+    168deg,
+    #fff7ed 0%,
+    #fce7f3 42%,
+    #eff6ff 100%
+  );
+  --schedule-celeb-gradient-back: linear-gradient(
+    155deg,
+    #fef3c7 0%,
+    #fce7f3 45%,
+    #e0f2fe 100%
+  );
+  --schedule-celeb-border: color-mix(in srgb, #d97706 22%, var(--line));
+}
+
+.schedule-celebrations-flip__scene {
+  min-height: 168px;
+  max-height: min(38vh, 280px);
+}
+
+.schedule-celebrations-flip .schedule-flip__inner {
+  min-height: 168px;
+}
+
+.schedule-celebrations-flip__card {
+  border: 1px solid var(--schedule-celeb-border);
+  background: var(--schedule-celeb-gradient);
+  border-radius: var(--radius);
+  padding: 12px 12px 10px;
+  box-sizing: border-box;
+}
+
+.schedule-celebrations-flip__card--back {
+  background: var(--schedule-celeb-gradient-back);
+}
+
+.schedule-celebrations-flip__head {
+  flex-shrink: 0;
+  margin-bottom: 8px;
+}
+
+.schedule-celebrations-flip__title {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+}
+
+.schedule-celebrations-flip__lede {
+  margin: 4px 0 0;
+  font-size: 0.78rem;
+  line-height: 1.35;
+}
+
+.schedule-celebrations-flip__scroll {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  margin-bottom: 8px;
+}
+
+.schedule-celebrations-flip__month-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.schedule-celebrations-flip__month-item {
+  padding-bottom: 8px;
+  border-bottom: 1px dashed color-mix(in srgb, var(--line) 85%, transparent);
+}
+
+.schedule-celebrations-flip__month-item:last-child {
+  padding-bottom: 0;
+  border-bottom: none;
+}
+
+.schedule-celebrations-flip__month-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 6px 10px;
+}
+
+.schedule-celebrations-flip__date {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: color-mix(in srgb, #c2410c 75%, var(--ink));
+  white-space: nowrap;
+}
+
+.schedule-celebrations-flip__name {
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.schedule-celebrations-flip__theme {
+  margin: 2px 0 0;
+  font-size: 0.78rem;
+}
+
+.schedule-celebrations-flip__flip-btn {
+  flex-shrink: 0;
+  width: 100%;
+  margin-top: auto;
+  background: color-mix(in srgb, var(--surface) 92%, transparent);
+  border-color: var(--schedule-celeb-border);
+  color: color-mix(in srgb, #c2410c 70%, var(--ink));
+  font-weight: 700;
+}
+
+.schedule-celebrations-flip__flip-btn:hover:not(:disabled) {
+  border-color: color-mix(in srgb, #d97706 45%, var(--line));
+  background: color-mix(in srgb, #fff7ed 60%, var(--surface));
+}
+
+.schedule-celebrations-flip__flip-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.schedule-celebrations-flip__empty {
+  margin: 0;
+  font-size: 0.85rem;
+  line-height: 1.45;
+}
+
+.schedule-celebrations-flip__code {
+  font-size: 0.75em;
+}
+
+.schedule-celebrations-flip__back-top {
+  margin-bottom: 8px;
+}
+
+.schedule-celebrations-flip__week-scroll {
+  flex: 1;
+  min-height: 0;
+}
+
+.schedule-celebrations-flip__week-list {
+  margin: 0;
+  padding: 0 2px 6px;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.schedule-celebrations-flip__week-label {
+  margin: 0 0 8px;
+  font-size: 0.8rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: color-mix(in srgb, var(--accent) 55%, var(--ink));
+}
+
+.schedule-celebrations-flip__celeb-card {
+  margin-bottom: 10px;
+  padding: 10px 10px 8px;
+  border-radius: 10px;
+  border: 1px solid color-mix(in srgb, var(--line) 88%, transparent);
+  background: color-mix(in srgb, var(--surface) 94%, transparent);
+}
+
+.schedule-celebrations-flip__celeb-card:last-child {
+  margin-bottom: 0;
+}
+
+.schedule-celebrations-flip__celeb-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 8px;
+  margin-bottom: 6px;
+  font-size: 0.8rem;
+}
+
+.schedule-celebrations-flip__celeb-head time {
+  font-weight: 700;
+  color: color-mix(in srgb, #c2410c 75%, var(--ink));
+}
+
+.schedule-celebrations-flip__celeb-head strong {
+  font-size: 0.9rem;
+  color: var(--ink);
+}
+
+.schedule-celebrations-flip__activities {
+  margin: 0;
+  padding-left: 1.1rem;
+  font-size: 0.8125rem;
+  line-height: 1.45;
+  color: var(--ink);
+}
+
+.schedule-celebrations-flip__activities li {
+  margin-bottom: 4px;
+}
+
+.schedule-celebrations-flip__activities li:last-child {
+  margin-bottom: 0;
+}
+
 .schedule-flip {
   flex: 1;
   min-height: 0;
@@ -1902,6 +2117,101 @@
 
 .schedule__flow-hint-desktop {
   display: none;
+}
+
+/* Schedule: tool links + receipt (replaces hub flash cards) */
+.page--schedule-receipt-open {
+  overflow: hidden;
+  position: relative;
+}
+
+.schedule__stage {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  transition: filter 0.28s ease, opacity 0.28s ease;
+}
+
+.page--schedule-receipt-open .schedule__stage,
+.page--schedule-receipt-open .schedule__footer {
+  filter: blur(8px);
+  opacity: 0.88;
+  pointer-events: none;
+  user-select: none;
+}
+
+.schedule__tools-nav {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.schedule__tool-link {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  min-height: 52px;
+  padding: 10px 8px;
+  border-radius: var(--radius);
+  border: 1px solid var(--line);
+  background: var(--surface);
+  text-decoration: none;
+  color: var(--ink);
+  box-shadow: 0 1px 2px color-mix(in srgb, var(--ink) 5%, transparent);
+}
+
+.schedule__tool-link:hover,
+.schedule__tool-link:focus-visible {
+  border-color: color-mix(in srgb, var(--accent) 40%, var(--line));
+  background: color-mix(in srgb, var(--accent-soft) 50%, var(--surface));
+  outline: none;
+}
+
+.schedule__tool-code {
+  font-size: 0.7rem;
+  font-weight: 800;
+  color: var(--accent);
+  letter-spacing: 0.06em;
+}
+
+.schedule__tool-label {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  text-align: center;
+  line-height: 1.2;
+}
+
+.schedule__receipt-btn {
+  width: 100%;
+  min-height: 48px;
+  padding: 12px 16px;
+  border-radius: var(--radius);
+  border: 1px solid var(--accent);
+  background: var(--accent);
+  color: var(--surface);
+  font: inherit;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.schedule__receipt-btn:hover:not(:disabled),
+.schedule__receipt-btn:focus-visible:not(:disabled) {
+  filter: brightness(1.06);
+  box-shadow: 0 0 0 1px var(--gold);
+}
+
+.schedule__receipt-btn:disabled {
+  opacity: 0.55;
+  cursor: default;
+}
+
+.receipt-modal__backdrop--over-schedule {
+  z-index: 120;
 }
 
 @media (min-width: 600px) {
@@ -4496,6 +4806,35 @@
   gap: 16px;
 }
 
+.notes-punctuality--simple {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 8px;
+  padding: 20px 16px;
+}
+
+.notes-punctuality--simple .notes-punctuality__ring {
+  margin: 0 auto;
+}
+
+.notes-punctuality__tier {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.notes-punctuality--simple .notes-punctuality__line {
+  margin: 0;
+}
+
+.notes-punctuality--simple .notes-punctuality__hint {
+  margin: 0;
+  max-width: 22rem;
+}
+
 .notes-punctuality__hero {
   display: flex;
   align-items: center;
@@ -4745,6 +5084,108 @@
   font-size: 0.875rem;
   font-weight: 600;
   text-align: center;
+}
+
+.journal-day-progress {
+  margin: 12px 0 16px;
+  padding: 12px 14px;
+  border-radius: var(--radius);
+  border: 1px solid var(--line);
+  background: color-mix(in srgb, var(--accent-soft) 28%, var(--surface));
+}
+
+.journal-day-progress__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 4px 12px;
+  margin-bottom: 10px;
+}
+
+.journal-day-progress__title {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--ink-muted);
+}
+
+.journal-day-progress__label {
+  font-size: 0.8125rem;
+  font-weight: 600;
+}
+
+.journal-day-progress__track {
+  height: 10px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--line) 55%, var(--paper));
+  overflow: hidden;
+  box-shadow: inset 0 1px 2px color-mix(in srgb, var(--ink) 6%, transparent);
+}
+
+.journal-day-progress__track[data-status='past'] .journal-day-progress__fill {
+  opacity: 0.85;
+}
+
+.journal-day-progress__track[data-status='future'] .journal-day-progress__fill {
+  opacity: 0.5;
+}
+
+.journal-day-progress__fill {
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--accent) 75%, #7c3aed),
+    color-mix(in srgb, var(--accent) 90%, #ec4899)
+  );
+  transition: width 0.6s ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .journal-day-progress__fill {
+    transition: none;
+  }
+}
+
+.journal__mileage-guide {
+  margin-bottom: 12px;
+}
+
+.journal__mileage-guide-title {
+  margin: 0 0 10px;
+  font-size: 0.9375rem;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.journal__mileage-guide-steps {
+  margin: 0;
+  padding-left: 1.15rem;
+  font-size: 0.8125rem;
+  line-height: 1.5;
+  color: var(--ink-muted);
+}
+
+.journal__mileage-guide-steps li {
+  margin-bottom: 8px;
+}
+
+.journal__mileage-guide-steps li:last-child {
+  margin-bottom: 0;
+}
+
+.journal__mileage-guide-steps strong {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.trip-places-foot-hint {
+  margin: 8px 0 0;
+  font-size: 0.75rem;
+  line-height: 1.4;
+  padding: 0 2px;
 }
 
 .journal__title {

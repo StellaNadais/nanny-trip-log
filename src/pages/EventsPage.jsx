@@ -1,27 +1,25 @@
 import { useMemo } from 'react'
-import { Link } from 'react-router-dom'
 import { EVENT_LOCATIONS, groupFamilyEventsByLocation } from '../data/familyEvents'
+import ToolWorkspaceHead from '../components/ToolWorkspaceHead'
 
 export default function EventsPage() {
   const byLocation = useMemo(() => groupFamilyEventsByLocation(), [])
 
   return (
-    <div className="page page--events">
-      <header className="events__head">
-        <Link to="/hub" className="page-back page-back--ghost">
-          ← Hub
-        </Link>
-        <h1 className="events__title">
-          Events <span className="placeholder__code">(D)</span>
-        </h1>
-        <p className="muted events__lede">
-          Family-friendly ideas by area. Times and fees change — confirm with each venue before you go.
-        </p>
-      </header>
+    <div className="page page--events work-ui">
+      <div className="page__badge" aria-hidden>
+        D
+      </div>
+      <ToolWorkspaceHead
+        code="D"
+        eyebrow="Events workspace"
+        title="Events"
+        lede="Family-friendly ideas by area. Times and fees change — confirm with each venue before you go."
+      />
 
       <div className="events__sections">
         {EVENT_LOCATIONS.map(({ id, label }) => (
-          <section key={id} className="events__section" aria-labelledby={`events-loc-${id}`}>
+          <section key={id} className="events__section work-ui__panel" aria-labelledby={`events-loc-${id}`}>
             <h2 id={`events-loc-${id}`} className="events__loc-title">
               {label}
             </h2>
