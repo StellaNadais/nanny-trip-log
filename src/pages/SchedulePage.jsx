@@ -1,15 +1,13 @@
 import { useEffect, useMemo, useState } from 'react'
-import { Link, useSearchParams } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import { toISODateLocal } from '../utils/dates'
 import { monthGrid, WEEKDAYS, isSameDay } from '../utils/calendarMonth'
 import { useBookings } from '../hooks/useBookings'
 import { useUpcomingGigsThemePlayback } from '../hooks/useUpcomingGigsThemePlayback'
 import { bookingOccupiesCalendarSlot } from '../utils/bookingCalendar'
 import { expandBookingCalendarDates, formatCareBookingWindow, bookingEndMs } from '../utils/bookingRange'
-import NannyReceiptPopup from '../components/NannyReceiptPopup'
-import { receiptNavLabel } from '../utils/receiptHref'
-import { CAREGIVER_TOOLS } from '../data/caregiverTools'
 import ScheduleCelebrationsFlip from '../components/ScheduleCelebrationsFlip'
+import JournalDayProgress from '../components/JournalDayProgress'
 
 function todayISO() {
   return toISODateLocal(new Date())
@@ -37,9 +35,6 @@ const SCHEDULE_PAGE_INTRO_TEXT = `${SCHEDULE_HEADING_TIP} ${SCHEDULE_EYEBROW_TOO
  */
 export default function SchedulePage() {
   const { bookings, patchBooking, removeBooking } = useBookings()
-  const [searchParams, setSearchParams] = useSearchParams()
-  const receiptOpen = searchParams.get('receipt') === 'open'
-  const receiptLabel = receiptNavLabel()
   const today = new Date()
   const [cursor, setCursor] = useState(
     () => new Date(today.getFullYear(), today.getMonth(), 1)
@@ -147,23 +142,9 @@ export default function SchedulePage() {
     setCursor(new Date(y, m + 1, 1))
   }
 
-  function openReceipt() {
-    const next = new URLSearchParams(searchParams)
-    next.set('receipt', 'open')
-    setSearchParams(next)
-  }
-
-  function closeReceipt() {
-    const next = new URLSearchParams(searchParams)
-    next.delete('receipt')
-    setSearchParams(next, { replace: true })
-  }
-
   return (
-    <div
-      className={`page page--calendar page--schedule work-ui${receiptOpen ? ' page--schedule-receipt-open' : ''}`}
-    >
-      <div className="schedule__stage" aria-hidden={receiptOpen}>
+    <div className="page page--calendar page--schedule work-ui">
+      <div className="schedule__stage">
       <div className="page__badge" aria-hidden>
         2
       </div>
@@ -179,14 +160,25 @@ export default function SchedulePage() {
           Scheduling workspace
         </p>
         <div className="schedule__title-row">
-          <h1
-            className="schedule__title schedule__title--hover-tip"
-            id="schedule-page-heading"
-            aria-describedby="schedule-page-intro"
-            data-tooltip={SCHEDULE_HEADING_TIP}
-          >
-            Schedule
-          </h1>
+          <div className="schedule__title-stack">
+            <h1
+              className="schedule__title schedule__title--hover-tip"
+              id="schedule-page-heading"
+              aria-describedby="schedule-page-intro"
+              data-tooltip={SCHEDULE_HEADING_TIP}
+            >
+              Schedule
+            </h1>
+            <JournalDayProgress
+              dateISO={todayISO()}
+              dateLabel={new Date().toLocaleDateString(undefined, {
+                weekday: 'long',
+                month: 'short',
+                day: 'numeric',
+              })}
+              variant="thin"
+            />
+          </div>
           <div className={`schedule-requests-dock ${requestsDockOpen ? 'schedule-requests-dock--open' : ''}`}>
             <button
               type="button"
@@ -373,9 +365,7 @@ export default function SchedulePage() {
         </span>
       </div>
 
-      <ScheduleCelebrationsFlip year={y} monthIndex={m} />
-
-      <div className="schedule-flip">
+      <div className="schedule-flip schedule-calendar-flip schedule-calendar-section">
         <div className="schedule-flip__scene">
           <div
             className={`schedule-flip__inner${scheduleCardListFace ? ' schedule-flip__inner--list' : ''}`}
@@ -385,7 +375,9 @@ export default function SchedulePage() {
               className="schedule-flip__face schedule-flip__face--front calendar__panel calendar__panel--book work-ui__calendar-card"
               aria-hidden={scheduleCardListFace}
             >
-              <div className="schedule-flip__calendar-main">
+              <div className="schedule-calendar-section__body">
+                <ScheduleCelebrationsFlip year={y} monthIndex={m} embedded />
+                <div className="schedule-flip__calendar-main schedule-calendar-section__calendar">
                 <div className="schedule-flip__calendar-top">
                   <div className="calendar__nav">
                     <button type="button" className="btn btn--ghost" onClick={prevMonth}>
@@ -511,32 +503,12 @@ export default function SchedulePage() {
       </div>
       </div>
 
-      <div className="calendar__footer schedule__footer" aria-hidden={receiptOpen}>
-        <nav className="schedule__tools-nav" aria-label="Caregiver tools">
-          {CAREGIVER_TOOLS.map((tool) => (
-            <Link key={tool.to} to={tool.to} className="schedule__tool-link" tabIndex={receiptOpen ? -1 : undefined}>
-              <span className="schedule__tool-code">{tool.code}</span>
-              <span className="schedule__tool-label">{tool.label}</span>
-            </Link>
-          ))}
-        </nav>
-        <button
-          type="button"
-          className="schedule__receipt-btn"
-          onClick={openReceipt}
-          disabled={receiptOpen}
-          tabIndex={receiptOpen ? -1 : undefined}
-        >
-          {receiptLabel}
-        </button>
+      <div className="calendar__footer schedule__footer">
+        <Link to="/hub" className="schedule__flow-hint schedule__flow-hint--link muted">
+          <span className="schedule__flow-hint-mobile">Swipe left for Tools</span>
+          <span className="schedule__flow-hint-desktop">Open Tools →</span>
+        </Link>
       </div>
-
-      {receiptOpen ? (
-        <NannyReceiptPopup
-          onClose={closeReceipt}
-          backdropClassName="receipt-modal__backdrop--over-schedule"
-        />
-      ) : null}
     </div>
   )
 }

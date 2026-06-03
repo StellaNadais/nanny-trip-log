@@ -21,7 +21,6 @@ import { OUTINGS_UPDATED_EVENT } from '../utils/outingsStorage'
 import { loadKidJournalEntries } from '../utils/kidJournalStorage'
 import { loadState } from '../utils/storage'
 import JournalDayReceiptModal from '../components/JournalDayReceiptModal'
-import JournalDayProgress from '../components/JournalDayProgress'
 import ToolWorkspaceHead from '../components/ToolWorkspaceHead'
 import {
   buildJournalDayExportText,
@@ -292,7 +291,7 @@ export default function KidJournalPage() {
         code="B"
         eyebrow="Kid journal workspace"
         title="Kid journal"
-        lede="Log the day for parents. Outing nicknames in About today sync mileage to your weekly receipt."
+        lede="Log the day for parents. Outing nicknames in About today sync mileage to your weekly receipt (open Receipt from Tools)."
       />
 
       <section className="journal__mileage-guide work-ui__panel" id="journal-mileage-guide" aria-labelledby="journal-mileage-guide-title">
@@ -301,17 +300,17 @@ export default function KidJournalPage() {
         </h2>
         <ol className="journal__mileage-guide-steps">
           <li>
-            Pick the <strong>same week</strong> as on Schedule → Receipt (use the week strip below).
+            Pick the <strong>same week</strong> as on Tools → Receipt (use the week strip below).
           </li>
           <li>
             In <strong>About today</strong>, type where you went using saved nicknames — e.g.{' '}
-            <em>home, drop off, then music</em> (commas or new lines between stops).
+            <em>H&apos;s drop off, music, then Commons</em> (commas or new lines between stops).
           </li>
           <li>
             When nicknames match, they <strong>highlight</strong> — that means mileage is counting for this week.
           </li>
           <li>
-            Open <strong>Receipt</strong> from Schedule to review total miles and reimbursement (updates as you type).
+            Open <strong>Receipt</strong> from Tools to review total miles and reimbursement (updates as you type).
           </li>
         </ol>
       </section>
@@ -347,8 +346,6 @@ export default function KidJournalPage() {
           }}
         />
       </div>
-
-      <JournalDayProgress dateISO={dateISO} dateLabel={journalDateLabel} />
 
       <form
         className="journal__form"
@@ -413,7 +410,7 @@ export default function KidJournalPage() {
             id="kid-journal-day-notes"
             value={dayNotes}
             onChange={setDayNotes}
-            placeholder="e.g. home, drop off, music — use nicknames so miles sync"
+            placeholder="e.g. H's drop off, music, Commons — use nicknames so miles sync"
             aria-labelledby="kid-journal-about-label"
             nestedInAbout
             describedByExtra="journal-mileage-guide"

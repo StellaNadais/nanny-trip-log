@@ -340,6 +340,47 @@
   outline-offset: 2px;
 }
 
+.work-ui.page--hub {
+  overflow: hidden;
+  position: relative;
+}
+
+.work-ui .hub-card {
+  background: var(--surface);
+  border-color: var(--line);
+  box-shadow:
+    0 1px 2px color-mix(in srgb, var(--ink) 6%, transparent),
+    0 4px 10px color-mix(in srgb, var(--ink) 5%, transparent);
+}
+
+.work-ui .hub-card:hover,
+.work-ui .hub-card:active {
+  border-color: color-mix(in srgb, var(--accent) 40%, var(--line));
+  background: color-mix(in srgb, var(--accent-soft) 45%, var(--surface));
+}
+
+.work-ui .hub__report {
+  border-radius: var(--radius);
+  font-weight: 700;
+}
+
+.work-ui .schedule-calendar-flip.work-ui__calendar-card,
+.work-ui .schedule-calendar-flip .work-ui__calendar-card {
+  box-shadow:
+    0 1px 2px color-mix(in srgb, var(--ink) 6%, transparent),
+    0 3px 10px color-mix(in srgb, var(--ink) 4%, transparent);
+}
+
+.work-ui .schedule-calendar-flip .calendar__nav {
+  padding: 4px 6px;
+  margin-bottom: 6px;
+}
+
+.work-ui .schedule-calendar-flip .calendar__nav .btn--ghost {
+  min-height: 36px;
+  padding: 4px 10px;
+}
+
 /* Shared tool workspace surfaces */
 .work-ui__panel {
   background: var(--surface);

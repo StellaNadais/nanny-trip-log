@@ -138,7 +138,7 @@ export default function OutingsPage() {
     <div className="page page--outings">
       <header className="outings__head">
         <Link to="/hub" className="page-back page-back--ghost">
-          ← Hub
+          ← Tools
         </Link>
         <h1
           className="outings__title outings__title--hover-tip"

@@ -41,7 +41,7 @@ npm run preview
 ## Journal → receipt mileage
 
 1. Use the **week strip** on Kid journal (same week as Receipt).
-2. In **About today**, type outing nicknames (e.g. `home, drop off, music`).
+2. In **About today**, type outing nicknames (e.g. `H's drop off, music, Commons`).
 3. Highlighted nicknames mean mileage is counting for that week.
 4. Open **Receipt** from Schedule to see totals.
 

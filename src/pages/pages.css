@@ -1093,10 +1093,202 @@
 }
 
 /* ——— Schedule (caregiver page 2) ——— */
+.page--calendar.page--schedule {
+  overflow: hidden;
+  max-height: 100dvh;
+  max-height: 100svh;
+}
+
 .page--schedule {
-  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.page--schedule .schedule__stage {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
   overflow-y: auto;
-  max-height: none;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+.page--schedule .schedule__head {
+  margin-bottom: 8px;
+}
+
+.page--schedule .schedule__title-stack .journal-day-progress--thin {
+  margin: 0;
+}
+
+.page--schedule .book-legend--work {
+  margin-bottom: 8px;
+  padding: 6px 10px;
+  font-size: 0.6875rem;
+  gap: 8px 12px;
+}
+
+.page--schedule .book-legend--work .book-legend__item {
+  gap: 4px;
+}
+
+/* Wonder list: compact band above calendar */
+.page--schedule .schedule-celebrations-flip {
+  margin-bottom: 8px;
+}
+
+.page--schedule .schedule-celebrations-flip__scene {
+  min-height: 120px;
+  max-height: min(22vh, 148px);
+}
+
+.page--schedule .schedule-celebrations-flip .schedule-flip__inner {
+  min-height: 120px;
+}
+
+.page--schedule .schedule-celebrations-flip__card {
+  padding: 8px 10px 8px;
+}
+
+.page--schedule .schedule-celebrations-flip__title {
+  font-size: 0.9rem;
+}
+
+.page--schedule .schedule-celebrations-flip__lede {
+  display: none;
+}
+
+.page--schedule .schedule-celebrations-flip__flip-btn {
+  padding: 8px 12px;
+  font-size: 0.8125rem;
+}
+
+/* Calendar flip: fills remaining space; grid scrolls inside if tight */
+.page--schedule .schedule-calendar-flip {
+  flex: 1 1 auto;
+  min-height: 240px;
+  display: flex;
+  flex-direction: column;
+}
+
+.page--schedule .schedule-calendar-flip .schedule-flip__scene {
+  flex: 1 1 auto;
+  min-height: 220px;
+}
+
+.page--schedule .schedule-calendar-flip .schedule-flip__inner {
+  min-height: 220px;
+}
+
+.page--schedule .schedule-calendar-flip .calendar__panel--book {
+  flex: 1;
+  min-height: 0;
+  height: 100%;
+  padding: 8px;
+}
+
+.page--schedule .schedule-calendar-flip .schedule-flip__calendar-main {
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+.page--schedule .schedule-calendar-flip .calendar__nav {
+  margin-bottom: 6px;
+}
+
+.page--schedule .schedule-calendar-flip .calendar__month {
+  font-size: 0.875rem;
+}
+
+.page--schedule .schedule-calendar-flip .schedule-flip__upcoming-slot {
+  padding-bottom: 4px;
+}
+
+.page--schedule .schedule-calendar-flip .schedule-flip__upcoming-strip--gigs {
+  padding: 7px 10px;
+  font-size: 0.8125rem;
+}
+
+.page--schedule .schedule-calendar-flip .calendar__weekdays {
+  margin-bottom: 3px;
+}
+
+.page--schedule .schedule-calendar-flip .calendar__wd {
+  font-size: 0.5625rem;
+}
+
+.page--schedule .schedule-calendar-flip .calendar__grid--book {
+  flex: 0 0 auto;
+  min-height: 0;
+  gap: 2px;
+}
+
+.page--schedule .schedule-calendar-flip .calendar__grid--book .calendar__cell {
+  min-height: 36px;
+  padding: 2px 1px 3px;
+  font-size: 0.8125rem;
+  border-radius: 6px;
+}
+
+.page--schedule .schedule-calendar-flip .calendar__grid--book .calendar__cell--empty {
+  min-height: 28px;
+}
+
+.page--schedule .schedule-calendar-flip .calendar__cell-num {
+  font-size: 0.8125rem;
+}
+
+.page--schedule .schedule-calendar-flip .calendar__booked-mark {
+  min-height: 6px;
+  font-size: 0.55rem;
+}
+
+.page--schedule .schedule-calendar-flip .calendar__booked-dot {
+  width: 5px;
+  height: 5px;
+}
+
+.page--schedule .schedule__footer {
+  flex-shrink: 0;
+  margin-top: 10px;
+  padding-bottom: 4px;
+}
+
+@media (min-width: 600px) {
+  .page--schedule .schedule-celebrations-flip__scene {
+    max-height: min(24vh, 160px);
+  }
+
+  .page--schedule .schedule-celebrations-flip__lede {
+    display: block;
+    font-size: 0.72rem;
+  }
+
+  .page--schedule .schedule-calendar-flip .calendar__grid--book .calendar__cell {
+    min-height: 40px;
+  }
+}
+
+@media (min-height: 780px) {
+  .page--schedule .schedule-celebrations-flip__scene {
+    max-height: min(28vh, 180px);
+  }
+
+  .page--schedule .schedule-calendar-flip {
+    min-height: 280px;
+  }
+
+  .page--schedule .schedule-calendar-flip .schedule-flip__scene,
+  .page--schedule .schedule-calendar-flip .schedule-flip__inner {
+    min-height: 260px;
+  }
+
+  .page--schedule .schedule-calendar-flip .calendar__grid--book .calendar__cell {
+    min-height: 44px;
+  }
 }
 
 /* Flip “board”: month grid (front) ↔ upcoming gigs list (back) */
@@ -1120,12 +1312,12 @@
 }
 
 .schedule-celebrations-flip__scene {
-  min-height: 168px;
-  max-height: min(38vh, 280px);
+  min-height: 120px;
+  max-height: min(22vh, 148px);
 }
 
 .schedule-celebrations-flip .schedule-flip__inner {
-  min-height: 168px;
+  min-height: 120px;
 }
 
 .schedule-celebrations-flip__card {
@@ -1622,6 +1814,23 @@
   position: relative;
   z-index: 230;
   margin-top: 2px;
+}
+
+.schedule__title-stack {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.schedule__title-stack .schedule__title {
+  margin: 6px 0 0;
+}
+
+.schedule__title-stack .journal-day-progress--thin {
+  margin: 0;
+  width: 100%;
 }
 
 .schedule__title {
@@ -5092,6 +5301,39 @@
   border-radius: var(--radius);
   border: 1px solid var(--line);
   background: color-mix(in srgb, var(--accent-soft) 28%, var(--surface));
+}
+
+.journal-day-progress--thin {
+  flex-shrink: 0;
+  margin: 0 0 10px;
+  padding: 0;
+  border: none;
+  border-radius: 0;
+  background: transparent;
+}
+
+.journal-day-progress--thin .journal-day-progress__head {
+  margin-bottom: 4px;
+  gap: 6px 10px;
+}
+
+.journal-day-progress--thin .journal-day-progress__title {
+  font-size: 0.625rem;
+  letter-spacing: 0.05em;
+}
+
+.journal-day-progress--thin .journal-day-progress__label {
+  font-size: 0.6875rem;
+  font-weight: 500;
+}
+
+.journal-day-progress--thin .journal-day-progress__track {
+  height: 3px;
+  border-radius: 999px;
+}
+
+.page--schedule .journal-day-progress--thin {
+  margin-bottom: 0;
 }
 
 .journal-day-progress__head {

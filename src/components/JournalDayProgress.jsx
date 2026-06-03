@@ -5,7 +5,9 @@ import { toISODateLocal } from '../utils/dates'
 /**
  * Bar that fills as the selected calendar day goes by (live when viewing today).
  */
-export default function JournalDayProgress({ dateISO, dateLabel }) {
+export default function JournalDayProgress({ dateISO, dateLabel, variant = 'inline' }) {
+  const variantClass =
+    variant === 'thin' ? ' journal-day-progress--thin' : variant === 'rail' ? ' journal-day-progress--rail' : ''
   const [now, setNow] = useState(() => new Date())
   const isToday = dateISO === toISODateLocal(now)
 
@@ -24,7 +26,7 @@ export default function JournalDayProgress({ dateISO, dateLabel }) {
 
   return (
     <section
-      className="journal-day-progress"
+      className={`journal-day-progress${variantClass}`}
       aria-label={`Day progress for ${dateLabel}`}
     >
       <div className="journal-day-progress__head">

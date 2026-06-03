@@ -10,8 +10,8 @@ export default function ToolWorkspaceHead({
 }) {
   return (
     <header className="tool-workspace-head schedule-workspace-head">
-      <Link to="/schedule" className="page-back page-back--ghost">
-        ← Schedule
+      <Link to="/hub" className="page-back page-back--ghost">
+        ← Tools
       </Link>
       <p className="schedule-workspace-head__eyebrow">{eyebrow}</p>
       <h1 className="schedule__title">

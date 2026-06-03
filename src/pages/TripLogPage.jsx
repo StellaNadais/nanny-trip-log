@@ -82,8 +82,8 @@ export default function TripLogPage() {
     <div className="app">
       <header className="app__header">
         <div className="page-toolbar">
-          <Link to="/schedule" className="page-back">
-            ← Schedule
+          <Link to="/hub" className="page-back">
+            ← Tools
           </Link>
         </div>
         <div className="app__title-row">
