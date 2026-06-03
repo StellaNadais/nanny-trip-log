@@ -1134,69 +1134,208 @@
   gap: 4px;
 }
 
-/* Do fun list nested inside calendar card */
-.page--schedule .schedule-calendar-section .schedule-celebrations-flip--embedded {
-  margin: 0;
-  flex-shrink: 0;
-}
-
-.page--schedule .schedule-calendar-section .schedule-celebrations-flip--embedded .schedule-celebrations-flip__scene {
-  min-height: 100px;
-  max-height: min(20vh, 132px);
-}
-
-.page--schedule .schedule-calendar-section .schedule-celebrations-flip--embedded .schedule-flip__inner {
-  min-height: 100px;
-}
-
-.page--schedule .schedule-calendar-section .schedule-celebrations-flip--embedded .schedule-celebrations-flip__card--embedded {
-  padding: 8px 8px 6px;
-}
-
-.page--schedule .schedule-calendar-section .schedule-celebrations-flip--embedded .schedule-celebrations-flip__title {
-  font-size: 0.875rem;
-}
-
-.page--schedule .schedule-calendar-section .schedule-celebrations-flip--embedded .schedule-celebrations-flip__lede {
-  display: none;
-}
-
-.page--schedule .schedule-calendar-section .schedule-celebrations-flip--embedded .schedule-celebrations-flip__flip-btn {
-  padding: 7px 10px;
-  font-size: 0.75rem;
-}
-
+/* Do fun list (full-width band) above calendar */
 .page--schedule .schedule-calendar-section__body {
   display: flex;
   flex-direction: column;
+  align-items: stretch;
+  gap: 8px;
   flex: 1;
-  min-height: 0;
+  min-height: min(48vh, 340px);
   height: 100%;
 }
 
+.page--schedule .schedule-calendar-section__fun {
+  flex: 0 0 auto;
+  width: 100%;
+  max-width: none;
+  min-width: 0;
+  order: 0;
+  display: flex;
+  flex-direction: column;
+}
+
 .page--schedule .schedule-calendar-section__calendar {
+  flex: 1 1 auto;
+  min-width: 0;
+  min-height: 0;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  order: 1;
+  border-top: 1px solid var(--line);
+  padding: 8px 0 0;
+  margin: 0;
+}
+
+.page--schedule .schedule-celebrations-flip--rect {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  min-height: 0;
+  border: 1px solid var(--schedule-celeb-border, var(--line));
+  border-radius: var(--radius);
+  background: color-mix(in srgb, #fff7ed 50%, var(--surface));
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--surface) 80%, transparent);
+  overflow: hidden;
+}
+
+.page--schedule .schedule-celebrations-flip--rect:not(.schedule-celebrations-flip--rect-open) {
+  flex: 0 0 auto;
+  height: auto;
+}
+
+.page--schedule .schedule-celebrations-flip--rect-open {
+  flex: 0 0 auto;
+  max-height: min(22vh, 148px);
+}
+
+.page--schedule .schedule-celebrations-flip__rect-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  width: 100%;
+  flex-shrink: 0;
+  padding: 8px 10px;
+  border: none;
+  border-bottom: 1px solid transparent;
+  background: color-mix(in srgb, #fff7ed 65%, var(--surface));
+  color: var(--ink);
+  font: inherit;
+  cursor: pointer;
+  text-align: left;
+}
+
+.page--schedule .schedule-celebrations-flip--rect-open .schedule-celebrations-flip__rect-toggle {
+  border-bottom-color: var(--line);
+}
+
+.page--schedule .schedule-celebrations-flip__rect-toggle-text {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 6px 10px;
+  min-width: 0;
+}
+
+.page--schedule .schedule-celebrations-flip__rect-title {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--ink-muted);
+}
+
+.page--schedule .schedule-celebrations-flip__rect-month {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.page--schedule .schedule-celebrations-flip__rect-body {
   flex: 1;
   min-height: 0;
-  border-top: 1px solid var(--line);
-  padding-top: 8px;
-  margin-top: 2px;
+  max-height: min(18vh, 120px);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.page--schedule .schedule-celebrations-flip--rect-open .schedule-celebrations-flip__rect-body {
+  max-height: min(20vh, 132px);
+}
+
+.page--schedule .schedule-celebrations-flip__rect-toggle:hover {
+  background: color-mix(in srgb, var(--accent-soft) 35%, var(--surface));
+}
+
+.page--schedule .schedule-celebrations-flip__rect-toggle:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+}
+
+.page--schedule .schedule-celebrations-flip__rect-chevron {
+  flex-shrink: 0;
+  font-size: 0.75rem;
+  color: var(--accent);
+}
+
+.page--schedule .schedule-celebrations-flip__rect-body .schedule-celebrations-flip__scene {
+  flex: 1;
+  min-height: 0;
+  max-height: none;
+  height: 100%;
+}
+
+.page--schedule .schedule-celebrations-flip__rect-body .schedule-flip__inner {
+  min-height: 100px;
+  height: 100%;
+}
+
+.page--schedule .schedule-celebrations-flip__rect-body .schedule-celebrations-flip__card--embedded {
+  padding: 8px 8px 6px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+  background: transparent;
+}
+
+.page--schedule .schedule-celebrations-flip__rect-body .schedule-celebrations-flip__head {
+  margin-bottom: 6px;
+}
+
+.page--schedule .schedule-celebrations-flip__rect-body .schedule-celebrations-flip__title {
+  font-size: 0.8125rem;
+}
+
+.page--schedule .schedule-celebrations-flip__rect-body .schedule-celebrations-flip__lede {
+  display: none;
+}
+
+.page--schedule .schedule-celebrations-flip__rect-body .schedule-celebrations-flip__scroll {
+  flex: 1;
+  min-height: 0;
+}
+
+.page--schedule .schedule-celebrations-flip__rect-body .schedule-celebrations-flip__flip-btn {
+  padding: 7px 8px;
+  font-size: 0.6875rem;
+}
+
+.page--schedule .schedule-calendar-section__calendar .calendar__grid--book {
+  flex: 0 0 auto;
+  min-height: 0;
+  align-content: start;
+}
+
+.page--schedule .schedule-calendar-section__calendar .calendar__grid--book .calendar__cell,
+.page--schedule .schedule-calendar-section__calendar .calendar__grid--book .calendar__cell--empty {
+  aspect-ratio: 1;
+  width: 100%;
+  min-height: 30px;
+  height: auto;
 }
 
 /* Calendar flip: fills remaining space; grid scrolls inside if tight */
 .page--schedule .schedule-calendar-flip {
   flex: 1 1 auto;
-  min-height: 240px;
+  min-height: min(50vh, 360px);
   display: flex;
   flex-direction: column;
 }
 
 .page--schedule .schedule-calendar-flip .schedule-flip__scene {
   flex: 1 1 auto;
-  min-height: 220px;
+  min-height: min(48vh, 340px);
 }
 
 .page--schedule .schedule-calendar-flip .schedule-flip__inner {
-  min-height: 220px;
+  min-height: min(48vh, 340px);
 }
 
 .page--schedule .schedule-calendar-flip .calendar__panel--book {
@@ -1210,6 +1349,11 @@
   overflow-y: auto;
   overscroll-behavior: contain;
   -webkit-overflow-scrolling: touch;
+}
+
+.page--schedule .schedule-calendar-section__calendar.schedule-flip__calendar-main {
+  overflow-x: hidden;
+  overflow-y: auto;
 }
 
 .page--schedule .schedule-calendar-flip .calendar__nav {
@@ -1275,36 +1419,46 @@
 }
 
 @media (min-width: 600px) {
-  .page--schedule .schedule-calendar-section .schedule-celebrations-flip--embedded .schedule-celebrations-flip__scene {
-    max-height: min(22vh, 148px);
+  .page--schedule .schedule-calendar-section__body {
+    min-height: min(52vh, 380px);
   }
 
-  .page--schedule .schedule-calendar-section .schedule-celebrations-flip--embedded .schedule-celebrations-flip__lede {
+  .page--schedule .schedule-celebrations-flip--rect-open {
+    max-height: min(24vh, 168px);
+  }
+
+  .page--schedule .schedule-celebrations-flip--rect-open .schedule-celebrations-flip__rect-body {
+    max-height: min(22vh, 152px);
+  }
+
+  .page--schedule .schedule-celebrations-flip__rect-body .schedule-celebrations-flip__lede {
     display: block;
-    font-size: 0.72rem;
+    font-size: 0.68rem;
   }
 
-  .page--schedule .schedule-calendar-flip .calendar__grid--book .calendar__cell {
-    min-height: 40px;
+  .page--schedule .schedule-calendar-section__calendar .calendar__grid--book .calendar__cell,
+  .page--schedule .schedule-calendar-section__calendar .calendar__grid--book .calendar__cell--empty {
+    min-height: 34px;
   }
 }
 
 @media (min-height: 780px) {
-  .page--schedule .schedule-calendar-section .schedule-celebrations-flip--embedded .schedule-celebrations-flip__scene {
-    max-height: min(24vh, 160px);
+  .page--schedule .schedule-calendar-section__body {
+    min-height: min(58vh, 420px);
   }
 
   .page--schedule .schedule-calendar-flip {
-    min-height: 280px;
+    min-height: min(58vh, 420px);
   }
 
   .page--schedule .schedule-calendar-flip .schedule-flip__scene,
   .page--schedule .schedule-calendar-flip .schedule-flip__inner {
-    min-height: 260px;
+    min-height: min(56vh, 400px);
   }
 
-  .page--schedule .schedule-calendar-flip .calendar__grid--book .calendar__cell {
-    min-height: 44px;
+  .page--schedule .schedule-calendar-section__calendar .calendar__grid--book .calendar__cell,
+  .page--schedule .schedule-calendar-section__calendar .calendar__grid--book .calendar__cell--empty {
+    min-height: 38px;
   }
 }
 

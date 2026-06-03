@@ -376,7 +376,9 @@ export default function SchedulePage() {
               aria-hidden={scheduleCardListFace}
             >
               <div className="schedule-calendar-section__body">
-                <ScheduleCelebrationsFlip year={y} monthIndex={m} embedded />
+                <div className="schedule-calendar-section__fun">
+                  <ScheduleCelebrationsFlip year={y} monthIndex={m} embedded />
+                </div>
                 <div className="schedule-flip__calendar-main schedule-calendar-section__calendar">
                 <div className="schedule-flip__calendar-top">
                   <div className="calendar__nav">
