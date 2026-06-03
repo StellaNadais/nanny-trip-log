@@ -1134,35 +1134,52 @@
   gap: 4px;
 }
 
-/* Wonder list: compact band above calendar */
-.page--schedule .schedule-celebrations-flip {
-  margin-bottom: 8px;
+/* Do fun list nested inside calendar card */
+.page--schedule .schedule-calendar-section .schedule-celebrations-flip--embedded {
+  margin: 0;
+  flex-shrink: 0;
 }
 
-.page--schedule .schedule-celebrations-flip__scene {
-  min-height: 120px;
-  max-height: min(22vh, 148px);
+.page--schedule .schedule-calendar-section .schedule-celebrations-flip--embedded .schedule-celebrations-flip__scene {
+  min-height: 100px;
+  max-height: min(20vh, 132px);
 }
 
-.page--schedule .schedule-celebrations-flip .schedule-flip__inner {
-  min-height: 120px;
+.page--schedule .schedule-calendar-section .schedule-celebrations-flip--embedded .schedule-flip__inner {
+  min-height: 100px;
 }
 
-.page--schedule .schedule-celebrations-flip__card {
-  padding: 8px 10px 8px;
+.page--schedule .schedule-calendar-section .schedule-celebrations-flip--embedded .schedule-celebrations-flip__card--embedded {
+  padding: 8px 8px 6px;
 }
 
-.page--schedule .schedule-celebrations-flip__title {
-  font-size: 0.9rem;
+.page--schedule .schedule-calendar-section .schedule-celebrations-flip--embedded .schedule-celebrations-flip__title {
+  font-size: 0.875rem;
 }
 
-.page--schedule .schedule-celebrations-flip__lede {
+.page--schedule .schedule-calendar-section .schedule-celebrations-flip--embedded .schedule-celebrations-flip__lede {
   display: none;
 }
 
-.page--schedule .schedule-celebrations-flip__flip-btn {
-  padding: 8px 12px;
-  font-size: 0.8125rem;
+.page--schedule .schedule-calendar-section .schedule-celebrations-flip--embedded .schedule-celebrations-flip__flip-btn {
+  padding: 7px 10px;
+  font-size: 0.75rem;
+}
+
+.page--schedule .schedule-calendar-section__body {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  height: 100%;
+}
+
+.page--schedule .schedule-calendar-section__calendar {
+  flex: 1;
+  min-height: 0;
+  border-top: 1px solid var(--line);
+  padding-top: 8px;
+  margin-top: 2px;
 }
 
 /* Calendar flip: fills remaining space; grid scrolls inside if tight */
@@ -1258,11 +1275,11 @@
 }
 
 @media (min-width: 600px) {
-  .page--schedule .schedule-celebrations-flip__scene {
-    max-height: min(24vh, 160px);
+  .page--schedule .schedule-calendar-section .schedule-celebrations-flip--embedded .schedule-celebrations-flip__scene {
+    max-height: min(22vh, 148px);
   }
 
-  .page--schedule .schedule-celebrations-flip__lede {
+  .page--schedule .schedule-calendar-section .schedule-celebrations-flip--embedded .schedule-celebrations-flip__lede {
     display: block;
     font-size: 0.72rem;
   }
@@ -1273,8 +1290,8 @@
 }
 
 @media (min-height: 780px) {
-  .page--schedule .schedule-celebrations-flip__scene {
-    max-height: min(28vh, 180px);
+  .page--schedule .schedule-calendar-section .schedule-celebrations-flip--embedded .schedule-celebrations-flip__scene {
+    max-height: min(24vh, 160px);
   }
 
   .page--schedule .schedule-calendar-flip {
@@ -1318,6 +1335,19 @@
 
 .schedule-celebrations-flip .schedule-flip__inner {
   min-height: 120px;
+}
+
+.schedule-celebrations-flip__card--embedded {
+  border: none;
+  border-radius: 10px;
+  background: color-mix(in srgb, #fff7ed 45%, var(--surface));
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--schedule-celeb-border) 65%, var(--line));
+}
+
+.schedule-celebrations-flip--embedded {
+  margin-bottom: 0;
+  padding-bottom: 0;
+  width: 100%;
 }
 
 .schedule-celebrations-flip__card {

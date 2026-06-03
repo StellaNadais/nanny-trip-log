@@ -444,6 +444,7 @@ export default function SchedulePage() {
                     )
                   })}
                 </div>
+                </div>
               </div>
             </div>
 
