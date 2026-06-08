@@ -13,6 +13,7 @@ import InternalNotesPage from './pages/InternalNotesPage'
 import OutingsPage from './pages/OutingsPage'
 import EventsPage from './pages/EventsPage'
 import CaregiverFlowLayout from './layouts/CaregiverFlowLayout'
+import CaregiverShellLayout from './layouts/CaregiverShellLayout'
 import './App.css'
 import './pages/pages.css'
 import './pages/work-ui.css'
@@ -23,19 +24,21 @@ export default function App() {
       <KidJournalProvider>
         <BookingsProvider>
           <Routes>
-            <Route element={<CaregiverFlowLayout />}>
-              <Route path="/" element={<WelcomePage />} />
-              <Route path="/schedule" element={<SchedulePage />} />
-              <Route path="/hub" element={<HubPage />} />
-            </Route>
             <Route path="/book" element={<BookPage />} />
-            <Route path="/trip-log" element={<Navigate to="/journal" replace />} />
-            <Route path="/receipt" element={<WeeklyReceiptPage />} />
-            <Route path="/shift" element={<ShiftPage />} />
-            <Route path="/journal" element={<KidJournalPage />} />
-            <Route path="/outings" element={<OutingsPage />} />
-            <Route path="/notes" element={<InternalNotesPage />} />
-            <Route path="/events" element={<EventsPage />} />
+            <Route element={<CaregiverShellLayout />}>
+              <Route element={<CaregiverFlowLayout />}>
+                <Route path="/" element={<WelcomePage />} />
+                <Route path="/schedule" element={<SchedulePage />} />
+                <Route path="/hub" element={<HubPage />} />
+              </Route>
+              <Route path="/trip-log" element={<Navigate to="/journal" replace />} />
+              <Route path="/receipt" element={<WeeklyReceiptPage />} />
+              <Route path="/shift" element={<ShiftPage />} />
+              <Route path="/journal" element={<KidJournalPage />} />
+              <Route path="/outings" element={<OutingsPage />} />
+              <Route path="/notes" element={<InternalNotesPage />} />
+              <Route path="/events" element={<EventsPage />} />
+            </Route>
           </Routes>
         </BookingsProvider>
       </KidJournalProvider>

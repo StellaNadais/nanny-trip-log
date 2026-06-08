@@ -1,6 +1,7 @@
 import { HOME_PLACE_ID, PLACE_BY_ID, PLACES } from '../data/tripPlaces'
 import { TRIP_SEGMENTS } from '../data/tripSegments'
 import { loadOutingsPlaces } from './outingsStorage'
+import { buildSegmentsForStops } from './dayTravelJournal'
 
 function roundMi(n) {
   return Math.round(n * 100) / 100
@@ -74,24 +75,12 @@ export function roundTripMilesForPlace(place, graph) {
 }
 
 /**
- * Trip miles: home → first stop → … → last stop → home using segment legs.
- * @param {{ id: string }[]} places
+ * @deprecated Prefer buildDayTravelJournal — sums chained leg miles for a place list.
  */
 export function runMilesForPlaceChain(places, graph) {
-  if (!places?.length) return 0
-  const adj = graph ?? buildTripGraph()
-  let total = 0
-  let prev = HOME_PLACE_ID
-  for (const p of places) {
-    const leg = milesBetween(prev, p.id, adj)
-    if (leg == null) return 0
-    total += leg
-    prev = p.id
-  }
-  const homeLeg = milesBetween(prev, HOME_PLACE_ID, adj)
-  if (homeLeg == null) return 0
-  total += homeLeg
-  return roundMi(total)
+  const segments = buildSegmentsForStops(places ?? [], graph)
+  if (!segments.length) return 0
+  return roundMi(segments.reduce((sum, s) => sum + s.miles, 0))
 }
 
 /** Built-in + custom ids for Outings “connect from” dropdown. */

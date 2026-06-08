@@ -2,9 +2,10 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { DayStrip } from '../components/DayStrip'
 import MealsInlineField from '../components/MealsInlineField'
-import JournalParentMessageIdeas from '../components/JournalParentMessageIdeas'
 import TripPlacesField from '../components/TripPlacesField'
-import { TodoPanel } from '../components/TodoPanel'
+import GroceryListPanel from '../components/GroceryListPanel'
+import JournalMoodBar from '../components/JournalMoodBar'
+import JournalLittleBooks from '../components/JournalLittleBooks'
 import { useKidJournal } from '../hooks/useKidJournal'
 import { getMealHealthSuggestions } from '../utils/mealSuggestions'
 import { countByCategory, parseMealsToParts } from '../utils/parseMeals'
@@ -30,11 +31,14 @@ import {
 } from '../utils/journalDayExport'
 import { fileToCompressedDataUrl } from '../utils/receiptImage'
 import {
-  addShoppingItem,
+  addShoppingItems,
   loadShoppingForWeek,
   removeShoppingItem,
   toggleShoppingItem,
 } from '../utils/journalShoppingStorage'
+import { napFromJournalEntry } from '../utils/journalNap'
+import { pottyFromJournalEntry } from '../utils/journalLittleBooks'
+import { useJournalDaySky } from '../hooks/useJournalDaySky'
 
 function loadDraftFromLatest(iso) {
   const ent = loadKidJournalEntries()
@@ -44,16 +48,23 @@ function loadDraftFromLatest(iso) {
     return {
       dayNotes: '',
       mealsText: '',
-      morningNap: '',
-      afternoonNap: '',
+      nap: '',
+      pottyTime: '',
+      pottyNotes: '',
+      wishes: '',
+      mood: '',
       handwrittenPhotoDataUrl: '',
     }
   }
+  const potty = pottyFromJournalEntry(latest)
   return {
     dayNotes: latest.dayNotes ?? '',
     mealsText: latest.mealsText ?? '',
-    morningNap: latest.morningNap ?? '',
-    afternoonNap: latest.afternoonNap ?? '',
+    nap: napFromJournalEntry(latest),
+    pottyTime: potty.pottyTime,
+    pottyNotes: potty.pottyNotes,
+    wishes: latest.wishes ?? '',
+    mood: latest.mood ?? '',
     handwrittenPhotoDataUrl: latest.handwrittenPhotoDataUrl ?? '',
   }
 }
@@ -92,8 +103,11 @@ export default function KidJournalPage() {
 
   const [dayNotes, setDayNotes] = useState('')
   const [mealsText, setMealsText] = useState('')
-  const [morningNap, setMorningNap] = useState('')
-  const [afternoonNap, setAfternoonNap] = useState('')
+  const [nap, setNap] = useState('')
+  const [pottyTime, setPottyTime] = useState('')
+  const [pottyNotes, setPottyNotes] = useState('')
+  const [wishes, setWishes] = useState('')
+  const [mood, setMood] = useState('')
   const [handwrittenPhotoDataUrl, setHandwrittenPhotoDataUrl] = useState('')
   const [handwrittenPhotoErr, setHandwrittenPhotoErr] = useState('')
   const handwrittenFileRef = useRef(null)
@@ -102,9 +116,14 @@ export default function KidJournalPage() {
   const [journalShareGateNow, setJournalShareGateNow] = useState(() => Date.now())
   const [outingsRev, setOutingsRev] = useState(0)
   const [shoppingItems, setShoppingItems] = useState([])
+  const [shoppingDockOpen, setShoppingDockOpen] = useState(false)
 
   useEffect(() => {
     setShoppingItems(loadShoppingForWeek(weekKey))
+  }, [weekKey])
+
+  useEffect(() => {
+    setShoppingDockOpen(false)
   }, [weekKey])
 
   useEffect(() => {
@@ -127,8 +146,11 @@ export default function KidJournalPage() {
     const d = loadDraftFromLatest(dateISO)
     setDayNotes(d.dayNotes)
     setMealsText(d.mealsText)
-    setMorningNap(d.morningNap)
-    setAfternoonNap(d.afternoonNap)
+    setNap(d.nap)
+    setPottyTime(d.pottyTime)
+    setPottyNotes(d.pottyNotes)
+    setWishes(d.wishes)
+    setMood(d.mood)
     setHandwrittenPhotoDataUrl(d.handwrittenPhotoDataUrl)
     setHandwrittenPhotoErr('')
   }, [dateISO])
@@ -180,8 +202,8 @@ export default function KidJournalPage() {
     setJournalWeekStart((w) => addDays(w, delta * 7))
   }
 
-  function handleAddShopping(text) {
-    setShoppingItems(addShoppingItem(weekKey, text))
+  function handleAddGrocery(raw) {
+    setShoppingItems(addShoppingItems(weekKey, raw))
   }
 
   function handleToggleShopping(id) {
@@ -199,16 +221,22 @@ export default function KidJournalPage() {
     if (
       dayNotes !== (latest.dayNotes ?? '') ||
       mealsText !== (latest.mealsText ?? '') ||
-      morningNap !== (latest.morningNap ?? '') ||
-      afternoonNap !== (latest.afternoonNap ?? '') ||
+      nap !== (latest.nap ?? '') ||
+      pottyTime !== (latest.pottyTime ?? '') ||
+      pottyNotes !== (latest.pottyNotes ?? '') ||
+      wishes !== (latest.wishes ?? '') ||
+      mood !== (latest.mood ?? '') ||
       photo !== latestPhoto
     ) {
       addEntry({
         dateISO,
         dayNotes,
         mealsText,
-        morningNap,
-        afternoonNap,
+        nap,
+        pottyTime,
+        pottyNotes,
+        wishes,
+        mood,
         handwrittenPhotoDataUrl: photo,
       })
     }
@@ -239,6 +267,12 @@ export default function KidJournalPage() {
   }
 
   const journalDateLabel = formatJournalDate(dateISO)
+  const daySky = useJournalDaySky(dateISO)
+
+  const shoppingOpenCount = useMemo(
+    () => shoppingItems.filter((item) => !item.done).length,
+    [shoppingItems]
+  )
 
   const forwardJournalSmsHref = useMemo(
     () =>
@@ -247,8 +281,11 @@ export default function KidJournalPage() {
         dateLabel: journalDateLabel,
         dayNotes,
         mealsText,
-        morningNap,
-        afternoonNap,
+        nap,
+        pottyTime,
+        pottyNotes,
+        wishes,
+        mood,
         handwrittenPhotoDataUrl,
         shoppingItems,
       }),
@@ -257,8 +294,11 @@ export default function KidJournalPage() {
       journalDateLabel,
       dayNotes,
       mealsText,
-      morningNap,
-      afternoonNap,
+      nap,
+      pottyTime,
+      pottyNotes,
+      wishes,
+      mood,
       handwrittenPhotoDataUrl,
       shoppingItems,
     ]
@@ -270,8 +310,11 @@ export default function KidJournalPage() {
       dateLabel: journalDateLabel,
       dayNotes,
       mealsText,
-      morningNap,
-      afternoonNap,
+      nap,
+      pottyTime,
+      pottyNotes,
+      wishes,
+      mood,
       handwrittenPhotoDataUrl,
       shoppingItems,
     }
@@ -282,77 +325,147 @@ export default function KidJournalPage() {
     downloadJournalDayFile(journalDayFilename(dateISO), text)
   }
 
-  return (
-    <div className="page page--kid-journal work-ui">
-      <div className="page__badge" aria-hidden>
-        B
-      </div>
-      <ToolWorkspaceHead
-        code="B"
-        eyebrow="Kid journal workspace"
-        title="Kid journal"
-        lede="Log the day for parents. Outing nicknames in About today sync mileage to your weekly receipt (open Receipt from Tools)."
-      />
-
-      <section className="journal__mileage-guide work-ui__panel" id="journal-mileage-guide" aria-labelledby="journal-mileage-guide-title">
-        <h2 id="journal-mileage-guide-title" className="journal__mileage-guide-title">
-          Sync mileage with your receipt
+  const shoppingDock = (
+    <div
+      className={`schedule-requests-dock journal-shopping-dock${shoppingDockOpen ? ' schedule-requests-dock--open' : ''}`}
+    >
+      <button
+        type="button"
+        className="schedule-requests-dock__tab"
+        onClick={() => setShoppingDockOpen((o) => !o)}
+        aria-expanded={shoppingDockOpen}
+        aria-controls="journal-shopping-panel"
+        aria-label={
+          shoppingOpenCount > 0
+            ? `Open grocery list (${shoppingOpenCount} to get)`
+            : 'Open grocery list'
+        }
+      >
+        {shoppingDockOpen ? (
+          <span className="schedule-requests-dock__tab-x" aria-hidden>
+            ×
+          </span>
+        ) : (
+          <>
+            <span className="schedule-requests-dock__tab-ico" aria-hidden>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z" />
+                <line x1="3" y1="6" x2="21" y2="6" />
+                <path d="M16 10a4 4 0 0 1-8 0" />
+              </svg>
+            </span>
+            <span className="schedule-requests-dock__tab-lbl">Grocery</span>
+            {shoppingOpenCount > 0 ? (
+              <span className="schedule-requests-dock__badge" aria-hidden>
+                {shoppingOpenCount > 99 ? '99+' : shoppingOpenCount}
+              </span>
+            ) : null}
+          </>
+        )}
+      </button>
+      <div
+        className="schedule-requests-dock__panel"
+        id="journal-shopping-panel"
+        role="region"
+        aria-hidden={!shoppingDockOpen}
+        aria-labelledby="journal-shopping-title"
+      >
+        <h2 id="journal-shopping-title" className="schedule-requests-dock__title">
+          Grocery list
         </h2>
-        <ol className="journal__mileage-guide-steps">
-          <li>
-            Pick the <strong>same week</strong> as on Tools → Receipt (use the week strip below).
-          </li>
-          <li>
-            In <strong>About today</strong>, type where you went using saved nicknames — e.g.{' '}
-            <em>H&apos;s drop off, music, then Commons</em> (commas or new lines between stops).
-          </li>
-          <li>
-            When nicknames match, they <strong>highlight</strong> — that means mileage is counting for this week.
-          </li>
-          <li>
-            Open <strong>Receipt</strong> from Tools to review total miles and reimbursement (updates as you type).
-          </li>
-        </ol>
-      </section>
-
-      <div className="journal__week-picker work-ui__panel">
-        <div className="trip-log__week-tools">
-          <button
-            type="button"
-            className="btn btn--ghost trip-log__week-btn"
-            onClick={() => shiftJournalWeek(-1)}
-          >
-            ← Previous week
-          </button>
-          <button
-            type="button"
-            className="btn btn--ghost trip-log__week-btn"
-            onClick={() => shiftJournalWeek(1)}
-          >
-            Next week →
-          </button>
-        </div>
-        <p className="journal__week-range muted" aria-live="polite">
-          {formatWeekRange(journalWeekStart)}
-        </p>
-        <DayStrip
-          weekStart={journalWeekStart}
-          selectedIso={dateISO}
-          onSelect={(iso) => {
-            const a = new Date(weekKey + 'T12:00:00')
-            const b = new Date(iso + 'T12:00:00')
-            const diff = Math.round((b - a) / 86400000)
-            setDayOffset(Math.max(0, Math.min(6, diff)))
-          }}
+        <p className="journal-shopping-dock__hint muted">This week — add as you think of it.</p>
+        <GroceryListPanel
+          items={shoppingItems}
+          onAddItems={handleAddGrocery}
+          onToggle={handleToggleShopping}
+          onRemove={handleRemoveShopping}
+          autoFocus={shoppingDockOpen}
+          placeholder="Milk, bananas, diapers…"
         />
       </div>
+    </div>
+  )
 
-      <form
-        className="journal__form"
-        onSubmit={(e) => {
-          e.preventDefault()
-        }}
-      >
+  return (
+    <div
+      className="page page--kid-journal work-ui"
+      style={daySky.style}
+      data-sky-phase={daySky.label}
+    >
+      <ToolWorkspaceHead
+        eyebrow="Kid journal workspace"
+        title="Kid journal"
+        lede="Outings, meals, nap & potty — one slip for the day."
+        titleAside={shoppingDock}
+      />
+      {shoppingDockOpen ? (
+        <button
+          type="button"
+          className="schedule-requests-dock__scrim"
+          aria-label="Close grocery list"
+          onClick={() => setShoppingDockOpen(false)}
+        />
+      ) : null}
+
+      <div className="journal__layout">
+        <section className="journal__week-picker work-ui__panel" aria-label="Pick a day">
+          <div className="journal__week-picker-top">
+            <div className="trip-log__week-tools journal__week-tools">
+              <button
+                type="button"
+                className="btn btn--ghost trip-log__week-btn"
+                onClick={() => shiftJournalWeek(-1)}
+              >
+                ← Prev
+              </button>
+              <p className="journal__week-range" aria-live="polite">
+                {formatWeekRange(journalWeekStart)}
+              </p>
+              <button
+                type="button"
+                className="btn btn--ghost trip-log__week-btn"
+                onClick={() => shiftJournalWeek(1)}
+              >
+                Next →
+              </button>
+            </div>
+            <p className="journal__selected-day" aria-live="polite">
+              {journalDateLabel}
+            </p>
+            <p className="journal__sky-phase" aria-live="polite">
+              {daySky.label}
+            </p>
+          </div>
+          <DayStrip
+            weekStart={journalWeekStart}
+            selectedIso={dateISO}
+            onSelect={(iso) => {
+              const a = new Date(weekKey + 'T12:00:00')
+              const b = new Date(iso + 'T12:00:00')
+              const diff = Math.round((b - a) / 86400000)
+              setDayOffset(Math.max(0, Math.min(6, diff)))
+            }}
+          />
+        </section>
+
+        <JournalMoodBar value={mood} onChange={setMood} />
+
+        <form
+          className="journal__form"
+          onSubmit={(e) => {
+            e.preventDefault()
+          }}
+        >
         <div className="field-block journal__about-bundle">
           <div className="journal__about-head">
             <span className="field-block__label" id="kid-journal-about-label">
@@ -406,16 +519,16 @@ export default function KidJournalPage() {
               </button>
             </div>
           ) : null}
-          <TripPlacesField
-            id="kid-journal-day-notes"
-            value={dayNotes}
-            onChange={setDayNotes}
-            placeholder="e.g. H's drop off, music, Commons — use nicknames so miles sync"
-            aria-labelledby="kid-journal-about-label"
-            nestedInAbout
-            describedByExtra="journal-mileage-guide"
-          />
-          <JournalParentMessageIdeas dateISO={dateISO} variant="journal" />
+          <div className="journal__write-box journal__write-box--notes">
+            <TripPlacesField
+              id="kid-journal-day-notes"
+              value={dayNotes}
+              onChange={setDayNotes}
+              placeholder="e.g. H's drop off, music, Commons"
+              aria-labelledby="kid-journal-about-label"
+              nestedInAbout
+            />
+          </div>
           <div className="journal__about-meals">
             <span className="field-block__label field-block__label--sub" id="kid-journal-meals-label">
               Meals today
@@ -423,56 +536,30 @@ export default function KidJournalPage() {
             <p className="journal__hint muted">
               Use commas or new lines between foods; colors match food groups as you type.
             </p>
-            <MealsInlineField
-              id="kid-journal-meals"
-              value={mealsText}
-              onChange={setMealsText}
-              placeholder="e.g. oatmeal, banana, milk, carrots, chicken, rice, yogurt"
-              aria-labelledby="kid-journal-meals-label"
-              suggestions={mealSuggestions}
-              className="meals-today-field--nested"
-            />
+            <div className="journal__write-box journal__write-box--meals">
+              <MealsInlineField
+                id="kid-journal-meals"
+                value={mealsText}
+                onChange={setMealsText}
+                placeholder="e.g. oatmeal, banana, milk, carrots, chicken, rice, yogurt"
+                aria-labelledby="kid-journal-meals-label"
+                suggestions={mealSuggestions}
+                className="meals-today-field--nested"
+              />
+            </div>
           </div>
         </div>
 
-        <div className="journal__nap-row">
-          <label className="field-block journal__nap-cell">
-            <span className="field-block__label">Morning nap</span>
-            <input
-              type="text"
-              className="input input--line"
-              value={morningNap}
-              onChange={(e) => setMorningNap(e.target.value)}
-              placeholder="e.g. 9:30–10:15 or none"
-            />
-          </label>
-
-          <label className="field-block journal__nap-cell">
-            <span className="field-block__label">Afternoon nap</span>
-            <input
-              type="text"
-              className="input input--line"
-              value={afternoonNap}
-              onChange={(e) => setAfternoonNap(e.target.value)}
-              placeholder="e.g. 1–3pm or car nap"
-            />
-          </label>
-        </div>
-
-        <div className="field-block journal__shopping">
-          <span className="field-block__label" id="kid-journal-shopping-label">
-            Shopping list
-          </span>
-          <p className="journal__hint muted">For this week — milk, snacks, supplies…</p>
-          <TodoPanel
-            todos={shoppingItems}
-            onAdd={handleAddShopping}
-            onToggle={handleToggleShopping}
-            onRemove={handleRemoveShopping}
-            placeholder="Add to shopping list…"
-            emptyMessage="Nothing on the list yet."
-          />
-        </div>
+        <JournalLittleBooks
+          nap={nap}
+          onNapChange={setNap}
+          pottyTime={pottyTime}
+          onPottyTimeChange={setPottyTime}
+          pottyNotes={pottyNotes}
+          onPottyNotesChange={setPottyNotes}
+          wishes={wishes}
+          onWishesChange={setWishes}
+        />
 
         <div
           className="journal__day-slip-actions"
@@ -487,7 +574,8 @@ export default function KidJournalPage() {
             Show journal
           </button>
         </div>
-      </form>
+        </form>
+      </div>
 
       <JournalDayReceiptModal
         open={journalReceiptOpen}
@@ -495,8 +583,11 @@ export default function KidJournalPage() {
         dateLabel={journalDateLabel}
         dayNotes={dayNotes}
         mealsText={mealsText}
-        morningNap={morningNap}
-        afternoonNap={afternoonNap}
+        nap={nap}
+        pottyTime={pottyTime}
+        pottyNotes={pottyNotes}
+        wishes={wishes}
+        mood={mood}
         handwrittenPhotoDataUrl={handwrittenPhotoDataUrl}
         forwardSmsHref={forwardJournalSmsHref}
         canForward={canJournalSaveForward}

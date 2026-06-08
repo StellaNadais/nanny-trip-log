@@ -20,9 +20,9 @@ const DEFAULT_CARE_START = '09:00'
 const DEFAULT_CARE_END = '17:00'
 const BOOK_END_DATE_SPAN_DAYS = 90
 
-/** Hover tooltip on “Book a gig” (styled bubble; copy matches user-requested wording). */
+/** Hover tooltip on “Book a gig”. */
 const BOOK_GIG_HEADING_TIP =
-  'Tap a day to request a gig: set when the nanny’s shift starts and when it ends (including overnight). Then add your family details.'
+  'Request a gig: set when the nanny’s shift starts and when it ends (including overnight), then add your family details.'
 
 function phoneLooksReachable(value) {
   const digits = value.replace(/\D/g, '')
@@ -38,7 +38,6 @@ export default function BookPage() {
   const [cursor, setCursor] = useState(
     () => new Date(today.getFullYear(), today.getMonth(), 1)
   )
-  const [selected, setSelected] = useState(() => new Date(today))
   const [bookModalOpen, setBookModalOpen] = useState(false)
   const [careStart, setCareStart] = useState(DEFAULT_CARE_START)
   const [careEnd, setCareEnd] = useState(DEFAULT_CARE_END)
@@ -73,15 +72,8 @@ export default function BookPage() {
     year: 'numeric',
   })
 
-  const selectedISO = useMemo(() => toISODateLocal(selected), [selected])
-
   const selectedBookings = bookingsByDate[careStartDateISO] ?? []
   const careStartIsPast = careStartDateISO < todayISO()
-
-  useEffect(() => {
-    if (!bookModalOpen) return
-    setSelected(new Date(`${careStartDateISO}T12:00:00`))
-  }, [bookModalOpen, careStartDateISO])
 
   const careDateHeadline = useMemo(() => {
     const opts = { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' }
@@ -127,12 +119,8 @@ export default function BookPage() {
     setRequestNotes('')
   }
 
-  function openBookingModal(dayNum) {
-    if (dayNum == null) return
-    const dayDate = new Date(y, m, dayNum)
-    const iso = toISODateLocal(dayDate)
-    setSelected(dayDate)
-    resetBookingModal(iso)
+  function openRequestForm() {
+    resetBookingModal(todayISO())
     setBookModalOpen(true)
   }
 
@@ -194,11 +182,11 @@ export default function BookPage() {
           Book a gig
         </h1>
         <p className="book-workspace-head__sub muted">
-          Choose a start date, set shift hours (including overnights), and send your details—your caregiver reviews
-          everything in their schedule.
+          Set shift hours (including overnights) and send your details—your caregiver reviews everything in their
+          schedule.
         </p>
         <p id="book-page-intro" className="sr-only">
-          {BOOK_GIG_HEADING_TIP} Dots show days that already have a request.
+          {BOOK_GIG_HEADING_TIP} The calendar shows days that already have a request.
         </p>
       </header>
 
@@ -251,7 +239,6 @@ export default function BookPage() {
             const iso = dateISOFromParts(y, m, dayNum)
             const dayBookings = bookingsByDate[iso] ?? []
             const isBooked = dayBookings.length > 0
-            const isSel = isSameDay(selected, new Date(y, m, dayNum))
             const isToday = isSameDay(today, new Date(y, m, dayNum))
             const isPast = iso < todayISO()
 
@@ -268,13 +255,11 @@ export default function BookPage() {
             ].filter(Boolean)
 
             return (
-              <button
+              <div
                 key={i}
-                type="button"
                 role="gridcell"
                 aria-label={ariaBits.join(', ')}
-                className={`calendar__cell ${isSel ? 'calendar__cell--selected' : ''} ${isToday ? 'calendar__cell--today' : ''} ${isBooked ? 'calendar__cell--booked' : ''} ${isPast ? 'calendar__cell--past' : ''}`}
-                onClick={() => openBookingModal(dayNum)}
+                className={`calendar__cell ${isToday ? 'calendar__cell--today' : ''} ${isBooked ? 'calendar__cell--booked' : ''} ${isPast ? 'calendar__cell--past' : ''}`}
               >
                 <span className="calendar__cell-num">{dayNum}</span>
                 {isBooked ? (
@@ -286,15 +271,17 @@ export default function BookPage() {
                     )}
                   </span>
                 ) : null}
-              </button>
+              </div>
             )
           })}
         </div>
       </div>
 
-      <p className="book-request-hint muted">
-        Pick a start day on the calendar, then set gig start and end date-times in the form.
-      </p>
+      <div className="book-request-cta">
+        <button type="button" className="btn btn--primary btn--work-primary" onClick={openRequestForm}>
+          Request a gig
+        </button>
+      </div>
 
       {bookModalOpen ? (
         <div
@@ -471,7 +458,7 @@ export default function BookPage() {
 
               {careStartIsPast ? (
                 <p className="book-modal__hint book-modal__hint--warn">
-                  Gig start date has passed. Close and pick today or a future day on the calendar.
+                  Gig start date has passed. Choose today or a future start date above.
                 </p>
               ) : null}
 

@@ -138,11 +138,7 @@ export default function ShiftPage() {
 
   return (
     <div className="page page--shift work-ui">
-      <div className="page__badge" aria-hidden>
-        A
-      </div>
       <ToolWorkspaceHead
-        code="A"
         eyebrow="Shift workspace"
         title="Shift"
         lede="Pick the week and day, then log arrival and end inside each ±5 minute window."
@@ -413,7 +409,7 @@ export default function ShiftPage() {
 
       <div className="shift__links">
         <Link to="/notes" className="page-back">
-          Punctuality in internal notes →
+          Punctuality in Nanny hub →
         </Link>
       </div>
     </div>

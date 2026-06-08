@@ -5,13 +5,9 @@ import ToolWorkspaceHead from '../components/ToolWorkspaceHead'
 export default function InternalNotesPage() {
   return (
     <div className="page page--internal-notes work-ui">
-      <div className="page__badge" aria-hidden>
-        E
-      </div>
       <ToolWorkspaceHead
-        code="E"
-        eyebrow="Internal notes workspace"
-        title="Internal notes"
+        eyebrow="Nanny hub workspace"
+        title="Nanny hub"
         lede="How punctual your shift logs look this year."
       >
         <Link to="/shift" className="btn btn--primary btn--work-primary notes__cta">

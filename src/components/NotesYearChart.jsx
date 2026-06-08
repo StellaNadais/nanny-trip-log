@@ -1,7 +1,7 @@
 import { useMemo } from 'react'
 import { buildHubShiftYearChart } from '../utils/hubShiftYearChart'
 
-/** Full-width chart on Internal notes page (larger than former hub tile). */
+/** Full-width chart on Nanny hub page (larger than former hub tile). */
 const W = 288
 const H = 82
 const BASE_Y = 62

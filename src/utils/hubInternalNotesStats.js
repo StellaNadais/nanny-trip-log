@@ -1,5 +1,5 @@
 /**
- * Summary line + badge for Internal notes — shift days + PTO from provider state.
+ * Summary line + badge for Nanny hub — shift days + PTO from provider state.
  * @param {{ dateISO?: string, arrival?: string, end?: string }[]} entries
  * @param {{ dateISO?: string }[]} timeOffEntries
  */

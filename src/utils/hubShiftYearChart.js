@@ -23,7 +23,7 @@ export function entryPunctualityScore(e) {
   return null
 }
 
-/** Year rollup for Internal notes — average slot score + day counts. */
+/** Year rollup for Nanny hub — average slot score + day counts. */
 export function getYearPunctualitySummary(entries, year = new Date().getFullYear()) {
   const y = String(year)
   let scoreSum = 0
@@ -59,7 +59,7 @@ export function getYearPunctualitySummary(entries, year = new Date().getFullYear
 }
 
 /**
- * Twelve-month model for the hub Internal notes chart (one calendar year).
+ * Twelve-month model for the Nanny hub chart (one calendar year).
  * @param {{ dateISO?: string, arrival?: string, end?: string }[]} entries
  */
 export function buildHubShiftYearChart(entries, year = new Date().getFullYear()) {

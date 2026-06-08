@@ -1,6 +1,14 @@
 /** Implicit start/end for every trip — not matched in journal text. */
 export const HOME_PLACE_ID = 'home'
 
+/** Matched in journal text; legs still start/end here. */
+export const HOME_PLACE = {
+  id: HOME_PLACE_ID,
+  label: 'Home',
+  aliases: ['home', 'back home'],
+  region: 'home',
+}
+
 /** IRS-style mileage rate. */
 export const MILE_RATE = 0.54
 
@@ -50,6 +58,18 @@ export const PLACES = [
     id: 'moraga-library',
     label: 'Moraga Library',
     aliases: ['Moraga library'],
+    region: 'moraga',
+  },
+  {
+    id: 'school',
+    label: 'School',
+    aliases: ['school'],
+    region: 'moraga',
+  },
+  {
+    id: 'store',
+    label: 'Store',
+    aliases: ['store', 'the store', 'grocery store', 'grocery'],
     region: 'moraga',
   },
 ]

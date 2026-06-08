@@ -271,12 +271,14 @@
 .input {
   font: inherit;
   font-size: 1rem;
+  font-weight: 600;
   color: var(--ink);
-  border: 1px solid var(--line);
+  border: 2px solid var(--line);
   border-radius: 8px;
   padding: 12px 12px;
   background: var(--surface);
   width: 100%;
+  box-shadow: 2px 2px 0 var(--line);
 }
 
 @media (min-width: 600px) {
@@ -347,10 +349,11 @@
   min-height: 44px;
   padding: 10px 16px;
   border-radius: 0;
-  border: 1px solid var(--line);
+  border: 2px solid var(--line);
   background: var(--surface);
   color: var(--ink);
   cursor: pointer;
+  box-shadow: 2px 2px 0 var(--line);
 }
 
 @media (min-width: 600px) {
@@ -365,6 +368,7 @@
   background: var(--accent);
   border-color: var(--accent);
   color: var(--surface);
+  box-shadow: 2px 2px 0 var(--line);
 }
 
 .btn--primary:hover,
@@ -375,6 +379,7 @@
 
 .btn--ghost {
   border-color: transparent;
+  box-shadow: none;
   background: transparent;
   min-width: 44px;
   min-height: 44px;

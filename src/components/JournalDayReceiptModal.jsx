@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { parseMealsToParts } from '../utils/parseMeals'
+import { journalMoodDisplay } from '../data/journalMoods'
+import { pottyDisplayLine } from '../utils/journalLittleBooks'
 
 const HOLD_MS = 560
 const MOVE_PX = 14
@@ -13,8 +15,11 @@ export default function JournalDayReceiptModal({
   dateLabel,
   dayNotes,
   mealsText,
-  morningNap,
-  afternoonNap,
+  nap,
+  pottyTime,
+  pottyNotes,
+  wishes,
+  mood,
   handwrittenPhotoDataUrl,
   forwardSmsHref,
   canForward = true,
@@ -160,6 +165,11 @@ export default function JournalDayReceiptModal({
                 </p>
                 <p className="journal-day-modal__meta">{dateLabel}</p>
                 <div className="journal-day-modal__rule" />
+                <p className="journal-day-modal__section-hdr">Mood</p>
+                <p className="journal-day-modal__body journal-day-modal__mood-line">
+                  {journalMoodDisplay(mood) || '—'}
+                </p>
+                <div className="journal-day-modal__rule" />
                 <p className="journal-day-modal__section-hdr">About today</p>
                 <p className="journal-day-modal__body">
                   {(dayNotes || '').trim() ? dayNotes : '—'}
@@ -191,13 +201,16 @@ export default function JournalDayReceiptModal({
                   <p className="journal-day-modal__body muted">—</p>
                 )}
                 <div className="journal-day-modal__rule" />
-                <p className="journal-day-modal__section-hdr">Naps</p>
+                <p className="journal-day-modal__section-hdr">Nap</p>
+                <p className="journal-day-modal__nap-line">{nap?.trim() || '—'}</p>
+                <div className="journal-day-modal__rule" />
+                <p className="journal-day-modal__section-hdr">Potty</p>
                 <p className="journal-day-modal__nap-line">
-                  <span>AM</span> <span>{morningNap?.trim() || '—'}</span>
+                  {pottyDisplayLine(pottyTime, pottyNotes) || '—'}
                 </p>
-                <p className="journal-day-modal__nap-line">
-                  <span>PM</span> <span>{afternoonNap?.trim() || '—'}</span>
-                </p>
+                <div className="journal-day-modal__rule" />
+                <p className="journal-day-modal__section-hdr">Wishes</p>
+                <p className="journal-day-modal__body">{wishes?.trim() || '—'}</p>
                 <div className="journal-day-modal__rule journal-day-modal__rule--bold" />
               </div>
               <div className="journal-day-modal__jagged journal-day-modal__jagged--bottom" aria-hidden />

@@ -7,11 +7,7 @@ export default function EventsPage() {
 
   return (
     <div className="page page--events work-ui">
-      <div className="page__badge" aria-hidden>
-        D
-      </div>
       <ToolWorkspaceHead
-        code="D"
         eyebrow="Events workspace"
         title="Events"
         lede="Family-friendly ideas by area. Times and fees change — confirm with each venue before you go."

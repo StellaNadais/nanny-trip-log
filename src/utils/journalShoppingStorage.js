@@ -1,3 +1,5 @@
+import { parseGroceryDraft } from './parseGroceryDraft'
+
 const KEY = 'nanny-journal-shopping-v1'
 
 function newId() {
@@ -42,6 +44,18 @@ export function addShoppingItem(weekKey, text) {
   const items = [
     ...loadShoppingForWeek(weekKey),
     { id: newId(), text: trimmed, done: false },
+  ]
+  persistShoppingForWeek(weekKey, items)
+  return items
+}
+
+/** Add one or many items (comma / newline separated). */
+export function addShoppingItems(weekKey, raw) {
+  const parts = parseGroceryDraft(raw)
+  if (!parts.length) return loadShoppingForWeek(weekKey)
+  const items = [
+    ...loadShoppingForWeek(weekKey),
+    ...parts.map((text) => ({ id: newId(), text, done: false })),
   ]
   persistShoppingForWeek(weekKey, items)
   return items

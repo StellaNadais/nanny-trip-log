@@ -19,7 +19,7 @@ npm run preview
 ## Caregiver flow
 
 1. **Welcome** → tap to start → **Schedule**
-2. On Schedule, open any tool (Shift, Kid journal, Events, Internal notes) or **Receipt**
+2. On Schedule, open any tool (Shift, Kid journal, Events, Nanny hub) or **Receipt**
 3. Each tool shows **Press to start**, then its workspace
 4. **← Schedule** returns from any tool
 
@@ -32,18 +32,11 @@ npm run preview
 | `/` | Welcome |
 | `/schedule` | Calendar + tool links + receipt |
 | `/shift` | Arrival / end logging |
-| `/journal` | Kid journal + mileage sync |
-| `/notes` | Punctuality score |
+| `/journal` | Kid journal |
+| `/notes` | Nanny hub (punctuality score) |
 | `/events` | Local event ideas |
 | `/book` | Parent booking |
 | `/receipt` | Redirects to Schedule with receipt open |
-
-## Journal → receipt mileage
-
-1. Use the **week strip** on Kid journal (same week as Receipt).
-2. In **About today**, type outing nicknames (e.g. `H's drop off, music, Commons`).
-3. Highlighted nicknames mean mileage is counting for that week.
-4. Open **Receipt** from Schedule to see totals.
 
 ## Customizing
 

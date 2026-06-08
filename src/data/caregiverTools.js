@@ -10,7 +10,7 @@ export const CAREGIVER_TOOLS = [
     to: '/journal',
     code: 'B',
     label: 'Kid journal',
-    hint: 'Day notes, meals, and mileage that sync to your receipt.',
+    hint: 'Day notes and meals for parents.',
   },
   {
     to: '/events',
@@ -21,7 +21,7 @@ export const CAREGIVER_TOOLS = [
   {
     to: '/notes',
     code: 'E',
-    label: 'Internal notes',
+    label: 'Nanny hub',
     hint: 'Your punctuality score from shift logs.',
   },
 ]

@@ -13,6 +13,8 @@ export const TRIP_SEGMENTS = [
   { from: 'drop-off', to: 'commons', miles: 0.6 },
   { from: 'drop-off', to: 'hacienda', miles: 1.8 },
   { from: 'drop-off', to: 'moraga-library', miles: 0.8 },
+  { from: HOME_PLACE_ID, to: 'school', miles: 8.0 },
+  { from: HOME_PLACE_ID, to: 'store', miles: 3.0 },
 ]
 
 function placeShort(id) {
@@ -24,6 +26,8 @@ function placeShort(id) {
     commons: 'Commons',
     hacienda: 'Hacienda',
     'moraga-library': 'Moraga library',
+    school: 'School',
+    store: 'Store',
   }
   return labels[id] ?? id
 }

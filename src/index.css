@@ -5,7 +5,8 @@
   --paper: #ffffff;
   --paper2: #f0f0f0;
   --surface: #ffffff;
-  --line: #d8d4cf;
+  --line: #1a1a1a;
+  --line-soft: #d8d4cf;
   /* Accents: deep purple (icons, links, primary), gold trim, peach & bubblegum for warmth */
   --accent: #5c2d6e;
   --accent-soft: rgba(92, 45, 110, 0.16);
@@ -34,7 +35,7 @@
   /* 16px+ avoids iOS zoom on focused inputs */
   font-family: var(--font);
   font-size: 16px;
-  font-weight: 400;
+  font-weight: 600;
   line-height: 1.55;
   letter-spacing: 0.01em;
   color: var(--ink);

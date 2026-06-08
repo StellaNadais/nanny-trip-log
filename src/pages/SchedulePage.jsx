@@ -7,7 +7,6 @@ import { useUpcomingGigsThemePlayback } from '../hooks/useUpcomingGigsThemePlayb
 import { bookingOccupiesCalendarSlot } from '../utils/bookingCalendar'
 import { expandBookingCalendarDates, formatCareBookingWindow, bookingEndMs } from '../utils/bookingRange'
 import ScheduleCelebrationsFlip from '../components/ScheduleCelebrationsFlip'
-import JournalDayProgress from '../components/JournalDayProgress'
 
 function todayISO() {
   return toISODateLocal(new Date())
@@ -43,6 +42,7 @@ export default function SchedulePage() {
   const y = cursor.getFullYear()
   const m = cursor.getMonth()
   const cells = useMemo(() => monthGrid(y, m), [y, m])
+  const calendarRowCount = useMemo(() => Math.ceil(cells.length / 7), [cells.length])
 
   const bookingsByDate = useMemo(() => {
     const map = {}
@@ -145,9 +145,6 @@ export default function SchedulePage() {
   return (
     <div className="page page--calendar page--schedule work-ui">
       <div className="schedule__stage">
-      <div className="page__badge" aria-hidden>
-        2
-      </div>
       <header className="schedule__head schedule-workspace-head">
         <Link to="/" className="page-back page-back--ghost">
           ← Home
@@ -160,25 +157,14 @@ export default function SchedulePage() {
           Scheduling workspace
         </p>
         <div className="schedule__title-row">
-          <div className="schedule__title-stack">
-            <h1
-              className="schedule__title schedule__title--hover-tip"
-              id="schedule-page-heading"
-              aria-describedby="schedule-page-intro"
-              data-tooltip={SCHEDULE_HEADING_TIP}
-            >
-              Schedule
-            </h1>
-            <JournalDayProgress
-              dateISO={todayISO()}
-              dateLabel={new Date().toLocaleDateString(undefined, {
-                weekday: 'long',
-                month: 'short',
-                day: 'numeric',
-              })}
-              variant="thin"
-            />
-          </div>
+          <h1
+            className="schedule__title schedule__title--hover-tip"
+            id="schedule-page-heading"
+            aria-describedby="schedule-page-intro"
+            data-tooltip={SCHEDULE_HEADING_TIP}
+          >
+            Schedule
+          </h1>
           <div className={`schedule-requests-dock ${requestsDockOpen ? 'schedule-requests-dock--open' : ''}`}>
             <button
               type="button"
@@ -365,20 +351,20 @@ export default function SchedulePage() {
         </span>
       </div>
 
-      <div className="schedule-flip schedule-calendar-flip schedule-calendar-section">
-        <div className="schedule-flip__scene">
-          <div
-            className={`schedule-flip__inner${scheduleCardListFace ? ' schedule-flip__inner--list' : ''}`}
-            aria-live="polite"
-          >
+      <div className="schedule-calendar-section">
+        <div className="schedule-calendar-section__fun">
+          <ScheduleCelebrationsFlip year={y} monthIndex={m} embedded />
+        </div>
+        <div className="schedule-flip schedule-calendar-flip">
+          <div className="schedule-flip__scene">
             <div
-              className="schedule-flip__face schedule-flip__face--front calendar__panel calendar__panel--book work-ui__calendar-card"
-              aria-hidden={scheduleCardListFace}
+              className={`schedule-flip__inner${scheduleCardListFace ? ' schedule-flip__inner--list' : ''}`}
+              aria-live="polite"
             >
-              <div className="schedule-calendar-section__body">
-                <div className="schedule-calendar-section__fun">
-                  <ScheduleCelebrationsFlip year={y} monthIndex={m} embedded />
-                </div>
+              <div
+                className="schedule-flip__face schedule-flip__face--front calendar__panel calendar__panel--book work-ui__calendar-card"
+                aria-hidden={scheduleCardListFace}
+              >
                 <div className="schedule-flip__calendar-main schedule-calendar-section__calendar">
                 <div className="schedule-flip__calendar-top">
                   <div className="calendar__nav">
@@ -401,6 +387,10 @@ export default function SchedulePage() {
                     Upcoming gigs
                   </button>
                 </div>
+                <div
+                  className="schedule-calendar-section__grid-grow"
+                  style={{ '--schedule-calendar-rows': calendarRowCount }}
+                >
                 <div className="calendar__weekdays" aria-hidden>
                   {WEEKDAYS.map((w) => (
                     <span key={w} className="calendar__wd">
@@ -447,14 +437,14 @@ export default function SchedulePage() {
                   })}
                 </div>
                 </div>
+                </div>
               </div>
-            </div>
 
-            <div
-              className="schedule-flip__face schedule-flip__face--back schedule-flip__retro32 calendar__panel calendar__panel--book work-ui__calendar-card"
-              aria-hidden={!scheduleCardListFace}
-            >
-              <div className="schedule-flip__back-top">
+              <div
+                className="schedule-flip__face schedule-flip__face--back schedule-flip__retro32 calendar__panel calendar__panel--book work-ui__calendar-card"
+                aria-hidden={!scheduleCardListFace}
+              >
+                <div className="schedule-flip__back-top">
                 <button
                   type="button"
                   className="btn btn--ghost schedule-flip__back-btn"
@@ -465,8 +455,8 @@ export default function SchedulePage() {
                 <h2 id="schedule-accepted-gigs-title" className="schedule-flip__back-heading">
                   Upcoming gigs
                 </h2>
-              </div>
-              <div className="schedule-flip__list-scroll">
+                </div>
+                <div className="schedule-flip__list-scroll">
                 {acceptedUpcoming.length === 0 ? (
                   <p className="muted schedule-flip__list-empty">
                     No confirmed upcoming gigs yet. Accept requests from the queue to see them here.
@@ -499,11 +489,11 @@ export default function SchedulePage() {
                     ))}
                   </ul>
                 )}
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
       </div>
 
       <div className="calendar__footer schedule__footer">
@@ -511,6 +501,7 @@ export default function SchedulePage() {
           <span className="schedule__flow-hint-mobile">Swipe left for Tools</span>
           <span className="schedule__flow-hint-desktop">Open Tools →</span>
         </Link>
+      </div>
       </div>
     </div>
   )

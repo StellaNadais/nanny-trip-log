@@ -65,8 +65,22 @@ export function buildWeekSummaryText({ weekMondayIso, weekLabel, receiptText }) 
       lines.push('    --- Kid journal ---')
       if (e.dayNotes) lines.push(indentBlock(e.dayNotes, 6))
       if (e.mealsText) lines.push(`      Meals: ${e.mealsText}`)
-      const nap = [e.morningNap, e.afternoonNap].filter(Boolean).join(' · ')
+      const nap =
+        String(e.nap ?? '').trim() ||
+        [e.morningNap, e.afternoonNap]
+          .map((s) => String(s ?? '').trim())
+          .filter(Boolean)
+          .join(' · ')
       if (nap) lines.push(`      Naps: ${nap}`)
+      const pottyTime = String(e.pottyTime ?? '').trim()
+      const pottyNotes = String(e.pottyNotes ?? '').trim()
+      const potty =
+        pottyTime && pottyNotes
+          ? `${pottyTime} — ${pottyNotes}`
+          : pottyTime || pottyNotes || String(e.potty ?? '').trim()
+      if (potty) lines.push(`      Potty: ${potty}`)
+      const wishes = String(e.wishes ?? '').trim()
+      if (wishes) lines.push(`      Wishes: ${wishes}`)
     }
     if (!tripLog && !dayNotes && jrows.length === 0) {
       lines.push('    (no trip log or journal for this date)')

@@ -3,7 +3,7 @@ import { splitTripLogForMirror } from '../utils/parseTripPlaces'
 import { mirrorNodesFromChunks } from './placeMirrorNodes'
 
 /**
- * Trip / outing notes with place nicknames highlighted (mileage syncs via journal week).
+ * Trip / outing notes with place nicknames highlighted.
  */
 export default function TripPlacesField({
   id,
@@ -12,12 +12,9 @@ export default function TripPlacesField({
   placeholder = '',
   'aria-labelledby': ariaLabelledby,
   nestedInAbout = false,
-  describedByExtra,
 }) {
   const footRegionId = useId()
-  const describedBy = describedByExtra
-    ? `${footRegionId} ${describedByExtra}`
-    : footRegionId
+  const describedBy = footRegionId
   const chunks = useMemo(() => splitTripLogForMirror(value), [value])
   const mirrorChildren = useMemo(() => mirrorNodesFromChunks(chunks), [chunks])
 
@@ -50,7 +47,7 @@ export default function TripPlacesField({
         </div>
       </div>
       <p id={footRegionId} className="trip-places-foot-hint muted">
-        Recognized place nicknames highlight as you type — mileage for this week updates for your receipt.
+        Saved place nicknames highlight as you type.
       </p>
     </div>
   )

@@ -11,7 +11,6 @@ import { MILE_RATE } from '../data/tripPlaces'
 import { notifyReceiptMileageUpdated, saveReceiptSettings } from '../utils/receiptStorage'
 import { OUTINGS_UPDATED_EVENT } from '../utils/outingsStorage'
 import { useBookings } from '../hooks/useBookings'
-import { isWeeklyReceiptBusinessHours } from '../utils/receiptWindowMode'
 import { receiptOpenLinkText, receiptPagePath } from '../utils/receiptHref'
 import '../App.css'
 
@@ -43,9 +42,6 @@ export default function TripLogPage() {
     [bookings, selectedIso]
   )
   const receiptLinkLabel = receiptOpenLinkText()
-  const tripLogReceiptPhrase = isWeeklyReceiptBusinessHours()
-    ? 'Weekly receipt'
-    : 'Receipt'
 
   const day = log.daysByIso[selectedIso]
 
@@ -142,13 +138,12 @@ export default function TripLogPage() {
                 day={day}
                 ensureDay={log.ensureDay}
                 onChange={log.updateDay}
-                receiptWeekKey={log.weekKey}
               />
             </div>
             <div className="trip-log__submit-bar">
               <p className="trip-log__submit-preview muted">
                 This week: {weekPreview.totalMiles.toFixed(1)} mi round-trip · @ ${MILE_RATE}/mi ={' '}
-                <strong>${weekPreview.reimbursement.toFixed(2)}</strong> — syncs to {tripLogReceiptPhrase} as you type.
+                <strong>${weekPreview.reimbursement.toFixed(2)}</strong>
               </p>
               <Link to={receiptTo} className="trip-log__receipt-link trip-log__receipt-link--solo">
                 {receiptLinkLabel}

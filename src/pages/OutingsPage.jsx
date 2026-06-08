@@ -146,7 +146,7 @@ export default function OutingsPage() {
           aria-describedby="outings-page-intro"
           data-tooltip={outingsHeadingTip}
         >
-          Outings <span className="placeholder__code">(C)</span>
+          Outings
         </h1>
         <p id="outings-page-intro" className="sr-only">
           {outingsHeadingTip}
