@@ -99,6 +99,14 @@ export const MONTHLY_CELEBRATIONS = [
     activities: ['Coupon book for Dad', 'Outdoor game: catch or bubbles', 'Interview: “favorite memory”'],
   },
   {
+    id: 'juneteenth',
+    month: 6,
+    day: 19,
+    title: 'Juneteenth',
+    theme: 'Freedom & history',
+    activities: ['Age-appropriate history read-aloud', 'Red foods snack plate', 'Freedom quilt paper craft'],
+  },
+  {
     id: 'summer-solstice',
     month: 6,
     day: 21,
