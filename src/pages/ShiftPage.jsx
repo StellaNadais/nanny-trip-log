@@ -4,7 +4,9 @@ import { DayStrip } from '../components/DayStrip'
 import { addDays, formatWeekRange, startOfWeekMonday, toISODateLocal } from '../utils/dates'
 import { useShiftPunctuality } from '../hooks/useShiftPunctuality'
 import { formatCountdownMs, shiftTimeWindowStatus } from '../utils/shiftTimeWindow'
+import ShiftContractSection from '../components/ShiftContractSection'
 import ToolWorkspaceHead from '../components/ToolWorkspaceHead'
+import { useJournalDaySky } from '../hooks/useJournalDaySky'
 
 const ARRIVAL_TIMES = ['8:00 AM', '8:05 AM', '8:10 AM']
 const END_TIMES = ['5:00 PM', '5:05 PM', '5:10 PM']
@@ -76,6 +78,8 @@ export default function ShiftPage() {
     }
   }, [tick, shiftDate, arrival, end])
 
+  const daySky = useJournalDaySky(shiftDate)
+
   function shiftShiftWeek(delta) {
     setShiftWeekStart((w) => addDays(w, delta * 7))
   }
@@ -98,29 +102,36 @@ export default function ShiftPage() {
   }
 
   return (
-    <div className="page page--shift work-ui">
+    <div
+      className="page page--shift page--kid-journal work-ui"
+      style={daySky.style}
+      data-sky-phase={daySky.label}
+    >
       <ToolWorkspaceHead
         eyebrow="Shift workspace"
         title="Shift"
         lede="Pick the week and day, then log arrival and end inside each ±5 minute window."
       />
 
-      <div className="shift__layout">
-        <section className="work-ui__panel shift__week-picker" aria-label="Pick a day">
-          <div className="shift__week-picker-top">
-            <div className="trip-log__week-tools shift__week-tools">
+      <div className="journal__layout shift__layout">
+        <section className="journal__week-picker work-ui__panel" aria-label="Pick a day">
+          <div className="journal__week-picker-top">
+            <div className="trip-log__week-tools journal__week-tools">
               <button type="button" className="btn btn--ghost trip-log__week-btn" onClick={() => shiftShiftWeek(-1)}>
                 ← Prev
               </button>
-              <p className="shift__week-range" aria-live="polite">
+              <p className="journal__week-range" aria-live="polite">
                 {formatWeekRange(shiftWeekStart)}
               </p>
               <button type="button" className="btn btn--ghost trip-log__week-btn" onClick={() => shiftShiftWeek(1)}>
                 Next →
               </button>
             </div>
-            <p className="shift__selected-day" aria-live="polite">
+            <p className="journal__selected-day" aria-live="polite">
               {formatDayLabel(shiftDate)}
+            </p>
+            <p className="journal__sky-phase" aria-live="polite">
+              {daySky.label}
             </p>
           </div>
           <DayStrip
@@ -135,8 +146,17 @@ export default function ShiftPage() {
           />
         </section>
 
-        <section className="shift__card shift__card--log work-ui__panel" aria-label="Log shift times">
-        <div className="shift__form">
+        <section
+          className="journal-mood-bar journal-panel journal-panel--shift-log shift__card shift__card--log"
+          aria-label="Log shift times"
+        >
+          <div className="journal-mood-bar__head">
+            <span className="journal-mood-bar__title">Clock in</span>
+            <span className="journal-mood-bar__picked journal-mood-bar__picked--empty muted">
+              ±5 min windows
+            </span>
+          </div>
+          <div className="journal-mood-bar__track journal-panel__body shift__form">
         {!clock.isShiftToday ? (
           <p className="shift__today-callout muted" role="note">
             Select <strong>today</strong> in the strip above to unlock logging; each button only works on the
@@ -255,8 +275,10 @@ export default function ShiftPage() {
             Log end
           </button>
         </div>
-        </div>
+          </div>
         </section>
+
+        <ShiftContractSection selectedDateISO={shiftDate} />
       </div>
 
       <div className="shift__links">

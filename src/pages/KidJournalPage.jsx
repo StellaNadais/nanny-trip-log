@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { DayStrip } from '../components/DayStrip'
 import MealsInlineField from '../components/MealsInlineField'
@@ -23,12 +23,7 @@ import { loadKidJournalEntries } from '../utils/kidJournalStorage'
 import { loadState } from '../utils/storage'
 import JournalDayReceiptModal from '../components/JournalDayReceiptModal'
 import ToolWorkspaceHead from '../components/ToolWorkspaceHead'
-import {
-  buildJournalDayExportText,
-  buildJournalDaySmsHref,
-  downloadJournalDayFile,
-  journalDayFilename,
-} from '../utils/journalDayExport'
+import { buildJournalDaySmsHref } from '../utils/journalDayExport'
 import {
   addShoppingItems,
   loadShoppingForWeek,
@@ -192,8 +187,6 @@ export default function KidJournalPage() {
     setJournalReceiptOpen(false)
   }, [dateISO])
 
-  const refreshJournalShareGate = useCallback(() => setJournalShareGateNow(Date.now()), [])
-
   function shiftJournalWeek(delta) {
     setJournalWeekStart((w) => addDays(w, delta * 7))
   }
@@ -286,27 +279,6 @@ export default function KidJournalPage() {
       shoppingItems,
     ]
   )
-
-  function journalDayExportPayload() {
-    return {
-      dateISO,
-      dateLabel: journalDateLabel,
-      dayNotes,
-      mealsText,
-      nap,
-      pottyTime,
-      pottyNotes,
-      wishes,
-      mood,
-      handwrittenPhotoDataUrl,
-      shoppingItems,
-    }
-  }
-
-  function downloadJournalOfTheDay() {
-    const text = buildJournalDayExportText(journalDayExportPayload())
-    downloadJournalDayFile(journalDayFilename(dateISO), text)
-  }
 
   const shoppingDock = (
     <div
@@ -530,9 +502,7 @@ export default function KidJournalPage() {
         handwrittenPhotoDataUrl={handwrittenPhotoDataUrl}
         forwardSmsHref={forwardJournalSmsHref}
         canForward={canJournalSaveForward}
-        onDownload={downloadJournalOfTheDay}
         onBeforeShareAction={beforeShareOrDownload}
-        onHoldSheetOpen={refreshJournalShareGate}
       />
     </div>
   )

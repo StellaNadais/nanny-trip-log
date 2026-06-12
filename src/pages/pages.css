@@ -5252,6 +5252,76 @@
   box-shadow: 4px 4px 0 var(--journal-card-border);
 }
 
+/* Kid journal — per-section tap / focus tint (phone-friendly) */
+.page--kid-journal .journal__week-picker,
+.page--kid-journal .journal-mood-bar:not(.journal-panel),
+.page--kid-journal .journal-panel.journal-mood-bar {
+  --journal-section-accent: var(--journal-mint-deep, #22a06b);
+  transition:
+    background 0.18s ease,
+    border-color 0.18s ease,
+    box-shadow 0.18s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.page--kid-journal .journal__week-picker {
+  --journal-section-accent: #22a06b;
+}
+
+.page--kid-journal .journal-mood-bar:not(.journal-panel) {
+  --journal-section-accent: #f59e0b;
+}
+
+.page--kid-journal .journal-panel--about {
+  --journal-section-accent: #3b9b6d;
+}
+
+.page--kid-journal .journal-panel--meals {
+  --journal-section-accent: #e8a317;
+}
+
+.page--kid-journal .journal-panel--nap {
+  --journal-section-accent: #7c5cff;
+}
+
+.page--kid-journal .journal-panel--potty {
+  --journal-section-accent: #ff4d6d;
+}
+
+.page--kid-journal .journal-panel--wishes {
+  --journal-section-accent: #e6a800;
+}
+
+.page--kid-journal .journal__week-picker:focus-within,
+.page--kid-journal .journal-mood-bar:not(.journal-panel):focus-within,
+.page--kid-journal .journal-panel.journal-mood-bar:focus-within,
+.page--kid-journal .journal__week-picker:active,
+.page--kid-journal .journal-mood-bar:not(.journal-panel):active,
+.page--kid-journal .journal-panel.journal-mood-bar:active {
+  background: color-mix(in srgb, var(--journal-section-accent) 16%, var(--journal-surface-bright));
+  border-color: color-mix(in srgb, var(--journal-section-accent) 62%, var(--journal-card-border));
+  box-shadow: 4px 4px 0 color-mix(in srgb, var(--journal-section-accent) 38%, var(--journal-card-border));
+}
+
+.page--kid-journal .journal-panel:focus-within .journal-mood-bar__track,
+.page--kid-journal .journal-mood-bar:not(.journal-panel):focus-within .journal-mood-bar__track {
+  border-color: color-mix(in srgb, var(--journal-section-accent) 45%, var(--journal-card-border));
+  background: color-mix(in srgb, var(--journal-section-accent) 8%, var(--journal-surface-bright));
+}
+
+.page--kid-journal .journal-panel:focus-within .journal-panel-field__input,
+.page--kid-journal .journal-panel:focus-within .journal-panel-field__textarea,
+.page--kid-journal .journal-panel:focus-within .meals-inline-ta {
+  border-color: color-mix(in srgb, var(--journal-section-accent) 70%, var(--journal-card-border));
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--journal-section-accent) 20%, transparent);
+}
+
+.page--kid-journal .journal-panel:focus-within .journal-panel-field__input:focus,
+.page--kid-journal .journal-panel:focus-within .journal-panel-field__textarea:focus,
+.page--kid-journal .journal-panel:focus-within .meals-inline-ta:focus {
+  outline: none;
+}
+
 .journal-panel__body {
   display: block;
   padding: 4px;
@@ -5562,6 +5632,26 @@
   border: 2px solid var(--journal-card-border);
   color: var(--journal-ink-front);
   box-shadow: 2px 2px 0 var(--journal-card-border);
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease,
+    transform 0.12s ease,
+    box-shadow 0.15s ease,
+    color 0.15s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.page--kid-journal .journal__week-tools .trip-log__week-btn:active {
+  border-color: var(--journal-mint-deep);
+  background: color-mix(in srgb, var(--journal-mint-deep) 22%, var(--journal-surface-bright));
+  color: var(--journal-ink-front);
+  transform: scale(0.96);
+  box-shadow: 1px 1px 0 color-mix(in srgb, var(--journal-mint-deep) 40%, var(--journal-card-border));
+}
+
+.page--kid-journal .journal__week-tools .trip-log__week-btn:focus-visible {
+  outline: 2px solid var(--journal-mint-deep);
+  outline-offset: 2px;
 }
 
 .journal__week-tools .trip-log__week-btn {
@@ -5619,6 +5709,18 @@
   transform: translateY(-1px);
   color: var(--journal-ink-front);
   font-weight: 900;
+}
+
+.page--kid-journal .day-chip:active:not(.day-chip--active) {
+  border-color: var(--journal-mint-deep);
+  background: color-mix(in srgb, var(--journal-mint-deep) 18%, var(--journal-surface-bright));
+  transform: scale(0.97);
+}
+
+.page--kid-journal .journal-mood-bar__seg:active {
+  background: color-mix(in srgb, #f59e0b 26%, var(--journal-sage));
+  border-color: color-mix(in srgb, #f59e0b 45%, transparent);
+  transform: scale(0.96);
 }
 
 .page--kid-journal .day-chip--active .day-chip__label {
@@ -6140,171 +6242,11 @@
   max-width: 360px;
 }
 
-.journal-day-modal__long-press-zone {
+.journal-day-modal__slip {
   width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 10px;
-  touch-action: pan-y;
-  user-select: none;
-  -webkit-user-select: none;
-  -webkit-touch-callout: none;
-}
-
-@media (hover: hover) and (pointer: fine) {
-  .journal-day-modal__long-press-zone {
-    user-select: text;
-    -webkit-user-select: text;
-    -webkit-touch-callout: default;
-  }
-}
-
-.journal-day-modal__slip-hover-actions {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(9.25rem, 1fr));
-  gap: 10px;
-  width: 100%;
-  max-width: 312px;
-}
-
-@media (hover: hover) and (pointer: fine) {
-  .journal-day-modal__slip-hover-actions {
-    max-height: 0;
-    opacity: 0;
-    overflow: hidden;
-    margin-top: 0;
-    pointer-events: none;
-    transition:
-      max-height 0.32s ease,
-      opacity 0.22s ease,
-      margin-top 0.22s ease;
-  }
-
-  .journal-day-modal__long-press-zone:hover .journal-day-modal__slip-hover-actions,
-  .journal-day-modal__long-press-zone:focus-within .journal-day-modal__slip-hover-actions {
-    max-height: 10rem;
-    opacity: 1;
-    margin-top: 4px;
-    pointer-events: auto;
-  }
-}
-
-.journal-day-modal__slip-hover-btn {
-  min-height: 48px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 0.9375rem;
-  font-weight: 700;
-  text-decoration: none;
-  width: 100%;
-  box-sizing: border-box;
-}
-
-.journal-day-modal__slip-hover-btn--secondary {
-  border-width: 2px;
-  background: var(--surface);
-  color: var(--ink);
-  border-color: var(--accent);
-}
-
-.journal-day-modal__slip-hover-btn--secondary:hover,
-.journal-day-modal__slip-hover-btn--secondary:active {
-  background: var(--paper2);
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .journal-day-modal__slip-hover-actions {
-    transition: none;
-  }
-}
-
-.journal-day-modal__hold-scrim {
-  position: fixed;
-  inset: 0;
-  z-index: 482;
-  border: none;
-  margin: 0;
-  padding: 0;
-  background: color-mix(in srgb, var(--ink) 38%, transparent);
-  cursor: pointer;
-  animation: journal-hold-scrim-in 0.2s ease;
-}
-
-@keyframes journal-hold-scrim-in {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
-.journal-day-modal__hold-panel {
-  position: fixed;
-  left: 50%;
-  bottom: 0;
-  z-index: 483;
-  width: 100%;
-  max-width: 360px;
-  transform: translateX(-50%);
-  padding: 16px max(16px, env(safe-area-inset-right)) calc(14px + env(safe-area-inset-bottom))
-    max(16px, env(safe-area-inset-left));
-  background: var(--surface);
-  border-radius: var(--radius) var(--radius) 0 0;
-  border: 1px solid var(--line);
-  border-bottom: none;
-  box-shadow: 0 -12px 40px color-mix(in srgb, var(--ink) 18%, transparent);
-  box-sizing: border-box;
-  animation: journal-hold-panel-in 0.22s cubic-bezier(0.32, 0.72, 0, 1);
-}
-
-@keyframes journal-hold-panel-in {
-  from {
-    transform: translate(-50%, 105%);
-  }
-  to {
-    transform: translate(-50%, 0);
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .journal-day-modal__hold-scrim,
-  .journal-day-modal__hold-panel {
-    animation: none;
-  }
-}
-
-.journal-day-modal__hold-panel-actions {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.journal-day-modal__hold-action {
-  width: 100%;
-  min-height: 48px;
-  justify-content: center;
-  font-weight: 700;
-}
-
-.journal-day-modal__hold-action:not(.btn--primary) {
-  border-width: 2px;
-  background: var(--surface);
-  color: var(--ink);
-  border-color: var(--accent);
-}
-
-.journal-day-modal__hold-action:not(.btn--primary):hover,
-.journal-day-modal__hold-action:not(.btn--primary):active {
-  background: var(--paper2);
-}
-
-.journal-day-modal__hold-cancel {
-  width: 100%;
-  margin-top: 6px;
-  justify-content: center;
 }
 
 .journal-day-modal__rainbow-wrap {
@@ -6458,6 +6400,14 @@
   gap: 12px;
   width: 100%;
   align-items: stretch;
+}
+
+.journal-day-modal__text-parent {
+  width: 100%;
+  min-height: 48px;
+  justify-content: center;
+  font-weight: 700;
+  text-decoration: none;
 }
 
 .journal-day-modal__close {

@@ -16,6 +16,8 @@ import './App.css'
 import './pages/pages.css'
 import './pages/work-ui.css'
 import './pages/schedule-dashboard.css'
+import './pages/shift-setup.css'
+import './pages/shift-journal.css'
 import './tech-type.css'
 
 export default function App() {
