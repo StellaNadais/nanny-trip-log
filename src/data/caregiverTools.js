@@ -18,10 +18,4 @@ export const CAREGIVER_TOOLS = [
     label: 'Events',
     hint: 'Local family-friendly ideas by area.',
   },
-  {
-    to: '/notes',
-    code: 'E',
-    label: 'Nanny hub',
-    hint: 'Your punctuality score from shift logs.',
-  },
 ]

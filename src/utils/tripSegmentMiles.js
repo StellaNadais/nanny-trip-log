@@ -83,11 +83,12 @@ export function runMilesForPlaceChain(places, graph) {
   return roundMi(segments.reduce((sum, s) => sum + s.miles, 0))
 }
 
-/** Built-in + custom ids for Outings “connect from” dropdown. */
+/** Built-in + saved custom ids for Outings “connect from” dropdown. */
 export function legAnchorOptions() {
   return [
     { id: HOME_PLACE_ID, label: 'Home' },
     ...PLACES.map((p) => ({ id: p.id, label: p.label })),
+    ...loadOutingsPlaces().map((r) => ({ id: r.id, label: r.label })),
   ]
 }
 

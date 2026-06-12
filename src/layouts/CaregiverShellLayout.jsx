@@ -8,9 +8,7 @@ const DAY_PROGRESS_PATHS = new Set([
   '/hub',
   '/shift',
   '/journal',
-  '/outings',
   '/events',
-  '/notes',
 ])
 
 export default function CaregiverShellLayout() {
@@ -25,7 +23,9 @@ export default function CaregiverShellLayout() {
   })
 
   return (
-    <div className={`caregiver-shell${showDayProgress ? '' : ' caregiver-shell--plain'}`}>
+    <div
+      className={`caregiver-shell${showDayProgress ? '' : ' caregiver-shell--plain'}${pathname === '/schedule' ? ' caregiver-shell--schedule-dashboard' : ''}`}
+    >
       {showDayProgress ? (
         <div className="caregiver-page-chrome" aria-label="Day in progress">
           <JournalDayProgress dateISO={todayIso} dateLabel={todayLabel} variant="thin" />

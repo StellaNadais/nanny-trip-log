@@ -19,7 +19,7 @@
   --seafoam-2: #5cb4ab;
   --seafoam-3: #8fd4cc;
   --sky-gradient: linear-gradient(180deg, var(--seafoam-1) 0%, var(--seafoam-2) 45%, var(--seafoam-3) 100%);
-  --radius: 12px;
+  --radius: 8px;
   /* Edge strips: purple, peach, gold, seafoam, pink */
   --rainbow-edge: linear-gradient(
     180deg,
@@ -30,17 +30,22 @@
     #d97aa8 82%,
     #4a1f5c 100%
   );
-  /* Preschool show vibe: soft rounded & very legible (Nunito) */
-  --font: 'Nunito', system-ui, -apple-system, 'Segoe UI', sans-serif;
-  /* 16px+ avoids iOS zoom on focused inputs */
+  --font: 'DM Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-display: 'DM Sans', var(--font);
+  --font-mono: 'IBM Plex Mono', ui-monospace, 'SF Mono', monospace;
+  --font-pixel: var(--font-display);
+  --weight-body: 400;
+  --weight-label: 500;
+  --weight-title: 600;
   font-family: var(--font);
   font-size: 16px;
-  font-weight: 600;
-  line-height: 1.55;
-  letter-spacing: 0.01em;
+  font-weight: var(--weight-body);
+  line-height: 1.5;
+  letter-spacing: -0.01em;
   color: var(--ink);
   background: transparent;
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
   -webkit-tap-highlight-color: rgba(92, 45, 110, 0.22);
 }
 

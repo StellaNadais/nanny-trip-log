@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import {
   celebrationsByActivityWeekInMonth,
   monthCelebrationsTitle,
@@ -25,32 +25,53 @@ function CelebrationsFlipFaces({
           aria-hidden={showWeeks}
         >
           <div className="schedule-celebrations-flip__head">
-            <h2 className="schedule-celebrations-flip__title">{monthTitle} do fun list</h2>
+            <div className="schedule-celebrations-flip__mission-bar">
+              <span className="schedule-celebrations-flip__mission-bar-tag">Mission log</span>
+              <span className="schedule-celebrations-flip__mission-bar-count">
+                {upcoming.length} active
+              </span>
+            </div>
+            <h2 className="schedule-celebrations-flip__title">
+              do fun list of {monthTitle}
+            </h2>
             <p className="schedule-celebrations-flip__lede muted">
-              Next important dates — do activities one week before each.
+              Complete prep one week before each target date.
             </p>
           </div>
           <div className="schedule-celebrations-flip__scroll">
             {upcoming.length === 0 ? (
               <p className="muted schedule-celebrations-flip__empty">
-                No more important dates left in {monthTitle}. Flip the calendar to another month or
-                edit <code className="schedule-celebrations-flip__code">monthlyCelebrations.js</code>.
+                No missions left in {monthTitle}. Change month on the calendar or edit{' '}
+                <code className="schedule-celebrations-flip__code">monthlyCelebrations.js</code>.
               </p>
             ) : (
-              <ul className="schedule-celebrations-flip__month-list">
-                {upcoming.map((c) => (
-                  <li key={c.id} className="schedule-celebrations-flip__month-item">
-                    <div className="schedule-celebrations-flip__month-row">
-                      <time className="schedule-celebrations-flip__date" dateTime={c.dateISO}>
-                        {c.dateLabel}
-                      </time>
-                      <span className="schedule-celebrations-flip__name">{c.title}</span>
+              <ul className="schedule-celebrations-flip__mission-list">
+                {upcoming.map((c, i) => (
+                  <li key={c.id} className="schedule-celebrations-flip__mission">
+                    <div className="schedule-celebrations-flip__mission-head">
+                      <span className="schedule-celebrations-flip__mission-num" aria-hidden>
+                        {String(i + 1).padStart(2, '0')}
+                      </span>
+                      <span className="schedule-celebrations-flip__mission-status">Active</span>
                     </div>
-                    <p className="schedule-celebrations-flip__activity-by">
-                      <span className="schedule-celebrations-flip__activity-by-label">Do activities by</span>
-                      <time dateTime={c.activityByISO}>{c.activityByLabel}</time>
-                    </p>
-                    <p className="schedule-celebrations-flip__theme muted">{c.theme}</p>
+                    <h3 className="schedule-celebrations-flip__mission-title">{c.title}</h3>
+                    <dl className="schedule-celebrations-flip__mission-meta">
+                      <div className="schedule-celebrations-flip__mission-meta-row">
+                        <dt>Target</dt>
+                        <dd>
+                          <time dateTime={c.dateISO}>{c.dateLabel}</time>
+                        </dd>
+                      </div>
+                      <div className="schedule-celebrations-flip__mission-meta-row">
+                        <dt>Prep by</dt>
+                        <dd>
+                          <time dateTime={c.activityByISO}>{c.activityByLabel}</time>
+                        </dd>
+                      </div>
+                    </dl>
+                    {c.theme ? (
+                      <p className="schedule-celebrations-flip__mission-brief">{c.theme}</p>
+                    ) : null}
                   </li>
                 ))}
               </ul>
@@ -61,9 +82,12 @@ function CelebrationsFlipFaces({
             className="schedule-flip__upcoming-strip schedule-celebrations-flip__flip-btn"
             onClick={() => setShowWeeks(true)}
             disabled={byActivityWeek.length === 0}
-            aria-label="Flip to activity prep weeks"
+            aria-label="Open prep week objectives"
           >
-            Activity weeks →
+            <span className="schedule-celebrations-flip__flip-btn-label">Prep weeks</span>
+            <span className="schedule-celebrations-flip__flip-btn-ico" aria-hidden>
+              ▶
+            </span>
           </button>
         </div>
 
@@ -79,34 +103,40 @@ function CelebrationsFlipFaces({
             >
               ← Dates
             </button>
-            <h2 className="schedule-flip__back-heading">Activity prep weeks</h2>
+            <h2 className="schedule-flip__back-heading">Prep objectives</h2>
           </div>
           <div className="schedule-flip__list-scroll schedule-celebrations-flip__week-scroll">
             {byActivityWeek.length === 0 ? (
               <p className="muted schedule-flip__list-empty">
-                No activity weeks left for {monthTitle} — upcoming prep dates have passed or change
-                month on the calendar.
+                No prep weeks left for {monthTitle} — change month on the calendar.
               </p>
             ) : (
               <ul className="schedule-celebrations-flip__week-list">
                 {byActivityWeek.map((week) => (
                   <li key={week.weekStartISO} className="schedule-celebrations-flip__week-block">
                     <h3 className="schedule-celebrations-flip__week-label">
+                      <span className="schedule-celebrations-flip__week-label-tag">Chapter</span>
                       Week of {week.weekLabel}
                     </h3>
                     {week.celebrations.map((c) => (
                       <article key={c.id} className="schedule-celebrations-flip__celeb-card">
                         <header className="schedule-celebrations-flip__celeb-head">
-                          <time dateTime={c.activityByISO}>Do by {c.activityByLabel}</time>
+                          <span className="schedule-celebrations-flip__celeb-rank">Side quest</span>
                           <strong>{c.title}</strong>
-                          <span className="muted">
-                            Important date:{' '}
+                          <span className="schedule-celebrations-flip__celeb-dates muted">
+                            Prep by{' '}
+                            <time dateTime={c.activityByISO}>{c.activityByLabel}</time>
+                            {' · '}Target{' '}
                             <time dateTime={c.dateISO}>{c.dateLabel}</time>
                           </span>
                         </header>
+                        <p className="schedule-celebrations-flip__objectives-label">Objectives</p>
                         <ul className="schedule-celebrations-flip__activities">
                           {c.activities.map((act) => (
-                            <li key={act}>{act}</li>
+                            <li key={act} className="schedule-celebrations-flip__objective">
+                              <span className="schedule-celebrations-flip__objective-box" aria-hidden />
+                              <span>{act}</span>
+                            </li>
                           ))}
                         </ul>
                       </article>
@@ -139,14 +169,18 @@ export default function ScheduleCelebrationsFlip({ year, monthIndex, embedded = 
     [year, monthIndex, todayIso]
   )
 
+  useEffect(() => {
+    setShowWeeks(false)
+  }, [year, monthIndex])
+
   const cardClass = embedded
     ? 'schedule-celebrations-flip__card schedule-celebrations-flip__card--embedded'
     : 'schedule-celebrations-flip__card work-ui__calendar-card'
 
   return (
     <section
-      className={`schedule-celebrations-flip schedule-flip${embedded ? ' schedule-celebrations-flip--embedded' : ''}`}
-      aria-label={`${monthTitle} do fun list`}
+      className={`schedule-celebrations-flip schedule-celebrations-flip--missions schedule-flip${embedded ? ' schedule-celebrations-flip--embedded' : ''}`}
+      aria-label={`do fun list of ${monthTitle}`}
     >
       <CelebrationsFlipFaces
         showWeeks={showWeeks}

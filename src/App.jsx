@@ -9,14 +9,14 @@ import HubPage from './pages/HubPage'
 import WeeklyReceiptPage from './pages/WeeklyReceiptPage'
 import ShiftPage from './pages/ShiftPage'
 import KidJournalPage from './pages/KidJournalPage'
-import InternalNotesPage from './pages/InternalNotesPage'
-import OutingsPage from './pages/OutingsPage'
 import EventsPage from './pages/EventsPage'
 import CaregiverFlowLayout from './layouts/CaregiverFlowLayout'
 import CaregiverShellLayout from './layouts/CaregiverShellLayout'
 import './App.css'
 import './pages/pages.css'
 import './pages/work-ui.css'
+import './pages/schedule-dashboard.css'
+import './tech-type.css'
 
 export default function App() {
   return (
@@ -35,8 +35,7 @@ export default function App() {
               <Route path="/receipt" element={<WeeklyReceiptPage />} />
               <Route path="/shift" element={<ShiftPage />} />
               <Route path="/journal" element={<KidJournalPage />} />
-              <Route path="/outings" element={<OutingsPage />} />
-              <Route path="/notes" element={<InternalNotesPage />} />
+              <Route path="/outings" element={<Navigate to="/hub" replace />} />
               <Route path="/events" element={<EventsPage />} />
             </Route>
           </Routes>

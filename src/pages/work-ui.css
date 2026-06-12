@@ -1,4 +1,4 @@
-/* Workspace surfaces: /book and /schedule — aligned with :root tokens (Nunito, --ink, --accent, --line). */
+/* Workspace surfaces: /book and /schedule — aligned with :root tokens (--font, --ink, --accent, --line). */
 
 .work-ui {
   background: linear-gradient(
@@ -166,8 +166,14 @@
   margin-top: 0;
   font-size: 1.375rem;
   font-weight: 700;
-  letter-spacing: -0.03em;
+  letter-spacing: 0.02em;
   color: var(--ink);
+}
+
+.page--events .schedule-workspace-head .schedule__title,
+.page--shift .schedule-workspace-head .schedule__title,
+.page--book .book-workspace-head .calendar__title {
+  margin-top: 4px;
 }
 
 .book-workspace-head__sub,
@@ -394,16 +400,19 @@
   margin-bottom: 12px;
 }
 
-.work-ui.page--shift,
 .work-ui.page--internal-notes,
 .work-ui.page--events {
   justify-content: flex-start;
   overflow-y: auto;
 }
 
+.work-ui.page--shift,
 .work-ui.page--kid-journal {
   justify-content: flex-start;
   overflow-y: auto;
+}
+
+.work-ui.page--kid-journal {
   background: linear-gradient(
     168deg,
     var(--journal-bg-deep, #1258a0) 0%,
@@ -414,7 +423,7 @@
   transition: background 1.2s ease;
 }
 
-/* Kid journal cards: stay light; do not inherit work-ui paper gradient */
+/* Journal-style tool cards: stay light on sky canvas */
 .work-ui.page--kid-journal .work-ui__panel {
   background: var(--journal-surface-bright, #ffffff);
   border-color: var(--journal-card-border, var(--line));

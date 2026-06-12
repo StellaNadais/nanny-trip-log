@@ -2,12 +2,6 @@ import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { DayStrip } from '../components/DayStrip'
 import { addDays, formatWeekRange, startOfWeekMonday, toISODateLocal } from '../utils/dates'
-import {
-  countByKindYear,
-  MAX_SICK_DAYS_PER_YEAR,
-  MAX_VACATION_DAYS_PER_YEAR,
-  yearFromIso,
-} from '../utils/timeOffStorage'
 import { useShiftPunctuality } from '../hooks/useShiftPunctuality'
 import { formatCountdownMs, shiftTimeWindowStatus } from '../utils/shiftTimeWindow'
 import ToolWorkspaceHead from '../components/ToolWorkspaceHead'
@@ -44,7 +38,7 @@ function splitTimeLabel(full) {
 }
 
 export default function ShiftPage() {
-  const { upsertShiftDay, timeOffEntries, addTimeOffEntry, removeTimeOffEntry } = useShiftPunctuality()
+  const { upsertShiftDay } = useShiftPunctuality()
   const [shiftWeekStart, setShiftWeekStart] = useState(() => startOfWeekMonday(new Date()))
   const [dayOffset, setDayOffset] = useState(() =>
     initialDayOffsetForWeek(startOfWeekMonday(new Date()))
@@ -82,28 +76,6 @@ export default function ShiftPage() {
     }
   }, [tick, shiftDate, arrival, end])
 
-  const [timeOffDate, setTimeOffDate] = useState(() => toISODateLocal(new Date()))
-  const [timeOffKind, setTimeOffKind] = useState('vacation')
-  const [timeOffFlash, setTimeOffFlash] = useState('')
-
-  const yearForTimeOff = useMemo(() => yearFromIso(timeOffDate), [timeOffDate])
-
-  const vacationUsed = useMemo(
-    () => countByKindYear(timeOffEntries, yearForTimeOff, 'vacation'),
-    [timeOffEntries, yearForTimeOff]
-  )
-
-  const sickUsed = useMemo(
-    () => countByKindYear(timeOffEntries, yearForTimeOff, 'sick'),
-    [timeOffEntries, yearForTimeOff]
-  )
-
-  const yearTimeOffList = useMemo(() => {
-    return [...timeOffEntries]
-      .filter((e) => yearFromIso(e.dateISO) === yearForTimeOff)
-      .sort((a, b) => (b.dateISO || '').localeCompare(a.dateISO || ''))
-  }, [timeOffEntries, yearForTimeOff])
-
   function shiftShiftWeek(delta) {
     setShiftWeekStart((w) => addDays(w, delta * 7))
   }
@@ -125,17 +97,6 @@ export default function ShiftPage() {
     )
   }
 
-  function submitTimeOff(e) {
-    e.preventDefault()
-    setTimeOffFlash('')
-    const err = addTimeOffEntry({ dateISO: timeOffDate, kind: timeOffKind })
-    if (err) {
-      setTimeOffFlash(err)
-      return
-    }
-    setTimeOffFlash('Day off logged.')
-  }
-
   return (
     <div className="page page--shift work-ui">
       <ToolWorkspaceHead
@@ -144,31 +105,38 @@ export default function ShiftPage() {
         lede="Pick the week and day, then log arrival and end inside each ±5 minute window."
       />
 
-      <div className="journal__week-picker work-ui__panel shift__week-picker">
-        <div className="trip-log__week-tools">
-          <button type="button" className="btn btn--ghost trip-log__week-btn" onClick={() => shiftShiftWeek(-1)}>
-            ← Previous week
-          </button>
-          <button type="button" className="btn btn--ghost trip-log__week-btn" onClick={() => shiftShiftWeek(1)}>
-            Next week →
-          </button>
-        </div>
-        <p className="journal__week-range muted" aria-live="polite">
-          {formatWeekRange(shiftWeekStart)}
-        </p>
-        <DayStrip
-          weekStart={shiftWeekStart}
-          selectedIso={shiftDate}
-          onSelect={(iso) => {
-            const a = new Date(weekKey + 'T12:00:00')
-            const b = new Date(iso + 'T12:00:00')
-            const diff = Math.round((b - a) / 86400000)
-            setDayOffset(Math.max(0, Math.min(6, diff)))
-          }}
-        />
-      </div>
+      <div className="shift__layout">
+        <section className="work-ui__panel shift__week-picker" aria-label="Pick a day">
+          <div className="shift__week-picker-top">
+            <div className="trip-log__week-tools shift__week-tools">
+              <button type="button" className="btn btn--ghost trip-log__week-btn" onClick={() => shiftShiftWeek(-1)}>
+                ← Prev
+              </button>
+              <p className="shift__week-range" aria-live="polite">
+                {formatWeekRange(shiftWeekStart)}
+              </p>
+              <button type="button" className="btn btn--ghost trip-log__week-btn" onClick={() => shiftShiftWeek(1)}>
+                Next →
+              </button>
+            </div>
+            <p className="shift__selected-day" aria-live="polite">
+              {formatDayLabel(shiftDate)}
+            </p>
+          </div>
+          <DayStrip
+            weekStart={shiftWeekStart}
+            selectedIso={shiftDate}
+            onSelect={(iso) => {
+              const a = new Date(weekKey + 'T12:00:00')
+              const b = new Date(iso + 'T12:00:00')
+              const diff = Math.round((b - a) / 86400000)
+              setDayOffset(Math.max(0, Math.min(6, diff)))
+            }}
+          />
+        </section>
 
-      <div className="shift__form">
+        <section className="shift__card shift__card--log work-ui__panel" aria-label="Log shift times">
+        <div className="shift__form">
         {!clock.isShiftToday ? (
           <p className="shift__today-callout muted" role="note">
             Select <strong>today</strong> in the strip above to unlock logging; each button only works on the
@@ -287,129 +255,13 @@ export default function ShiftPage() {
             Log end
           </button>
         </div>
-
-        <details className="shift__time-off-details shift__time-off-details--footer">
-          <summary className="shift__time-off-summary">
-            <span className="shift__time-off-summary-title">Paid vacation & paid sick days</span>
-            <span className="shift__time-off-summary-stats muted">
-              {yearForTimeOff}: {vacationUsed}/{MAX_VACATION_DAYS_PER_YEAR} paid vacation · {sickUsed}/
-              {MAX_SICK_DAYS_PER_YEAR} paid sick
-            </span>
-          </summary>
-
-          <div className="shift__time-off-panel">
-            <p className="muted shift__time-off-lede">
-              Per calendar year: up to <strong>{MAX_VACATION_DAYS_PER_YEAR}</strong> paid vacation days and{' '}
-              <strong>{MAX_SICK_DAYS_PER_YEAR}</strong> paid sick days. Pick a date below to see counts for that year.
-            </p>
-
-            <div className="shift__time-off-meters" aria-live="polite">
-              <div className="shift__meter">
-                <span className="shift__meter-label">Paid vacation ({yearForTimeOff})</span>
-                <span className="shift__meter-count">
-                  {vacationUsed} / {MAX_VACATION_DAYS_PER_YEAR}
-                </span>
-                <div className="shift__meter-bar" role="presentation">
-                  <div
-                    className="shift__meter-fill shift__meter-fill--vacation"
-                    style={{
-                      width: `${Math.min(100, (vacationUsed / MAX_VACATION_DAYS_PER_YEAR) * 100)}%`,
-                    }}
-                  />
-                </div>
-              </div>
-              <div className="shift__meter">
-                <span className="shift__meter-label">Paid sick days ({yearForTimeOff})</span>
-                <span className="shift__meter-count">
-                  {sickUsed} / {MAX_SICK_DAYS_PER_YEAR}
-                </span>
-                <div className="shift__meter-bar" role="presentation">
-                  <div
-                    className="shift__meter-fill shift__meter-fill--sick"
-                    style={{
-                      width: `${Math.min(100, (sickUsed / MAX_SICK_DAYS_PER_YEAR) * 100)}%`,
-                    }}
-                  />
-                </div>
-              </div>
-            </div>
-
-            <form className="shift__time-off-form" onSubmit={submitTimeOff}>
-              <label className="field-block">
-                <span className="field-block__label">Day off date</span>
-                <input
-                  type="date"
-                  className="input input--line"
-                  value={timeOffDate}
-                  onChange={(e) => setTimeOffDate(e.target.value)}
-                  required
-                />
-              </label>
-
-              <fieldset className="time-pick shift__time-off-kind">
-                <legend className="time-pick__legend">Type</legend>
-                <div className="time-pick__chips" role="group" aria-label="Day off type">
-                  <button
-                    type="button"
-                    className={`time-chip ${timeOffKind === 'vacation' ? 'time-chip--on' : ''}`}
-                    onClick={() => setTimeOffKind('vacation')}
-                  >
-                    Paid vacation
-                  </button>
-                  <button
-                    type="button"
-                    className={`time-chip ${timeOffKind === 'sick' ? 'time-chip--on' : ''}`}
-                    onClick={() => setTimeOffKind('sick')}
-                  >
-                    Paid sick days
-                  </button>
-                </div>
-              </fieldset>
-
-              {timeOffFlash ? (
-                <p
-                  className={`shift__flash ${timeOffFlash.startsWith('Day off') ? 'shift__flash--ok' : ''}`}
-                  role="status"
-                >
-                  {timeOffFlash}
-                </p>
-              ) : null}
-
-              <button type="submit" className="btn btn--primary shift__time-off-submit">
-                Log day off
-              </button>
-            </form>
-
-            {yearTimeOffList.length > 0 ? (
-              <ul className="shift__time-off-list">
-                {yearTimeOffList.map((row) => (
-                  <li key={row.id} className="shift__time-off-row">
-                    <span className="shift__time-off-date">{formatDayLabel(row.dateISO)}</span>
-                    <span className={`shift__time-off-tag ${row.kind === 'sick' ? 'shift__time-off-tag--sick' : ''}`}>
-                      {row.kind === 'vacation' ? 'Paid vacation' : 'Paid sick days'}
-                    </span>
-                    <button
-                      type="button"
-                      className="btn btn--ghost shift__time-off-remove"
-                      onClick={() => removeTimeOffEntry(row.id)}
-                    >
-                      Remove
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <p className="muted shift__time-off-empty">
-                No paid vacation or paid sick days logged for {yearForTimeOff} yet.
-              </p>
-            )}
-          </div>
-        </details>
+        </div>
+        </section>
       </div>
 
       <div className="shift__links">
-        <Link to="/notes" className="page-back">
-          Punctuality in Nanny hub →
+        <Link to="/hub" className="page-back">
+          ← Tools
         </Link>
       </div>
     </div>

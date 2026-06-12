@@ -143,7 +143,7 @@ export default function SchedulePage() {
   }
 
   return (
-    <div className="page page--calendar page--schedule work-ui">
+    <div className="page page--calendar page--schedule schedule-dashboard work-ui">
       <div className="schedule__stage">
       <header className="schedule__head schedule-workspace-head">
         <Link to="/" className="page-back page-back--ghost">
@@ -341,6 +341,21 @@ export default function SchedulePage() {
           {SCHEDULE_PAGE_INTRO_TEXT}
         </p>
       </header>
+
+      <div className="schedule-dashboard__hud" aria-label="Schedule overview">
+        <div className="schedule-dashboard__stat">
+          <span className="schedule-dashboard__stat-label">Queue</span>
+          <span className="schedule-dashboard__stat-value">{upcoming.length}</span>
+        </div>
+        <div className="schedule-dashboard__stat">
+          <span className="schedule-dashboard__stat-label">Confirmed</span>
+          <span className="schedule-dashboard__stat-value">{acceptedUpcoming.length}</span>
+        </div>
+        <div className="schedule-dashboard__stat schedule-dashboard__stat--wide">
+          <span className="schedule-dashboard__stat-label">Viewing</span>
+          <span className="schedule-dashboard__stat-value">{title}</span>
+        </div>
+      </div>
 
       <div className="book-legend book-legend--work" aria-hidden>
         <span className="book-legend__item">

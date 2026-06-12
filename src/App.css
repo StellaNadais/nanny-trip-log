@@ -345,6 +345,7 @@
 .btn {
   font: inherit;
   font-weight: 600;
+  letter-spacing: 0.02em;
   font-size: 0.9375rem;
   min-height: 44px;
   padding: 10px 16px;
