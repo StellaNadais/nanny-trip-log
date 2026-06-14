@@ -1,0 +1,81 @@
+/* Events page — kid journal skin */
+
+.page--events.page--kid-journal {
+  color: var(--journal-ink-on-page);
+  background: transparent;
+  transition: background 1.2s ease;
+}
+
+.page--events.page--kid-journal.work-ui {
+  background: transparent;
+}
+
+.page--events.page--kid-journal > * {
+  position: relative;
+  z-index: 1;
+}
+
+.page--events.page--kid-journal .events__layout,
+.page--events.page--kid-journal .tool-workspace-head {
+  background: transparent;
+}
+
+.page--events.page--kid-journal .events__layout {
+  gap: 12px;
+  padding-bottom: max(16px, env(safe-area-inset-bottom, 0px));
+}
+
+.page--events.page--kid-journal .events__sky-phase {
+  margin: 0 0 4px;
+  text-align: left;
+}
+
+.page--events.page--kid-journal .events__sections {
+  gap: 12px;
+  max-width: none;
+  padding-bottom: 0;
+}
+
+.page--events.page--kid-journal .events__section {
+  margin: 0;
+}
+
+.page--events.page--kid-journal .events__loc-title {
+  margin: 0;
+  font-size: inherit;
+  font-weight: inherit;
+  letter-spacing: inherit;
+  text-transform: none;
+  color: inherit;
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.page--events.page--kid-journal .events__list {
+  gap: 10px;
+  margin: 0;
+}
+
+.page--events.page--kid-journal .events__item {
+  margin: 0;
+  padding: 10px 12px;
+  border: 2px solid color-mix(in srgb, var(--journal-card-border) 55%, transparent);
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--journal-sage) 18%, var(--journal-surface-bright));
+}
+
+.page--events.page--kid-journal .events__item-title {
+  color: var(--journal-ink-front);
+  font-weight: 700;
+}
+
+.page--events.page--kid-journal .events__place,
+.page--events.page--kid-journal .events__blurb {
+  color: var(--journal-ink-muted-front) !important;
+  font-weight: 600;
+}
+
+.page--events.page--kid-journal .events__when {
+  color: var(--journal-mint-deep);
+  font-weight: 700;
+}

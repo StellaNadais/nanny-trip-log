@@ -7,6 +7,7 @@ import { useBookings } from '../hooks/useBookings'
 import { bookingOccupiesCalendarSlot } from '../utils/bookingCalendar'
 import { careIntervalValid, expandBookingCalendarDates } from '../utils/bookingRange'
 import { BOOK_THANKS_LEDE, BOOK_THANKS_SUPPORTERS } from '../data/bookThanks'
+import { useJournalDaySky } from '../hooks/useJournalDaySky'
 
 function todayISO() {
   return toISODateLocal(new Date())
@@ -71,6 +72,8 @@ export default function BookPage() {
     month: 'long',
     year: 'numeric',
   })
+
+  const daySky = useJournalDaySky(todayISO())
 
   const selectedBookings = bookingsByDate[careStartDateISO] ?? []
   const careStartIsPast = careStartDateISO < todayISO()
@@ -167,12 +170,19 @@ export default function BookPage() {
   }
 
   return (
-    <div className="page page--calendar page--book page--parents-only work-ui">
+    <div
+      className="page page--calendar page--book page--parents-only page--kid-journal work-ui"
+      style={daySky.style}
+      data-sky-phase={daySky.label}
+    >
       <header className="calendar__head calendar__head--book book-workspace-head">
         <p className="book-parents-banner" role="note">
           Parent & family portal · this link is not the caregiver app
         </p>
         <p className="book-workspace-head__eyebrow">Availability request</p>
+        <p className="journal__sky-phase book__sky-phase" aria-live="polite">
+          {daySky.label}
+        </p>
         <h1
           className="calendar__title calendar__title--book-tip"
           id="book-page-heading"
@@ -190,6 +200,7 @@ export default function BookPage() {
         </p>
       </header>
 
+      <div className="journal__layout book__layout">
       <div className="book-legend book-legend--work" role="group" aria-label="Calendar legend">
         <span className="book-legend__item">
           <span className="book-legend__dot book-legend__dot--booked" aria-hidden /> Request on file
@@ -524,6 +535,7 @@ export default function BookPage() {
           ))}
         </ul>
       </section>
+      </div>
     </div>
   )
 }

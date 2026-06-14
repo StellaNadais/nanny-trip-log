@@ -1,0 +1,205 @@
+/* Shift page — kid journal skin (shared page--kid-journal shell + shift controls) */
+
+.page--shift.page--kid-journal .shift__layout {
+  gap: 12px;
+}
+
+.page--shift.page--kid-journal .journal-panel--shift-log {
+  --journal-section-accent: var(--journal-mint-deep, #22a06b);
+}
+
+.page--shift.page--kid-journal .journal-panel--shift-log .journal-mood-bar__track {
+  display: block;
+  padding: 8px;
+  border-radius: 10px;
+  overflow: visible;
+}
+
+.page--shift.page--kid-journal .shift__form {
+  margin-top: 0;
+  gap: 16px;
+}
+
+.page--shift.page--kid-journal .time-pick__legend {
+  color: var(--journal-ink-muted-front);
+  font-family: var(--font);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: none;
+}
+
+.page--shift.page--kid-journal .shift__time-circle {
+  border: 2px solid var(--journal-card-border);
+  background: var(--journal-surface-bright);
+  color: var(--journal-ink-front);
+  box-shadow: 2px 2px 0 var(--journal-card-border);
+}
+
+.page--shift.page--kid-journal .shift__time-circle:hover,
+.page--shift.page--kid-journal .shift__time-circle:focus-visible {
+  border-color: var(--journal-mint-deep);
+  outline: none;
+}
+
+.page--shift.page--kid-journal .shift__time-circle--on {
+  border-color: var(--journal-mint-deep);
+  background: var(--journal-sage);
+  box-shadow: 2px 2px 0 var(--journal-card-border);
+}
+
+.page--shift.page--kid-journal .shift__time-circle__ap {
+  color: var(--journal-ink-muted-front);
+}
+
+.page--shift.page--kid-journal .shift__time-circle--on .shift__time-circle__ap {
+  color: var(--journal-ink-front);
+}
+
+@keyframes shift-time-live-journal {
+  0%,
+  100% {
+    box-shadow:
+      2px 2px 0 var(--journal-card-border),
+      0 0 14px color-mix(in srgb, var(--journal-mint-deep) 28%, transparent);
+    transform: scale(1);
+  }
+  50% {
+    box-shadow:
+      2px 2px 0 var(--journal-mint-deep),
+      0 0 22px color-mix(in srgb, var(--journal-mint-deep) 42%, transparent);
+    transform: scale(1.04);
+  }
+}
+
+.page--shift.page--kid-journal .shift__time-circle--live {
+  animation: shift-time-live-journal 2.2s ease-in-out infinite;
+}
+
+.page--shift.page--kid-journal .shift__today-callout {
+  border: 2px dashed color-mix(in srgb, var(--journal-mint-deep) 45%, var(--journal-card-border));
+  background: color-mix(in srgb, var(--journal-sage) 55%, var(--journal-surface-bright));
+  color: var(--journal-ink-front);
+  border-radius: 8px;
+}
+
+.page--shift.page--kid-journal .shift__today-callout.muted,
+.page--shift.page--kid-journal .shift__window-hint.muted {
+  color: var(--journal-ink-muted-front) !important;
+}
+
+.page--shift.page--kid-journal .shift__window-hint--ok {
+  color: var(--journal-mint-deep);
+}
+
+.page--shift.page--kid-journal .shift__flash {
+  color: #b91c1c;
+}
+
+.page--shift.page--kid-journal .shift__flash--ok {
+  color: var(--journal-ink-muted-front);
+}
+
+.page--shift.page--kid-journal .shift__submit-btn {
+  border: 2px solid var(--journal-card-border);
+  border-radius: 8px;
+  box-shadow: 2px 2px 0 var(--journal-card-border);
+  font-weight: 800;
+}
+
+.page--shift.page--kid-journal .shift__submit-btn:not(:disabled) {
+  background: var(--journal-mint-deep);
+  border-color: var(--journal-card-border);
+  color: #fff;
+}
+
+.page--shift.page--kid-journal .shift__submit-btn--live:not(:disabled) {
+  box-shadow:
+    2px 2px 0 var(--journal-card-border),
+    0 4px 16px color-mix(in srgb, var(--journal-mint-deep) 35%, transparent);
+}
+
+.page--shift.page--kid-journal .shift__submit-btn:not(:disabled):active {
+  transform: scale(0.98);
+  box-shadow: 1px 1px 0 var(--journal-card-border);
+}
+
+.page--shift.page--kid-journal .shift__links .page-back {
+  color: var(--journal-ink-on-page);
+  border-color: color-mix(in srgb, var(--journal-ink-on-page) 35%, transparent);
+}
+
+/* Contract stats teaser — journal card chrome */
+.page--shift.page--kid-journal .shift-setup-teaser {
+  border: 2px solid var(--journal-card-border);
+  border-radius: var(--radius);
+  background: var(--journal-surface-bright);
+  box-shadow: 4px 4px 0 var(--journal-card-border);
+  color: var(--journal-ink-front);
+}
+
+.page--shift.page--kid-journal .shift-setup-teaser:hover {
+  background: var(--journal-surface-bright);
+  border-color: var(--journal-mint-deep);
+}
+
+.page--shift.page--kid-journal .shift-setup-teaser:active {
+  transform: scale(0.99);
+  border-color: var(--journal-mint-deep);
+  background: color-mix(in srgb, var(--journal-sage) 40%, var(--journal-surface-bright));
+  box-shadow: 2px 2px 0 var(--journal-card-border);
+}
+
+.page--shift.page--kid-journal .shift-setup-teaser__bar {
+  background: color-mix(in srgb, var(--journal-sage) 35%, var(--journal-surface-bright));
+  border: 1px solid var(--journal-card-border);
+}
+
+.page--shift.page--kid-journal .shift-setup-teaser__bar-tag {
+  color: var(--journal-ink-muted-front);
+}
+
+.page--shift.page--kid-journal .shift-setup-teaser__bar-status,
+.page--shift.page--kid-journal .shift-setup-teaser__cta {
+  color: var(--journal-mint-deep);
+}
+
+.page--shift.page--kid-journal .shift-setup-teaser__title {
+  color: var(--journal-ink-front);
+}
+
+/* Contract modal — journal surfaces */
+.page--shift .shift-contract-modal__sheet {
+  border: 2px solid var(--journal-card-border, #0a1210);
+  border-radius: var(--radius);
+  background: var(--journal-surface-bright, #fff);
+  box-shadow: 6px 6px 0 var(--journal-card-border, #0a1210);
+}
+
+.page--shift .shift-setup {
+  --setup-bg: var(--journal-surface-bright, #fff);
+  --setup-bg-alt: color-mix(in srgb, var(--journal-sage, #b8f0d4) 35%, #fff);
+  --setup-border: var(--journal-card-border, #0a1210);
+  --setup-ink: var(--journal-ink-front, #0d1f18);
+  --setup-muted: var(--journal-ink-muted-front, #2f5245);
+  --setup-accent: var(--journal-mint-deep, #22a06b);
+  --setup-accent-soft: var(--journal-sage, #b8f0d4);
+}
+
+.page--shift .shift-setup__bar {
+  border-width: 1px;
+  border-radius: 8px;
+}
+
+.page--shift .shift-setup__stat {
+  border-width: 1px;
+  border-left-width: 3px;
+  box-shadow: 1px 1px 0 color-mix(in srgb, var(--journal-card-border) 65%, transparent);
+}
+
+.page--shift .shift-setup__date-input,
+.page--shift .shift-setup__num-input {
+  border-width: 2px;
+  border-color: var(--journal-card-border);
+  border-radius: 8px;
+  box-shadow: 1px 1px 0 var(--journal-card-border);
+}

@@ -7,6 +7,7 @@ import { useUpcomingGigsThemePlayback } from '../hooks/useUpcomingGigsThemePlayb
 import { bookingOccupiesCalendarSlot } from '../utils/bookingCalendar'
 import { expandBookingCalendarDates, formatCareBookingWindow, bookingEndMs } from '../utils/bookingRange'
 import ScheduleCelebrationsFlip from '../components/ScheduleCelebrationsFlip'
+import { useJournalDaySky } from '../hooks/useJournalDaySky'
 
 function todayISO() {
   return toISODateLocal(new Date())
@@ -134,6 +135,8 @@ export default function SchedulePage() {
     year: 'numeric',
   })
 
+  const daySky = useJournalDaySky(todayISO())
+
   function prevMonth() {
     setCursor(new Date(y, m - 1, 1))
   }
@@ -143,7 +146,11 @@ export default function SchedulePage() {
   }
 
   return (
-    <div className="page page--calendar page--schedule schedule-dashboard work-ui">
+    <div
+      className="page page--calendar page--schedule page--kid-journal schedule-dashboard work-ui"
+      style={daySky.style}
+      data-sky-phase={daySky.label}
+    >
       <div className="schedule__stage">
       <header className="schedule__head schedule-workspace-head">
         <Link to="/" className="page-back page-back--ghost">
@@ -155,6 +162,9 @@ export default function SchedulePage() {
           tabIndex={0}
         >
           Scheduling workspace
+        </p>
+        <p className="journal__sky-phase schedule__sky-phase" aria-live="polite">
+          {daySky.label}
         </p>
         <div className="schedule__title-row">
           <h1

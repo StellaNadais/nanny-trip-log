@@ -1347,12 +1347,15 @@
 }
 
 .page--schedule .schedule-calendar-flip .schedule-flip__upcoming-slot {
-  padding-bottom: 2px;
+  padding-bottom: 4px;
 }
 
 .page--schedule .schedule-calendar-flip .schedule-flip__upcoming-strip--gigs {
-  padding: 5px 8px;
-  font-size: 0.75rem;
+  padding: 12px 14px;
+  min-height: 46px;
+  font-size: 0.9375rem;
+  font-weight: 700;
+  box-shadow: none;
 }
 
 .page--schedule .schedule-calendar-flip .calendar__weekdays {
@@ -1480,7 +1483,24 @@
   min-height: 0;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
-  margin-bottom: 8px;
+  margin-bottom: 6px;
+}
+
+.page--schedule .schedule-celebrations-flip--embedded .schedule-celebrations-flip__scroll {
+  flex: 1 1 0;
+  min-height: 0;
+  max-height: none;
+  margin-bottom: 0;
+}
+
+.page--schedule .schedule-celebrations-flip--embedded .schedule-flip__face.schedule-celebrations-flip__card {
+  padding-bottom: 8px;
+  gap: 6px;
+}
+
+.page--schedule .schedule-celebrations-flip--embedded .schedule-celebrations-flip__flip-btn {
+  margin-top: 0;
+  flex-shrink: 0;
 }
 
 .schedule-celebrations-flip__month-list {
@@ -1549,11 +1569,18 @@
 .schedule-celebrations-flip__flip-btn {
   flex-shrink: 0;
   width: 100%;
-  margin-top: auto;
+  min-height: 46px;
+  padding: 12px 14px;
+  font-size: 0.9375rem;
   background: var(--paper2);
   border-color: var(--schedule-celeb-border);
   color: var(--ink);
-  font-weight: 600;
+  font-weight: 700;
+  box-shadow: none;
+}
+
+.page--schedule .schedule-celebrations-flip--embedded .schedule-celebrations-flip__flip-btn {
+  margin-top: 0;
 }
 
 .schedule-celebrations-flip__flip-btn:hover:not(:disabled) {
@@ -1748,10 +1775,11 @@
 
 /* Upcoming gigs strip — same palette & type as flipped panel */
 .schedule-flip__upcoming-strip--gigs {
-  padding: 10px 14px;
+  padding: 12px 14px;
+  min-height: 46px;
   font: inherit;
-  font-size: 0.9rem;
-  font-weight: 600;
+  font-size: 0.9375rem;
+  font-weight: 700;
   line-height: 1.35;
   letter-spacing: 0.01em;
   color: var(--ink);
@@ -1759,7 +1787,7 @@
   background: var(--schedule-gigs-gradient);
   border: 1px solid var(--schedule-gigs-border);
   border-radius: 10px;
-  box-shadow: 0 1px 3px rgba(42, 38, 48, 0.06);
+  box-shadow: none;
 }
 
 .schedule-flip__upcoming-strip--gigs:hover {
@@ -4887,7 +4915,11 @@
 /* Gaps between cards show the dark page — not a second layer */
 .page--kid-journal .journal__layout,
 .page--kid-journal .journal__form,
-.page--kid-journal .tool-workspace-head {
+.page--kid-journal .tool-workspace-head,
+.page--shift.page--kid-journal .shift__layout,
+.page--shift.page--kid-journal .tool-workspace-head,
+.page--events.page--kid-journal .events__layout,
+.page--events.page--kid-journal .tool-workspace-head {
   background: transparent;
 }
 
@@ -4934,23 +4966,27 @@
   }
 }
 
-.page--kid-journal .page-back {
+.page--kid-journal .page-back,
+.page--shift.page--kid-journal .page-back {
   color: var(--journal-ink-on-page);
   font-weight: 800;
   opacity: 0.92;
 }
 
-.page--kid-journal .schedule-workspace-head__eyebrow {
+.page--kid-journal .schedule-workspace-head__eyebrow,
+.page--shift.page--kid-journal .schedule-workspace-head__eyebrow {
   color: var(--journal-ink-muted-on-page);
   font-weight: 800;
 }
 
-.page--kid-journal .schedule-workspace-head .schedule__title {
+.page--kid-journal .schedule-workspace-head .schedule__title,
+.page--shift.page--kid-journal .schedule-workspace-head .schedule__title {
   margin-top: 4px;
   color: #ffffff;
 }
 
-.page--kid-journal .schedule-workspace-head__sub {
+.page--kid-journal .schedule-workspace-head__sub,
+.page--shift.page--kid-journal .schedule-workspace-head__sub {
   color: var(--journal-ink-muted-on-page);
   font-weight: 700;
 }
@@ -5280,6 +5316,10 @@
   --journal-section-accent: #e8a317;
 }
 
+.page--kid-journal .journal-panel--shift-log {
+  --journal-section-accent: #22a06b;
+}
+
 .page--kid-journal .journal-panel--nap {
   --journal-section-accent: #7c5cff;
 }
@@ -5593,7 +5633,8 @@
 
 .page--kid-journal .journal-panel--nap .journal-mood-bar__track,
 .page--kid-journal .journal-panel--potty .journal-mood-bar__track,
-.page--kid-journal .journal-panel--wishes .journal-mood-bar__track {
+.page--kid-journal .journal-panel--wishes .journal-mood-bar__track,
+.page--kid-journal .journal-panel--shift-log .journal-mood-bar__track {
   display: block;
   padding: 8px;
 }

@@ -16,8 +16,11 @@ import './App.css'
 import './pages/pages.css'
 import './pages/work-ui.css'
 import './pages/schedule-dashboard.css'
+import './pages/schedule-journal.css'
+import './pages/book-journal.css'
 import './pages/shift-setup.css'
 import './pages/shift-journal.css'
+import './pages/events-journal.css'
 import './tech-type.css'
 
 export default function App() {

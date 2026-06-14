@@ -131,7 +131,6 @@
 }
 
 /* Page titles — clean, no chunky stroke */
-.page--schedule .schedule__title,
 .page--shift .schedule-workspace-head .schedule__title,
 .page--book .calendar__title,
 .page--events .schedule-workspace-head .schedule__title,
@@ -148,7 +147,9 @@
   text-shadow: none;
 }
 
-.page--kid-journal .schedule-workspace-head .schedule__title {
+.page--kid-journal .schedule-workspace-head .schedule__title,
+.page--schedule.page--kid-journal .schedule__title,
+.page--book.page--kid-journal .calendar__title {
   font-family: var(--font-display);
   font-weight: 600;
   font-size: 1.375rem;
@@ -159,6 +160,22 @@
   -webkit-text-stroke: 0;
   paint-order: normal;
   text-shadow: 0 1px 12px color-mix(in srgb, #0a1210 35%, transparent);
+}
+
+.page--shift.page--kid-journal .schedule-workspace-head__eyebrow,
+.page--schedule.page--kid-journal .schedule-workspace-head__eyebrow {
+  color: var(--journal-ink-muted-on-page);
+  font-weight: 800;
+}
+
+.page--book.page--kid-journal .book-workspace-head__eyebrow {
+  color: var(--journal-ink-muted-on-page);
+  font-weight: 800;
+}
+
+.page--book.page--kid-journal .book-workspace-head__sub {
+  color: var(--journal-ink-muted-on-page);
+  font-weight: 600;
 }
 
 .page--kid-journal .schedule-workspace-head__eyebrow {
