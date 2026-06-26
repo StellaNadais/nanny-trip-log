@@ -29,7 +29,7 @@ export function buildJournalDayExportText({
       ? ['(empty)']
       : shoppingItems.map((item) => `${item.done ? '[x]' : '[ ]'} ${item.text}`)
   const lines = [
-    'KID JOURNAL',
+    'TODAY',
     dateLabel,
     `Date (ISO): ${dateISO}`,
     '',

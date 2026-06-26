@@ -35,7 +35,7 @@ export function receiptPagePath(bookings, opts = {}) {
       if (iso) params.set('gigDate', iso)
     }
   }
-  return `/hub?${params.toString()}`
+  return `/schedule?${params.toString()}`
 }
 
 export function receiptNavLabel() {

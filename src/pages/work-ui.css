@@ -50,7 +50,7 @@
   background: var(--surface);
   border: 2px solid var(--line);
   border-radius: var(--radius);
-  box-shadow: 3px 3px 0 var(--line);
+  box-shadow: none;
 }
 
 .work-ui .calendar__nav {
@@ -285,7 +285,7 @@
 
 .work-ui .btn--work-primary:hover {
   filter: brightness(1.08);
-  box-shadow: 0 0 0 1px var(--gold);
+  box-shadow: none;
 }
 
 .work-ui .btn--work-primary:disabled {
@@ -395,13 +395,14 @@
   background: var(--surface);
   border: 2px solid var(--line);
   border-radius: var(--radius);
-  box-shadow: 3px 3px 0 var(--line);
+  box-shadow: none;
   padding: 12px 14px;
   margin-bottom: 12px;
 }
 
 .work-ui.page--internal-notes,
-.work-ui.page--events {
+.work-ui.page--events,
+.work-ui.page--outings {
   justify-content: flex-start;
   overflow-y: auto;
 }

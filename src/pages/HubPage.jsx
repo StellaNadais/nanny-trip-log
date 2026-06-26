@@ -4,7 +4,7 @@ import { receiptNavLabel } from '../utils/receiptHref'
 
 const CARDS = [
   { to: '/shift', label: 'Shift', code: 'A' },
-  { to: '/journal', label: 'Kid Journal', code: 'B' },
+  { to: '/journal', label: 'Today', code: 'B' },
   { to: '/events', label: 'Events', code: 'C', stacked: true },
 ]
 
@@ -32,8 +32,6 @@ export default function HubPage() {
           <Link to="/schedule" className="page-back page-back--ghost">
             ← Schedule
           </Link>
-          <p className="schedule-workspace-head__eyebrow">Tools workspace</p>
-          <h1 className="hub__title schedule__title">Tools</h1>
         </header>
 
         <div className="hub__grid">

@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useRef } from 'react'
 import { Outlet, useLocation, useNavigate } from 'react-router-dom'
 
-/** Home → schedule → hub (swipe on touch; arrow keys). */
-const FLOW_PATHS = ['/', '/schedule', '/hub']
+/** Good morning → schedule (swipe on touch; arrow keys). */
+const FLOW_PATHS = ['/', '/schedule']
 
 const SWIPE_MIN_PX = 56
 
@@ -66,9 +66,8 @@ export default function CaregiverFlowLayout() {
       onTouchEnd={onTouchEnd}
     >
       <p className="sr-only">
-        Home opens your schedule when you tap the screen. Swipe left from schedule to open Tools flash
-        cards, or use the link at the bottom. Swipe right from Tools to return to schedule. Arrow keys
-        move between home, schedule, and tools; the right arrow does not advance from home.
+        Tap Good morning to open Schedule. Swipe left from home to open Schedule, or swipe right from
+        Schedule to return home.
       </p>
       <Outlet />
     </div>

@@ -9,7 +9,7 @@ export const CAREGIVER_TOOLS = [
   {
     to: '/journal',
     code: 'B',
-    label: 'Kid journal',
+    label: 'Today',
     hint: 'Day notes and meals for parents.',
   },
   {

@@ -107,7 +107,6 @@ export function celebrationsByActivityWeekInMonth(
         celebrations: celebrations.sort((a, b) => a.activityByISO.localeCompare(b.activityByISO)),
       }
     })
-    .filter((w) => w.celebrations.some((c) => c.activityByISO >= todayIso))
 }
 
 /** @deprecated Use celebrationsByActivityWeekInMonth */

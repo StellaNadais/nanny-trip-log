@@ -104,9 +104,6 @@ export default function ShiftContractSetup({ selectedDateISO, titleId = 'shift-c
         <h2 className="shift-setup__title" id={titleId}>
           contract stats
         </h2>
-        <p className="shift-setup__lede muted">
-          Vacation, sick days, and season length — track PTO like game resources.
-        </p>
       </div>
 
       <ul className="shift-setup__stat-list">

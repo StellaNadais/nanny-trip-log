@@ -1,81 +1,86 @@
-/* Events page — kid journal skin */
+/* Events page — plain white workbook sheet */
 
-.page--events.page--kid-journal {
-  color: var(--journal-ink-on-page);
-  background: transparent;
-  transition: background 1.2s ease;
+.page--events.work-ui {
+  background: #fff;
+  color: var(--ink);
 }
 
-.page--events.page--kid-journal.work-ui {
-  background: transparent;
-}
-
-.page--events.page--kid-journal > * {
-  position: relative;
-  z-index: 1;
-}
-
-.page--events.page--kid-journal .events__layout,
-.page--events.page--kid-journal .tool-workspace-head {
+.page--events .tool-workspace-head,
+.page--events .events__layout {
   background: transparent;
 }
 
-.page--events.page--kid-journal .events__layout {
+.page--events .schedule-workspace-head .schedule__title {
+  color: var(--ink);
+  text-shadow: none;
+}
+
+.page--events .events__layout {
   gap: 12px;
   padding-bottom: max(16px, env(safe-area-inset-bottom, 0px));
 }
 
-.page--events.page--kid-journal .events__sky-phase {
-  margin: 0 0 4px;
-  text-align: left;
-}
-
-.page--events.page--kid-journal .events__sections {
-  gap: 12px;
-  max-width: none;
-  padding-bottom: 0;
-}
-
-.page--events.page--kid-journal .events__section {
+.page--events .events__section {
   margin: 0;
+  background: #fff;
 }
 
-.page--events.page--kid-journal .events__loc-title {
-  margin: 0;
-  font-size: inherit;
-  font-weight: inherit;
-  letter-spacing: inherit;
-  text-transform: none;
-  color: inherit;
-  border-bottom: none;
-  padding-bottom: 0;
-}
-
-.page--events.page--kid-journal .events__list {
+.page--events .events__list {
   gap: 10px;
   margin: 0;
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
 }
 
-.page--events.page--kid-journal .events__item {
+.page--events .events__item {
   margin: 0;
-  padding: 10px 12px;
-  border: 2px solid color-mix(in srgb, var(--journal-card-border) 55%, transparent);
-  border-radius: 8px;
-  background: color-mix(in srgb, var(--journal-sage) 18%, var(--journal-surface-bright));
+  padding: 10px 0;
+  border: none;
+  border-radius: 0;
+  background: #fff;
+  box-shadow: none;
 }
 
-.page--events.page--kid-journal .events__item-title {
-  color: var(--journal-ink-front);
-  font-weight: 700;
-}
-
-.page--events.page--kid-journal .events__place,
-.page--events.page--kid-journal .events__blurb {
-  color: var(--journal-ink-muted-front) !important;
+.page--events .events__item-title {
+  margin: 0 0 4px;
+  color: var(--ink);
   font-weight: 600;
 }
 
-.page--events.page--kid-journal .events__when {
-  color: var(--journal-mint-deep);
-  font-weight: 700;
+.page--events .events__place,
+.page--events .events__blurb {
+  margin: 0 0 4px;
+  color: var(--ink-muted) !important;
+  font-weight: 400;
+}
+
+.page--events .events__when {
+  margin: 0 0 4px;
+  color: var(--ink-muted);
+  font-weight: 500;
+}
+
+.page--events .world-cup-panel__intro {
+  margin: 0 0 10px;
+  font-size: 0.8125rem;
+  line-height: 1.45;
+}
+
+.page--events .world-cup-panel__meta {
+  margin: 0 0 4px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.page--events .workspace-tile,
+.page--events .workspace-tile__head {
+  background: #fff;
+}
+
+.page--events .workspace-tile__label {
+  color: var(--ink-muted);
 }

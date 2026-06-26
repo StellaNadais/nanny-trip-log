@@ -62,7 +62,7 @@ export function buildWeekSummaryText({ weekMondayIso, weekLabel, receiptText }) 
       lines.push(indentBlock(dayNotes, 4))
     }
     for (const e of jrows) {
-      lines.push('    --- Kid journal ---')
+      lines.push('    --- Today ---')
       if (e.dayNotes) lines.push(indentBlock(e.dayNotes, 6))
       if (e.mealsText) lines.push(`      Meals: ${e.mealsText}`)
       const nap =

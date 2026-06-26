@@ -14,14 +14,13 @@ export function BookingsProvider({ children }) {
   }, [bookings])
 
   const addBooking = useCallback((payload) => {
-    setBookings((prev) => [
-      {
-        id: newId(),
-        createdAt: new Date().toISOString(),
-        ...payload,
-      },
-      ...prev,
-    ])
+    const booking = {
+      id: newId(),
+      createdAt: new Date().toISOString(),
+      ...payload,
+    }
+    setBookings((prev) => [booking, ...prev])
+    return booking
   }, [])
 
   const removeBooking = useCallback((id) => {

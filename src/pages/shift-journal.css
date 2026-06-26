@@ -6,6 +6,8 @@
 
 .page--shift.page--kid-journal .journal-panel--shift-log {
   --journal-section-accent: var(--journal-mint-deep, #22a06b);
+  border: none;
+  box-shadow: none;
 }
 
 .page--shift.page--kid-journal .journal-panel--shift-log .journal-mood-bar__track {
@@ -37,8 +39,16 @@
 
 .page--shift.page--kid-journal .shift__time-circle:hover,
 .page--shift.page--kid-journal .shift__time-circle:focus-visible {
-  border-color: var(--journal-mint-deep);
+  border-color: var(--bubblegum);
+  background: color-mix(in srgb, var(--peach-soft) 62%, var(--journal-surface-bright));
+  box-shadow: 2px 2px 0 color-mix(in srgb, var(--bubblegum) 38%, var(--journal-card-border));
   outline: none;
+}
+
+.page--shift.page--kid-journal .shift__time-circle--on:hover,
+.page--shift.page--kid-journal .shift__time-circle--on:focus-visible {
+  border-color: var(--bubblegum);
+  background: color-mix(in srgb, var(--peach-soft) 48%, var(--journal-sage));
 }
 
 .page--shift.page--kid-journal .shift__time-circle--on {
@@ -73,6 +83,14 @@
 
 .page--shift.page--kid-journal .shift__time-circle--live {
   animation: shift-time-live-journal 2.2s ease-in-out infinite;
+}
+
+.page--shift.page--kid-journal .hold-confirm__ring-track {
+  stroke: color-mix(in srgb, var(--journal-mint-deep) 28%, transparent);
+}
+
+.page--shift.page--kid-journal .hold-confirm__ring-progress {
+  stroke: var(--journal-mint-deep);
 }
 
 .page--shift.page--kid-journal .shift__today-callout {
@@ -116,6 +134,14 @@
   box-shadow:
     2px 2px 0 var(--journal-card-border),
     0 4px 16px color-mix(in srgb, var(--journal-mint-deep) 35%, transparent);
+}
+
+.page--shift.page--kid-journal .shift__submit-btn:not(:disabled):hover,
+.page--shift.page--kid-journal .shift__submit-btn:not(:disabled):focus-visible {
+  background: var(--bubblegum);
+  border-color: color-mix(in srgb, var(--bubblegum) 55%, var(--journal-card-border));
+  color: #fff;
+  outline: none;
 }
 
 .page--shift.page--kid-journal .shift__submit-btn:not(:disabled):active {

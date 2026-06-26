@@ -127,20 +127,30 @@
   background: var(--journal-gold);
 }
 
-/* Do fun + calendar panels */
+/* Do fun list — warm party palette (not journal green) */
 .page--schedule.page--kid-journal.schedule-dashboard .schedule-celebrations-flip--missions {
-  --mission-bg: var(--journal-surface-bright);
-  --mission-bg-alt: color-mix(in srgb, var(--journal-sage) 35%, var(--journal-surface-bright));
-  --mission-border: var(--journal-card-border);
-  --mission-ink: var(--journal-ink-front);
-  --mission-muted: var(--journal-ink-muted-front);
-  --mission-accent: var(--journal-mint-deep);
-  --mission-accent-soft: var(--journal-sage);
+  --mission-bg: #fffaf7;
+  --mission-bg-alt: #fff0e8;
+  --mission-border: color-mix(in srgb, var(--peach) 48%, var(--line));
+  --mission-ink: #3d2a32;
+  --mission-muted: #7a5f68;
+  --mission-accent: var(--bubblegum);
+  --mission-accent-soft: color-mix(in srgb, var(--peach-soft) 75%, #fff5ee);
+  --mission-pop: var(--gold);
+  --mission-pop-soft: color-mix(in srgb, var(--gold-soft) 85%, #fff8e6);
+  --mission-lilac: #e8dcff;
+  --schedule-celeb-gradient: linear-gradient(148deg, #fff8f0 0%, #fdeef6 42%, #f3ecff 100%);
+  --schedule-celeb-gradient-back: linear-gradient(148deg, #f3ecff 0%, #fff0f5 50%, #fff8f0 100%);
+  --schedule-celeb-border: color-mix(in srgb, var(--bubblegum) 28%, var(--peach) 72%);
 }
 
-.page--schedule.page--kid-journal.schedule-dashboard .schedule-flip__face.schedule-celebrations-flip__card {
-  border: 2px solid var(--journal-card-border);
-  box-shadow: 4px 4px 0 var(--journal-card-border);
+.page--schedule.page--kid-journal.schedule-dashboard
+  .schedule-celebrations-flip--fun
+  .schedule-flip__face.schedule-celebrations-flip__card {
+  border: 2px solid var(--schedule-celeb-border);
+  box-shadow:
+    4px 4px 0 color-mix(in srgb, var(--bubblegum) 22%, var(--peach) 78%),
+    0 10px 24px color-mix(in srgb, var(--bubblegum) 10%, transparent);
 }
 
 .page--schedule.page--kid-journal.schedule-dashboard .schedule-calendar-flip {
@@ -233,18 +243,31 @@
 }
 
 .page--schedule.page--kid-journal.schedule-dashboard .schedule-celebrations-flip__flip-btn {
-  border: 2px solid var(--journal-card-border);
-  box-shadow: none;
-  color: var(--journal-mint-deep);
+  border: 2px dashed color-mix(in srgb, var(--mission-accent) 40%, var(--mission-border));
+  box-shadow: 2px 2px 0 color-mix(in srgb, var(--mission-border) 50%, transparent);
+  color: var(--mission-accent);
+  background: color-mix(in srgb, var(--mission-pop-soft) 65%, var(--mission-bg));
   min-height: 46px;
   padding: 12px 16px;
   font-size: 0.9375rem;
-  font-weight: 700;
+  font-weight: 800;
 }
 
 .page--schedule.page--kid-journal.schedule-dashboard .schedule-celebrations-flip__flip-btn:hover:not(:disabled) {
-  background: color-mix(in srgb, var(--journal-sage) 45%, var(--journal-surface-bright));
-  border-color: var(--journal-mint-deep);
+  background: color-mix(in srgb, var(--mission-accent-soft) 70%, var(--mission-bg));
+  border-color: color-mix(in srgb, var(--mission-accent) 55%, var(--mission-border));
+  border-style: solid;
+  color: var(--mission-ink);
+}
+
+.page--schedule.page--kid-journal.schedule-dashboard
+  .schedule-celebrations-flip__back-top
+  .schedule-flip__back-btn:hover,
+.page--schedule.page--kid-journal.schedule-dashboard
+  .schedule-celebrations-flip__back-top
+  .schedule-flip__back-btn:active {
+  background: color-mix(in srgb, var(--mission-pop-soft) 65%, var(--mission-bg));
+  color: var(--mission-accent);
 }
 
 /* Requests dock — journal grocery-dock vibe */
@@ -304,16 +327,36 @@
   color: var(--journal-ink-front);
 }
 
-.page--schedule.page--kid-journal .schedule__flow-hint--link {
-  color: var(--journal-ink-on-page);
-  opacity: 0.9;
-  font-weight: 700;
+.page--schedule.page--kid-journal .schedule__flow-hint--link,
+.page--schedule.page--kid-journal .schedule__tools-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 46px;
+  padding: 12px 16px;
+  margin: 0;
+  border: 2px solid var(--journal-card-border);
+  border-radius: 8px;
+  background: var(--journal-surface-bright);
+  color: var(--journal-ink-front);
+  font-weight: 800;
+  font-size: 0.9375rem;
+  text-decoration: none;
+  box-shadow: 2px 2px 0 var(--journal-card-border);
+  opacity: 1;
+  box-sizing: border-box;
 }
 
 .page--schedule.page--kid-journal .schedule__flow-hint--link:hover,
-.page--schedule.page--kid-journal .schedule__flow-hint--link:focus-visible {
-  color: #ffffff;
-  opacity: 1;
+.page--schedule.page--kid-journal .schedule__flow-hint--link:focus-visible,
+.page--schedule.page--kid-journal .schedule__tools-btn:hover,
+.page--schedule.page--kid-journal .schedule__tools-btn:focus-visible {
+  background: color-mix(in srgb, var(--journal-sage) 42%, var(--journal-surface-bright));
+  border-color: var(--journal-mint-deep);
+  color: var(--journal-ink-front);
+  text-decoration: none;
+  outline: none;
 }
 
 @media (min-width: 600px) {
@@ -323,25 +366,25 @@
   }
 }
 
-/* Shell chrome when schedule uses journal sky */
-.caregiver-shell--schedule-dashboard:has(.page--schedule.page--kid-journal) {
+/* Shell chrome when schedule uses journal sky — Today page only via page--today-sky */
+.caregiver-shell--schedule-dashboard:has(.page--schedule.page--kid-journal.page--today-sky) {
   background: var(--journal-bg-deep, #1258a0);
 }
 
-.caregiver-shell--schedule-dashboard:has(.page--schedule.page--kid-journal) .caregiver-page-chrome {
+.caregiver-shell--schedule-dashboard:has(.page--schedule.page--kid-journal.page--today-sky) .caregiver-page-chrome {
   background: color-mix(in srgb, var(--journal-bg-deep, #1258a0) 88%, #000);
   border-bottom-color: color-mix(in srgb, var(--journal-mint-deep) 35%, transparent);
 }
 
-.caregiver-shell--schedule-dashboard:has(.page--schedule.page--kid-journal) .journal-day-progress__title {
+.caregiver-shell--schedule-dashboard:has(.page--schedule.page--kid-journal.page--today-sky) .journal-day-progress__title {
   color: var(--journal-ink-muted-on-page, #c8d4e8);
 }
 
-.caregiver-shell--schedule-dashboard:has(.page--schedule.page--kid-journal) .journal-day-progress__label {
+.caregiver-shell--schedule-dashboard:has(.page--schedule.page--kid-journal.page--today-sky) .journal-day-progress__label {
   color: var(--journal-ink-on-page, #f2f6ff);
 }
 
-.caregiver-shell--schedule-dashboard:has(.page--schedule.page--kid-journal) .journal-day-progress__fill {
+.caregiver-shell--schedule-dashboard:has(.page--schedule.page--kid-journal.page--today-sky) .journal-day-progress__fill {
   background: linear-gradient(
     90deg,
     var(--journal-mint-deep, #22a06b) 0%,

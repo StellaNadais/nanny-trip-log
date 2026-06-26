@@ -17,7 +17,7 @@ export default function JournalMoodBar({ value, onChange }) {
             <span aria-hidden>{picked.emoji}</span> {picked.label}
           </span>
         ) : (
-          <span className="journal-mood-bar__picked journal-mood-bar__picked--empty muted">Tap a step</span>
+          <span className="journal-mood-bar__picked journal-mood-bar__picked--empty muted">—</span>
         )}
       </div>
       <div

@@ -150,16 +150,20 @@
 .page--kid-journal .schedule-workspace-head .schedule__title,
 .page--schedule.page--kid-journal .schedule__title,
 .page--book.page--kid-journal .calendar__title {
-  font-family: var(--font-display);
+  font-family: var(--font-ui);
   font-weight: 600;
-  font-size: 1.375rem;
+  font-size: 1.25rem;
   line-height: 1.2;
-  letter-spacing: -0.03em;
+  letter-spacing: -0.02em;
   text-transform: none;
   color: #ffffff;
-  -webkit-text-stroke: 0;
-  paint-order: normal;
-  text-shadow: 0 1px 12px color-mix(in srgb, #0a1210 35%, transparent);
+  text-shadow: none;
+}
+
+.page--workspace .schedule-workspace-head .schedule__title,
+.workbook .schedule-workspace-head .schedule__title {
+  color: var(--ink);
+  text-shadow: none;
 }
 
 .page--shift.page--kid-journal .schedule-workspace-head__eyebrow,

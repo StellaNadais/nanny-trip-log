@@ -75,9 +75,6 @@ export default function WelcomePage() {
       </div>
       <div className="welcome__actions">
         <span className="welcome__cta">Tap to start</span>
-        <p className="welcome__hints muted">
-          Your schedule and tools — parents use a separate booking link you share.
-        </p>
       </div>
     </Link>
   )

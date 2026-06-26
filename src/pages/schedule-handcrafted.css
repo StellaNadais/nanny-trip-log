@@ -1,0 +1,518 @@
+/* Schedule — fun list matches calendar; soft calendar cells */
+
+/* Fun list panel — same shell as calendar */
+.page--schedule.schedule-dashboard .schedule-fun-flip {
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--peri-surface, #fff);
+  box-shadow:
+    0 1px 2px color-mix(in srgb, var(--peri-ink, var(--ink)) 6%, transparent),
+    0 3px 10px color-mix(in srgb, var(--peri-ink, var(--ink)) 4%, transparent);
+  overflow: hidden;
+  color: var(--peri-ink, var(--ink));
+}
+
+.page--schedule.page--kid-journal.schedule-dashboard .schedule-fun-flip {
+  border: 2px solid var(--journal-card-border);
+  border-radius: var(--radius);
+  background: var(--journal-surface-bright, #fff);
+  box-shadow: 4px 4px 0 var(--journal-card-border);
+  color: var(--journal-ink-front);
+}
+
+/* Journal sky page uses light default text — force dark ink inside the white panel */
+.page--schedule.page--kid-journal.schedule-dashboard .schedule-fun-flip .muted {
+  color: var(--journal-ink-muted-front) !important;
+}
+
+.page--schedule.page--kid-journal.schedule-dashboard .schedule-fun-flip .schedule-flip__back-heading,
+.page--schedule.page--kid-journal.schedule-dashboard .schedule-fun-flip .schedule-celebrations-flip__prep-item strong {
+  color: var(--journal-ink-front);
+}
+
+.page--schedule.page--kid-journal.schedule-dashboard .schedule-fun-flip .schedule-celebrations-flip__prep-todos {
+  color: var(--journal-ink-muted-front);
+}
+
+.page--schedule.page--kid-journal.schedule-dashboard .schedule-fun-flip .schedule-celebrations-flip__flip-btn,
+.page--schedule.page--kid-journal.schedule-dashboard .schedule-fun-flip .schedule-flip__back-top .btn--ghost {
+  color: var(--journal-ink-front);
+}
+
+.page--schedule.page--kid-journal.schedule-dashboard .schedule-fun-flip .schedule-celebrations-flip__flip-btn:hover:not(:disabled),
+.page--schedule.page--kid-journal.schedule-dashboard .schedule-fun-flip .schedule-flip__back-top .btn--ghost:hover {
+  color: var(--journal-mint-deep);
+}
+
+.page--schedule.schedule-dashboard .schedule-fun-flip .muted {
+  color: var(--ink-muted) !important;
+}
+
+.page--schedule.schedule-dashboard .schedule-fun-flip .schedule-flip__back-heading,
+.page--schedule.schedule-dashboard .schedule-fun-flip .schedule-celebrations-flip__prep-item strong {
+  color: var(--peri-ink, var(--ink));
+}
+
+.page--schedule.schedule-dashboard .schedule-fun-flip .schedule-celebrations-flip__flip-btn,
+.page--schedule.schedule-dashboard .schedule-fun-flip .schedule-flip__back-top .btn--ghost {
+  color: var(--peri-ink, var(--ink));
+}
+
+.page--schedule.schedule-dashboard .schedule-fun-flip .schedule-flip__face,
+.page--schedule.page--kid-journal.schedule-dashboard .schedule-fun-flip .schedule-flip__face {
+  background: #fff;
+  border: none;
+  box-shadow: none;
+  border-radius: 0;
+  padding: 6px 8px 8px;
+}
+
+.page--schedule.schedule-dashboard .schedule-fun-flip .calendar__panel--book,
+.page--schedule.page--kid-journal.schedule-dashboard .schedule-fun-flip .calendar__panel--book {
+  background: transparent;
+}
+
+.page--schedule.schedule-dashboard .schedule-celebrations-flip__head {
+  flex-shrink: 0;
+  margin-bottom: 6px;
+  padding: 4px 2px 0;
+  text-align: center;
+}
+
+.page--schedule.schedule-dashboard .schedule-celebrations-flip__title {
+  margin: 0;
+  font-size: 0.9375rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--peri-ink, var(--ink));
+}
+
+.page--schedule.page--kid-journal.schedule-dashboard .schedule-celebrations-flip__title {
+  color: var(--journal-ink-front);
+}
+
+.page--schedule.schedule-dashboard .schedule-celebrations-flip__month {
+  margin: 2px 0 0;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.page--schedule.schedule-dashboard .schedule-celebrations-flip__scroll,
+.page--schedule.schedule-dashboard .schedule-celebrations-flip__week-scroll {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.page--schedule.schedule-dashboard .schedule-celebrations-flip__list,
+.page--schedule.schedule-dashboard .schedule-celebrations-flip__week-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.page--schedule.schedule-dashboard .schedule-celebrations-flip__item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 8px 6px;
+  border-bottom: 1px solid color-mix(in srgb, var(--line) 35%, transparent);
+  font-size: 0.8125rem;
+}
+
+.page--schedule.schedule-dashboard .schedule-celebrations-flip__item:last-child {
+  border-bottom: none;
+}
+
+.page--schedule.schedule-dashboard .schedule-celebrations-flip__item time {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  color: var(--ink-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.page--schedule.page--kid-journal.schedule-dashboard .schedule-celebrations-flip__item time {
+  color: var(--journal-ink-muted-front);
+}
+
+.page--schedule.schedule-dashboard .schedule-celebrations-flip__item-title {
+  font-weight: 600;
+  color: var(--peri-ink, var(--ink));
+  line-height: 1.35;
+}
+
+.page--schedule.page--kid-journal.schedule-dashboard .schedule-celebrations-flip__item-title {
+  color: var(--journal-ink-front);
+}
+
+.page--schedule.schedule-dashboard .schedule-celebrations-flip__empty,
+.page--schedule.schedule-dashboard .schedule-flip__list-empty {
+  margin: 0;
+  padding: 12px 6px;
+  font-size: 0.8125rem;
+  text-align: center;
+}
+
+.page--schedule.schedule-dashboard .schedule-celebrations-flip__flip-btn {
+  flex-shrink: 0;
+  width: 100%;
+  margin-top: 6px;
+  justify-content: center;
+  min-height: 40px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: color-mix(in srgb, var(--paper2, #f0f0f0) 50%, #fff);
+  box-shadow: none;
+}
+
+.page--schedule.page--kid-journal.schedule-dashboard .schedule-fun-flip .schedule-celebrations-flip__flip-btn {
+  border: 2px solid var(--journal-card-border);
+  background: var(--journal-surface-bright);
+  box-shadow: 2px 2px 0 var(--journal-card-border);
+  color: var(--journal-ink-front);
+}
+
+.page--schedule.page--kid-journal.schedule-dashboard .schedule-fun-flip .schedule-flip__back-top .btn--ghost {
+  border: 2px solid var(--journal-card-border);
+  border-radius: 8px;
+  background: var(--journal-surface-bright);
+  color: var(--journal-ink-front);
+  box-shadow: 2px 2px 0 var(--journal-card-border);
+  font-weight: 700;
+}
+
+.page--schedule.schedule-dashboard .schedule-celebrations-flip__back-top {
+  background: color-mix(in srgb, var(--paper2, #f0f0f0) 65%, #fff);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  margin-bottom: 6px;
+}
+
+.page--schedule.page--kid-journal.schedule-dashboard .schedule-celebrations-flip__back-top {
+  background: var(--journal-surface-bright);
+  border: 2px solid var(--journal-card-border);
+  box-shadow: 2px 2px 0 var(--journal-card-border);
+}
+
+.page--schedule.schedule-dashboard .schedule-celebrations-flip__week-block {
+  margin-bottom: 10px;
+}
+
+.page--schedule.schedule-dashboard .schedule-celebrations-flip__week-label {
+  margin: 0 0 6px;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.page--schedule.schedule-dashboard .schedule-celebrations-flip__prep-item {
+  padding: 8px 0;
+  border-bottom: 1px solid color-mix(in srgb, var(--line) 30%, transparent);
+  font-size: 0.8125rem;
+}
+
+.page--schedule.schedule-dashboard .schedule-celebrations-flip__prep-item strong {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.page--schedule.schedule-dashboard .schedule-celebrations-flip__prep-todos {
+  margin: 0;
+  padding-left: 1.1rem;
+  color: var(--ink-muted);
+  font-size: 0.75rem;
+  line-height: 1.4;
+}
+
+.page--schedule.schedule-dashboard .schedule-dashboard__hud {
+  border-radius: var(--radius);
+}
+
+.page--schedule.page--kid-journal.schedule-dashboard .schedule-calendar-flip {
+  border-width: 1px;
+  border-radius: var(--radius);
+  border-color: color-mix(in srgb, var(--journal-card-border) 28%, transparent);
+  box-shadow:
+    0 14px 32px rgba(10, 18, 16, 0.07),
+    0 4px 12px rgba(184, 169, 224, 0.14);
+}
+
+.page--schedule.schedule-dashboard .schedule-calendar-flip {
+  border-width: 1px;
+  border-radius: var(--radius);
+  border-color: color-mix(in srgb, var(--peri-accent) 14%, var(--line));
+  box-shadow:
+    0 14px 32px rgba(42, 38, 48, 0.07),
+    0 4px 12px rgba(184, 169, 224, 0.12);
+}
+
+/* Calendar: quiet grid, accent only on important dates */
+.page--schedule.page--kid-journal.schedule-dashboard .schedule-calendar-flip .calendar__cell,
+.page--schedule.schedule-dashboard .schedule-calendar-flip .calendar__cell {
+  border-style: dashed;
+  border-width: 1px;
+  border-color: color-mix(in srgb, var(--line) 22%, transparent);
+  border-radius: 5px;
+  background: transparent;
+  box-shadow: none;
+}
+
+.page--schedule.page--kid-journal.schedule-dashboard .schedule-calendar-flip .calendar__cell--empty,
+.page--schedule.schedule-dashboard .schedule-calendar-flip .calendar__cell--empty {
+  border: none;
+  background: color-mix(in srgb, var(--journal-sage, var(--peri-surface-tint)) 12%, transparent);
+}
+
+.page--schedule.page--kid-journal.schedule-dashboard .schedule-calendar-flip .calendar__cell--today,
+.page--schedule.schedule-dashboard .schedule-calendar-flip .calendar__cell--today {
+  border-style: solid;
+  border-width: 1.5px;
+  border-color: var(--journal-gold, var(--peri-accent));
+  border-radius: 8px;
+  background: color-mix(
+    in srgb,
+    var(--journal-gold, var(--peri-accent-soft)) 28%,
+    var(--journal-surface-bright, var(--peri-surface))
+  );
+  box-shadow: 0 3px 10px color-mix(in srgb, var(--journal-gold, var(--peri-accent)) 16%, transparent);
+  font-weight: 800;
+}
+
+.page--schedule.page--kid-journal.schedule-dashboard .schedule-calendar-flip .calendar__cell--booked,
+.page--schedule.schedule-dashboard .schedule-calendar-flip .calendar__cell--booked {
+  border-style: solid;
+  border-width: 1px;
+  border-color: color-mix(in srgb, var(--journal-mint-deep, var(--peri-accent)) 32%, transparent);
+  border-radius: 8px;
+  background: linear-gradient(
+    148deg,
+    color-mix(in srgb, var(--journal-sage, var(--peri-accent-soft)) 55%, var(--journal-surface-bright, var(--peri-surface))) 0%,
+    var(--journal-surface-bright, var(--peri-surface)) 78%
+  );
+  box-shadow: 0 2px 8px color-mix(in srgb, var(--journal-mint-deep, var(--peri-accent)) 12%, transparent);
+}
+
+.page--schedule.page--kid-journal.schedule-dashboard
+  .schedule-calendar-flip
+  .calendar__cell--past:not(.calendar__cell--booked):not(.calendar__cell--today),
+.page--schedule.schedule-dashboard
+  .schedule-calendar-flip
+  .calendar__cell--past:not(.calendar__cell--booked):not(.calendar__cell--today) {
+  opacity: 0.68;
+  border-style: dotted;
+  border-color: color-mix(in srgb, var(--line) 14%, transparent);
+}
+
+.page--schedule.schedule-dashboard .schedule-calendar-flip .calendar__grid--book {
+  gap: 5px;
+}
+
+/* Calendar legend + scheduled date labels */
+.schedule-calendar-flip__legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 10px;
+  margin: 2px 0 8px;
+  padding: 0 2px;
+}
+
+.schedule-calendar-flip__legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-family: var(--font-ui);
+  font-size: 0.625rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+}
+
+.schedule-calendar-flip__legend-item::before {
+  content: '';
+  width: 0.625rem;
+  height: 0.625rem;
+  border-radius: 3px;
+  flex-shrink: 0;
+}
+
+.schedule-calendar-flip__legend-item--today::before {
+  border: 1.5px solid var(--journal-gold, var(--peri-accent));
+  background: color-mix(in srgb, var(--journal-gold, var(--peri-accent-soft)) 35%, var(--paper));
+}
+
+.schedule-calendar-flip__legend-item--booked::before {
+  background: color-mix(in srgb, var(--journal-mint-deep, var(--peri-accent)) 28%, var(--paper));
+  border: 1px solid color-mix(in srgb, var(--journal-mint-deep, var(--peri-accent)) 45%, transparent);
+}
+
+.schedule-calendar-flip__legend-item--pending::before {
+  background: color-mix(in srgb, var(--journal-gold, #feca57) 22%, var(--paper));
+  border: 1px dashed color-mix(in srgb, var(--journal-gold, #feca57) 55%, transparent);
+}
+
+.page--schedule .schedule-calendar-flip .calendar__booked-label {
+  display: block;
+  max-width: 100%;
+  margin-top: 1px;
+  padding: 0 2px;
+  font-family: var(--font-ui);
+  font-size: 0.5rem;
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: 0.01em;
+  text-align: center;
+  color: var(--journal-mint-deep, var(--peri-accent));
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.page--schedule.page--kid-journal.schedule-dashboard
+  .schedule-calendar-flip
+  .calendar__cell--booked-pending,
+.page--schedule.schedule-dashboard .schedule-calendar-flip .calendar__cell--booked-pending {
+  border-style: dashed;
+  border-color: color-mix(in srgb, var(--journal-gold, #feca57) 55%, transparent);
+  background: color-mix(in srgb, var(--journal-gold, #feca57) 18%, var(--journal-surface-bright, var(--paper)));
+}
+
+.page--schedule.page--kid-journal.schedule-dashboard
+  .schedule-calendar-flip
+  .calendar__cell--booked-pending
+  .calendar__booked-label,
+.page--schedule.schedule-dashboard
+  .schedule-calendar-flip
+  .calendar__cell--booked-pending
+  .calendar__booked-label {
+  color: color-mix(in srgb, var(--journal-gold-deep, #c9920a) 80%, var(--ink));
+}
+
+.page--schedule.page--kid-journal.schedule-dashboard
+  .schedule-calendar-flip
+  .calendar__cell--booked-declined,
+.page--schedule.schedule-dashboard .schedule-calendar-flip .calendar__cell--booked-declined {
+  opacity: 0.55;
+  border-style: dotted;
+}
+
+.page--schedule .schedule-calendar-flip .calendar__cell--booked-accepted .calendar__booked-label {
+  color: var(--journal-mint-deep, var(--peri-accent));
+}
+
+.page--schedule .schedule-calendar-section__grid-grow .calendar__grid--book .calendar__cell:not(.calendar__cell--empty) {
+  min-height: 2.75rem;
+}
+
+.schedule-flip__calendar-footer {
+  flex-shrink: 0;
+  padding-top: 8px;
+}
+
+.schedule-flip__gigs-flip-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  margin: 0;
+  padding: 12px 14px;
+  border: 1px solid var(--schedule-gigs-border);
+  border-radius: 10px;
+  background: var(--schedule-gigs-gradient);
+  color: var(--ink);
+  font-family: var(--font-ui);
+  font-size: 0.875rem;
+  font-weight: 700;
+  line-height: 1.3;
+  cursor: pointer;
+  appearance: none;
+  -webkit-tap-highlight-color: transparent;
+  box-shadow: none;
+}
+
+.schedule-flip__gigs-flip-btn:hover {
+  border-color: color-mix(in srgb, var(--accent) 32%, var(--line));
+  color: var(--accent);
+  background: linear-gradient(168deg, #f3f1fa 0%, #f0f7fd 48%, #f7f4fb 100%);
+}
+
+.schedule-flip__gigs-flip-btn-count {
+  min-width: 1.25rem;
+  padding: 0 0.35rem;
+  border-radius: 999px;
+  background: var(--accent);
+  color: var(--paper);
+  font-size: 0.6875rem;
+  font-weight: 800;
+  line-height: 1.35;
+}
+
+.schedule-flip__gigs-flip-btn-hint {
+  margin-left: auto;
+  font-size: 0.75rem;
+  font-weight: 600;
+  opacity: 0.85;
+}
+
+.schedule-gig-row__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.schedule-gig-status {
+  flex-shrink: 0;
+  padding: 0.1rem 0.4rem;
+  border-radius: 999px;
+  font-family: var(--font-ui);
+  font-size: 0.5625rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.schedule-gig-status--accepted {
+  background: color-mix(in srgb, var(--journal-mint-deep, var(--accent)) 18%, var(--paper));
+  color: var(--journal-mint-deep, var(--accent));
+}
+
+.schedule-gig-status--pending {
+  background: color-mix(in srgb, var(--journal-gold, #feca57) 22%, var(--paper));
+  color: color-mix(in srgb, var(--journal-gold-deep, #a87800) 85%, var(--ink));
+}
+
+.schedule-gig-status--declined {
+  background: color-mix(in srgb, var(--ink-muted) 12%, var(--paper));
+  color: var(--ink-muted);
+}
+
+.caregiver-shell--workbook .schedule-calendar-flip .calendar__cell--booked-accepted {
+  background: color-mix(in srgb, var(--journal-sage, var(--accent-soft)) 42%, var(--paper)) !important;
+}
+
+.caregiver-shell--workbook .schedule-calendar-flip .calendar__cell--booked-pending {
+  background: color-mix(in srgb, var(--journal-gold, #feca57) 16%, var(--paper)) !important;
+}
+
+.caregiver-shell--workbook .schedule-calendar-flip .calendar__cell--today {
+  background: color-mix(in srgb, var(--journal-gold, var(--accent-soft)) 22%, var(--paper)) !important;
+}
+
+.caregiver-shell--workbook .schedule-flip__gigs-flip-btn {
+  border: 1px solid var(--schedule-gigs-border) !important;
+  background: var(--schedule-gigs-gradient) !important;
+  color: var(--ink) !important;
+}
+
+.caregiver-shell--workbook .schedule-flip__gigs-flip-btn:hover {
+  border-color: color-mix(in srgb, var(--accent) 32%, var(--line)) !important;
+  color: var(--accent) !important;
+  background: linear-gradient(168deg, #f3f1fa 0%, #f0f7fd 48%, #f7f4fb 100%) !important;
+}

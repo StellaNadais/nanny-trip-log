@@ -27,10 +27,6 @@ export function DayLogPanel({ iso, day, onChange, ensureDay }) {
           <span id={labelId} className="field-block__label">
             Day notes &amp; outings
           </span>
-          <p className="trip-log__type-hint muted">
-            Mood, story, sleep — and place names. Use <strong>then</strong> or <strong>+</strong> between stops
-            for one trip.
-          </p>
           <TripPlacesField
             id={fieldId}
             value={displayValue}

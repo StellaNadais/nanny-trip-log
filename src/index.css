@@ -20,28 +20,29 @@
   --seafoam-3: #8fd4cc;
   --sky-gradient: linear-gradient(180deg, var(--seafoam-1) 0%, var(--seafoam-2) 45%, var(--seafoam-3) 100%);
   --radius: 8px;
-  /* Edge strips: purple, peach, gold, seafoam, pink */
+  /* Edge strips: sage green, sky blue, white, sunshine yellow */
   --rainbow-edge: linear-gradient(
     180deg,
-    #4a1f5c 0%,
-    #e8a090 20%,
-    #e0b14a 40%,
-    #5cb4ab 62%,
-    #d97aa8 82%,
-    #4a1f5c 100%
+    #22a06b 0%,
+    #2a90d0 18%,
+    #ffffff 38%,
+    #f5c542 58%,
+    #68c0f0 78%,
+    #7ad9a8 100%
   );
-  --font: 'DM Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
-  --font-display: 'DM Sans', var(--font);
-  --font-mono: 'IBM Plex Mono', ui-monospace, 'SF Mono', monospace;
-  --font-pixel: var(--font-display);
+  --font: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-display: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-ui: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: ui-monospace, 'SF Mono', 'Cascadia Code', monospace;
+  --font-pixel: var(--font-ui);
   --weight-body: 400;
   --weight-label: 500;
   --weight-title: 600;
-  font-family: var(--font);
-  font-size: 16px;
+  font-family: var(--font-ui);
+  font-size: 15px;
   font-weight: var(--weight-body);
-  line-height: 1.5;
-  letter-spacing: -0.01em;
+  line-height: 1.45;
+  letter-spacing: 0;
   color: var(--ink);
   background: transparent;
   -webkit-font-smoothing: antialiased;
@@ -106,7 +107,7 @@ body::after {
 }
 
 @media (min-width: 600px) {
-  /* Hug the app column: strips sit in the margin just outside the 28rem shell (home → schedule → hub, etc.) */
+  /* Hug the app column: strips sit in the margin just outside the 28rem shell */
   body::before {
     right: auto;
     width: 10px;

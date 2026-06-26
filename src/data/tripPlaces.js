@@ -43,6 +43,20 @@ export const PLACES = [
     region: 'lafayette',
   },
   {
+    id: 'swim',
+    label: 'swim',
+    aliases: [
+      'Harriet Plummer Aquatic School',
+      'Harriet Plummer',
+      'Harriet Plummer Aquatics',
+      'swim school',
+      'swim lessons',
+      'Plummer swim',
+      'aquatic school',
+    ],
+    region: 'lafayette',
+  },
+  {
     id: 'commons',
     label: 'Commons',
     aliases: ['commons', 'Moraga Commons', 'Moraga commons'],

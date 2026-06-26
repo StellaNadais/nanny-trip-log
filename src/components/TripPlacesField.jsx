@@ -1,4 +1,4 @@
-import { useId, useMemo } from 'react'
+import { useMemo } from 'react'
 import { splitTripLogForMirror } from '../utils/parseTripPlaces'
 import { mirrorNodesFromChunks } from './placeMirrorNodes'
 
@@ -13,8 +13,6 @@ export default function TripPlacesField({
   'aria-labelledby': ariaLabelledby,
   nestedInAbout = false,
 }) {
-  const footRegionId = useId()
-  const describedBy = footRegionId
   const chunks = useMemo(() => splitTripLogForMirror(value), [value])
   const mirrorChildren = useMemo(() => mirrorNodesFromChunks(chunks), [chunks])
 
@@ -40,15 +38,11 @@ export default function TripPlacesField({
             onChange={(e) => onChange(e.target.value)}
             placeholder={placeholder}
             aria-labelledby={ariaLabelledby}
-            aria-describedby={describedBy}
             spellCheck="true"
             autoComplete="off"
           />
         </div>
       </div>
-      <p id={footRegionId} className="trip-places-foot-hint muted">
-        Saved place nicknames highlight as you type.
-      </p>
     </div>
   )
 }

@@ -1,11 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { Link } from 'react-router-dom'
 import { DayStrip } from '../components/DayStrip'
-import MealsInlineField from '../components/MealsInlineField'
-import TripPlacesField from '../components/TripPlacesField'
-import GroceryListPanel from '../components/GroceryListPanel'
-import JournalMoodBar from '../components/JournalMoodBar'
-import JournalLittleBooks from '../components/JournalLittleBooks'
 import { useKidJournal } from '../hooks/useKidJournal'
 import { getMealHealthSuggestions } from '../utils/mealSuggestions'
 import { countByCategory, parseMealsToParts } from '../utils/parseMeals'
@@ -21,8 +15,11 @@ import { notifyReceiptMileageUpdated, saveReceiptSettings } from '../utils/recei
 import { OUTINGS_UPDATED_EVENT } from '../utils/outingsStorage'
 import { loadKidJournalEntries } from '../utils/kidJournalStorage'
 import { loadState } from '../utils/storage'
-import JournalDayReceiptModal from '../components/JournalDayReceiptModal'
-import ToolWorkspaceHead from '../components/ToolWorkspaceHead'
+import AboutTodayModal from '../components/AboutTodayModal'
+import GroceryModal from '../components/GroceryModal'
+import OutingsModal from '../components/OutingsModal'
+import RemindersModal from '../components/RemindersModal'
+import TodaySpaceTile from '../components/TodaySpaceTile'
 import { buildJournalDaySmsHref } from '../utils/journalDayExport'
 import {
   addShoppingItems,
@@ -32,7 +29,14 @@ import {
 } from '../utils/journalShoppingStorage'
 import { napFromJournalEntry } from '../utils/journalNap'
 import { pottyFromJournalEntry } from '../utils/journalLittleBooks'
-import { useJournalDaySky } from '../hooks/useJournalDaySky'
+import { useOutingsWeekData } from '../hooks/useOutingsWeekData'
+import WorkspaceTileBoard from '../components/WorkspaceTileBoard'
+import { useBookings } from '../hooks/useBookings'
+import { useParentReminders } from '../hooks/useParentReminders'
+import {
+  careDayReminderGroups,
+  countRemindersForCareDate,
+} from '../utils/parentReminderQueries'
 
 function loadDraftFromLatest(iso) {
   const ent = loadKidJournalEntries()
@@ -84,6 +88,8 @@ function initialDayOffsetForWeek(mondayDate) {
 
 export default function KidJournalPage() {
   const { entries, addEntry } = useKidJournal()
+  const { bookings } = useBookings()
+  const { reminders } = useParentReminders()
   const [journalWeekStart, setJournalWeekStart] = useState(() => startOfWeekMonday(new Date()))
   const [dayOffset, setDayOffset] = useState(() =>
     initialDayOffsetForWeek(startOfWeekMonday(new Date()))
@@ -95,6 +101,8 @@ export default function KidJournalPage() {
     [journalWeekStart, dayOffset]
   )
 
+  const outings = useOutingsWeekData(weekKey)
+
   const [dayNotes, setDayNotes] = useState('')
   const [mealsText, setMealsText] = useState('')
   const [nap, setNap] = useState('')
@@ -103,20 +111,26 @@ export default function KidJournalPage() {
   const [wishes, setWishes] = useState('')
   const [mood, setMood] = useState('')
   const [handwrittenPhotoDataUrl, setHandwrittenPhotoDataUrl] = useState('')
-  const [journalReceiptOpen, setJournalReceiptOpen] = useState(false)
   const [suggestionClock, setSuggestionClock] = useState(() => Date.now())
   const [journalShareGateNow, setJournalShareGateNow] = useState(() => Date.now())
   const [outingsRev, setOutingsRev] = useState(0)
   const [shoppingItems, setShoppingItems] = useState([])
-  const [shoppingDockOpen, setShoppingDockOpen] = useState(false)
+  const [groceryOpen, setGroceryOpen] = useState(false)
+  const [outingsOpen, setOutingsOpen] = useState(false)
+  const [remindersOpen, setRemindersOpen] = useState(false)
+  const [aboutTodayOpen, setAboutTodayOpen] = useState(false)
 
   useEffect(() => {
     setShoppingItems(loadShoppingForWeek(weekKey))
   }, [weekKey])
 
   useEffect(() => {
-    setShoppingDockOpen(false)
-  }, [weekKey])
+    setGroceryOpen(false)
+    setOutingsOpen(false)
+    setRemindersOpen(false)
+    setAboutTodayOpen(false)
+    outings.resetOutingsForm()
+  }, [weekKey, outings.resetOutingsForm])
 
   useEffect(() => {
     const id = setInterval(() => setSuggestionClock(Date.now()), 5 * 60 * 1000)
@@ -184,8 +198,12 @@ export default function KidJournalPage() {
   )
 
   useEffect(() => {
-    setJournalReceiptOpen(false)
-  }, [dateISO])
+    setGroceryOpen(false)
+    setOutingsOpen(false)
+    setRemindersOpen(false)
+    setAboutTodayOpen(false)
+    outings.resetOutingsForm()
+  }, [dateISO, outings.resetOutingsForm])
 
   function shiftJournalWeek(delta) {
     setJournalWeekStart((w) => addDays(w, delta * 7))
@@ -231,23 +249,36 @@ export default function KidJournalPage() {
     }
   }
 
-  function openJournalSlip() {
-    setJournalShareGateNow(Date.now())
-    persistJournalIfChanged()
-    setJournalReceiptOpen(true)
-  }
-
   function beforeShareOrDownload() {
     setJournalShareGateNow(Date.now())
     persistJournalIfChanged()
   }
 
-  const journalDateLabel = formatJournalDate(dateISO)
-  const daySky = useJournalDaySky(dateISO)
+  const aboutTodayPreview = useMemo(() => {
+    const bits = [dayNotes, mealsText, mood, nap, wishes].map((s) => String(s || '').trim()).filter(Boolean)
+    if (!bits.length) return ''
+    if (dayNotes.trim()) {
+      const t = dayNotes.trim()
+      return t.length > 120 ? `${t.slice(0, 117)}…` : t
+    }
+    return "Tap to add today's report…"
+  }, [dayNotes, mealsText, mood, nap, wishes])
 
+  const journalDateLabel = formatJournalDate(dateISO)
+  const weekLabel = formatWeekRange(journalWeekStart)
   const shoppingOpenCount = useMemo(
     () => shoppingItems.filter((item) => !item.done).length,
     [shoppingItems]
+  )
+
+  const reminderGroups = useMemo(
+    () => careDayReminderGroups(reminders, bookings, dateISO),
+    [reminders, bookings, dateISO]
+  )
+
+  const reminderCount = useMemo(
+    () => countRemindersForCareDate(reminders, bookings, dateISO),
+    [reminders, bookings, dateISO]
   )
 
   const forwardJournalSmsHref = useMemo(
@@ -280,98 +311,87 @@ export default function KidJournalPage() {
     ]
   )
 
-  const shoppingDock = (
-    <div
-      className={`schedule-requests-dock journal-shopping-dock${shoppingDockOpen ? ' schedule-requests-dock--open' : ''}`}
+  const groceryPreview = useMemo(() => {
+    const open = shoppingItems.filter((item) => !item.done)
+    if (!open.length) return ''
+    return open
+      .slice(0, 3)
+      .map((item) => item.text)
+      .join(', ')
+  }, [shoppingItems])
+
+  const remindersPreview = useMemo(() => {
+    if (!reminderGroups.length) return ''
+    for (const group of reminderGroups) {
+      const first = group.reminders[0]
+      if (first?.text) {
+        const prefix = first.childName ? `${first.childName}: ` : ''
+        const line = `${prefix}${first.text}`
+        return line.length > 72 ? `${line.slice(0, 69)}…` : line
+      }
+      if (group.notes) {
+        const line = group.notes.trim()
+        return line.length > 72 ? `${line.slice(0, 69)}…` : line
+      }
+    }
+    const family = reminderGroups[0]?.booking?.familyName
+    return family ? `${family} — no reminders yet` : ''
+  }, [reminderGroups])
+
+  const remindersIcon = (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="22"
+      height="22"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
     >
-      <button
-        type="button"
-        className="schedule-requests-dock__tab"
-        onClick={() => setShoppingDockOpen((o) => !o)}
-        aria-expanded={shoppingDockOpen}
-        aria-controls="journal-shopping-panel"
-        aria-label={
-          shoppingOpenCount > 0
-            ? `Open grocery list (${shoppingOpenCount} to get)`
-            : 'Open grocery list'
-        }
-      >
-        {shoppingDockOpen ? (
-          <span className="schedule-requests-dock__tab-x" aria-hidden>
-            ×
-          </span>
-        ) : (
-          <>
-            <span className="schedule-requests-dock__tab-ico" aria-hidden>
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="20"
-                height="20"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z" />
-                <line x1="3" y1="6" x2="21" y2="6" />
-                <path d="M16 10a4 4 0 0 1-8 0" />
-              </svg>
-            </span>
-            <span className="schedule-requests-dock__tab-lbl">Grocery</span>
-            {shoppingOpenCount > 0 ? (
-              <span className="schedule-requests-dock__badge" aria-hidden>
-                {shoppingOpenCount > 99 ? '99+' : shoppingOpenCount}
-              </span>
-            ) : null}
-          </>
-        )}
-      </button>
-      <div
-        className="schedule-requests-dock__panel"
-        id="journal-shopping-panel"
-        role="region"
-        aria-hidden={!shoppingDockOpen}
-        aria-labelledby="journal-shopping-title"
-      >
-        <h2 id="journal-shopping-title" className="schedule-requests-dock__title">
-          Grocery list
-        </h2>
-        <p className="journal-shopping-dock__hint muted">This week — add as you think of it.</p>
-        <GroceryListPanel
-          items={shoppingItems}
-          onAddItems={handleAddGrocery}
-          onToggle={handleToggleShopping}
-          onRemove={handleRemoveShopping}
-          autoFocus={shoppingDockOpen}
-          placeholder="Milk, bananas, diapers…"
-        />
-      </div>
-    </div>
+      <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9" />
+      <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0" />
+    </svg>
+  )
+
+  const groceryIcon = (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="22"
+      height="22"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z" />
+      <line x1="3" y1="6" x2="21" y2="6" />
+      <path d="M16 10a4 4 0 0 1-8 0" />
+    </svg>
+  )
+
+  const outingsIcon = (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="22"
+      height="22"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <line x1="12" y1="1" x2="12" y2="23" />
+      <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+    </svg>
   )
 
   return (
-    <div
-      className="page page--kid-journal work-ui"
-      style={daySky.style}
-      data-sky-phase={daySky.label}
-    >
-      <ToolWorkspaceHead
-        eyebrow="Kid journal workspace"
-        title="Kid journal"
-        lede="Outings, meals, nap & potty — one slip for the day."
-        titleAside={shoppingDock}
-      />
-      {shoppingDockOpen ? (
-        <button
-          type="button"
-          className="schedule-requests-dock__scrim"
-          aria-label="Close grocery list"
-          onClick={() => setShoppingDockOpen(false)}
-        />
-      ) : null}
-
+    <div className="page page--kid-journal page--workspace work-ui">
       <div className="journal__layout">
         <section className="journal__week-picker work-ui__panel" aria-label="Pick a day">
           <div className="journal__week-picker-top">
@@ -397,9 +417,6 @@ export default function KidJournalPage() {
             <p className="journal__selected-day" aria-live="polite">
               {journalDateLabel}
             </p>
-            <p className="journal__sky-phase" aria-live="polite">
-              {daySky.label}
-            </p>
           </div>
           <DayStrip
             weekStart={journalWeekStart}
@@ -413,96 +430,145 @@ export default function KidJournalPage() {
           />
         </section>
 
-        <JournalMoodBar value={mood} onChange={setMood} />
-
-        <form
-          className="journal__form"
-          onSubmit={(e) => {
-            e.preventDefault()
-          }}
-        >
-        <section className="journal-mood-bar journal-panel journal-panel--about" aria-label="About today">
-          <div className="journal-mood-bar__head">
-            <span className="journal-mood-bar__title" id="kid-journal-about-label">
-              About today
-            </span>
-          </div>
-          <div className="journal-mood-bar__track journal-panel__body">
-            <TripPlacesField
-              id="kid-journal-day-notes"
-              value={dayNotes}
-              onChange={setDayNotes}
-              placeholder="e.g. H's drop off, music, Commons"
-              aria-labelledby="kid-journal-about-label"
-              nestedInAbout
-            />
-          </div>
-        </section>
-
-        <section className="journal-mood-bar journal-panel journal-panel--meals" aria-label="Meals today">
-          <div className="journal-mood-bar__head">
-            <span className="journal-mood-bar__title" id="kid-journal-meals-label">
-              Meals today
-            </span>
-            <span className="journal-mood-bar__picked journal-mood-bar__picked--empty muted">
-              Comma or newline · colors by food group
-            </span>
-          </div>
-          <div className="journal-mood-bar__track journal-panel__body">
-            <MealsInlineField
-              id="kid-journal-meals"
-              value={mealsText}
-              onChange={setMealsText}
-              placeholder="e.g. oatmeal, banana, milk, carrots, chicken, rice, yogurt"
-              aria-labelledby="kid-journal-meals-label"
-              suggestions={mealSuggestions}
-              className="meals-today-field--nested"
-            />
-          </div>
-        </section>
-
-        <JournalLittleBooks
-          nap={nap}
-          onNapChange={setNap}
-          pottyTime={pottyTime}
-          onPottyTimeChange={setPottyTime}
-          pottyNotes={pottyNotes}
-          onPottyNotesChange={setPottyNotes}
-          wishes={wishes}
-          onWishesChange={setWishes}
+        <WorkspaceTileBoard
+          workspaceId="today"
+          tiles={[
+            {
+              id: 'about',
+              label: 'About today',
+              span: 2,
+              children: (
+                <button
+                  type="button"
+                  className="about-today-tile"
+                  onClick={() => setAboutTodayOpen(true)}
+                >
+                  <p className="about-today-tile__preview">
+                    {aboutTodayPreview || (
+                      <span className="about-today-tile__hint muted">
+                        Tap to report the day with your child — outings, meals, nap, and more.
+                      </span>
+                    )}
+                  </p>
+                  <span className="about-today-tile__cta">Open report →</span>
+                </button>
+              ),
+            },
+            {
+              id: 'reminders',
+              label: 'Reminders',
+              square: true,
+              children: (
+                <TodaySpaceTile
+                  icon={remindersIcon}
+                  count={reminderCount}
+                  preview={remindersPreview}
+                  hint="Parent notes for this day — tap to open."
+                  onClick={() => setRemindersOpen(true)}
+                />
+              ),
+            },
+            {
+              id: 'grocery',
+              label: 'Grocery',
+              square: true,
+              children: (
+                <TodaySpaceTile
+                  icon={groceryIcon}
+                  count={shoppingOpenCount}
+                  preview={groceryPreview}
+                  hint="Week grocery list — tap to add items."
+                  onClick={() => setGroceryOpen(true)}
+                />
+              ),
+            },
+            {
+              id: 'outings',
+              label: 'Outings',
+              square: true,
+              children: (
+                <TodaySpaceTile
+                  icon={outingsIcon}
+                  count={outings.outingsCount}
+                  preview={outings.outingsPreview}
+                  hint="Parking, tolls, and trip places — tap to add."
+                  onClick={() => setOutingsOpen(true)}
+                />
+              ),
+            },
+          ]}
         />
-
-        <div
-          className="journal__day-slip-actions"
-          role="group"
-          aria-label="Journal slip preview"
-        >
-          <button
-            type="button"
-            className="btn btn--primary journal__show-journal-btn"
-            onClick={openJournalSlip}
-          >
-            Show journal
-          </button>
-        </div>
-        </form>
       </div>
 
-      <JournalDayReceiptModal
-        open={journalReceiptOpen}
-        onClose={() => setJournalReceiptOpen(false)}
+      <AboutTodayModal
+        open={aboutTodayOpen}
+        onClose={() => setAboutTodayOpen(false)}
         dateLabel={journalDateLabel}
         dayNotes={dayNotes}
+        onDayNotesChange={setDayNotes}
         mealsText={mealsText}
+        onMealsChange={setMealsText}
+        mealSuggestions={mealSuggestions}
         nap={nap}
+        onNapChange={setNap}
         pottyTime={pottyTime}
+        onPottyTimeChange={setPottyTime}
         pottyNotes={pottyNotes}
+        onPottyNotesChange={setPottyNotes}
         wishes={wishes}
+        onWishesChange={setWishes}
         mood={mood}
+        onMoodChange={setMood}
         handwrittenPhotoDataUrl={handwrittenPhotoDataUrl}
         forwardSmsHref={forwardJournalSmsHref}
         canForward={canJournalSaveForward}
         onBeforeShareAction={beforeShareOrDownload}
+      />
+
+      <RemindersModal
+        open={remindersOpen}
+        onClose={() => setRemindersOpen(false)}
+        dateLabel={journalDateLabel}
+        groups={reminderGroups}
+      />
+
+      <GroceryModal
+        open={groceryOpen}
+        onClose={() => setGroceryOpen(false)}
+        weekLabel={weekLabel}
+        items={shoppingItems}
+        onAddItems={handleAddGrocery}
+        onToggle={handleToggleShopping}
+        onRemove={handleRemoveShopping}
+      />
+
+      <OutingsModal
+        open={outingsOpen}
+        onClose={() => {
+          setOutingsOpen(false)
+          outings.resetOutingsForm()
+        }}
+        weekLabel={weekLabel}
+        extras={outings.extras}
+        manualOpen={outings.manualOpen}
+        onToggleManualOpen={() => outings.setManualOpen((o) => !o)}
+        manualCat={outings.manualCat}
+        onManualCatChange={outings.setManualCat}
+        manualAmt={outings.manualAmt}
+        onManualAmtChange={outings.setManualAmt}
+        manualNote={outings.manualNote}
+        onManualNoteChange={outings.setManualNote}
+        onAddManualLine={outings.addManualLine}
+        onRemoveManualLine={outings.removeManualLine}
+        manualTotal={outings.manualTotal}
+        customPlaces={outings.customPlaces}
+        placeNickname={outings.placeNickname}
+        onPlaceNicknameChange={outings.setPlaceNickname}
+        placeRoundTrip={outings.placeRoundTrip}
+        onPlaceRoundTripChange={outings.setPlaceRoundTrip}
+        placeFormErr={outings.placeFormErr}
+        onAddCustomPlace={outings.addCustomPlace}
+        onRemoveCustomPlace={outings.removeCustomPlace}
       />
     </div>
   )
