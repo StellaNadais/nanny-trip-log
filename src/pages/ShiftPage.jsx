@@ -81,6 +81,16 @@ export default function ShiftPage() {
     setShiftWeekStart((w) => addDays(w, delta * 7))
   }
 
+  function toggleArrival(t) {
+    setArrival((prev) => (prev === t ? '' : t))
+    setFlash('')
+  }
+
+  function toggleEnd(t) {
+    setEnd((prev) => (prev === t ? '' : t))
+    setFlash('')
+  }
+
   function logArrival() {
     if (!clock.canLogArrival) return
     upsertShiftDay({ dateISO: shiftDate, arrival })
@@ -159,11 +169,15 @@ export default function ShiftPage() {
                   key={t}
                   enabled={canHold}
                   onConfirm={logArrival}
-                  onClick={() => setArrival(t)}
+                  onClick={() => toggleArrival(t)}
                   className={`shift__time-circle ${on ? 'shift__time-circle--on' : ''} ${slotLive ? 'shift__time-circle--live' : ''}`}
                   aria-pressed={on}
                   aria-label={
-                    canHold ? `Hold to log arrival ${t}` : `Arrival ${t}`
+                    on
+                      ? canHold
+                        ? `Hold to log arrival ${t}, or tap to clear`
+                        : `Clear arrival ${t}`
+                      : `Select arrival ${t}`
                   }
                 >
                   <span className="shift__time-circle__clock">{clockPart}</span>
@@ -203,10 +217,16 @@ export default function ShiftPage() {
                   key={t}
                   enabled={canHold}
                   onConfirm={logEnd}
-                  onClick={() => setEnd(t)}
+                  onClick={() => toggleEnd(t)}
                   className={`shift__time-circle ${on ? 'shift__time-circle--on' : ''} ${slotLive ? 'shift__time-circle--live' : ''}`}
                   aria-pressed={on}
-                  aria-label={canHold ? `Hold to log end ${t}` : `End ${t}`}
+                  aria-label={
+                    on
+                      ? canHold
+                        ? `Hold to log end ${t}, or tap to clear`
+                        : `Clear end ${t}`
+                      : `Select end ${t}`
+                  }
                 >
                   <span className="shift__time-circle__clock">{clockPart}</span>
                   {ap ? <span className="shift__time-circle__ap">{ap}</span> : null}

@@ -272,24 +272,42 @@
   border-top-color: var(--line);
 }
 
-/* Matches global .btn--primary (accent fill, gold hover ring) */
+/* Delicate primary — light outline, no purple fill */
+.work-ui .btn--primary,
 .work-ui .btn--work-primary {
-  background: var(--accent);
-  border-color: var(--accent);
-  color: var(--surface);
-  font-weight: 600;
-  border-radius: 0;
-  padding: 10px 16px;
-  min-height: 44px;
-}
-
-.work-ui .btn--work-primary:hover {
-  filter: brightness(1.08);
+  background: var(--paper);
+  border: 1px solid var(--line-soft);
+  color: var(--ink);
+  font-weight: 500;
+  font-size: 0.875rem;
+  letter-spacing: 0.01em;
+  border-radius: var(--radius);
+  padding: 9px 14px;
+  min-height: 42px;
   box-shadow: none;
 }
 
-.work-ui .btn--work-primary:disabled {
-  opacity: 0.5;
+.work-ui .btn--primary:hover:not(:disabled),
+.work-ui .btn--work-primary:hover:not(:disabled) {
+  filter: none;
+  background: var(--paper2);
+  border-color: color-mix(in srgb, var(--ink-muted) 28%, var(--line-soft));
+  color: var(--ink);
+}
+
+.work-ui .btn--primary:active:not(:disabled),
+.work-ui .btn--work-primary:active:not(:disabled) {
+  filter: none;
+  transform: scale(0.99);
+}
+
+.work-ui .btn--work-primary:disabled,
+.work-ui .btn--primary:disabled {
+  opacity: 1;
+  background: var(--paper);
+  color: color-mix(in srgb, var(--ink-muted) 70%, var(--paper));
+  border-color: color-mix(in srgb, var(--line-soft) 88%, var(--paper));
+  cursor: not-allowed;
 }
 
 .work-ui .book-events-details--work {

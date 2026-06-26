@@ -11,6 +11,7 @@ export function usePressAndHold({ enabled, onComplete }) {
   const rafRef = useRef(null)
   const startRef = useRef(0)
   const completedRef = useRef(false)
+  const holdStartedRef = useRef(false)
   const onCompleteRef = useRef(onComplete)
 
   useEffect(() => {
@@ -36,6 +37,7 @@ export function usePressAndHold({ enabled, onComplete }) {
     if (p >= 1) {
       rafRef.current = null
       completedRef.current = true
+      holdStartedRef.current = false
       setHolding(false)
       setProgress(0)
       onCompleteRef.current?.()
@@ -49,6 +51,7 @@ export function usePressAndHold({ enabled, onComplete }) {
       if (!enabled) return
       e.preventDefault()
       e.currentTarget.setPointerCapture?.(e.pointerId)
+      holdStartedRef.current = true
       startRef.current = Date.now()
       completedRef.current = false
       setHolding(true)
@@ -80,6 +83,11 @@ export function usePressAndHold({ enabled, onComplete }) {
     justCompleted: () => {
       if (!completedRef.current) return false
       completedRef.current = false
+      return true
+    },
+    holdStartedWithoutComplete: () => {
+      if (!holdStartedRef.current) return false
+      holdStartedRef.current = false
       return true
     },
   }

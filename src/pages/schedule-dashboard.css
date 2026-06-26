@@ -257,7 +257,7 @@
   border-radius: 999px;
 }
 
-.page--schedule.schedule-dashboard .schedule-celebrations-flip__title {
+.page--schedule.schedule-dashboard .schedule-celebrations-flip--missions .schedule-celebrations-flip__title {
   margin: 0;
   font-family: var(--font-display);
   font-size: 1.0625rem;
@@ -272,8 +272,8 @@
   gap: 6px;
 }
 
-.page--schedule.schedule-dashboard .schedule-celebrations-flip__lede,
-.page--schedule.schedule-dashboard .schedule-celebrations-flip__empty {
+.page--schedule.schedule-dashboard .schedule-celebrations-flip--missions .schedule-celebrations-flip__lede,
+.page--schedule.schedule-dashboard .schedule-celebrations-flip--missions .schedule-celebrations-flip__empty {
   color: var(--mission-muted) !important;
   font-size: 0.75rem;
   font-weight: 400;
@@ -281,7 +281,7 @@
   letter-spacing: -0.01em;
 }
 
-.page--schedule.schedule-dashboard .schedule-celebrations-flip .muted {
+.page--schedule.schedule-dashboard .schedule-celebrations-flip--missions .muted {
   color: var(--mission-muted) !important;
 }
 
@@ -401,7 +401,7 @@
   font-style: normal;
 }
 
-.page--schedule.schedule-dashboard .schedule-celebrations-flip__flip-btn {
+.page--schedule.schedule-dashboard .schedule-celebrations-flip--missions .schedule-celebrations-flip__flip-btn {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -420,14 +420,14 @@
   box-shadow: 2px 2px 0 color-mix(in srgb, var(--mission-border) 50%, transparent);
 }
 
-.page--schedule.schedule-dashboard .schedule-celebrations-flip__flip-btn:hover:not(:disabled) {
+.page--schedule.schedule-dashboard .schedule-celebrations-flip--missions .schedule-celebrations-flip__flip-btn:hover:not(:disabled) {
   background: color-mix(in srgb, var(--mission-accent-soft) 70%, var(--mission-bg));
   border-color: color-mix(in srgb, var(--mission-accent) 55%, var(--mission-border));
   border-style: solid;
   color: var(--mission-ink);
 }
 
-.page--schedule.schedule-dashboard .schedule-celebrations-flip__flip-btn:active:not(:disabled) {
+.page--schedule.schedule-dashboard .schedule-celebrations-flip--missions .schedule-celebrations-flip__flip-btn:active:not(:disabled) {
   transform: none;
 }
 
@@ -436,7 +436,7 @@
   opacity: 0.9;
 }
 
-.page--schedule.schedule-dashboard .schedule-celebrations-flip__back-top {
+.page--schedule.schedule-dashboard .schedule-celebrations-flip--missions .schedule-celebrations-flip__back-top {
   background: color-mix(in srgb, var(--mission-pop-soft) 55%, var(--mission-bg));
   border: 1px solid var(--mission-border);
   border-radius: 12px;
@@ -456,7 +456,7 @@
   letter-spacing: -0.02em;
 }
 
-.page--schedule.schedule-dashboard .schedule-celebrations-flip__week-label {
+.page--schedule.schedule-dashboard .schedule-celebrations-flip--missions .schedule-celebrations-flip__week-label {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
@@ -554,7 +554,8 @@
     0 10px 24px color-mix(in srgb, var(--bubblegum) 10%, transparent);
 }
 
-.page--schedule.schedule-dashboard .schedule-calendar-flip {
+.page--schedule.schedule-dashboard .schedule-calendar-flip,
+.page--schedule.schedule-dashboard .schedule-fun-flip.schedule-calendar-flip {
   border: 1px solid var(--line);
   border-radius: var(--radius);
   background: var(--peri-surface);
@@ -563,26 +564,62 @@
     0 3px 10px color-mix(in srgb, var(--peri-ink) 4%, transparent);
 }
 
-.page--schedule.schedule-dashboard .schedule-calendar-flip .calendar__panel--book {
+.page--schedule.schedule-dashboard .schedule-calendar-flip .calendar__panel--book,
+.page--schedule.schedule-dashboard .schedule-fun-flip.schedule-calendar-flip .calendar__panel--book {
   background: transparent;
   border: none;
   box-shadow: none;
 }
 
 .page--schedule.schedule-dashboard .schedule-calendar-flip .calendar__nav,
-.page--schedule.schedule-dashboard .schedule-calendar-flip .schedule-flip__back-top {
+.page--schedule.schedule-dashboard .schedule-calendar-flip .schedule-flip__back-top,
+.page--schedule.schedule-dashboard .schedule-fun-flip.schedule-calendar-flip .calendar__nav,
+.page--schedule.schedule-dashboard .schedule-fun-flip.schedule-calendar-flip .schedule-flip__back-top {
   background: color-mix(in srgb, var(--paper2) 65%, var(--peri-surface) 35%);
   border: 1px solid var(--line);
 }
 
 .page--schedule.schedule-dashboard .schedule-calendar-flip .calendar__nav .btn--ghost,
-.page--schedule.schedule-dashboard .schedule-calendar-flip .schedule-flip__back-top .btn--ghost {
+.page--schedule.schedule-dashboard .schedule-calendar-flip .schedule-flip__back-top .btn--ghost,
+.page--schedule.schedule-dashboard .schedule-fun-flip.schedule-calendar-flip .calendar__nav .btn--ghost,
+.page--schedule.schedule-dashboard .schedule-fun-flip.schedule-calendar-flip .schedule-flip__back-top .btn--ghost {
   color: var(--peri-ink);
 }
 
 .page--schedule.schedule-dashboard .schedule-calendar-flip .calendar__month,
-.page--schedule.schedule-dashboard .schedule-calendar-flip .schedule-flip__back-heading {
+.page--schedule.schedule-dashboard .schedule-calendar-flip .schedule-flip__back-heading,
+.page--schedule.schedule-dashboard .schedule-fun-flip.schedule-calendar-flip .calendar__month,
+.page--schedule.schedule-dashboard .schedule-fun-flip.schedule-calendar-flip .schedule-flip__back-heading {
   color: var(--peri-ink);
+}
+
+.page--schedule.schedule-dashboard .schedule-fun-flip.schedule-calendar-flip .schedule-celebrations-flip__title {
+  margin: 0 0 4px;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--peri-ink);
+  text-align: center;
+}
+
+.page--schedule.schedule-dashboard .schedule-fun-flip.schedule-calendar-flip .schedule-celebrations-flip__item {
+  border-bottom-color: color-mix(in srgb, var(--line) 35%, transparent);
+}
+
+.page--schedule.schedule-dashboard .schedule-fun-flip.schedule-calendar-flip .schedule-celebrations-flip__item time {
+  color: var(--peri-ink-muted);
+}
+
+.page--schedule.schedule-dashboard .schedule-fun-flip.schedule-calendar-flip .schedule-celebrations-flip__item-title {
+  color: var(--peri-ink);
+}
+
+.page--schedule.schedule-dashboard .schedule-fun-flip.schedule-calendar-flip .schedule-celebrations-flip__prep-item {
+  border-bottom-color: color-mix(in srgb, var(--line) 30%, transparent);
+}
+
+.page--schedule.schedule-dashboard .schedule-fun-flip.schedule-calendar-flip .schedule-celebrations-flip__prep-todos {
+  color: var(--peri-ink-muted);
 }
 
 .page--schedule.schedule-dashboard .schedule-calendar-flip .calendar__wd {

@@ -127,7 +127,7 @@
   background: var(--journal-gold);
 }
 
-/* Do fun list — warm party palette (not journal green) */
+/* Missions board — warm party palette */
 .page--schedule.page--kid-journal.schedule-dashboard .schedule-celebrations-flip--missions {
   --mission-bg: #fffaf7;
   --mission-bg-alt: #fff0e8;
@@ -144,30 +144,25 @@
   --schedule-celeb-border: color-mix(in srgb, var(--bubblegum) 28%, var(--peach) 72%);
 }
 
-.page--schedule.page--kid-journal.schedule-dashboard
-  .schedule-celebrations-flip--fun
-  .schedule-flip__face.schedule-celebrations-flip__card {
-  border: 2px solid var(--schedule-celeb-border);
-  box-shadow:
-    4px 4px 0 color-mix(in srgb, var(--bubblegum) 22%, var(--peach) 78%),
-    0 10px 24px color-mix(in srgb, var(--bubblegum) 10%, transparent);
-}
-
-.page--schedule.page--kid-journal.schedule-dashboard .schedule-calendar-flip {
+.page--schedule.page--kid-journal.schedule-dashboard .schedule-calendar-flip,
+.page--schedule.page--kid-journal.schedule-dashboard .schedule-fun-flip.schedule-calendar-flip {
   border: 2px solid var(--journal-card-border);
   border-radius: var(--radius);
   background: var(--journal-surface-bright);
   box-shadow: 4px 4px 0 var(--journal-card-border);
 }
 
-.page--schedule.page--kid-journal.schedule-dashboard .schedule-calendar-flip .calendar__panel--book {
+.page--schedule.page--kid-journal.schedule-dashboard .schedule-calendar-flip .calendar__panel--book,
+.page--schedule.page--kid-journal.schedule-dashboard .schedule-fun-flip.schedule-calendar-flip .calendar__panel--book {
   background: var(--journal-surface-bright);
   border: none;
   box-shadow: none;
 }
 
 .page--schedule.page--kid-journal.schedule-dashboard .schedule-calendar-flip .calendar__nav .btn--ghost,
-.page--schedule.page--kid-journal.schedule-dashboard .schedule-calendar-flip .schedule-flip__back-top .btn--ghost {
+.page--schedule.page--kid-journal.schedule-dashboard .schedule-calendar-flip .schedule-flip__back-top .btn--ghost,
+.page--schedule.page--kid-journal.schedule-dashboard .schedule-fun-flip.schedule-calendar-flip .calendar__nav .btn--ghost,
+.page--schedule.page--kid-journal.schedule-dashboard .schedule-fun-flip.schedule-calendar-flip .schedule-flip__back-top .btn--ghost {
   border: 2px solid var(--journal-card-border);
   border-radius: 8px;
   background: var(--journal-surface-bright);
@@ -177,16 +172,32 @@
 }
 
 .page--schedule.page--kid-journal.schedule-dashboard .schedule-calendar-flip .calendar__nav .btn--ghost:active,
-.page--schedule.page--kid-journal.schedule-dashboard .schedule-calendar-flip .schedule-flip__back-top .btn--ghost:active {
+.page--schedule.page--kid-journal.schedule-dashboard .schedule-calendar-flip .schedule-flip__back-top .btn--ghost:active,
+.page--schedule.page--kid-journal.schedule-dashboard .schedule-fun-flip.schedule-calendar-flip .calendar__nav .btn--ghost:active,
+.page--schedule.page--kid-journal.schedule-dashboard .schedule-fun-flip.schedule-calendar-flip .schedule-flip__back-top .btn--ghost:active {
   transform: scale(0.96);
   border-color: var(--journal-mint-deep);
   background: color-mix(in srgb, var(--journal-sage) 45%, var(--journal-surface-bright));
 }
 
 .page--schedule.page--kid-journal.schedule-dashboard .schedule-calendar-flip .calendar__month,
-.page--schedule.page--kid-journal.schedule-dashboard .schedule-calendar-flip .schedule-flip__back-heading {
+.page--schedule.page--kid-journal.schedule-dashboard .schedule-calendar-flip .schedule-flip__back-heading,
+.page--schedule.page--kid-journal.schedule-dashboard .schedule-fun-flip.schedule-calendar-flip .calendar__month,
+.page--schedule.page--kid-journal.schedule-dashboard .schedule-fun-flip.schedule-calendar-flip .schedule-flip__back-heading,
+.page--schedule.page--kid-journal.schedule-dashboard .schedule-fun-flip.schedule-calendar-flip .schedule-celebrations-flip__title {
   color: var(--journal-ink-front);
   font-weight: 700;
+}
+
+.page--schedule.page--kid-journal.schedule-dashboard .schedule-fun-flip.schedule-calendar-flip .muted,
+.page--schedule.page--kid-journal.schedule-dashboard .schedule-fun-flip.schedule-calendar-flip .schedule-celebrations-flip__item time,
+.page--schedule.page--kid-journal.schedule-dashboard .schedule-fun-flip.schedule-calendar-flip .schedule-celebrations-flip__prep-todos {
+  color: var(--journal-ink-muted-front) !important;
+}
+
+.page--schedule.page--kid-journal.schedule-dashboard .schedule-fun-flip.schedule-calendar-flip .schedule-celebrations-flip__item-title,
+.page--schedule.page--kid-journal.schedule-dashboard .schedule-fun-flip.schedule-calendar-flip .schedule-celebrations-flip__prep-item strong {
+  color: var(--journal-ink-front);
 }
 
 .page--schedule.page--kid-journal.schedule-dashboard .schedule-calendar-flip .calendar__wd {
@@ -242,7 +253,7 @@
   border-color: var(--journal-mint-deep);
 }
 
-.page--schedule.page--kid-journal.schedule-dashboard .schedule-celebrations-flip__flip-btn {
+.page--schedule.page--kid-journal.schedule-dashboard .schedule-celebrations-flip--missions .schedule-celebrations-flip__flip-btn {
   border: 2px dashed color-mix(in srgb, var(--mission-accent) 40%, var(--mission-border));
   box-shadow: 2px 2px 0 color-mix(in srgb, var(--mission-border) 50%, transparent);
   color: var(--mission-accent);
@@ -253,7 +264,7 @@
   font-weight: 800;
 }
 
-.page--schedule.page--kid-journal.schedule-dashboard .schedule-celebrations-flip__flip-btn:hover:not(:disabled) {
+.page--schedule.page--kid-journal.schedule-dashboard .schedule-celebrations-flip--missions .schedule-celebrations-flip__flip-btn:hover:not(:disabled) {
   background: color-mix(in srgb, var(--mission-accent-soft) 70%, var(--mission-bg));
   border-color: color-mix(in srgb, var(--mission-accent) 55%, var(--mission-border));
   border-style: solid;
@@ -313,10 +324,16 @@
 }
 
 .page--schedule.page--kid-journal.schedule-dashboard .schedule-upcoming-card__btn.btn--primary {
-  background: var(--journal-mint-deep);
-  border: 2px solid var(--journal-card-border);
-  box-shadow: 2px 2px 0 var(--journal-card-border);
-  font-weight: 700;
+  background: var(--journal-surface-bright);
+  border: 1px solid var(--journal-card-border);
+  box-shadow: none;
+  color: var(--journal-ink-front);
+  font-weight: 600;
+}
+
+.page--schedule.page--kid-journal.schedule-dashboard .schedule-upcoming-card__btn.btn--primary:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--paper2) 65%, var(--journal-surface-bright));
+  border-color: color-mix(in srgb, var(--journal-ink-muted-front) 38%, var(--journal-card-border));
 }
 
 .page--schedule.page--kid-journal.schedule-dashboard .schedule-flip__retro32 .book-upcoming__date {

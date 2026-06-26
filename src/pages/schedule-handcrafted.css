@@ -1,100 +1,41 @@
-/* Schedule — fun list matches calendar; soft calendar cells */
+/* Schedule — do fun list shares schedule calendar shell */
 
-/* Fun list panel — same shell as calendar */
-.page--schedule.schedule-dashboard .schedule-fun-flip {
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
-  background: var(--peri-surface, #fff);
-  box-shadow:
-    0 1px 2px color-mix(in srgb, var(--peri-ink, var(--ink)) 6%, transparent),
-    0 3px 10px color-mix(in srgb, var(--peri-ink, var(--ink)) 4%, transparent);
-  overflow: hidden;
-  color: var(--peri-ink, var(--ink));
-}
-
-.page--schedule.page--kid-journal.schedule-dashboard .schedule-fun-flip {
-  border: 2px solid var(--journal-card-border);
-  border-radius: var(--radius);
-  background: var(--journal-surface-bright, #fff);
-  box-shadow: 4px 4px 0 var(--journal-card-border);
-  color: var(--journal-ink-front);
-}
-
-/* Journal sky page uses light default text — force dark ink inside the white panel */
-.page--schedule.page--kid-journal.schedule-dashboard .schedule-fun-flip .muted {
-  color: var(--journal-ink-muted-front) !important;
-}
-
-.page--schedule.page--kid-journal.schedule-dashboard .schedule-fun-flip .schedule-flip__back-heading,
-.page--schedule.page--kid-journal.schedule-dashboard .schedule-fun-flip .schedule-celebrations-flip__prep-item strong {
-  color: var(--journal-ink-front);
-}
-
-.page--schedule.page--kid-journal.schedule-dashboard .schedule-fun-flip .schedule-celebrations-flip__prep-todos {
-  color: var(--journal-ink-muted-front);
-}
-
-.page--schedule.page--kid-journal.schedule-dashboard .schedule-fun-flip .schedule-celebrations-flip__flip-btn,
-.page--schedule.page--kid-journal.schedule-dashboard .schedule-fun-flip .schedule-flip__back-top .btn--ghost {
-  color: var(--journal-ink-front);
-}
-
-.page--schedule.page--kid-journal.schedule-dashboard .schedule-fun-flip .schedule-celebrations-flip__flip-btn:hover:not(:disabled),
-.page--schedule.page--kid-journal.schedule-dashboard .schedule-fun-flip .schedule-flip__back-top .btn--ghost:hover {
-  color: var(--journal-mint-deep);
-}
-
-.page--schedule.schedule-dashboard .schedule-fun-flip .muted {
-  color: var(--ink-muted) !important;
-}
-
-.page--schedule.schedule-dashboard .schedule-fun-flip .schedule-flip__back-heading,
-.page--schedule.schedule-dashboard .schedule-fun-flip .schedule-celebrations-flip__prep-item strong {
-  color: var(--peri-ink, var(--ink));
-}
-
-.page--schedule.schedule-dashboard .schedule-fun-flip .schedule-celebrations-flip__flip-btn,
-.page--schedule.schedule-dashboard .schedule-fun-flip .schedule-flip__back-top .btn--ghost {
-  color: var(--peri-ink, var(--ink));
-}
-
-.page--schedule.schedule-dashboard .schedule-fun-flip .schedule-flip__face,
-.page--schedule.page--kid-journal.schedule-dashboard .schedule-fun-flip .schedule-flip__face {
-  background: #fff;
+.page--schedule.schedule-dashboard .schedule-fun-flip.schedule-calendar-flip .schedule-flip__face {
+  background: transparent;
   border: none;
   box-shadow: none;
   border-radius: 0;
-  padding: 6px 8px 8px;
+  padding: 6px;
+  display: flex;
+  flex-direction: column;
 }
 
-.page--schedule.schedule-dashboard .schedule-fun-flip .calendar__panel--book,
-.page--schedule.page--kid-journal.schedule-dashboard .schedule-fun-flip .calendar__panel--book {
-  background: transparent;
+.page--schedule.schedule-dashboard .schedule-celebrations-flip__main {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 }
 
-.page--schedule.schedule-dashboard .schedule-celebrations-flip__head {
+.page--schedule.schedule-dashboard .schedule-fun-flip.schedule-calendar-flip .schedule-flip__calendar-top {
   flex-shrink: 0;
-  margin-bottom: 6px;
-  padding: 4px 2px 0;
+  margin-bottom: 4px;
+}
+
+.page--schedule.schedule-dashboard .schedule-fun-flip.schedule-calendar-flip .schedule-celebrations-flip__title {
+  margin: 0 0 4px;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
   text-align: center;
 }
 
-.page--schedule.schedule-dashboard .schedule-celebrations-flip__title {
+.page--schedule.schedule-dashboard .schedule-fun-flip.schedule-calendar-flip .schedule-celebrations-flip__month-label {
   margin: 0;
-  font-size: 0.9375rem;
+  text-align: center;
+  font-size: 0.8125rem;
   font-weight: 700;
-  letter-spacing: -0.02em;
-  color: var(--peri-ink, var(--ink));
-}
-
-.page--schedule.page--kid-journal.schedule-dashboard .schedule-celebrations-flip__title {
-  color: var(--journal-ink-front);
-}
-
-.page--schedule.schedule-dashboard .schedule-celebrations-flip__month {
-  margin: 2px 0 0;
-  font-size: 0.75rem;
-  font-weight: 600;
 }
 
 .page--schedule.schedule-dashboard .schedule-celebrations-flip__scroll,
@@ -152,49 +93,6 @@
   padding: 12px 6px;
   font-size: 0.8125rem;
   text-align: center;
-}
-
-.page--schedule.schedule-dashboard .schedule-celebrations-flip__flip-btn {
-  flex-shrink: 0;
-  width: 100%;
-  margin-top: 6px;
-  justify-content: center;
-  min-height: 40px;
-  font-size: 0.8125rem;
-  font-weight: 600;
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
-  background: color-mix(in srgb, var(--paper2, #f0f0f0) 50%, #fff);
-  box-shadow: none;
-}
-
-.page--schedule.page--kid-journal.schedule-dashboard .schedule-fun-flip .schedule-celebrations-flip__flip-btn {
-  border: 2px solid var(--journal-card-border);
-  background: var(--journal-surface-bright);
-  box-shadow: 2px 2px 0 var(--journal-card-border);
-  color: var(--journal-ink-front);
-}
-
-.page--schedule.page--kid-journal.schedule-dashboard .schedule-fun-flip .schedule-flip__back-top .btn--ghost {
-  border: 2px solid var(--journal-card-border);
-  border-radius: 8px;
-  background: var(--journal-surface-bright);
-  color: var(--journal-ink-front);
-  box-shadow: 2px 2px 0 var(--journal-card-border);
-  font-weight: 700;
-}
-
-.page--schedule.schedule-dashboard .schedule-celebrations-flip__back-top {
-  background: color-mix(in srgb, var(--paper2, #f0f0f0) 65%, #fff);
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
-  margin-bottom: 6px;
-}
-
-.page--schedule.page--kid-journal.schedule-dashboard .schedule-celebrations-flip__back-top {
-  background: var(--journal-surface-bright);
-  border: 2px solid var(--journal-card-border);
-  box-shadow: 2px 2px 0 var(--journal-card-border);
 }
 
 .page--schedule.schedule-dashboard .schedule-celebrations-flip__week-block {

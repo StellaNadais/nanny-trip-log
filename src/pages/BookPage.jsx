@@ -199,28 +199,6 @@ export default function BookPage() {
   function handleCalendarDateSelect(iso) {
     if (iso < todayISO()) return
 
-    if (schedulingOpen && !awaitingEndDate) {
-      if (iso === careEndDateISO && careEndDateISO !== careStartDateISO) {
-        setCareEndDateISO(careStartDateISO)
-        setAwaitingEndDate(true)
-        return
-      }
-      if (iso === careStartDateISO) {
-        if (careStartDateISO === careEndDateISO) {
-          resetBookingForm()
-          return
-        }
-        setCareEndDateISO(careStartDateISO)
-        setAwaitingEndDate(true)
-        return
-      }
-    }
-
-    if (schedulingOpen && awaitingEndDate && iso === careStartDateISO) {
-      resetBookingForm()
-      return
-    }
-
     if (!schedulingOpen || !awaitingEndDate) {
       setCareStartDateISO(iso)
       setCareEndDateISO(iso)

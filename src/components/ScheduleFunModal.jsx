@@ -1,12 +1,15 @@
 import ScheduleCelebrationsFlip from './ScheduleCelebrationsFlip'
 import TodayPanelModal from './TodayPanelModal'
+import { monthCelebrationsTitle } from '../utils/scheduleCelebrations'
 
-export default function ScheduleFunModal({ open, onClose, year, monthIndex, monthLabel }) {
+export default function ScheduleFunModal({ open, onClose, year, monthIndex }) {
+  const monthLabel = monthCelebrationsTitle(monthIndex, year)
+
   return (
     <TodayPanelModal
       open={open}
       onClose={onClose}
-      eyebrow="This month"
+      eyebrow="Holidays & ideas"
       title="Do fun"
       dateLabel={monthLabel}
     >

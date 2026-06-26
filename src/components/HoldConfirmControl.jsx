@@ -14,13 +14,18 @@ export default function HoldConfirmControl({
   children,
   ...rest
 }) {
-  const { progress, holding, pointerProps, justCompleted } = usePressAndHold({
-    enabled,
-    onComplete: onConfirm,
-  })
+  const { progress, holding, pointerProps, justCompleted, holdStartedWithoutComplete } =
+    usePressAndHold({
+      enabled,
+      onComplete: onConfirm,
+    })
 
   function handleClick(e) {
     if (justCompleted()) {
+      e.preventDefault()
+      return
+    }
+    if (holdStartedWithoutComplete()) {
       e.preventDefault()
       return
     }

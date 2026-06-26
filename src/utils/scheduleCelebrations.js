@@ -89,6 +89,27 @@ export function celebrationsByActivityWeekInMonth(
   todayIso = toISODateLocal(new Date())
 ) {
   const items = upcomingCelebrationsInMonth(year, monthIndex, todayIso)
+  return groupCelebrationsByActivityWeek(items)
+}
+
+/** @deprecated Use celebrationsByActivityWeekInMonth */
+export function celebrationsByWeekInMonth(year, monthIndex, todayIso) {
+  return celebrationsByActivityWeekInMonth(year, monthIndex, todayIso)
+}
+
+export function monthCelebrationsTitle(monthIndex, year = new Date().getFullYear()) {
+  return new Date(year, monthIndex, 1).toLocaleDateString(undefined, {
+    month: 'long',
+    year: 'numeric',
+  })
+}
+
+/** All celebrations in a month with prep-week metadata. */
+export function celebrationsInMonthWithPrep(year, monthIndex) {
+  return celebrationsInMonth(year, monthIndex).map(withActivityPrep)
+}
+
+function groupCelebrationsByActivityWeek(items) {
   const byWeek = new Map()
 
   for (const c of items) {
@@ -109,11 +130,7 @@ export function celebrationsByActivityWeekInMonth(
     })
 }
 
-/** @deprecated Use celebrationsByActivityWeekInMonth */
-export function celebrationsByWeekInMonth(year, monthIndex, todayIso) {
-  return celebrationsByActivityWeekInMonth(year, monthIndex, todayIso)
-}
-
-export function monthCelebrationsTitle(monthIndex) {
-  return new Date(2000, monthIndex, 1).toLocaleDateString(undefined, { month: 'long' })
+/** Prep weeks for every celebration in the browsed month. */
+export function celebrationsByActivityWeekForMonth(year, monthIndex) {
+  return groupCelebrationsByActivityWeek(celebrationsInMonthWithPrep(year, monthIndex))
 }

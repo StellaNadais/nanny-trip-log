@@ -406,7 +406,6 @@ export default function SchedulePage() {
         onClose={closeSchedulePanel}
         year={y}
         monthIndex={m}
-        monthLabel={title}
       />
     </div>
   )

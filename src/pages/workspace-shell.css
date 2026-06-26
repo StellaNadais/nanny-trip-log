@@ -665,6 +665,45 @@
   font-size: 1.25rem;
 }
 
+.about-today-modal .btn--primary {
+  background: var(--paper);
+  border: 1px solid var(--line-soft);
+  color: var(--ink);
+  font-weight: 500;
+  font-size: 0.875rem;
+  letter-spacing: 0.01em;
+  border-radius: var(--radius);
+  padding: 9px 14px;
+  min-height: 42px;
+  box-shadow: none;
+}
+
+.about-today-modal .btn--primary:hover:not(:disabled) {
+  filter: none;
+  background: var(--paper2);
+  border-color: color-mix(in srgb, var(--ink-muted) 28%, var(--line-soft));
+  color: var(--ink);
+}
+
+.about-today-modal .btn--primary:active:not(:disabled) {
+  filter: none;
+  transform: scale(0.99);
+}
+
+.about-today-modal .btn--primary:disabled {
+  opacity: 1;
+  background: var(--paper);
+  color: color-mix(in srgb, var(--ink-muted) 70%, var(--paper));
+  border-color: color-mix(in srgb, var(--line-soft) 88%, var(--paper));
+  cursor: not-allowed;
+}
+
+.about-today-modal .outings__locations-form .btn--primary,
+.about-today-modal .outings-expenses__submit {
+  width: 100%;
+  justify-content: center;
+}
+
 .about-today-modal__scroll {
   flex: 1;
   min-height: 0;
@@ -699,6 +738,20 @@
 
 .about-today-modal__scroll .journal-mood-bar.journal-panel {
   padding: 12px 14px;
+  box-shadow: none;
+}
+
+.about-today-modal .journal-mood-bar,
+.about-today-modal .journal-panel,
+.about-today-modal .journal-mood-bar.journal-panel {
+  box-shadow: none !important;
+}
+
+.about-today-modal .journal-mood-bar:focus-within,
+.about-today-modal .journal-panel:focus-within,
+.about-today-modal .journal-mood-bar:active,
+.about-today-modal .journal-panel:active {
+  box-shadow: none !important;
 }
 
 .about-today-modal__scroll .journal-panel--meals.journal-mood-bar .journal-mood-bar__track,
@@ -720,16 +773,17 @@
   justify-content: center;
   min-height: 40px;
   font-size: 0.875rem;
-  font-weight: 700;
-  border: 2px solid var(--journal-card-border, var(--line));
-  border-radius: 8px;
-  background: var(--journal-surface-bright, var(--paper));
-  color: var(--journal-ink-front, var(--ink));
+  font-weight: 500;
+  border: 1px solid var(--line-soft);
+  border-radius: var(--radius);
+  background: var(--paper);
+  color: var(--ink);
+  box-shadow: none;
 }
 
 .about-today-modal__scroll .grocery-list-panel__add:hover:not(:disabled) {
-  border-color: var(--journal-mint-deep, var(--accent));
-  background: color-mix(in srgb, var(--journal-sage, var(--accent-soft)) 42%, var(--journal-surface-bright, var(--paper)));
+  border-color: color-mix(in srgb, var(--ink-muted) 28%, var(--line-soft));
+  background: var(--paper2);
 }
 
 .about-today-modal__scroll .grocery-list-panel__add:disabled {
@@ -771,7 +825,11 @@
 .caregiver-shell--workbook .about-today-modal .journal-mood-bar.journal-panel {
   border: 2px solid var(--journal-card-border, #1a1a1a) !important;
   background: var(--journal-surface-bright, var(--paper)) !important;
-  box-shadow: 4px 4px 0 var(--journal-card-border, #1a1a1a) !important;
+  box-shadow: none !important;
+}
+
+.caregiver-shell--workbook .about-today-modal .journal-mood-bar:not(.journal-panel) {
+  box-shadow: none !important;
 }
 
 .caregiver-shell--workbook .about-today-modal .journal-mood-bar__track {
@@ -848,11 +906,13 @@
   height: 100%;
 }
 
-.about-today-modal .schedule-celebrations-flip--embedded {
+.about-today-modal .schedule-celebrations-flip--embedded,
+.about-today-modal .schedule-fun-flip.schedule-calendar-flip--embedded {
   min-height: 16rem;
 }
 
-.about-today-modal .schedule-celebrations-flip--embedded .schedule-flip__scene {
+.about-today-modal .schedule-celebrations-flip--embedded .schedule-flip__scene,
+.about-today-modal .schedule-fun-flip.schedule-calendar-flip--embedded .schedule-flip__scene {
   min-height: 14rem;
   height: min(48dvh, 22rem);
 }
@@ -957,7 +1017,7 @@
 .caregiver-shell--workbook .schedule-dashboard__hud,
 .caregiver-shell--workbook .schedule-dashboard__stat,
 .caregiver-shell--workbook .calendar__panel,
-.caregiver-shell--workbook .schedule-fun-flip,
+.caregiver-shell--workbook .schedule-fun-flip.schedule-calendar-flip,
 .caregiver-shell--workbook .schedule-calendar-flip:not(.schedule-calendar-flip--embedded),
 .caregiver-shell--workbook .schedule-requests-dock__tab,
 .caregiver-shell--workbook .schedule-requests-dock__panel,

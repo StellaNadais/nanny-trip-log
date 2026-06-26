@@ -132,7 +132,7 @@
 .page--book-portal .btn--work-primary,
 .page--book-portal .book-request-cta .btn {
   font-family: var(--font-ui);
-  font-weight: 600;
+  font-weight: 500;
   font-size: 0.875rem;
   letter-spacing: 0.01em;
 }
