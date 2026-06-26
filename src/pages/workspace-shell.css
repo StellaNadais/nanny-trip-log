@@ -1,0 +1,1035 @@
+/* Excel-style workbook — top sheet tabs + flat movable tiles */
+
+.workbook {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  width: 100%;
+  background: #fff;
+}
+
+.caregiver-shell--workbook {
+  background: #fff;
+}
+
+.caregiver-shell--workbook .caregiver-shell__body {
+  background: #fff;
+}
+
+.caregiver-shell--workbook .caregiver-page-chrome {
+  background: #fff;
+  border-bottom: 1px solid var(--line-soft);
+}
+
+.caregiver-shell--workbook .journal-day-progress__title {
+  color: var(--ink-muted);
+}
+
+.caregiver-shell--workbook .journal-day-progress__label {
+  color: var(--ink);
+}
+
+.caregiver-shell--workbook .journal-day-progress__track {
+  background: color-mix(in srgb, var(--line) 55%, var(--paper));
+}
+
+.caregiver-shell--workbook .journal-day-progress__fill {
+  background: linear-gradient(90deg, var(--accent) 0%, var(--journal-mint-deep, #22a06b) 100%);
+}
+
+.caregiver-shell--workbook.caregiver-shell--schedule-dashboard,
+.caregiver-shell--workbook.caregiver-shell--schedule-dashboard:has(.page--schedule.page--kid-journal),
+.caregiver-shell--workbook.caregiver-shell--schedule-dashboard:has(.page--schedule.page--kid-journal) .caregiver-page-chrome {
+  background: #fff;
+}
+
+.workbook-tabs-bar {
+  display: flex;
+  align-items: flex-end;
+  gap: 0;
+  flex-shrink: 0;
+  padding: 0 max(8px, env(safe-area-inset-right, 0px)) 0 max(8px, env(safe-area-inset-left, 0px));
+  border-bottom: none;
+  background: #fff;
+  box-shadow: none;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.workbook-tabs {
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+  flex: 1;
+  min-width: 0;
+  padding-top: 6px;
+}
+
+.workbook-tabs__tab {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2rem;
+  padding: 6px 14px 7px;
+  border: none;
+  border-radius: 0;
+  background: #fff;
+  color: var(--ink-muted);
+  font-family: var(--font-ui);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  line-height: 1.2;
+  text-decoration: none;
+  white-space: nowrap;
+  box-shadow: none;
+  transition: background 0.12s, color 0.12s;
+}
+
+.workbook-tabs__tab:hover {
+  background: color-mix(in srgb, var(--line) 8%, #fff);
+  color: var(--ink);
+}
+
+.workbook-tabs__tab--active {
+  background: #fff;
+  color: var(--ink);
+  font-weight: 600;
+  margin-bottom: 0;
+  padding-bottom: 7px;
+  z-index: 1;
+}
+
+.workbook-tabs__receipt {
+  flex-shrink: 0;
+  align-self: center;
+  margin: 6px 0 6px 8px;
+  padding: 6px 10px;
+  border: none;
+  border-radius: 0;
+  background: color-mix(in srgb, var(--paper2) 55%, var(--paper));
+  color: var(--ink);
+  font-family: var(--font-ui);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  box-shadow: none;
+  cursor: pointer;
+}
+
+.workbook-tabs__receipt:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.workbook__canvas {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: #fff;
+}
+
+.workbook__canvas > .page {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  max-width: none;
+  border: none;
+}
+
+.caregiver-shell--workbook .caregiver-page-chrome,
+.caregiver-shell--workbook .caregiver-shell__body > .workbook {
+  max-width: none;
+  border-left: none;
+  border-right: none;
+}
+
+@media (min-width: 600px) {
+  .caregiver-shell--workbook .caregiver-page-chrome,
+  .caregiver-shell--workbook .caregiver-shell__body > .workbook,
+  .caregiver-shell--workbook .caregiver-shell__body > .workbook .workbook__canvas > .page {
+    max-width: none;
+    border-left: none;
+    border-right: none;
+  }
+}
+
+.workbook-scratch {
+  margin: 0;
+  min-height: 4.5rem;
+  font-size: 0.8125rem;
+  line-height: 1.45;
+}
+
+.page--schedule .workspace-tile-board {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  padding: 0 12px 16px;
+}
+
+.page--schedule .schedule-dashboard__hud {
+  margin: 0;
+}
+
+.schedule-overview {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.schedule-overview .schedule-dashboard__hud {
+  margin-bottom: 0;
+}
+
+.schedule-overview__requests {
+  margin: 0;
+  padding-top: 2px;
+}
+
+.schedule-overview__requests-title {
+  margin: 0 0 8px;
+  font-family: var(--font-ui);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+}
+
+.schedule-overview__requests-empty {
+  margin: 0;
+  font-size: 0.8125rem;
+  line-height: 1.45;
+}
+
+.page--schedule.page--kid-journal.schedule-dashboard .schedule-overview__requests .schedule-upcoming-carousel__window {
+  border-radius: var(--radius);
+  background: color-mix(in srgb, var(--journal-surface-bright, var(--paper)) 88%, var(--journal-sage, var(--accent-soft)));
+}
+
+.page--schedule.schedule-dashboard .schedule-overview__requests .schedule-upcoming-carousel {
+  gap: 8px;
+}
+
+.page--schedule .schedule-flip.schedule-calendar-flip {
+  min-height: 20rem;
+}
+
+.page--schedule .schedule__calendar-panel {
+  width: 100%;
+  min-width: 0;
+  padding: 8px 12px 10px;
+}
+
+.page--schedule.page--workspace .schedule__calendar-panel,
+.page--book-portal.page--workspace .schedule__calendar-panel {
+  flex-shrink: 0;
+  margin: 0 0 4px;
+  padding: 10px 12px 12px;
+  border: 1px solid var(--line-soft) !important;
+  border-radius: var(--radius);
+  background: var(--paper);
+}
+
+.page--schedule .schedule__calendar-panel .schedule-calendar-flip--embedded,
+.page--book-portal .schedule__calendar-panel .schedule-calendar-flip--embedded {
+  min-height: calc(10.5rem + var(--schedule-calendar-rows, 5) * 2.65rem);
+}
+
+.page--schedule .schedule__calendar-panel .schedule-calendar-flip--embedded .schedule-flip__scene,
+.page--book-portal .schedule__calendar-panel .schedule-calendar-flip--embedded .schedule-flip__scene {
+  min-height: calc(10.5rem + var(--schedule-calendar-rows, 5) * 2.65rem);
+  height: calc(10.5rem + var(--schedule-calendar-rows, 5) * 2.65rem);
+  flex: none;
+}
+
+.page--schedule .schedule__calendar-panel .schedule-calendar-flip--embedded .schedule-flip__inner,
+.page--book-portal .schedule__calendar-panel .schedule-calendar-flip--embedded .schedule-flip__inner {
+  min-height: 100%;
+  height: 100%;
+}
+
+.page--schedule.page--workspace .schedule-calendar-flip--embedded .calendar__wd,
+.page--book-portal.page--workspace .schedule-calendar-flip--embedded .calendar__wd {
+  font-size: 0.625rem;
+  font-weight: 700;
+}
+
+.page--schedule.page--workspace .schedule-calendar-flip--embedded .calendar__month,
+.page--book-portal.page--workspace .schedule-calendar-flip--embedded .calendar__month {
+  font-size: 0.9375rem;
+  font-weight: 700;
+}
+
+.page--schedule.page--workspace .schedule-calendar-flip--embedded .calendar__cell-num,
+.page--book-portal.page--workspace .schedule-calendar-flip--embedded .calendar__cell-num {
+  font-size: 0.875rem;
+  font-weight: 700;
+}
+
+.caregiver-shell--workbook .schedule-calendar-flip--embedded .calendar__cell,
+.caregiver-shell--workbook .schedule-calendar-flip--embedded .calendar__cell--empty {
+  border: 1px dashed color-mix(in srgb, var(--line) 55%, transparent) !important;
+}
+
+.caregiver-shell--workbook .schedule-calendar-flip--embedded .calendar__cell--empty {
+  border: none !important;
+}
+
+.caregiver-shell--workbook .schedule-calendar-flip--embedded .calendar__cell--today {
+  border: 1.5px solid var(--journal-gold, var(--gold)) !important;
+}
+
+.page--schedule .workspace-tile--wide:has(.schedule-calendar-flip) .workspace-tile__body {
+  min-height: 20rem;
+}
+
+/* Movable tiles */
+.workspace-tile-board {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 17rem), 1fr));
+  gap: 10px;
+  align-items: start;
+}
+
+.workspace-tile {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  border: none;
+  border-radius: 0;
+  background: var(--paper);
+  box-shadow: none;
+}
+
+.workspace-tile--wide {
+  grid-column: 1 / -1;
+}
+
+.workspace-tile--dragging {
+  opacity: 0.72;
+  outline: 2px dashed var(--accent);
+}
+
+.workspace-tile--headless .workspace-tile__body {
+  padding-top: 10px;
+}
+
+.workspace-tile__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 8px 10px;
+  border-bottom: none;
+  background: color-mix(in srgb, var(--paper2) 40%, var(--paper));
+}
+
+.workspace-tile__label {
+  font-family: var(--font-ui);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+}
+
+.workspace-tile__grip {
+  flex-shrink: 0;
+  width: 1.75rem;
+  height: 1.75rem;
+  padding: 0;
+  border: none;
+  border-radius: 0;
+  background: color-mix(in srgb, var(--paper2) 55%, var(--paper));
+  color: var(--ink-muted);
+  font-size: 0.875rem;
+  line-height: 1;
+  cursor: grab;
+  box-shadow: none;
+}
+
+.workspace-tile__grip:active {
+  cursor: grabbing;
+}
+
+.workspace-tile__body {
+  padding: 10px;
+  min-width: 0;
+}
+
+.workspace-tile__body .journal-mood-bar,
+.workspace-tile__body .journal-panel {
+  border: none;
+  box-shadow: none;
+  background: transparent;
+  padding: 0;
+}
+
+.about-today-tile {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+  font: inherit;
+  color: inherit;
+}
+
+.about-today-tile__preview {
+  margin: 0;
+  font-size: 0.875rem;
+  line-height: 1.45;
+  color: var(--journal-ink-front, var(--ink));
+}
+
+.about-today-tile__hint {
+  margin: 0;
+  font-size: 0.8125rem;
+  line-height: 1.4;
+}
+
+.about-today-tile__cta {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--journal-mint-deep, var(--accent));
+}
+
+.page--kid-journal .workspace-tile-board {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  padding: 0 12px 16px;
+}
+
+.page--workspace .journal__layout,
+.page--workspace .shift__layout,
+.page--workspace .outings__layout,
+.page--workspace .journal__layout.schedule__layout {
+  gap: 8px;
+}
+
+.page--workspace .schedule__calendar-panel {
+  padding: 6px 10px 8px;
+  box-shadow: none;
+}
+
+.page--workspace .schedule__calendar-panel .schedule-calendar-flip--embedded .schedule-flip__scene {
+  min-height: calc(10.5rem + var(--schedule-calendar-rows, 5) * 2.65rem);
+}
+
+/* Compact week calendar — Shift, Today, Outings workbook tabs */
+
+.page--workspace.page--kid-journal .journal__week-picker {
+  padding: 5px 10px 7px;
+  box-shadow: none;
+}
+
+.page--workspace .journal__week-picker-top {
+  margin-bottom: 3px;
+}
+
+.page--workspace .journal__week-tools {
+  gap: 4px;
+}
+
+.page--workspace .journal__week-tools .trip-log__week-btn,
+.page--workspace.page--kid-journal .journal__week-tools .trip-log__week-btn {
+  min-height: 28px;
+  padding: 2px 8px;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  border-radius: 6px;
+}
+
+.page--workspace .journal__week-range {
+  margin: 0;
+  font-size: 0.8125rem;
+  font-weight: 700;
+}
+
+.page--workspace .journal__selected-day {
+  margin: 1px 0 0;
+  font-size: 0.9375rem;
+  font-weight: 800;
+}
+
+.page--workspace .day-strip {
+  gap: 3px;
+}
+
+.page--workspace .day-chip {
+  min-height: 30px;
+  padding: 2px 1px;
+  gap: 1px;
+}
+
+.page--workspace.page--kid-journal .day-chip {
+  border-width: 1px;
+  border-radius: 6px;
+}
+
+.page--workspace.page--kid-journal .day-chip--active {
+  box-shadow: none;
+  transform: none;
+}
+
+.page--workspace .day-chip__label {
+  font-size: 0.625rem;
+  letter-spacing: 0.04em;
+}
+
+.page--workspace .day-chip__num,
+.page--workspace.page--kid-journal .day-chip__num {
+  font-size: 0.9375rem;
+  font-weight: 800;
+}
+
+.page--workspace.page--outings .journal__week-picker.outings__week-picker {
+  padding: 3px 8px 5px;
+}
+
+.page--workspace.page--outings .journal__week-picker-top {
+  margin-bottom: 2px;
+}
+
+.page--workspace.page--outings .journal__selected-day {
+  margin: 0;
+  font-size: 0.875rem;
+}
+
+.page--workspace.page--outings .day-chip {
+  min-height: 28px;
+  padding: 1px 1px;
+}
+
+.workspace-tile--square .workspace-tile__body {
+  aspect-ratio: 1;
+  display: flex;
+  padding: 8px;
+}
+
+.today-space-tile {
+  position: relative;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 6px;
+  width: 100%;
+  min-height: 0;
+  margin: 0;
+  padding: 4px 2px;
+  border: none;
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+  font: inherit;
+  color: inherit;
+}
+
+.today-space-tile__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  color: var(--journal-mint-deep, var(--accent));
+}
+
+.today-space-tile__count {
+  position: absolute;
+  top: 0;
+  right: 0;
+  min-width: 1.25rem;
+  padding: 0 0.35rem;
+  border-radius: 999px;
+  background: var(--journal-mint-deep, var(--accent));
+  color: var(--paper);
+  font-family: var(--font-ui);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  line-height: 1.35;
+  text-align: center;
+}
+
+.today-space-tile__preview {
+  flex: 1;
+  margin: 0;
+  font-size: 0.75rem;
+  line-height: 1.35;
+  color: var(--journal-ink-front, var(--ink));
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+}
+
+.today-space-tile__hint {
+  margin: 0;
+  font-size: 0.6875rem;
+  line-height: 1.35;
+}
+
+.today-space-tile__cta {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--journal-mint-deep, var(--accent));
+}
+
+/* About today modal */
+.about-today-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 5000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: max(12px, env(safe-area-inset-top, 0px)) max(12px, env(safe-area-inset-right, 0px))
+    max(12px, env(safe-area-inset-bottom, 0px)) max(12px, env(safe-area-inset-left, 0px));
+}
+
+.about-today-modal__backdrop {
+  position: absolute;
+  inset: 0;
+  border: none;
+  margin: 0;
+  padding: 0;
+  background: color-mix(in srgb, var(--ink) 28%, transparent);
+  cursor: pointer;
+}
+
+.about-today-modal__sheet {
+  position: relative;
+  z-index: 1;
+  width: min(100%, 28rem);
+  max-height: min(92dvh, 720px);
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--line-soft);
+  border-radius: var(--radius);
+  background: var(--paper);
+  box-shadow: none;
+  overflow: hidden;
+}
+
+.about-today-modal__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 14px 10px;
+  border-bottom: 1px solid var(--line-soft);
+}
+
+.about-today-modal__eyebrow {
+  margin: 0 0 2px;
+  font-family: var(--font-ui);
+  font-size: 0.625rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+}
+
+.about-today-modal__title {
+  margin: 0;
+  font-family: var(--font-ui);
+  font-size: 1.125rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+}
+
+.about-today-modal__date {
+  margin: 4px 0 0;
+  font-size: 0.8125rem;
+}
+
+.about-today-modal__close {
+  min-width: 2.25rem;
+  min-height: 2.25rem;
+  padding: 0;
+  font-size: 1.25rem;
+}
+
+.about-today-modal__scroll {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  -webkit-overflow-scrolling: touch;
+}
+
+.about-today-modal__section {
+  margin: 0;
+}
+
+.about-today-modal__section + .about-today-modal__section:not(.journal-mood-bar) {
+  padding-top: 4px;
+  border-top: 1px solid var(--line-soft);
+}
+
+.about-today-modal__section .outings-locations__panel {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.about-today-modal__section .outings__journal-sign-text {
+  margin: 0;
+  font-size: 0.8125rem;
+  line-height: 1.45;
+}
+
+.about-today-modal__scroll .journal-mood-bar.journal-panel {
+  padding: 12px 14px;
+}
+
+.about-today-modal__scroll .journal-panel--meals.journal-mood-bar .journal-mood-bar__track,
+.about-today-modal__scroll .journal-panel--about.journal-mood-bar .journal-mood-bar__track {
+  display: block;
+  padding: 8px;
+}
+
+.about-today-modal__scroll .grocery-list-panel__composer {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 10px;
+  margin: 0;
+}
+
+.about-today-modal__scroll .grocery-list-panel__add {
+  width: 100%;
+  justify-content: center;
+  min-height: 40px;
+  font-size: 0.875rem;
+  font-weight: 700;
+  border: 2px solid var(--journal-card-border, var(--line));
+  border-radius: 8px;
+  background: var(--journal-surface-bright, var(--paper));
+  color: var(--journal-ink-front, var(--ink));
+}
+
+.about-today-modal__scroll .grocery-list-panel__add:hover:not(:disabled) {
+  border-color: var(--journal-mint-deep, var(--accent));
+  background: color-mix(in srgb, var(--journal-sage, var(--accent-soft)) 42%, var(--journal-surface-bright, var(--paper)));
+}
+
+.about-today-modal__scroll .grocery-list-panel__add:disabled {
+  opacity: 0.45;
+}
+
+.about-today-modal__scroll .grocery-list-panel__list {
+  max-height: none;
+  overflow: visible;
+  margin: 0;
+}
+
+.about-today-modal__scroll .grocery-list-panel__row {
+  padding: 8px 0;
+  border-bottom: 1px solid color-mix(in srgb, var(--journal-card-border, var(--line)) 35%, transparent);
+}
+
+.about-today-modal__scroll .grocery-list-panel__row:last-child {
+  border-bottom: none;
+}
+
+.about-today-modal__scroll .grocery-list-panel__check {
+  font-size: 0.875rem;
+  color: var(--journal-ink-front, var(--ink));
+}
+
+.about-today-modal__scroll .grocery-list-panel__empty {
+  margin: 0;
+  padding: 0;
+  font-size: 0.8125rem;
+}
+
+.about-today-modal__scroll .grocery-list-panel__open-count {
+  font-weight: 600;
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.caregiver-shell--workbook .about-today-modal .journal-mood-bar.journal-panel {
+  border: 2px solid var(--journal-card-border, #1a1a1a) !important;
+  background: var(--journal-surface-bright, var(--paper)) !important;
+  box-shadow: 4px 4px 0 var(--journal-card-border, #1a1a1a) !important;
+}
+
+.caregiver-shell--workbook .about-today-modal .journal-mood-bar__track {
+  border: 2px solid var(--journal-card-border, #1a1a1a) !important;
+  background: var(--journal-surface-bright, var(--paper)) !important;
+}
+
+.about-today-modal__foot {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+  padding: 10px 14px 14px;
+  border-top: 1px solid var(--line-soft);
+}
+
+.about-today-modal__preview {
+  margin: 4px 0 0;
+  padding-top: 8px;
+  border-top: 1px solid var(--line-soft);
+}
+
+.about-today-modal__preview-title {
+  margin: 0 0 10px;
+  font-family: var(--font-ui);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+}
+
+.about-today-modal__preview .journal-day-modal__slip--embedded {
+  margin: 0 auto;
+}
+
+.about-today-modal__preview .journal-day-modal__rainbow-wrap {
+  max-width: 100%;
+  box-shadow: none;
+}
+
+.about-today-modal__preview .journal-day-modal__ticket {
+  filter: none;
+}
+
+/* Schedule workspace modals */
+.about-today-modal:has(.schedule-calendar-flip--modal) .about-today-modal__sheet {
+  width: min(100%, 26rem);
+}
+
+.about-today-modal .schedule-overview-modal__hud {
+  margin: 0;
+}
+
+.about-today-modal .schedule-overview__requests {
+  margin: 0;
+}
+
+.about-today-modal .schedule-overview__requests .schedule-upcoming-carousel__window {
+  border-radius: var(--radius);
+  background: color-mix(in srgb, var(--journal-surface-bright, var(--paper)) 88%, var(--journal-sage, var(--accent-soft)));
+}
+
+.about-today-modal .schedule-calendar-flip--modal {
+  min-height: 20rem;
+}
+
+.about-today-modal .schedule-calendar-flip--modal .schedule-flip__scene {
+  min-height: 18rem;
+  height: min(52dvh, 26rem);
+}
+
+.about-today-modal .schedule-calendar-flip--modal .schedule-flip__inner {
+  min-height: 18rem;
+  height: 100%;
+}
+
+.about-today-modal .schedule-celebrations-flip--embedded {
+  min-height: 16rem;
+}
+
+.about-today-modal .schedule-celebrations-flip--embedded .schedule-flip__scene {
+  min-height: 14rem;
+  height: min(48dvh, 22rem);
+}
+
+.caregiver-shell--workbook .about-today-modal__preview {
+  border-top: none;
+}
+
+/* Flat workspace — no offset shadows */
+.page--workspace .journal-panel,
+.page--workspace .journal-mood-bar,
+.page--workspace .journal__week-picker,
+.page--workspace .work-ui__panel,
+.page--workspace .workspace-tile,
+.workbook .journal-panel,
+.workbook .journal-mood-bar,
+.workbook .journal__week-picker,
+.workbook .work-ui__panel {
+  box-shadow: none !important;
+}
+
+.page--workspace .journal-panel:focus-within,
+.page--workspace .journal-mood-bar:focus-within,
+.workbook .journal-panel:focus-within,
+.workbook .journal-mood-bar:focus-within {
+  box-shadow: none !important;
+}
+
+.page--workspace .schedule-workspace-head .schedule__title,
+.workbook .schedule-workspace-head .schedule__title {
+  color: var(--ink);
+  text-shadow: none;
+}
+
+.page--workspace.page--kid-journal,
+.workbook .page--kid-journal {
+  color: var(--journal-ink-front, var(--ink));
+}
+
+.page--workspace.page--kid-journal.page--today-sky,
+.workbook .page--kid-journal.page--today-sky {
+  color: var(--journal-ink-on-page, var(--ink));
+}
+
+.page--workspace.page--kid-journal .journal-panel,
+.page--workspace.page--kid-journal .journal-mood-bar,
+.page--workspace.page--kid-journal .journal__week-picker,
+.workbook .page--kid-journal .journal-panel,
+.workbook .page--kid-journal .journal-mood-bar,
+.workbook .page--kid-journal .journal__week-picker {
+  border-width: 1px;
+  border-color: var(--line-soft);
+}
+
+.page--schedule.page--workspace {
+  background: #fff;
+}
+
+.page--schedule.page--workspace.schedule-dashboard,
+.page--schedule.page--workspace.schedule-dashboard.work-ui {
+  background: #fff;
+}
+
+.page--shift.page--workspace.page--kid-journal,
+.page--events.page--workspace {
+  background: #fff;
+}
+
+.page--workspace.page--kid-journal:not(.page--today-sky) {
+  background: #fff;
+  color: var(--ink);
+}
+
+.page--schedule.page--workspace .schedule__stage {
+  background: transparent;
+}
+
+.page--schedule.page--workspace::before,
+.page--schedule.page--workspace::after {
+  display: none;
+}
+
+/* ——— Flat layout: no shadows, no edges ——— */
+.caregiver-shell--workbook,
+.caregiver-shell--workbook * {
+  box-shadow: none !important;
+}
+
+.caregiver-shell--workbook .caregiver-page-chrome,
+.caregiver-shell--workbook .caregiver-shell__body > .workbook,
+.caregiver-shell--workbook .caregiver-shell__body > .workbook .workbook__canvas > .page,
+.caregiver-shell--workbook .workbook-tabs-bar,
+.caregiver-shell--workbook .workbook-tabs__tab,
+.caregiver-shell--workbook .workbook-tabs__receipt,
+.caregiver-shell--workbook .workspace-tile,
+.caregiver-shell--workbook .workspace-tile__head,
+.caregiver-shell--workbook .workspace-tile__grip,
+.caregiver-shell--workbook .journal-panel,
+.caregiver-shell--workbook .journal-mood-bar,
+.caregiver-shell--workbook .journal__week-picker,
+.caregiver-shell--workbook .work-ui__panel,
+.caregiver-shell--workbook .schedule-dashboard__hud,
+.caregiver-shell--workbook .schedule-dashboard__stat,
+.caregiver-shell--workbook .calendar__panel,
+.caregiver-shell--workbook .schedule-fun-flip,
+.caregiver-shell--workbook .schedule-calendar-flip:not(.schedule-calendar-flip--embedded),
+.caregiver-shell--workbook .schedule-requests-dock__tab,
+.caregiver-shell--workbook .schedule-requests-dock__panel,
+.caregiver-shell--workbook .day-chip,
+.caregiver-shell--workbook .input,
+.caregiver-shell--workbook .about-today-modal__sheet,
+.caregiver-shell--workbook .outings-expenses__chip,
+.caregiver-shell--workbook .outings-expenses__add-btn,
+.caregiver-shell--workbook .outings-expenses__form,
+.caregiver-shell--workbook .hub-card {
+  border: none !important;
+  outline: none;
+}
+
+.caregiver-shell--workbook .btn,
+.caregiver-shell--workbook button:not(.sr-only):not(.about-today-modal__backdrop):not(.schedule-requests-dock__scrim) {
+  border: none !important;
+  box-shadow: none !important;
+  outline: none;
+}
+
+.caregiver-shell--workbook .btn--primary:hover,
+.caregiver-shell--workbook .btn--primary:active,
+.caregiver-shell--workbook .btn--ghost:hover,
+.caregiver-shell--workbook .btn--ghost:active,
+.caregiver-shell--workbook .btn--work-primary:hover,
+.caregiver-shell--workbook .workbook-tabs__tab--active {
+  box-shadow: none !important;
+  border: none !important;
+}
+
+.caregiver-shell--workbook .workbook-tabs-bar {
+  border-bottom: none;
+  background: #fff;
+}
+
+.caregiver-shell--workbook .workbook-tabs__tab {
+  border-radius: 0;
+  background: #fff;
+}
+
+.caregiver-shell--workbook .workbook-tabs__tab--active {
+  background: #fff;
+}
+
+.caregiver-shell--workbook .workspace-tile__head {
+  background: color-mix(in srgb, var(--paper2) 35%, var(--paper));
+}
+
+.caregiver-shell--workbook .input,
+.caregiver-shell--workbook .input--line,
+.caregiver-shell--workbook select.input {
+  background: color-mix(in srgb, var(--paper2) 50%, var(--paper));
+}
+
+.caregiver-shell--workbook .input:focus,
+.caregiver-shell--workbook .input:focus-visible,
+.caregiver-shell--workbook .btn:focus-visible,
+.caregiver-shell--workbook button:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--accent) 45%, transparent);
+  outline-offset: 1px;
+}
+
+.caregiver-shell--workbook .caregiver-page-chrome {
+  border-bottom: none;
+}
+
+@media (min-width: 600px) {
+  .caregiver-shell--workbook .caregiver-page-chrome,
+  .caregiver-shell--workbook .caregiver-shell__body > .workbook,
+  .caregiver-shell--workbook .caregiver-shell__body > .workbook .workbook__canvas > .page {
+    border-left: none !important;
+    border-right: none !important;
+  }
+}
