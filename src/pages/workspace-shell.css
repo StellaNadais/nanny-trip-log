@@ -912,9 +912,19 @@
 }
 
 .about-today-modal .schedule-celebrations-flip--embedded .schedule-flip__scene,
-.about-today-modal .schedule-fun-flip.schedule-calendar-flip--embedded .schedule-flip__scene {
+.about-today-modal .schedule-fun-flip.schedule-calendar-flip--embedded .schedule-flip__scene,
+.about-today-modal .schedule-celebrations-flip--embedded .schedule-celebrations-flip__scene,
+.about-today-modal .schedule-fun-flip.schedule-calendar-flip--embedded .schedule-celebrations-flip__scene {
   min-height: 14rem;
   height: min(48dvh, 22rem);
+  max-height: none;
+  flex: 1;
+}
+
+.about-today-modal .schedule-fun-flip.schedule-calendar-flip--embedded .schedule-flip__inner {
+  min-height: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
 }
 
 .caregiver-shell--workbook .about-today-modal__preview {

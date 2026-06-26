@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { toISODateLocal } from '../utils/dates'
 import {
+  celebrationsByActivityWeekForMonth,
   celebrationsByActivityWeekInMonth,
   monthCelebrationsTitle,
   upcomingCelebrationsInMonth,
@@ -50,13 +51,13 @@ function CelebrationsFlipFaces({
                 type="button"
                 className="schedule-flip__gigs-flip-btn"
                 onClick={() => setShowWeeks(true)}
-                disabled={celebrations.length === 0}
+                disabled={celebrations.length === 0 && byActivityWeek.length === 0}
                 aria-expanded={showWeeks}
-                aria-label="Open prep weeks and activity ideas"
+                aria-label="Flip to ideas and prep weeks"
               >
                 <span className="schedule-flip__gigs-flip-btn-label">Ideas & prep</span>
                 <span className="schedule-flip__gigs-flip-btn-hint" aria-hidden>
-                  View list →
+                  Flip →
                 </span>
               </button>
             </div>
@@ -127,8 +128,11 @@ export default function ScheduleCelebrationsFlip({
     [year, monthIndex, todayIso]
   )
   const byActivityWeek = useMemo(
-    () => celebrationsByActivityWeekInMonth(year, monthIndex, todayIso),
-    [year, monthIndex, todayIso]
+    () =>
+      celebrations.length > 0
+        ? celebrationsByActivityWeekInMonth(year, monthIndex, todayIso)
+        : celebrationsByActivityWeekForMonth(year, monthIndex),
+    [year, monthIndex, todayIso, celebrations.length]
   )
 
   useEffect(() => {
