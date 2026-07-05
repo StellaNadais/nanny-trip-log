@@ -36,6 +36,8 @@ export default function ScheduleCalendarFlip({
   listFlipLabel = 'Upcoming gigs',
   listEmptyMessage = 'No upcoming gigs on the calendar yet. Share your booking link with families.',
   onDateSelect,
+  onDateHover,
+  onDateHoverEnd,
   dateSelectionRole,
   selectionHint,
   showSelectionLegend = false,
@@ -163,6 +165,10 @@ export default function ScheduleCalendarFlip({
                           aria-pressed={selectionRole != null}
                           className={cellClass}
                           onClick={() => onDateSelect(iso)}
+                          onMouseEnter={onDateHover ? () => onDateHover(iso) : undefined}
+                          onMouseLeave={onDateHoverEnd || undefined}
+                          onFocus={onDateHover ? () => onDateHover(iso) : undefined}
+                          onBlur={onDateHoverEnd || undefined}
                         >
                           {inner}
                         </button>

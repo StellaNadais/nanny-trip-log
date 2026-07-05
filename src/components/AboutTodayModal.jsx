@@ -1,11 +1,11 @@
-import { useEffect, useId } from 'react'
 import MealsInlineField from './MealsInlineField'
 import TripPlacesField from './TripPlacesField'
 import JournalLittleBooks from './JournalLittleBooks'
 import JournalMoodBar from './JournalMoodBar'
+import TodayPanelModal from './TodayPanelModal'
 
 /**
- * Popup for reporting the day with the child.
+ * Popup for reporting the day with the child — soft-panel shell (matches Thank you).
  */
 export default function AboutTodayModal({
   open,
@@ -30,59 +30,37 @@ export default function AboutTodayModal({
   canForward = true,
   onBeforeShareAction,
 }) {
-  const titleId = useId()
-
-  useEffect(() => {
-    if (!open) return
-    const onKey = (e) => {
-      if (e.key === 'Escape') onClose()
-    }
-    window.addEventListener('keydown', onKey)
-    return () => window.removeEventListener('keydown', onKey)
-  }, [open, onClose])
-
-  if (!open) return null
-
   return (
-    <div
-      className="about-today-modal"
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby={titleId}
+    <TodayPanelModal
+      open={open}
+      onClose={onClose}
+      title="About today"
+      hideHead
+      hideFoot
+      modalClassName="about-today-modal--about-today"
     >
-      <button
-        type="button"
-        className="about-today-modal__backdrop"
-        aria-label="Close"
-        onClick={onClose}
-      />
-      <div className="about-today-modal__sheet">
-        <header className="about-today-modal__head">
-          <div>
-            <p className="about-today-modal__eyebrow">Report with child</p>
-            <h2 id={titleId} className="about-today-modal__title">
-              About today
-            </h2>
-            <p className="about-today-modal__date muted">{dateLabel}</p>
-          </div>
-          <button type="button" className="btn btn--ghost about-today-modal__close" onClick={onClose}>
-            ×
-          </button>
-        </header>
+      <section className="soft-panel soft-panel--about-today soft-panel--book-popup" aria-labelledby="about-today-title">
+        <div className="soft-panel__hero">
+          <p className="soft-panel__eyebrow">Report with child</p>
+          <h2 id="about-today-title" className="soft-panel__title">
+            About today
+          </h2>
+          <p className="soft-panel__meta muted">{dateLabel}</p>
+          <p className="soft-panel__lede">
+            Mood, outings, meals, nap, and notes — text parents when you&apos;re ready.
+          </p>
+        </div>
 
-        <div className="about-today-modal__scroll">
+        <div className="soft-panel__body soft-panel__body--about-today">
           <JournalMoodBar value={mood} onChange={onMoodChange} />
 
-          <section
-            className="journal-mood-bar journal-panel journal-panel--about about-today-modal__section"
-            aria-label="Day notes"
-          >
-            <div className="journal-mood-bar__head">
-              <span className="journal-mood-bar__title" id="about-today-notes-label">
+          <section className="about-today__section journal-panel journal-panel--about" aria-label="Day notes">
+            <div className="about-today__section-head">
+              <span className="about-today__section-title" id="about-today-notes-label">
                 What we did
               </span>
             </div>
-            <div className="journal-mood-bar__track journal-panel__body">
+            <div className="about-today__section-body">
               <TripPlacesField
                 id="about-today-day-notes"
                 value={dayNotes}
@@ -94,16 +72,13 @@ export default function AboutTodayModal({
             </div>
           </section>
 
-          <section
-            className="journal-mood-bar journal-panel journal-panel--meals about-today-modal__section"
-            aria-label="Meals"
-          >
-            <div className="journal-mood-bar__head">
-              <span className="journal-mood-bar__title" id="about-today-meals-label">
+          <section className="about-today__section journal-panel journal-panel--meals" aria-label="Meals">
+            <div className="about-today__section-head">
+              <span className="about-today__section-title" id="about-today-meals-label">
                 Meals today
               </span>
             </div>
-            <div className="journal-mood-bar__track journal-panel__body">
+            <div className="about-today__section-body">
               <MealsInlineField
                 id="about-today-meals"
                 value={mealsText}
@@ -117,6 +92,7 @@ export default function AboutTodayModal({
           </section>
 
           <JournalLittleBooks
+            flush
             nap={nap}
             onNapChange={onNapChange}
             pottyTime={pottyTime}
@@ -126,10 +102,9 @@ export default function AboutTodayModal({
             wishes={wishes}
             onWishesChange={onWishesChange}
           />
-
         </div>
 
-        <footer className="about-today-modal__foot">
+        <div className="soft-panel__actions">
           <button type="button" className="btn btn--ghost" onClick={onClose}>
             Done
           </button>
@@ -143,8 +118,8 @@ export default function AboutTodayModal({
               Text parent
             </a>
           ) : null}
-        </footer>
-      </div>
-    </div>
+        </div>
+      </section>
+    </TodayPanelModal>
   )
 }

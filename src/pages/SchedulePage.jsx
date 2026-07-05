@@ -3,13 +3,15 @@ import { toISODateLocal } from '../utils/dates'
 import { monthGrid, isSameDay } from '../utils/calendarMonth'
 import { useBookings } from '../hooks/useBookings'
 import { bookingOccupiesCalendarSlot } from '../utils/bookingCalendar'
-import { expandBookingCalendarDates, formatCareBookingWindow, bookingEndMs } from '../utils/bookingRange'
-import { formatBookingChildrenLabel } from '../utils/bookingChildren'
+import { expandBookingCalendarDates, bookingEndMs } from '../utils/bookingRange'
 import { upcomingCelebrationsInMonth } from '../utils/scheduleCelebrations'
+import { CUSTOM_CELEBRATIONS_UPDATED_EVENT } from '../utils/customCelebrationsStorage'
 import ScheduleCalendarFlip from '../components/ScheduleCalendarFlip'
 import ScheduleFunModal from '../components/ScheduleFunModal'
+import ScheduleFunListTile from '../components/ScheduleFunListTile'
 import ScheduleOverviewModal from '../components/ScheduleOverviewModal'
-import TodaySpaceTile from '../components/TodaySpaceTile'
+import ScheduleOverviewListTile from '../components/ScheduleOverviewListTile'
+import ScheduleOverviewRequestList from '../components/ScheduleOverviewRequestList'
 import WorkspaceTileBoard from '../components/WorkspaceTileBoard'
 
 function todayISO() {
@@ -18,11 +20,6 @@ function todayISO() {
 
 function dateISOFromParts(y, m, dayNum) {
   return toISODateLocal(new Date(y, m, dayNum))
-}
-
-function gigResponseStatus(b) {
-  if (b.responseStatus === 'accepted' || b.responseStatus === 'declined') return b.responseStatus
-  return 'pending'
 }
 
 function cellBookingMod(bookings) {
@@ -88,23 +85,14 @@ export default function SchedulePage() {
       })
   }, [bookings])
 
-  const [carouselIndex, setCarouselIndex] = useState(0)
-  const [enterAnim, setEnterAnim] = useState(null)
   const [openPanel, setOpenPanel] = useState(null)
+  const [customFunRev, setCustomFunRev] = useState(0)
 
   useEffect(() => {
-    if (upcoming.length === 0) {
-      setCarouselIndex(0)
-      return
-    }
-    setCarouselIndex((i) => Math.min(i, upcoming.length - 1))
-  }, [upcoming.length])
-
-  useEffect(() => {
-    if (!enterAnim) return
-    const t = window.setTimeout(() => setEnterAnim(null), 320)
-    return () => window.clearTimeout(t)
-  }, [carouselIndex, enterAnim])
+    const refresh = () => setCustomFunRev((r) => r + 1)
+    window.addEventListener(CUSTOM_CELEBRATIONS_UPDATED_EVENT, refresh)
+    return () => window.removeEventListener(CUSTOM_CELEBRATIONS_UPDATED_EVENT, refresh)
+  }, [])
 
   useEffect(() => {
     setOpenPanel(null)
@@ -118,23 +106,7 @@ export default function SchedulePage() {
     setOpenPanel(null)
   }
 
-  const currentGig = upcoming.length > 0 ? upcoming[carouselIndex] : null
-  const gigStatus = currentGig ? gigResponseStatus(currentGig) : 'pending'
-
-  function goNextGig() {
-    if (upcoming.length <= 1) return
-    setEnterAnim('next')
-    setCarouselIndex((i) => (i + 1) % upcoming.length)
-  }
-
-  function goPrevGig() {
-    if (upcoming.length <= 1) return
-    setEnterAnim('prev')
-    setCarouselIndex((i) => (i - 1 + upcoming.length) % upcoming.length)
-  }
-
-  function deleteCurrentGig() {
-    if (!currentGig) return
+  function deleteGig(gig) {
     if (
       !window.confirm(
         'Delete this gig request? It will be removed from your calendar, the parent booking page, and upcoming gigs.'
@@ -142,7 +114,7 @@ export default function SchedulePage() {
     ) {
       return
     }
-    removeBooking(currentGig.id)
+    removeBooking(gig.id)
   }
 
   const title = cursor.toLocaleDateString(undefined, {
@@ -158,177 +130,19 @@ export default function SchedulePage() {
     setCursor(new Date(y, m + 1, 1))
   }
 
-  const overviewPreview = useMemo(() => {
-    const bits = [`${upcoming.length} in queue`, `${acceptedUpcoming.length} confirmed`]
-    if (currentGig?.familyName) bits.push(currentGig.familyName)
-    return bits.join(' · ')
-  }, [upcoming.length, acceptedUpcoming.length, currentGig?.familyName])
-
-  const funPreview = useMemo(() => {
-    const list = upcomingCelebrationsInMonth(y, m, todayISO())
-    if (!list.length) return ''
-    return list
-      .slice(0, 2)
-      .map((c) => c.title)
-      .join(', ')
-  }, [y, m])
-
-  const funCount = useMemo(
-    () => upcomingCelebrationsInMonth(y, m, todayISO()).length,
-    [y, m]
-  )
-
-  const funIcon = (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width="22"
-      height="22"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
-    </svg>
-  )
-
-  const overviewIcon = (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width="22"
-      height="22"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M3 3v18h18" />
-      <path d="M7 16l4-4 4 4 6-6" />
-    </svg>
-  )
+  const funCelebrations = useMemo(() => {
+    void customFunRev
+    return upcomingCelebrationsInMonth(y, m, todayISO())
+  }, [y, m, customFunRev])
 
   const requestsPanel = (
-    <section
-      className="schedule-overview__requests"
-      aria-labelledby="schedule-requested-dates-title"
-    >
-      <h2 id="schedule-requested-dates-title" className="schedule-overview__requests-title">
-        Requests
-      </h2>
-      {upcoming.length === 0 ? (
-        <p className="schedule-overview__requests-empty muted">
-          No requested dates yet. Share your parent booking link when you’re ready.
-        </p>
-      ) : (
-        <div className="schedule-upcoming-carousel">
-          <div className="schedule-upcoming-carousel__nav" aria-label="Browse requested dates">
-            <button
-              type="button"
-              className="btn btn--ghost schedule-upcoming-carousel__arrow"
-              onClick={goPrevGig}
-              disabled={upcoming.length <= 1}
-              aria-label="Previous request"
-            >
-              ‹
-            </button>
-            <span className="schedule-upcoming-carousel__count muted">
-              {carouselIndex + 1} / {upcoming.length}
-            </span>
-            <button
-              type="button"
-              className="btn btn--ghost schedule-upcoming-carousel__arrow"
-              onClick={goNextGig}
-              disabled={upcoming.length <= 1}
-              aria-label="Next request"
-            >
-              ›
-            </button>
-          </div>
-
-          <div className="schedule-upcoming-carousel__window">
-            {currentGig ? (
-              <div
-                className={`schedule-upcoming-card book-upcoming__row ${enterAnim === 'next' ? 'schedule-upcoming-card--enter-next' : ''} ${enterAnim === 'prev' ? 'schedule-upcoming-card--enter-prev' : ''}`}
-                key={currentGig.id}
-              >
-                <time className="book-upcoming__date" dateTime={currentGig.dateISO}>
-                  {new Date(currentGig.dateISO + 'T12:00:00').toLocaleDateString(undefined, {
-                    weekday: 'short',
-                    month: 'short',
-                    day: 'numeric',
-                    year: 'numeric',
-                  })}
-                </time>
-                <div className="book-upcoming__body">
-                  <strong>{currentGig.familyName}</strong>
-                  <span className="muted">{currentGig.contact}</span>
-                  {formatCareBookingWindow(currentGig) || formatBookingChildrenLabel(currentGig) ? (
-                    <span className="book-upcoming__meta muted">
-                      {[formatCareBookingWindow(currentGig), formatBookingChildrenLabel(currentGig)]
-                        .filter(Boolean)
-                        .join(' · ')}
-                    </span>
-                  ) : null}
-                  {currentGig.notes ? <p className="book-upcoming__notes">{currentGig.notes}</p> : null}
-
-                  <div className="schedule-upcoming-card__actions">
-                    {gigStatus === 'pending' ? (
-                      <>
-                        <button
-                          type="button"
-                          className="btn btn--primary schedule-upcoming-card__btn"
-                          onClick={() => patchBooking(currentGig.id, { responseStatus: 'accepted' })}
-                        >
-                          Accept
-                        </button>
-                        <button
-                          type="button"
-                          className="btn btn--ghost schedule-upcoming-card__btn"
-                          onClick={() => patchBooking(currentGig.id, { responseStatus: 'declined' })}
-                        >
-                          Decline
-                        </button>
-                      </>
-                    ) : gigStatus === 'accepted' ? (
-                      <p className="schedule-upcoming-card__status schedule-upcoming-card__status--accepted muted">
-                        Accepted
-                      </p>
-                    ) : (
-                      <>
-                        <p className="schedule-upcoming-card__status schedule-upcoming-card__status--declined muted">
-                          Declined
-                        </p>
-                        <button
-                          type="button"
-                          className="btn btn--ghost schedule-upcoming-card__btn schedule-upcoming-card__undo"
-                          onClick={() => patchBooking(currentGig.id, { responseStatus: undefined })}
-                        >
-                          Undo decline
-                        </button>
-                      </>
-                    )}
-                  </div>
-                  <div className="schedule-upcoming-card__delete-row">
-                    <button
-                      type="button"
-                      className="btn btn--ghost schedule-upcoming-card__delete"
-                      onClick={deleteCurrentGig}
-                      aria-label="Delete this gig request"
-                    >
-                      Delete gig
-                    </button>
-                  </div>
-                </div>
-              </div>
-            ) : null}
-          </div>
-        </div>
-      )}
-    </section>
+    <ScheduleOverviewRequestList
+      upcoming={upcoming}
+      onAccept={(id) => patchBooking(id, { responseStatus: 'accepted' })}
+      onDecline={(id) => patchBooking(id, { responseStatus: 'declined' })}
+      onUndoDecline={(id) => patchBooking(id, { responseStatus: undefined })}
+      onDelete={deleteGig}
+    />
   )
 
   return (
@@ -362,13 +176,14 @@ export default function SchedulePage() {
             {
               id: 'overview',
               label: 'Overview',
-              square: true,
+              span: 2,
+              hideHead: true,
               children: (
-                <TodaySpaceTile
-                  icon={overviewIcon}
-                  count={upcoming.length}
-                  preview={overviewPreview}
-                  hint="Queue and requests — tap to open."
+                <ScheduleOverviewListTile
+                  monthLabel={title}
+                  queueCount={upcoming.length}
+                  confirmedCount={acceptedUpcoming.length}
+                  upcoming={upcoming}
                   onClick={() => openSchedulePanel('overview')}
                 />
               ),
@@ -376,13 +191,12 @@ export default function SchedulePage() {
             {
               id: 'fun',
               label: 'Do fun',
-              square: true,
+              span: 2,
+              hideHead: true,
               children: (
-                <TodaySpaceTile
-                  icon={funIcon}
-                  count={funCount}
-                  preview={funPreview}
-                  hint="Celebrations this month — tap to open."
+                <ScheduleFunListTile
+                  monthLabel={title}
+                  celebrations={funCelebrations}
                   onClick={() => openSchedulePanel('fun')}
                 />
               ),

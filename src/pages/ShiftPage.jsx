@@ -3,12 +3,19 @@ import { DayStrip } from '../components/DayStrip'
 import HoldConfirmControl from '../components/HoldConfirmControl'
 import { addDays, formatWeekRange, startOfWeekMonday, toISODateLocal } from '../utils/dates'
 import { useShiftPunctuality } from '../hooks/useShiftPunctuality'
-import { formatCountdownMs, shiftTimeWindowStatus } from '../utils/shiftTimeWindow'
+import { useBookings } from '../hooks/useBookings'
+import {
+  formatCountdownMs,
+  hmToShiftLabel,
+  shiftPickerOptionsFromHm,
+  shiftTimeWindowStatus,
+} from '../utils/shiftTimeWindow'
+import { bookingCareTimesForDay, bookingsCoveringDate } from '../utils/bookingRange'
 import ShiftContractSection from '../components/ShiftContractSection'
 import WorkspaceTileBoard from '../components/WorkspaceTileBoard'
 
-const ARRIVAL_TIMES = ['8:00 AM', '8:05 AM', '8:10 AM']
-const END_TIMES = ['5:00 PM', '5:05 PM', '5:10 PM']
+const FALLBACK_ARRIVAL_TIMES = ['8:00 AM', '8:05 AM', '8:10 AM']
+const FALLBACK_END_TIMES = ['5:00 PM', '5:05 PM', '5:10 PM']
 
 function formatDayLabel(iso) {
   if (!iso) return ''
@@ -38,8 +45,169 @@ function splitTimeLabel(full) {
   return { clock: full, ap: '' }
 }
 
+function ShiftTimeRow({
+  legend,
+  ariaGroupLabel,
+  options,
+  selected,
+  onSelect,
+  shiftDate,
+  isShiftToday,
+  now,
+  kind,
+}) {
+  const status = selected ? shiftTimeWindowStatus(shiftDate, selected, now) : null
+
+  return (
+    <fieldset className="shift__pick-field time-pick">
+      <legend className="time-pick__legend">{legend}</legend>
+      <div className="shift__circle-row" role="group" aria-label={ariaGroupLabel}>
+        {options.map((t) => {
+          const { clock: clockPart, ap } = splitTimeLabel(t)
+          const on = selected === t
+          const live = on && isShiftToday && shiftTimeWindowStatus(shiftDate, t, now).status === 'inside'
+          return (
+            <button
+              key={t}
+              type="button"
+              className={`shift__time-circle ${on ? 'shift__time-circle--on' : ''} ${live ? 'shift__time-circle--live' : ''}`}
+              aria-pressed={on}
+              aria-label={on ? `Clear ${kind} ${t}` : `Select ${kind} ${t}`}
+              onClick={() => onSelect(on ? '' : t)}
+            >
+              <span className="shift__time-circle__clock">{clockPart}</span>
+              {ap ? <span className="shift__time-circle__ap">{ap}</span> : null}
+            </button>
+          )
+        })}
+      </div>
+      {selected && isShiftToday && status?.status === 'inside' ? (
+        <p className="shift__window-hint shift__window-hint--ok" aria-live="polite">
+          Press and hold below to log {kind}
+        </p>
+      ) : selected && isShiftToday && status?.status === 'before' ? (
+        <p className="shift__window-hint muted" aria-live="polite">
+          Unlocks in{' '}
+          <strong className="shift__countdown">
+            {formatCountdownMs(status.opensAt.getTime() - now.getTime())}
+          </strong>
+        </p>
+      ) : selected && isShiftToday && status?.status === 'after' ? (
+        <p className="shift__window-hint muted" aria-live="polite">
+          Window passed for {selected}
+        </p>
+      ) : null}
+    </fieldset>
+  )
+}
+
+function ShiftGigClock({
+  gig,
+  shiftDate,
+  isShiftToday,
+  now,
+  arrival,
+  end,
+  onArrival,
+  onEnd,
+  onLogArrival,
+  onLogEnd,
+  canLogArrival,
+  canLogEnd,
+}) {
+  const times = bookingCareTimesForDay(gig, shiftDate)
+  if (!times) return null
+
+  const arrivalOptions = times.arrivalHM ? shiftPickerOptionsFromHm(times.arrivalHM) : []
+  const endOptions = times.endHM ? shiftPickerOptionsFromHm(times.endHM) : []
+  const statusLabel =
+    gig.responseStatus === 'accepted' ? 'Confirmed' : gig.responseStatus === 'declined' ? 'Declined' : 'Request'
+
+  return (
+    <div className="shift__family-block">
+      <div className="shift__family-head">
+        <h3 className="shift__family-name">{times.familyName}</h3>
+        <span className={`shift__family-status shift__family-status--${gig.responseStatus || 'pending'}`}>
+          {statusLabel}
+        </span>
+      </div>
+
+      {times.middleDay ? (
+        <p className="shift__family-note muted">Overnight care — middle day (no clock times requested).</p>
+      ) : (
+        <>
+          {times.arrivalHM ? (
+            <p className="shift__requested muted">
+              Requested arrival: <strong>{hmToShiftLabel(times.arrivalHM)}</strong>
+            </p>
+          ) : null}
+          {times.endHM ? (
+            <p className="shift__requested muted">
+              Requested end: <strong>{hmToShiftLabel(times.endHM)}</strong>
+            </p>
+          ) : null}
+
+          {arrivalOptions.length ? (
+            <ShiftTimeRow
+              legend="Arrival"
+              ariaGroupLabel={`Arrival time for ${times.familyName}`}
+              options={arrivalOptions}
+              selected={arrival}
+              onSelect={onArrival}
+              shiftDate={shiftDate}
+              isShiftToday={isShiftToday}
+              now={now}
+              kind="arrival"
+            />
+          ) : null}
+
+          {endOptions.length ? (
+            <ShiftTimeRow
+              legend="End of shift"
+              ariaGroupLabel={`End time for ${times.familyName}`}
+              options={endOptions}
+              selected={end}
+              onSelect={onEnd}
+              shiftDate={shiftDate}
+              isShiftToday={isShiftToday}
+              now={now}
+              kind="end"
+            />
+          ) : null}
+
+          <div className="shift__submit-row">
+            {arrivalOptions.length ? (
+              <HoldConfirmControl
+                enabled={canLogArrival}
+                onConfirm={onLogArrival}
+                disabled={!canLogArrival}
+                className={`btn btn--primary shift__submit-btn shift__submit-btn--arrival ${canLogArrival ? 'shift__submit-btn--live' : ''}`}
+                aria-label={`Press and hold to log arrival for ${times.familyName}`}
+              >
+                Log arrival
+              </HoldConfirmControl>
+            ) : null}
+            {endOptions.length ? (
+              <HoldConfirmControl
+                enabled={canLogEnd}
+                onConfirm={onLogEnd}
+                disabled={!canLogEnd}
+                className={`btn btn--primary shift__submit-btn shift__submit-btn--end ${canLogEnd ? 'shift__submit-btn--live' : ''}`}
+                aria-label={`Press and hold to log end for ${times.familyName}`}
+              >
+                Log end
+              </HoldConfirmControl>
+            ) : null}
+          </div>
+        </>
+      )}
+    </div>
+  )
+}
+
 export default function ShiftPage() {
-  const { upsertShiftDay } = useShiftPunctuality()
+  const { bookings } = useBookings()
+  const { entries, upsertShiftDay } = useShiftPunctuality()
   const [shiftWeekStart, setShiftWeekStart] = useState(() => startOfWeekMonday(new Date()))
   const [dayOffset, setDayOffset] = useState(() =>
     initialDayOffsetForWeek(startOfWeekMonday(new Date()))
@@ -51,8 +219,11 @@ export default function ShiftPage() {
     [shiftWeekStart, dayOffset]
   )
 
-  const [arrival, setArrival] = useState('')
-  const [end, setEnd] = useState('')
+  const dayGigs = useMemo(() => bookingsCoveringDate(bookings, shiftDate), [bookings, shiftDate])
+
+  const [manualArrival, setManualArrival] = useState('')
+  const [manualEnd, setManualEnd] = useState('')
+  const [gigPicks, setGigPicks] = useState({})
   const [flash, setFlash] = useState('')
   const [tick, setTick] = useState(0)
 
@@ -61,56 +232,170 @@ export default function ShiftPage() {
     return () => clearInterval(id)
   }, [])
 
-  const clock = useMemo(() => {
-    const now = new Date()
-    const todayIso = toISODateLocal(now)
-    const isShiftToday = shiftDate === todayIso
-    const arrivalSt = arrival ? shiftTimeWindowStatus(shiftDate, arrival, now) : null
-    const endSt = end ? shiftTimeWindowStatus(shiftDate, end, now) : null
-    return {
-      now,
-      isShiftToday,
-      arrivalSt,
-      endSt,
-      canLogArrival: isShiftToday && Boolean(arrival && arrivalSt?.status === 'inside'),
-      canLogEnd: isShiftToday && Boolean(end && endSt?.status === 'inside'),
+  useEffect(() => {
+    const next = {}
+    for (const gig of dayGigs) {
+      const saved = entries.find((e) => e.dateISO === shiftDate && e.bookingId === gig.id)
+      next[gig.id] = { arrival: saved?.arrival ?? '', end: saved?.end ?? '' }
     }
-  }, [tick, shiftDate, arrival, end])
+    setGigPicks(next)
+    setManualArrival('')
+    setManualEnd('')
+    setFlash('')
+  }, [shiftDate, dayGigs])
+
+  const now = useMemo(() => new Date(), [tick])
+  const todayIso = toISODateLocal(now)
+  const isShiftToday = shiftDate === todayIso
 
   function shiftShiftWeek(delta) {
     setShiftWeekStart((w) => addDays(w, delta * 7))
   }
 
-  function toggleArrival(t) {
-    setArrival((prev) => (prev === t ? '' : t))
+  function setGigPick(gigId, patch) {
+    setGigPicks((prev) => ({
+      ...prev,
+      [gigId]: { ...prev[gigId], ...patch },
+    }))
     setFlash('')
   }
 
-  function toggleEnd(t) {
-    setEnd((prev) => (prev === t ? '' : t))
-    setFlash('')
+  function logGigArrival(gigId) {
+    const pick = gigPicks[gigId]
+    if (!pick?.arrival || !isShiftToday) return
+    if (shiftTimeWindowStatus(shiftDate, pick.arrival, now).status !== 'inside') return
+    upsertShiftDay({ dateISO: shiftDate, bookingId: gigId, arrival: pick.arrival })
+    setFlash('Arrival saved.')
   }
 
-  function logArrival() {
-    if (!clock.canLogArrival) return
-    upsertShiftDay({ dateISO: shiftDate, arrival })
-    setFlash('Arrival saved. Log end when you leave, inside its ±5 minute window.')
+  function logGigEnd(gigId) {
+    const pick = gigPicks[gigId]
+    if (!pick?.end || !isShiftToday) return
+    if (shiftTimeWindowStatus(shiftDate, pick.end, now).status !== 'inside') return
+    upsertShiftDay({ dateISO: shiftDate, bookingId: gigId, end: pick.end })
+    setFlash('End saved.')
   }
 
-  function logEnd() {
-    if (!clock.canLogEnd) return
-    upsertShiftDay({ dateISO: shiftDate, end })
-    const pair = Boolean(arrival && end)
-    setFlash(
-      pair
-        ? "Today's shift is logged."
-        : 'End saved.'
-    )
+  function logManualArrival() {
+    if (!manualArrival || !isShiftToday) return
+    if (shiftTimeWindowStatus(shiftDate, manualArrival, now).status !== 'inside') return
+    upsertShiftDay({ dateISO: shiftDate, arrival: manualArrival })
+    setFlash('Arrival saved.')
   }
+
+  function logManualEnd() {
+    if (!manualEnd || !isShiftToday) return
+    if (shiftTimeWindowStatus(shiftDate, manualEnd, now).status !== 'inside') return
+    upsertShiftDay({ dateISO: shiftDate, end: manualEnd })
+    setFlash('End saved.')
+  }
+
+  const manualCanLogArrival =
+    isShiftToday &&
+    Boolean(manualArrival && shiftTimeWindowStatus(shiftDate, manualArrival, now).status === 'inside')
+  const manualCanLogEnd =
+    isShiftToday &&
+    Boolean(manualEnd && shiftTimeWindowStatus(shiftDate, manualEnd, now).status === 'inside')
+
+  const clockPanel = (
+    <section
+      className="journal-mood-bar journal-panel journal-panel--shift-log shift__card shift__card--log"
+      aria-label="Log shift times"
+    >
+      <div className="journal-mood-bar__track journal-panel__body shift__form">
+        {dayGigs.length > 0 ? (
+          <>
+            <p className="shift__form-lede muted">
+              Times are based on each family&apos;s request for {formatDayLabel(shiftDate)}.
+            </p>
+            {dayGigs.map((gig) => {
+              const pick = gigPicks[gig.id] ?? { arrival: '', end: '' }
+              const canLogArrival =
+                isShiftToday &&
+                Boolean(
+                  pick.arrival && shiftTimeWindowStatus(shiftDate, pick.arrival, now).status === 'inside'
+                )
+              const canLogEnd =
+                isShiftToday &&
+                Boolean(pick.end && shiftTimeWindowStatus(shiftDate, pick.end, now).status === 'inside')
+              return (
+                <ShiftGigClock
+                  key={gig.id}
+                  gig={gig}
+                  shiftDate={shiftDate}
+                  isShiftToday={isShiftToday}
+                  now={now}
+                  arrival={pick.arrival}
+                  end={pick.end}
+                  onArrival={(v) => setGigPick(gig.id, { arrival: v })}
+                  onEnd={(v) => setGigPick(gig.id, { end: v })}
+                  onLogArrival={() => logGigArrival(gig.id)}
+                  onLogEnd={() => logGigEnd(gig.id)}
+                  canLogArrival={canLogArrival}
+                  canLogEnd={canLogEnd}
+                />
+              )
+            })}
+          </>
+        ) : (
+          <>
+            <p className="shift__form-lede muted">No gigs on this day — pick times manually.</p>
+            <ShiftTimeRow
+              legend="Arrival"
+              ariaGroupLabel="Arrival time"
+              options={FALLBACK_ARRIVAL_TIMES}
+              selected={manualArrival}
+              onSelect={setManualArrival}
+              shiftDate={shiftDate}
+              isShiftToday={isShiftToday}
+              now={now}
+              kind="arrival"
+            />
+            <ShiftTimeRow
+              legend="End of shift"
+              ariaGroupLabel="End of shift time"
+              options={FALLBACK_END_TIMES}
+              selected={manualEnd}
+              onSelect={setManualEnd}
+              shiftDate={shiftDate}
+              isShiftToday={isShiftToday}
+              now={now}
+              kind="end"
+            />
+            <div className="shift__submit-row">
+              <HoldConfirmControl
+                enabled={manualCanLogArrival}
+                onConfirm={logManualArrival}
+                disabled={!manualCanLogArrival}
+                className={`btn btn--primary shift__submit-btn shift__submit-btn--arrival ${manualCanLogArrival ? 'shift__submit-btn--live' : ''}`}
+                aria-label="Press and hold to log arrival"
+              >
+                Log arrival
+              </HoldConfirmControl>
+              <HoldConfirmControl
+                enabled={manualCanLogEnd}
+                onConfirm={logManualEnd}
+                disabled={!manualCanLogEnd}
+                className={`btn btn--primary shift__submit-btn shift__submit-btn--end ${manualCanLogEnd ? 'shift__submit-btn--live' : ''}`}
+                aria-label="Press and hold to log end"
+              >
+                Log end
+              </HoldConfirmControl>
+            </div>
+          </>
+        )}
+
+        {flash ? (
+          <p className="shift__flash shift__flash--ok" role="status">
+            {flash}
+          </p>
+        ) : null}
+      </div>
+    </section>
+  )
 
   return (
     <div className="page page--shift page--kid-journal page--workspace work-ui">
-
       <div className="journal__layout shift__layout">
         <section className="journal__week-picker work-ui__panel" aria-label="Pick a day">
           <div className="journal__week-picker-top">
@@ -149,146 +434,7 @@ export default function ShiftPage() {
               label: 'Clock in',
               span: 2,
               hideHead: true,
-              children: (
-                <>
-        <section
-          className="journal-mood-bar journal-panel journal-panel--shift-log shift__card shift__card--log"
-          aria-label="Log shift times"
-        >
-          <div className="journal-mood-bar__track journal-panel__body shift__form">
-        <fieldset className="shift__pick-field time-pick">
-          <legend className="time-pick__legend">Arrival</legend>
-          <div className="shift__circle-row" role="group" aria-label="Arrival time">
-            {ARRIVAL_TIMES.map((t) => {
-              const { clock: clockPart, ap } = splitTimeLabel(t)
-              const on = arrival === t
-              const slotLive = on && clock.isShiftToday && clock.arrivalSt?.status === 'inside'
-              const canHold = slotLive && clock.canLogArrival
-              return (
-                <HoldConfirmControl
-                  key={t}
-                  enabled={canHold}
-                  onConfirm={logArrival}
-                  onClick={() => toggleArrival(t)}
-                  className={`shift__time-circle ${on ? 'shift__time-circle--on' : ''} ${slotLive ? 'shift__time-circle--live' : ''}`}
-                  aria-pressed={on}
-                  aria-label={
-                    on
-                      ? canHold
-                        ? `Hold to log arrival ${t}, or tap to clear`
-                        : `Clear arrival ${t}`
-                      : `Select arrival ${t}`
-                  }
-                >
-                  <span className="shift__time-circle__clock">{clockPart}</span>
-                  {ap ? <span className="shift__time-circle__ap">{ap}</span> : null}
-                </HoldConfirmControl>
-              )
-            })}
-          </div>
-          {arrival && clock.isShiftToday && clock.arrivalSt?.status === 'inside' ? (
-            <p className="shift__window-hint shift__window-hint--ok" aria-live="polite">
-              Press and hold to log arrival
-            </p>
-          ) : arrival && clock.isShiftToday && clock.arrivalSt?.status === 'before' ? (
-            <p className="shift__window-hint muted" aria-live="polite">
-              Unlocks in{' '}
-              <strong className="shift__countdown">
-                {formatCountdownMs(clock.arrivalSt.opensAt.getTime() - clock.now.getTime())}
-              </strong>
-            </p>
-          ) : arrival && clock.isShiftToday && clock.arrivalSt?.status === 'after' ? (
-            <p className="shift__window-hint muted" aria-live="polite">
-              Window passed for {arrival}
-            </p>
-          ) : null}
-        </fieldset>
-
-        <fieldset className="shift__pick-field time-pick">
-          <legend className="time-pick__legend">End of shift</legend>
-          <div className="shift__circle-row" role="group" aria-label="End of shift time">
-            {END_TIMES.map((t) => {
-              const { clock: clockPart, ap } = splitTimeLabel(t)
-              const on = end === t
-              const slotLive = on && clock.isShiftToday && clock.endSt?.status === 'inside'
-              const canHold = slotLive && clock.canLogEnd
-              return (
-                <HoldConfirmControl
-                  key={t}
-                  enabled={canHold}
-                  onConfirm={logEnd}
-                  onClick={() => toggleEnd(t)}
-                  className={`shift__time-circle ${on ? 'shift__time-circle--on' : ''} ${slotLive ? 'shift__time-circle--live' : ''}`}
-                  aria-pressed={on}
-                  aria-label={
-                    on
-                      ? canHold
-                        ? `Hold to log end ${t}, or tap to clear`
-                        : `Clear end ${t}`
-                      : `Select end ${t}`
-                  }
-                >
-                  <span className="shift__time-circle__clock">{clockPart}</span>
-                  {ap ? <span className="shift__time-circle__ap">{ap}</span> : null}
-                </HoldConfirmControl>
-              )
-            })}
-          </div>
-          {end && clock.isShiftToday && clock.endSt?.status === 'inside' ? (
-            <p className="shift__window-hint shift__window-hint--ok" aria-live="polite">
-              Press and hold to log end
-            </p>
-          ) : end && clock.isShiftToday && clock.endSt?.status === 'before' ? (
-            <p className="shift__window-hint muted" aria-live="polite">
-              Unlocks in{' '}
-              <strong className="shift__countdown">
-                {formatCountdownMs(clock.endSt.opensAt.getTime() - clock.now.getTime())}
-              </strong>
-            </p>
-          ) : end && clock.isShiftToday && clock.endSt?.status === 'after' ? (
-            <p className="shift__window-hint muted" aria-live="polite">
-              Window passed for {end}
-            </p>
-          ) : null}
-        </fieldset>
-
-        {flash ? (
-          <p
-            className={`shift__flash ${
-              flash.startsWith('Arrival') || flash.startsWith('End saved') || flash.startsWith('Today')
-                ? 'shift__flash--ok'
-                : ''
-            }`}
-            role="status"
-          >
-            {flash}
-          </p>
-        ) : null}
-
-        <div className="shift__submit-row">
-          <HoldConfirmControl
-            enabled={clock.canLogArrival}
-            onConfirm={logArrival}
-            disabled={!clock.canLogArrival}
-            className={`btn btn--primary shift__submit-btn shift__submit-btn--arrival ${clock.canLogArrival ? 'shift__submit-btn--live' : ''}`}
-            aria-label="Press and hold to log arrival"
-          >
-            Log arrival
-          </HoldConfirmControl>
-          <HoldConfirmControl
-            enabled={clock.canLogEnd}
-            onConfirm={logEnd}
-            disabled={!clock.canLogEnd}
-            className={`btn btn--primary shift__submit-btn shift__submit-btn--end ${clock.canLogEnd ? 'shift__submit-btn--live' : ''}`}
-            aria-label="Press and hold to log end"
-          >
-            Log end
-          </HoldConfirmControl>
-        </div>
-          </div>
-        </section>
-                </>
-              ),
+              children: clockPanel,
             },
             {
               id: 'contract',

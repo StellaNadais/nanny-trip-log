@@ -1,6 +1,7 @@
 import OutingsExpensesPanel from './OutingsExpensesPanel'
 import OutingsLocationsPanel from './OutingsLocationsPanel'
 import TodayPanelModal from './TodayPanelModal'
+import { TodaySoftPanel, TodaySoftSection } from './TodaySoftPanel'
 
 export default function OutingsModal({
   open,
@@ -19,6 +20,8 @@ export default function OutingsModal({
   onRemoveManualLine,
   manualTotal,
   customPlaces,
+  locationsOpen,
+  onToggleLocationsOpen,
   placeNickname,
   onPlaceNicknameChange,
   placeRoundTrip,
@@ -31,45 +34,50 @@ export default function OutingsModal({
     <TodayPanelModal
       open={open}
       onClose={onClose}
-      eyebrow="This week"
       title="Outings"
-      dateLabel={weekLabel}
+      hideHead
+      hideFoot
+      modalClassName="about-today-modal--soft-popup"
     >
-      <section className="about-today-modal__section" aria-labelledby="outings-expenses-heading">
-        <h3 id="outings-expenses-heading" className="schedule-overview__requests-title">
-          Expenses
-        </h3>
-        <OutingsExpensesPanel
-          extras={extras}
-          manualOpen={manualOpen}
-          onToggleManualOpen={onToggleManualOpen}
-          manualCat={manualCat}
-          onManualCatChange={onManualCatChange}
-          manualAmt={manualAmt}
-          onManualAmtChange={onManualAmtChange}
-          manualNote={manualNote}
-          onManualNoteChange={onManualNoteChange}
-          onAddManualLine={onAddManualLine}
-          onRemoveManualLine={onRemoveManualLine}
-          manualTotal={manualTotal}
-        />
-      </section>
+      <TodaySoftPanel
+        titleId="outings-popup-title"
+        eyebrow="This week"
+        title="Outings"
+        meta={weekLabel}
+        lede="Track parking, tolls, and trip places for the week."
+      >
+        <TodaySoftSection title="Expenses" titleId="outings-expenses-heading">
+          <OutingsExpensesPanel
+            extras={extras}
+            manualOpen={manualOpen}
+            onToggleManualOpen={onToggleManualOpen}
+            manualCat={manualCat}
+            onManualCatChange={onManualCatChange}
+            manualAmt={manualAmt}
+            onManualAmtChange={onManualAmtChange}
+            manualNote={manualNote}
+            onManualNoteChange={onManualNoteChange}
+            onAddManualLine={onAddManualLine}
+            onRemoveManualLine={onRemoveManualLine}
+            manualTotal={manualTotal}
+          />
+        </TodaySoftSection>
 
-      <section className="about-today-modal__section" aria-labelledby="outings-locations-heading">
-        <h3 id="outings-locations-heading" className="schedule-overview__requests-title">
-          Locations
-        </h3>
-        <OutingsLocationsPanel
-          customPlaces={customPlaces}
-          placeNickname={placeNickname}
-          onPlaceNicknameChange={onPlaceNicknameChange}
-          placeRoundTrip={placeRoundTrip}
-          onPlaceRoundTripChange={onPlaceRoundTripChange}
-          placeFormErr={placeFormErr}
-          onAddCustomPlace={onAddCustomPlace}
-          onRemoveCustomPlace={onRemoveCustomPlace}
-        />
-      </section>
+        <TodaySoftSection title="Locations" titleId="outings-locations-heading">
+          <OutingsLocationsPanel
+            customPlaces={customPlaces}
+            locationsOpen={locationsOpen}
+            onToggleLocationsOpen={onToggleLocationsOpen}
+            placeNickname={placeNickname}
+            onPlaceNicknameChange={onPlaceNicknameChange}
+            placeRoundTrip={placeRoundTrip}
+            onPlaceRoundTripChange={onPlaceRoundTripChange}
+            placeFormErr={placeFormErr}
+            onAddCustomPlace={onAddCustomPlace}
+            onRemoveCustomPlace={onRemoveCustomPlace}
+          />
+        </TodaySoftSection>
+      </TodaySoftPanel>
     </TodayPanelModal>
   )
 }

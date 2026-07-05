@@ -28,8 +28,9 @@
 
 .page--book-portal .book-workspace-head__sub,
 .page--book-portal .book-events__lede,
-.page--book-portal .book-thanks__lede,
-.page--book-portal .book-thanks__note,
+.page--book-portal .soft-panel__lede,
+.page--book-portal .soft-panel__card-body,
+.page--book-portal .soft-panel__footer,
 .page--book-portal .book-modal__sub,
 .page--book-portal .book-reminders-field__lede {
   font-family: var(--font-ui);
@@ -38,7 +39,7 @@
 }
 
 .page--book-portal .book-events__summary-title,
-.page--book-portal .book-thanks__title,
+.page--book-portal .soft-panel__title,
 .page--book-portal .book-modal__title,
 .page--book-portal .schedule-flip__back-heading {
   font-family: var(--font-ui);
@@ -47,18 +48,17 @@
 }
 
 .page--book-portal .book-modal__date,
-.page--book-portal .book-events__item-title,
-.page--book-portal .book-thanks__name {
+.page--book-portal .soft-panel__card-title {
   font-family: var(--font-ui);
   font-weight: 600;
   letter-spacing: 0;
 }
 
 .page--book-portal .book-modal__eyebrow,
+.page--book-portal .soft-panel__eyebrow,
 .page--book-portal .book-modal__block-title,
 .page--book-portal .book-modal__hotel-kicker,
-.page--book-portal .field-block__label,
-.page--book-portal .book-events__loc {
+.page--book-portal .field-block__label {
   font-family: var(--font-ui);
   font-weight: 600;
   font-size: 0.6875rem;
@@ -270,7 +270,7 @@
 }
 
 .page--book-portal .book-scheduling-modal__date-readout {
-  margin: 0;
+  margin: 0 0 12px;
   font-family: var(--font-ui);
   font-size: 0.9375rem;
   font-weight: 600;
@@ -283,6 +283,47 @@
   padding-top: 4px;
   border-top: 1px solid var(--line-soft);
   margin-top: 4px;
+}
+
+.book-calendar-booking {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-height: 0;
+}
+
+.book-calendar-selection-bar {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 14px;
+  border-radius: 12px;
+  border: 1px solid color-mix(in srgb, var(--accent) 28%, var(--line-soft));
+  background: color-mix(in srgb, var(--accent-soft) 35%, var(--paper));
+}
+
+.book-calendar-selection-bar__copy {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.book-calendar-selection-bar__text {
+  margin: 0;
+  font-size: 0.8125rem;
+  line-height: 1.45;
+}
+
+.book-calendar-selection-bar__hint {
+  margin: 0;
+  font-size: 0.75rem;
+  line-height: 1.45;
+}
+
+.book-calendar-selection-bar__cancel {
+  flex-shrink: 0;
 }
 
 .page--book-portal .book-parents-banner {
@@ -319,142 +360,46 @@
   font-weight: 600;
 }
 
-.page--book-portal .book-events__panel,
-.page--book-portal .book-thanks {
-  border: 1px solid var(--line-soft);
-  border-radius: var(--radius);
-  background: var(--paper);
+.page--book-portal .book-portal__panel:has(.soft-panel--thanks) {
   padding: 12px 14px;
 }
 
-.page--book-portal .book-events__summary-title,
-.page--book-portal .book-thanks__title {
-  margin: 0 0 8px;
-  font-size: 1rem;
-  color: var(--ink);
-}
-
-.page--book-portal .book-events__lede,
-.page--book-portal .book-thanks__lede {
-  margin: 0 0 12px;
-  font-size: 0.8125rem;
-  line-height: 1.45;
-}
-
-.page--book-portal .book-events__grid {
-  display: grid;
+.page--book-portal .book-portal__panel--events {
+  padding: 0;
   gap: 12px;
 }
 
-@media (min-width: 600px) {
-  .page--book-portal .book-events__grid {
-    grid-template-columns: 1fr 1fr;
-  }
-}
-
-.page--book-portal .book-events__loc {
-  margin: 0 0 6px;
-  font-size: 0.6875rem;
-}
-
-.page--book-portal .book-events__list {
-  margin: 0;
-  padding: 0;
-  list-style: none;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.page--book-portal .book-events__item {
-  font-size: 0.8125rem;
-  line-height: 1.4;
-}
-
-.page--book-portal .book-events__item-title {
-  display: block;
-  font-weight: 600;
-}
-
-.page--book-portal .book-events__more {
-  margin-top: 12px;
-}
-
-.page--book-portal .book-thanks__list {
-  margin: 0;
-  padding: 0;
-  list-style: none;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.page--book-portal .book-thanks__item {
-  font-size: 0.8125rem;
-  line-height: 1.45;
-}
-
-.page--book-portal .book-thanks__name {
-  display: block;
-}
-
-.page--book-portal .book-thanks__note {
-  color: var(--ink-muted);
-}
-
-/* Post-booking grocery + reminders */
-.page--book-portal .book-follow-up__sheet {
-  max-height: min(92dvh, 40rem);
-  display: flex;
-  flex-direction: column;
-}
-
-.page--book-portal .book-follow-up__body {
-  flex: 1;
-  min-height: 0;
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
-  padding: 0 16px 8px;
-}
-
-.page--book-portal .book-follow-up__section {
-  margin-bottom: 4px;
-}
-
-.page--book-portal .book-follow-up__section .journal-mood-bar,
-.page--book-portal .book-follow-up__section .journal-panel {
+.page--book-portal .soft-panel--thanks {
   border: 1px solid var(--line-soft);
   border-radius: var(--radius);
-  background: var(--paper);
-  box-shadow: none;
+  padding: 0;
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, #fff 85%, transparent),
+    0 4px 18px color-mix(in srgb, var(--accent) 7%, transparent);
 }
 
-.page--book-portal .book-follow-up__section .journal-mood-bar__title {
-  font-family: var(--font-ui);
-  font-size: 0.8125rem;
-  font-weight: 600;
+.page--book-portal .soft-panel--events-box {
+  padding: 0;
+}
+
+.page--book-portal .events-board__title,
+.page--book-portal .soft-panel__title {
+  margin: 0 0 8px;
+  font-size: 1.125rem;
   color: var(--ink);
 }
 
-.page--book-portal .book-follow-up__section .grocery-list-panel__composer {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  align-items: flex-end;
+.page--book-portal .events-board__lede,
+.page--book-portal .soft-panel__lede {
+  max-width: 28rem;
 }
 
-.page--book-portal .book-follow-up__section .grocery-list-panel__input {
-  flex: 1;
-  min-width: 10rem;
+.page--book-portal .soft-panel__card-title {
+  display: block;
+  font-size: 0.875rem;
+  line-height: 1.3;
 }
 
-.page--book-portal .book-follow-up__actions {
-  flex-shrink: 0;
-  padding: 12px 16px 16px;
-  border-top: 1px solid var(--line-soft);
-}
-
-.page--book-portal .book-follow-up .book-reminders-field {
-  border-top: none;
-  padding-top: 0;
+.page--book-portal .soft-panel__card-body {
+  font-size: 0.8125rem;
 }

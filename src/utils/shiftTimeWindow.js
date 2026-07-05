@@ -58,3 +58,28 @@ export function formatCountdownMs(ms) {
   const r = s % 60
   return `${m}:${String(r).padStart(2, '0')}`
 }
+
+/** 24h HH:MM → shift label e.g. "9:00 AM". */
+export function hmToShiftLabel(hm) {
+  if (!hm || typeof hm !== 'string') return ''
+  const [h, m] = hm.split(':').map(Number)
+  if (!Number.isFinite(h) || !Number.isFinite(m)) return ''
+  return new Date(2000, 0, 1, h, m).toLocaleTimeString(undefined, {
+    hour: 'numeric',
+    minute: '2-digit',
+  })
+}
+
+/** ±5 minute picker options around a requested HH:MM time. */
+export function shiftPickerOptionsFromHm(hm) {
+  if (!hm || typeof hm !== 'string') return []
+  const [h, m] = hm.split(':').map(Number)
+  if (!Number.isFinite(h) || !Number.isFinite(m)) return []
+  const base = new Date(2000, 0, 1, h, m, 0, 0).getTime()
+  return [-5, 0, 5].map((offsetMin) =>
+    new Date(base + offsetMin * 60_000).toLocaleTimeString(undefined, {
+      hour: 'numeric',
+      minute: '2-digit',
+    })
+  )
+}

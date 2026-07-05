@@ -1,6 +1,4 @@
 import { useMemo, useState } from 'react'
-import { Link } from 'react-router-dom'
-import { EVENT_LOCATIONS, groupFamilyEventsByLocation } from '../data/familyEvents'
 import { OVERNIGHT_RATE } from '../data/bookingRates'
 import { toISODateLocal } from '../utils/dates'
 import { monthGrid, isSameDay } from '../utils/calendarMonth'
@@ -10,6 +8,8 @@ import BookFollowUpModal from '../components/BookFollowUpModal'
 import BookSchedulingDock from '../components/BookSchedulingDock'
 import ScheduleCalendarFlip from '../components/ScheduleCalendarFlip'
 import BookTabBar from '../components/BookTabBar'
+import EventsTilesSection from '../components/EventsTilesSection'
+import BookThanksPanel from '../components/BookThanksPanel'
 import { bookingOccupiesCalendarSlot } from '../utils/bookingCalendar'
 import {
   bookingEndMs,
@@ -20,7 +20,6 @@ import {
   suggestCareEndDateISO,
 } from '../utils/bookingRange'
 import { parseChildrenOnGig } from '../utils/bookingChildren'
-import { BOOK_THANKS_LEDE, BOOK_THANKS_SUPPORTERS } from '../data/bookThanks'
 
 function todayISO() {
   return toISODateLocal(new Date())
@@ -64,8 +63,8 @@ export default function BookPage() {
     () => new Date(today.getFullYear(), today.getMonth(), 1)
   )
   const [activeTab, setActiveTab] = useState('calendar')
-  const [schedulingOpen, setSchedulingOpen] = useState(false)
   const [awaitingEndDate, setAwaitingEndDate] = useState(false)
+  const [hoverEndDateISO, setHoverEndDateISO] = useState('')
   const [careStart, setCareStart] = useState(DEFAULT_CARE_START)
   const [careEnd, setCareEnd] = useState(DEFAULT_CARE_END)
   const [careStartDateISO, setCareStartDateISO] = useState('')
@@ -106,8 +105,6 @@ export default function BookPage() {
       })
   }, [bookings])
 
-  const eventsByLocation = useMemo(() => groupFamilyEventsByLocation(), [])
-
   const title = cursor.toLocaleDateString(undefined, {
     month: 'long',
     year: 'numeric',
@@ -128,22 +125,6 @@ export default function BookPage() {
     const b = new Date(`${resolvedEndDateISO}T12:00:00`).toLocaleDateString(undefined, opts)
     if (careStartDateISO === resolvedEndDateISO) return a
     return `${a} → ${b}`
-  }, [careStartDateISO, resolvedEndDateISO])
-
-  const careSpanSummary = useMemo(() => {
-    if (!careStartDateISO || !resolvedEndDateISO) return null
-    const d0 = new Date(`${careStartDateISO}T12:00:00`)
-    const d1 = new Date(`${resolvedEndDateISO}T12:00:00`)
-    const diff = Math.round((d1 - d0) / 86400000)
-    if (diff === 0) return null
-    const nights = bookingOvernightNightCount({
-      dateISO: careStartDateISO,
-      careEndDateISO: resolvedEndDateISO,
-    })
-    const rateLine =
-      nights > 0 ? ` · ${nights} overnight${nights === 1 ? '' : 's'} × $${OVERNIGHT_RATE}` : ''
-    if (diff === 1) return `Overnight gig · spans 2 days on the calendar${rateLine}`
-    return `${diff + 1} calendar days · ${diff} overnight${diff === 1 ? '' : 's'}${rateLine}`
   }, [careStartDateISO, resolvedEndDateISO])
 
   const overnightNights = useMemo(() => {
@@ -188,21 +169,32 @@ export default function BookPage() {
     setFamilyName('')
     setPhone('')
     setRequestNotes('')
-    setSchedulingOpen(false)
     setAwaitingEndDate(false)
+    setHoverEndDateISO('')
   }
 
   function clearScheduling() {
     resetBookingForm()
   }
 
+  function changeDatesOnCalendar() {
+    setAwaitingEndDate(true)
+  }
+
   function handleCalendarDateSelect(iso) {
     if (iso < todayISO()) return
+    setHoverEndDateISO('')
 
-    if (!schedulingOpen || !awaitingEndDate) {
+    if (careStartDateISO && !awaitingEndDate) {
       setCareStartDateISO(iso)
       setCareEndDateISO(iso)
-      setSchedulingOpen(true)
+      setAwaitingEndDate(true)
+      return
+    }
+
+    if (!careStartDateISO || !awaitingEndDate) {
+      setCareStartDateISO(iso)
+      setCareEndDateISO(iso)
       setAwaitingEndDate(true)
       return
     }
@@ -210,7 +202,6 @@ export default function BookPage() {
     if (iso < careStartDateISO) {
       setCareStartDateISO(iso)
       setCareEndDateISO(iso)
-      setAwaitingEndDate(true)
       return
     }
 
@@ -218,19 +209,50 @@ export default function BookPage() {
     setAwaitingEndDate(false)
   }
 
-  const selectionHint = useMemo(() => {
-    if (!schedulingOpen) return 'Tap your start day on the calendar'
-    if (awaitingEndDate) return 'Tap your end day on the calendar'
-    return 'Complete your booking in the popup'
-  }, [schedulingOpen, awaitingEndDate])
+  function handleCalendarDateHover(iso) {
+    if (!awaitingEndDate || !careStartDateISO) return
+    if (!iso || iso < todayISO()) {
+      setHoverEndDateISO('')
+      return
+    }
+    setHoverEndDateISO(iso)
+  }
 
-  const dateSelectionRole = useMemo(
-    () => (iso) =>
-      schedulingOpen
-        ? calendarSelectionRole(iso, careStartDateISO, careEndDateISO)
-        : null,
-    [schedulingOpen, careStartDateISO, careEndDateISO]
-  )
+  function clearCalendarDateHover() {
+    setHoverEndDateISO('')
+  }
+
+  const showBookingForm = Boolean(careStartDateISO) && !awaitingEndDate
+
+  const selectionHint = useMemo(() => {
+    if (!careStartDateISO) {
+      return 'Tap check-in, then check-out — tap the same date if no overnight'
+    }
+    if (awaitingEndDate) {
+      return 'No overnight? Tap the same date again. Otherwise tap your check-out day'
+    }
+    return 'Your dates are set — complete the form below'
+  }, [careStartDateISO, awaitingEndDate])
+
+  const dateSelectionRole = useMemo(() => {
+    const previewEnd =
+      awaitingEndDate && hoverEndDateISO && hoverEndDateISO >= careStartDateISO
+        ? hoverEndDateISO
+        : awaitingEndDate
+          ? ''
+          : careEndDateISO
+    return (iso) =>
+      careStartDateISO ? calendarSelectionRole(iso, careStartDateISO, previewEnd) : null
+  }, [careStartDateISO, careEndDateISO, awaitingEndDate, hoverEndDateISO])
+
+  const checkInLabel = useMemo(() => {
+    if (!careStartDateISO) return ''
+    return new Date(`${careStartDateISO}T12:00:00`).toLocaleDateString(undefined, {
+      weekday: 'short',
+      month: 'short',
+      day: 'numeric',
+    })
+  }, [careStartDateISO])
 
   function showBookToast(message) {
     setBookToast(message)
@@ -247,7 +269,7 @@ export default function BookPage() {
 
   function submitBooking(e) {
     e.preventDefault()
-    if (!schedulingOpen || careStartIsPast) return
+    if (!careStartDateISO || awaitingEndDate || careStartIsPast) return
     if (!timeOk || !kidsOk || !nameOk || !phoneOk) return
     const start = careStartDateISO
     const endDate = resolvedEndDateISO
@@ -305,7 +327,7 @@ export default function BookPage() {
             Book a gig
           </h1>
           <p className="book-workspace-head__sub muted">
-            Tap your start day, then end day on the calendar — same view your caregiver uses.
+            Tap check-in, then check-out. Same date if no overnight.
           </p>
         </header>
 
@@ -320,114 +342,105 @@ export default function BookPage() {
                 </p>
               ) : null}
 
-              <section className="schedule__calendar-panel work-ui__panel" aria-label="Booking calendar">
-                <ScheduleCalendarFlip
-                  embedded
-                  title={title}
-                  cells={cells}
-                  y={y}
-                  m={m}
-                  today={today}
-                  calendarRowCount={calendarRowCount}
-                  bookingsByDate={bookingsByDate}
-                  upcoming={upcoming}
-                  dateISOFromParts={dateISOFromParts}
-                  todayISO={todayISO}
-                  isSameDay={isSameDay}
-                  cellBookingMod={cellBookingMod}
-                  cellBookingLabel={cellBookingLabel}
-                  onPrevMonth={prevMonth}
-                  onNextMonth={nextMonth}
-                  onDateSelect={handleCalendarDateSelect}
-                  dateSelectionRole={dateSelectionRole}
-                  selectionHint={selectionHint}
-                  showSelectionLegend
-                  listTitle="Your requests"
-                  listFlipLabel="Your requests"
-                  listEmptyMessage="No requests on file yet. Tap dates on the calendar to schedule."
+              <div className="book-calendar-booking">
+                <section className="schedule__calendar-panel work-ui__panel" aria-label="Booking calendar">
+                  <ScheduleCalendarFlip
+                    embedded
+                    title={title}
+                    cells={cells}
+                    y={y}
+                    m={m}
+                    today={today}
+                    calendarRowCount={calendarRowCount}
+                    bookingsByDate={bookingsByDate}
+                    upcoming={upcoming}
+                    dateISOFromParts={dateISOFromParts}
+                    todayISO={todayISO}
+                    isSameDay={isSameDay}
+                    cellBookingMod={cellBookingMod}
+                    cellBookingLabel={cellBookingLabel}
+                    onPrevMonth={prevMonth}
+                    onNextMonth={nextMonth}
+                    onDateSelect={handleCalendarDateSelect}
+                    onDateHover={awaitingEndDate ? handleCalendarDateHover : undefined}
+                    onDateHoverEnd={awaitingEndDate ? clearCalendarDateHover : undefined}
+                    dateSelectionRole={dateSelectionRole}
+                    selectionHint={selectionHint}
+                    showSelectionLegend
+                    listTitle="Your requests"
+                    listFlipLabel="Your requests"
+                    listEmptyMessage="No requests on file yet. Tap dates on the calendar to schedule."
+                  />
+                </section>
+
+                {careStartDateISO && awaitingEndDate ? (
+                  <div className="book-calendar-selection-bar" role="status">
+                    <div className="book-calendar-selection-bar__copy">
+                      <p className="book-calendar-selection-bar__text">
+                        <strong>Check-in:</strong> {checkInLabel}
+                      </p>
+                      <p className="book-calendar-selection-bar__hint muted">
+                        No overnight? Tap the same date again.
+                      </p>
+                    </div>
+                    <button
+                      type="button"
+                      className="btn btn--ghost btn--small book-calendar-selection-bar__cancel"
+                      onClick={clearScheduling}
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                ) : null}
+
+                <BookSchedulingDock
+                  open={showBookingForm}
+                  onClose={clearScheduling}
+                  onChangeDates={changeDatesOnCalendar}
+                  careDateHeadline={careDateHeadline}
+                  overnightNights={overnightNights}
+                  overnightTotal={overnightTotal}
+                  careStart={careStart}
+                  careEnd={careEnd}
+                  onCareStartTime={applyCareStartTime}
+                  onCareEndTime={applyCareEndTime}
+                  timeOk={timeOk}
+                  childrenOnGig={childrenOnGig}
+                  familyName={familyName}
+                  phone={phone}
+                  phoneOk={phoneOk}
+                  requestNotes={requestNotes}
+                  onChildrenOnGig={setChildrenOnGig}
+                  onFamilyName={setFamilyName}
+                  onPhone={setPhone}
+                  onRequestNotes={setRequestNotes}
+                  selectedBookingsCount={selectedBookings.length}
+                  careStartIsPast={careStartIsPast}
+                  canSubmit={!careStartIsPast && timeOk && kidsOk && nameOk && phoneOk}
+                  onSubmit={submitBooking}
+                  onClear={clearScheduling}
                 />
-              </section>
+              </div>
             </div>
           ) : null}
 
           {activeTab === 'events' ? (
-            <div className="book-portal__panel" role="tabpanel" aria-labelledby="book-tab-events">
-              <section className="book-events__panel">
-                <h2 className="book-events__summary-title">Local events</h2>
-                <p className="muted book-events__lede">
-                  Ideas near Moraga & Oakland — confirm times with each place. Your caregiver also has a full list in
-                  Tools → Events.
-                </p>
-                <div className="book-events__grid">
-                  {EVENT_LOCATIONS.map(({ id, label }) => (
-                    <div key={id} className="book-events__col">
-                      <h3 className="book-events__loc">{label}</h3>
-                      <ul className="book-events__list">
-                        {eventsByLocation[id]?.map((ev) => (
-                          <li key={ev.id} className="book-events__item">
-                            <span className="book-events__item-title">{ev.title}</span>
-                            <span className="book-events__item-place muted">{ev.place}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  ))}
-                </div>
-                <Link to="/events" className="btn btn--ghost book-events__more">
-                  Open full events list
-                </Link>
-              </section>
+            <div
+              className="journal__layout events__layout book-portal__panel book-portal__panel--events"
+              role="tabpanel"
+              aria-labelledby="book-tab-events"
+            >
+              <EventsTilesSection />
             </div>
           ) : null}
 
           {activeTab === 'thanks' ? (
             <div className="book-portal__panel" role="tabpanel" aria-labelledby="book-tab-thanks">
-              <section className="book-thanks" aria-labelledby="book-thanks-heading">
-                <h2 id="book-thanks-heading" className="book-thanks__title">
-                  Thank you
-                </h2>
-                <p className="book-thanks__lede">{BOOK_THANKS_LEDE}</p>
-                <ul className="book-thanks__list">
-                  {BOOK_THANKS_SUPPORTERS.map((person) => (
-                    <li key={person.name} className="book-thanks__item">
-                      <strong className="book-thanks__name">{person.name}</strong>
-                      <span className="book-thanks__note">{person.note}</span>
-                    </li>
-                  ))}
-                </ul>
-              </section>
+              <BookThanksPanel />
             </div>
           ) : null}
         </main>
       </div>
-
-      <BookSchedulingDock
-        open={schedulingOpen && !awaitingEndDate}
-        onClose={clearScheduling}
-        careDateHeadline={careDateHeadline}
-        careSpanSummary={careSpanSummary}
-        overnightNights={overnightNights}
-        overnightTotal={overnightTotal}
-        careStart={careStart}
-        careEnd={careEnd}
-        onCareStartTime={applyCareStartTime}
-        onCareEndTime={applyCareEndTime}
-        timeOk={timeOk}
-        childrenOnGig={childrenOnGig}
-        familyName={familyName}
-        phone={phone}
-        phoneOk={phoneOk}
-        requestNotes={requestNotes}
-        onChildrenOnGig={setChildrenOnGig}
-        onFamilyName={setFamilyName}
-        onPhone={setPhone}
-        onRequestNotes={setRequestNotes}
-        selectedBookingsCount={selectedBookings.length}
-        careStartIsPast={careStartIsPast}
-        canSubmit={!careStartIsPast && timeOk && kidsOk && nameOk && phoneOk}
-        onSubmit={submitBooking}
-        onClear={clearScheduling}
-      />
 
       <BookFollowUpModal
         open={Boolean(followUpBooking)}

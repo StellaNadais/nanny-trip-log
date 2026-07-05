@@ -10,7 +10,10 @@ export function getCareEndDateISO(b) {
 /** Highlight role for hotel-style calendar range (start / end / between / single). */
 export function calendarSelectionRole(iso, startISO, endISO) {
   if (!startISO || !iso) return null
-  const end = endISO || startISO
+  if (!endISO) {
+    return iso === startISO ? 'start' : null
+  }
+  const end = endISO
   const lo = startISO <= end ? startISO : end
   const hi = startISO <= end ? end : startISO
   if (iso < lo || iso > hi) return null
@@ -91,6 +94,74 @@ function fmtShortDate(iso) {
     day: 'numeric',
     year: 'numeric',
   })
+}
+
+/**
+ * Requested arrival/end for one calendar day within a booking (handles overnight spans).
+ * @returns {{ arrivalHM: string | null, endHM: string | null, middleDay: boolean, familyName: string } | null}
+ */
+export function bookingCareTimesForDay(b, dateISO) {
+  if (!b?.dateISO || !dateISO) return null
+  const start = b.dateISO
+  const end = getCareEndDateISO(b)
+  const onCalendar = expandBookingCalendarDates(b)
+  if (!onCalendar.includes(dateISO)) return null
+
+  const familyName = (b.familyName || 'Family').trim()
+  const single = start === end
+
+  if (single) {
+    return {
+      arrivalHM: b.careStart || null,
+      endHM: b.careEnd || null,
+      middleDay: false,
+      familyName,
+    }
+  }
+
+  if (dateISO === start) {
+    return {
+      arrivalHM: b.careStart || null,
+      endHM: null,
+      middleDay: false,
+      familyName,
+    }
+  }
+
+  if (dateISO === end) {
+    return {
+      arrivalHM: null,
+      endHM: b.careEnd || null,
+      middleDay: false,
+      familyName,
+    }
+  }
+
+  return {
+    arrivalHM: null,
+    endHM: null,
+    middleDay: true,
+    familyName,
+  }
+}
+
+/** Bookings that cover dateISO, sorted by start time then family name. */
+export function bookingsCoveringDate(bookings, dateISO, { activeOnly = true } = {}) {
+  if (!dateISO || !Array.isArray(bookings)) return []
+  return bookings
+    .filter((b) => {
+      if (!b?.dateISO) return false
+      if (activeOnly && b.responseStatus === 'declined') return false
+      return expandBookingCalendarDates(b).includes(dateISO)
+    })
+    .sort((a, b) => {
+      const times = bookingCareTimesForDay(a, dateISO)
+      const timeb = bookingCareTimesForDay(b, dateISO)
+      const a0 = times?.arrivalHM || times?.endHM || a.careStart || '99:99'
+      const b0 = timeb?.arrivalHM || timeb?.endHM || b.careStart || '99:99'
+      if (a0 !== b0) return a0.localeCompare(b0)
+      return (a.familyName || '').localeCompare(b.familyName || '')
+    })
 }
 
 /** One line for schedule / lists: includes dates when a gig spans multiple calendar days. */

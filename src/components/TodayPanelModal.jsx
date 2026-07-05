@@ -10,6 +10,9 @@ export default function TodayPanelModal({
   dateLabel,
   children,
   footer,
+  hideHead = false,
+  hideFoot = false,
+  modalClassName = '',
 }) {
   const titleId = useId()
 
@@ -34,31 +37,55 @@ export default function TodayPanelModal({
   if (!open) return null
 
   return createPortal(
-    <div className="about-today-modal" role="dialog" aria-modal="true" aria-labelledby={titleId}>
+    <div
+      className={`about-today-modal${modalClassName ? ` ${modalClassName}` : ''}`}
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby={titleId}
+    >
       <button type="button" className="about-today-modal__backdrop" aria-label="Close" onClick={onClose} />
       <div className="about-today-modal__sheet">
-        <header className="about-today-modal__head">
-          <div>
-            {eyebrow ? <p className="about-today-modal__eyebrow">{eyebrow}</p> : null}
-            <h2 id={titleId} className="about-today-modal__title">
-              {title}
-            </h2>
-            {dateLabel ? <p className="about-today-modal__date muted">{dateLabel}</p> : null}
-          </div>
-          <button type="button" className="btn btn--ghost about-today-modal__close" onClick={onClose}>
-            ×
-          </button>
-        </header>
+        {hideHead ? (
+          <>
+            {title ? (
+              <h2 id={titleId} className="sr-only">
+                {title}
+              </h2>
+            ) : null}
+            <button
+              type="button"
+              className="btn btn--ghost about-today-modal__close about-today-modal__close--float"
+              onClick={onClose}
+            >
+              ×
+            </button>
+          </>
+        ) : (
+          <header className="about-today-modal__head">
+            <div>
+              {eyebrow ? <p className="about-today-modal__eyebrow">{eyebrow}</p> : null}
+              <h2 id={titleId} className="about-today-modal__title">
+                {title}
+              </h2>
+              {dateLabel ? <p className="about-today-modal__date muted">{dateLabel}</p> : null}
+            </div>
+            <button type="button" className="btn btn--ghost about-today-modal__close" onClick={onClose}>
+              ×
+            </button>
+          </header>
+        )}
 
         <div className="about-today-modal__scroll">{children}</div>
 
-        <footer className="about-today-modal__foot">
-          {footer ?? (
-            <button type="button" className="btn btn--ghost" onClick={onClose}>
-              Done
-            </button>
-          )}
-        </footer>
+        {hideFoot ? null : (
+          <footer className="about-today-modal__foot">
+            {footer ?? (
+              <button type="button" className="btn btn--ghost" onClick={onClose}>
+                Done
+              </button>
+            )}
+          </footer>
+        )}
       </div>
     </div>,
     document.body

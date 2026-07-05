@@ -15,16 +15,18 @@ const REGION_LABEL = {
   argentina: 'Argentina',
 }
 
-export default function WorldCupGamesPanel() {
+export default function WorldCupGamesPanel({ variant = 'modal' }) {
   const games = useMemo(() => upcomingWorldCupGames(toISODateLocal(new Date())), [])
+  const sectionClass =
+    variant === 'board'
+      ? 'events__section world-cup-panel world-cup-panel--board'
+      : 'events__section world-cup-panel world-cup-panel--modal'
+
+  const listClass = variant === 'modal' ? 'events__list events__list--flush' : 'events__list'
 
   return (
-    <section className="journal-panel events__section world-cup-panel" aria-label="World Cup 2026 games">
-      <p className="world-cup-panel__intro muted">
-        USMNT, Levi&apos;s Stadium, and tournament dates. Brazil and Argentina games are outlined.
-        Times Pacific.
-      </p>
-      <ul className="events__list journal-panel__body">
+    <section className={sectionClass} aria-label="World Cup 2026 games">
+      <ul className={listClass}>
         {games.length === 0 ? (
           <li className="events__item">
             <p className="events__item-title">No upcoming games</p>

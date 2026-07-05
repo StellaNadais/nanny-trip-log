@@ -278,29 +278,21 @@
 }
 
 /* Thank you */
-.page--book.page--kid-journal .book-thanks {
+.page--book.page--kid-journal .soft-panel--thanks {
   border: 2px solid var(--journal-card-border);
   border-radius: var(--radius);
   background: var(--journal-surface-bright);
   box-shadow: 4px 4px 0 var(--journal-card-border);
-  border-top: 2px solid var(--journal-card-border);
 }
 
-.page--book.page--kid-journal .book-thanks__title {
+.page--book.page--kid-journal .soft-panel__title,
+.page--book.page--kid-journal .thanks__item-title {
   color: var(--journal-ink-front);
 }
 
-.page--book.page--kid-journal .book-thanks__lede,
-.page--book.page--kid-journal .book-thanks__note {
+.page--book.page--kid-journal .soft-panel__lede,
+.page--book.page--kid-journal .thanks__item-note {
   color: var(--journal-ink-muted-front);
-}
-
-.page--book.page--kid-journal .book-thanks__name {
-  color: var(--journal-ink-front);
-}
-
-.page--book.page--kid-journal .book-thanks__item {
-  border-bottom-color: color-mix(in srgb, var(--journal-card-border) 65%, transparent);
 }
 
 @media (min-width: 600px) {

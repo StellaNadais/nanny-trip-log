@@ -1,4 +1,5 @@
 import TodayPanelModal from './TodayPanelModal'
+import { TodaySoftPanel, TodaySoftSection } from './TodaySoftPanel'
 
 export default function ScheduleOverviewModal({
   open,
@@ -8,29 +9,55 @@ export default function ScheduleOverviewModal({
   confirmedCount,
   children,
 }) {
+  const queueLabel = queueCount === 1 ? '1 request waiting' : `${queueCount} requests waiting`
+  const confirmedLabel =
+    confirmedCount === 1 ? '1 gig confirmed' : `${confirmedCount} gigs confirmed`
+
   return (
     <TodayPanelModal
       open={open}
       onClose={onClose}
-      eyebrow="This month"
       title="Overview"
-      dateLabel={monthLabel}
+      hideHead
+      hideFoot
+      modalClassName="about-today-modal--soft-popup"
     >
-      <div className="schedule-dashboard__hud schedule-overview-modal__hud" aria-label="Schedule stats">
-        <div className="schedule-dashboard__stat">
-          <span className="schedule-dashboard__stat-label">Queue</span>
-          <span className="schedule-dashboard__stat-value">{queueCount}</span>
-        </div>
-        <div className="schedule-dashboard__stat">
-          <span className="schedule-dashboard__stat-label">Confirmed</span>
-          <span className="schedule-dashboard__stat-value">{confirmedCount}</span>
-        </div>
-        <div className="schedule-dashboard__stat schedule-dashboard__stat--wide">
-          <span className="schedule-dashboard__stat-label">Viewing</span>
-          <span className="schedule-dashboard__stat-value">{monthLabel}</span>
-        </div>
-      </div>
-      {children}
+      <TodaySoftPanel
+        titleId="schedule-overview-title"
+        eyebrow="This month"
+        title="Overview"
+        meta={monthLabel}
+        lede="Your gig queue at a glance — browse parent requests and respond when you're ready."
+        footer="Share your booking link when you're open to more dates."
+        className="soft-panel--overview"
+      >
+        <ul className="thanks__list thanks__list--flush schedule-overview-stats">
+          <li className="thanks__item">
+            <div className="thanks__item-head">
+              <span className="thanks__item-icon" aria-hidden>
+                ◎
+              </span>
+              <strong className="thanks__item-title">In queue</strong>
+              <span className="schedule-overview-stats__value">{queueCount}</span>
+            </div>
+            <p className="thanks__item-note muted">{queueLabel}</p>
+          </li>
+          <li className="thanks__item">
+            <div className="thanks__item-head">
+              <span className="thanks__item-icon" aria-hidden>
+                ✦
+              </span>
+              <strong className="thanks__item-title">Confirmed</strong>
+              <span className="schedule-overview-stats__value">{confirmedCount}</span>
+            </div>
+            <p className="thanks__item-note muted">{confirmedLabel}</p>
+          </li>
+        </ul>
+
+        <TodaySoftSection title="Requests" titleId="schedule-requested-dates-title">
+          {children}
+        </TodaySoftSection>
+      </TodaySoftPanel>
     </TodayPanelModal>
   )
 }

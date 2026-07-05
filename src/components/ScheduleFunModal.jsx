@@ -1,5 +1,6 @@
 import ScheduleCelebrationsFlip from './ScheduleCelebrationsFlip'
 import TodayPanelModal from './TodayPanelModal'
+import { TodaySoftPanel } from './TodaySoftPanel'
 import { monthCelebrationsTitle } from '../utils/scheduleCelebrations'
 
 export default function ScheduleFunModal({ open, onClose, year, monthIndex }) {
@@ -9,11 +10,21 @@ export default function ScheduleFunModal({ open, onClose, year, monthIndex }) {
     <TodayPanelModal
       open={open}
       onClose={onClose}
-      eyebrow="Holidays & ideas"
       title="Do fun"
-      dateLabel={monthLabel}
+      hideHead
+      hideFoot
+      modalClassName="about-today-modal--soft-popup"
     >
-      <ScheduleCelebrationsFlip year={year} monthIndex={monthIndex} embedded />
+      <TodaySoftPanel
+        titleId="schedule-do-fun-title"
+        eyebrow="Holidays & ideas"
+        title="Do fun"
+        meta={monthLabel}
+        lede="Upcoming celebrations this month — flip for prep ideas one week ahead."
+        className="soft-panel--do-fun"
+      >
+        <ScheduleCelebrationsFlip year={year} monthIndex={monthIndex} embedded />
+      </TodaySoftPanel>
     </TodayPanelModal>
   )
 }

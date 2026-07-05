@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import BookRemindersField from './BookRemindersField'
 import GroceryListPanel from './GroceryListPanel'
+import TodayPanelModal from './TodayPanelModal'
 import { startOfWeekMonday, toISODateLocal } from '../utils/dates'
 import {
   addShoppingItems,
@@ -11,12 +12,6 @@ import {
 
 /**
  * After a gig is scheduled, parents can add grocery items and day reminders.
- * @param {{
- *   open: boolean
- *   booking: { id: string, dateISO: string, careEndDateISO: string, familyName?: string } | null
- *   onClose: () => void
- *   onDone: (reminderRows: { dateISO: string, childName: string, text: string }[]) => void
- * }} props
  */
 export default function BookFollowUpModal({ open, booking, onClose, onDone }) {
   const weekKey = useMemo(() => {
@@ -32,15 +27,6 @@ export default function BookFollowUpModal({ open, booking, onClose, onDone }) {
     setGroceryItems(loadShoppingForWeek(weekKey))
     setReminders([])
   }, [open, weekKey, booking?.id])
-
-  useEffect(() => {
-    if (!open) return
-    const onKey = (e) => {
-      if (e.key === 'Escape') onClose()
-    }
-    window.addEventListener('keydown', onKey)
-    return () => window.removeEventListener('keydown', onKey)
-  }, [open, onClose])
 
   if (!open || !booking) return null
 
@@ -74,42 +60,31 @@ export default function BookFollowUpModal({ open, booking, onClose, onDone }) {
   })
 
   return (
-    <div
-      className="book-modal book-follow-up"
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="book-follow-up-title"
+    <TodayPanelModal
+      open={open}
+      onClose={onClose}
+      title="Grocery & reminders"
+      hideHead
+      hideFoot
+      modalClassName="about-today-modal--book-popup"
     >
-      <button
-        type="button"
-        className="book-modal__backdrop"
-        aria-label="Close"
-        onClick={onClose}
-      />
-      <div className="book-modal__sheet book-follow-up__sheet">
-        <div className="book-modal__head">
-          <div className="book-modal__head-text">
-            <p className="book-modal__eyebrow">Request sent</p>
-            <h2 id="book-follow-up-title" className="book-modal__title">
-              Grocery & reminders
-            </h2>
-            <p className="book-modal__date">{dateLabel}</p>
-            <p className="book-modal__sub muted">
-              Optional — add a grocery list and day notes for your caregiver. You can skip and
-              come back anytime.
-            </p>
-          </div>
-          <button
-            type="button"
-            className="btn btn--ghost book-modal__close"
-            aria-label="Close"
-            onClick={onClose}
-          >
-            ×
-          </button>
+      <section
+        className="soft-panel soft-panel--book-follow-up soft-panel--book-popup"
+        aria-labelledby="book-follow-up-title"
+      >
+        <div className="soft-panel__hero">
+          <p className="soft-panel__eyebrow">Request sent</p>
+          <h2 id="book-follow-up-title" className="soft-panel__title">
+            Grocery & reminders
+          </h2>
+          <p className="soft-panel__meta muted">{dateLabel}</p>
+          <p className="soft-panel__lede">
+            Optional — add a grocery list and day notes for your caregiver. You can skip and come
+            back anytime.
+          </p>
         </div>
 
-        <div className="book-follow-up__body">
+        <div className="soft-panel__body soft-panel__body--booking">
           <div className="book-follow-up__section">
             <GroceryListPanel
               items={groceryItems}
@@ -131,7 +106,7 @@ export default function BookFollowUpModal({ open, booking, onClose, onDone }) {
           />
         </div>
 
-        <div className="book-modal__actions book-follow-up__actions">
+        <div className="soft-panel__actions">
           <button type="button" className="btn btn--ghost" onClick={onClose}>
             Skip for now
           </button>
@@ -139,7 +114,9 @@ export default function BookFollowUpModal({ open, booking, onClose, onDone }) {
             Save & done
           </button>
         </div>
-      </div>
-    </div>
+
+        <p className="soft-panel__footer">Lists and notes sync with your caregiver&apos;s workbook.</p>
+      </section>
+    </TodayPanelModal>
   )
 }

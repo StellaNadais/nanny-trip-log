@@ -1,23 +1,37 @@
 /**
  * Caregiver view: parent reminders for the selected journal day, grouped by family.
  */
-export default function ParentRemindersPanel({ dateLabel, groups, emptyHint }) {
+export default function ParentRemindersPanel({ dateLabel, groups, emptyHint, flush = false }) {
   if (!groups.length) {
     return (
-      <div className="parent-reminders-panel">
-        <p className="parent-reminders-panel__empty muted">{emptyHint}</p>
+      <div className={`parent-reminders-panel${flush ? ' parent-reminders-panel--flush' : ''}`}>
+        <p className="soft-panel__empty muted">{emptyHint}</p>
       </div>
     )
   }
 
+  const listClass = flush
+    ? 'thanks__list thanks__list--flush parent-reminders-panel__list--flush'
+    : 'parent-reminders-panel__groups'
+
   return (
-    <div className="parent-reminders-panel">
-      <p className="parent-reminders-panel__day muted">{dateLabel}</p>
-      <ul className="parent-reminders-panel__groups">
+    <div className={`parent-reminders-panel${flush ? ' parent-reminders-panel--flush' : ''}`}>
+      {!flush && dateLabel ? <p className="parent-reminders-panel__day muted">{dateLabel}</p> : null}
+      <ul className={listClass}>
         {groups.map((group) => (
-          <li key={group.booking.id} className="parent-reminders-panel__group">
-            <header className="parent-reminders-panel__group-head">
-              <strong className="parent-reminders-panel__family">
+          <li
+            key={group.booking.id}
+            className={flush ? 'thanks__item parent-reminders-panel__item--flush' : 'parent-reminders-panel__group'}
+          >
+            <header
+              className={
+                flush ? 'thanks__item-head parent-reminders-panel__head--flush' : 'parent-reminders-panel__group-head'
+              }
+            >
+              {flush ? <span className="thanks__item-icon" aria-hidden>◎</span> : null}
+              <strong
+                className={flush ? 'thanks__item-title parent-reminders-panel__family' : 'parent-reminders-panel__family'}
+              >
                 {group.booking.familyName || 'Family'}
               </strong>
               <span className="parent-reminders-panel__kids muted">{group.kidsLabel}</span>

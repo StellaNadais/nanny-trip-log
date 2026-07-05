@@ -24,12 +24,13 @@ export function ShiftPunctualityProvider({ children }) {
     ])
   }, [])
 
-  /** Merge arrival/end for the same calendar day (clock-in and clock-out at real time). */
+  /** Merge arrival/end for the same calendar day (optionally per booking). */
   const upsertShiftDay = useCallback((partial) => {
-    const { dateISO, arrival, end } = partial
+    const { dateISO, bookingId, arrival, end } = partial
     if (!dateISO) return
+    const bid = bookingId ?? ''
     setEntries((prev) => {
-      const i = prev.findIndex((e) => e.dateISO === dateISO)
+      const i = prev.findIndex((e) => e.dateISO === dateISO && (e.bookingId ?? '') === bid)
       const savedAt = new Date().toISOString()
       if (i >= 0) {
         const row = { ...prev[i], savedAt }
@@ -44,6 +45,7 @@ export function ShiftPunctualityProvider({ children }) {
           id: newId(),
           savedAt,
           dateISO,
+          ...(bookingId ? { bookingId } : {}),
           arrival: arrival ?? '',
           end: end ?? '',
         },

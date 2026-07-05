@@ -20,6 +20,10 @@ import GroceryModal from '../components/GroceryModal'
 import OutingsModal from '../components/OutingsModal'
 import RemindersModal from '../components/RemindersModal'
 import TodaySpaceTile from '../components/TodaySpaceTile'
+import TodayAddTileButton from '../components/TodayAddTileButton'
+import TodayAddTileModal from '../components/TodayAddTileModal'
+import TodayCustomTilePreview from '../components/TodayCustomTilePreview'
+import TodayCustomTileModal from '../components/TodayCustomTileModal'
 import { buildJournalDaySmsHref } from '../utils/journalDayExport'
 import {
   addShoppingItems,
@@ -37,6 +41,10 @@ import {
   careDayReminderGroups,
   countRemindersForCareDate,
 } from '../utils/parentReminderQueries'
+import {
+  loadCustomTodayTiles,
+  TODAY_CUSTOM_TILES_UPDATED_EVENT,
+} from '../utils/todayCustomTilesStorage'
 
 function loadDraftFromLatest(iso) {
   const ent = loadKidJournalEntries()
@@ -119,6 +127,9 @@ export default function KidJournalPage() {
   const [outingsOpen, setOutingsOpen] = useState(false)
   const [remindersOpen, setRemindersOpen] = useState(false)
   const [aboutTodayOpen, setAboutTodayOpen] = useState(false)
+  const [addTileOpen, setAddTileOpen] = useState(false)
+  const [openCustomTileId, setOpenCustomTileId] = useState(null)
+  const [customTilesRev, setCustomTilesRev] = useState(0)
 
   useEffect(() => {
     setShoppingItems(loadShoppingForWeek(weekKey))
@@ -129,6 +140,8 @@ export default function KidJournalPage() {
     setOutingsOpen(false)
     setRemindersOpen(false)
     setAboutTodayOpen(false)
+    setAddTileOpen(false)
+    setOpenCustomTileId(null)
     outings.resetOutingsForm()
   }, [weekKey, outings.resetOutingsForm])
 
@@ -143,9 +156,15 @@ export default function KidJournalPage() {
   }, [])
 
   useEffect(() => {
-    const bump = () => setOutingsRev((r) => r + 1)
-    window.addEventListener(OUTINGS_UPDATED_EVENT, bump)
-    return () => window.removeEventListener(OUTINGS_UPDATED_EVENT, bump)
+    const bumpOutings = () => setOutingsRev((r) => r + 1)
+    window.addEventListener(OUTINGS_UPDATED_EVENT, bumpOutings)
+    return () => window.removeEventListener(OUTINGS_UPDATED_EVENT, bumpOutings)
+  }, [])
+
+  useEffect(() => {
+    const bumpTiles = () => setCustomTilesRev((r) => r + 1)
+    window.addEventListener(TODAY_CUSTOM_TILES_UPDATED_EVENT, bumpTiles)
+    return () => window.removeEventListener(TODAY_CUSTOM_TILES_UPDATED_EVENT, bumpTiles)
   }, [])
 
   useEffect(() => {
@@ -390,6 +409,116 @@ export default function KidJournalPage() {
     </svg>
   )
 
+  const customTiles = useMemo(() => {
+    void customTilesRev
+    return loadCustomTodayTiles()
+  }, [customTilesRev])
+
+  const openCustomTile = useMemo(
+    () => customTiles.find((t) => t.id === openCustomTileId) ?? null,
+    [customTiles, openCustomTileId]
+  )
+
+  const todayBoardTiles = useMemo(() => {
+    const core = [
+      {
+        id: 'about',
+        label: 'About today',
+        span: 2,
+        children: (
+          <button
+            type="button"
+            className="about-today-tile"
+            onClick={() => setAboutTodayOpen(true)}
+          >
+            <p className="about-today-tile__preview">
+              {aboutTodayPreview || (
+                <span className="about-today-tile__hint muted">
+                  Tap to report the day with your child — outings, meals, nap, and more.
+                </span>
+              )}
+            </p>
+            <span className="about-today-tile__cta">Open report →</span>
+          </button>
+        ),
+      },
+      {
+        id: 'reminders',
+        label: 'Reminders',
+        square: true,
+        children: (
+          <TodaySpaceTile
+            icon={remindersIcon}
+            count={reminderCount}
+            preview={remindersPreview}
+            hint="Parent notes for this day — tap to open."
+            onClick={() => setRemindersOpen(true)}
+          />
+        ),
+      },
+      {
+        id: 'grocery',
+        label: 'Grocery',
+        square: true,
+        children: (
+          <TodaySpaceTile
+            icon={groceryIcon}
+            count={shoppingOpenCount}
+            preview={groceryPreview}
+            hint="Week grocery list — tap to add items."
+            onClick={() => setGroceryOpen(true)}
+          />
+        ),
+      },
+      {
+        id: 'outings',
+        label: 'Outings',
+        square: true,
+        children: (
+          <TodaySpaceTile
+            icon={outingsIcon}
+            count={outings.outingsCount}
+            preview={outings.outingsPreview}
+            hint="Parking, tolls, and trip places — tap to add."
+            onClick={() => setOutingsOpen(true)}
+          />
+        ),
+      },
+    ]
+
+    const custom = customTiles.map((tile) => ({
+      id: tile.id,
+      label: tile.title,
+      square: true,
+      children: (
+        <TodayCustomTilePreview tile={tile} onClick={() => setOpenCustomTileId(tile.id)} />
+      ),
+    }))
+
+    const addTile = {
+      id: 'today-add-tile',
+      label: 'Add box',
+      square: true,
+      pinned: true,
+      noDrag: true,
+      children: <TodayAddTileButton onClick={() => setAddTileOpen(true)} />,
+    }
+
+    return [...core, ...custom, addTile]
+  }, [
+    aboutTodayPreview,
+    reminderCount,
+    remindersPreview,
+    shoppingOpenCount,
+    groceryPreview,
+    outings.outingsCount,
+    outings.outingsPreview,
+    customTiles,
+    remindersIcon,
+    groceryIcon,
+    outingsIcon,
+  ])
+
   return (
     <div className="page page--kid-journal page--workspace work-ui">
       <div className="journal__layout">
@@ -430,74 +559,7 @@ export default function KidJournalPage() {
           />
         </section>
 
-        <WorkspaceTileBoard
-          workspaceId="today"
-          tiles={[
-            {
-              id: 'about',
-              label: 'About today',
-              span: 2,
-              children: (
-                <button
-                  type="button"
-                  className="about-today-tile"
-                  onClick={() => setAboutTodayOpen(true)}
-                >
-                  <p className="about-today-tile__preview">
-                    {aboutTodayPreview || (
-                      <span className="about-today-tile__hint muted">
-                        Tap to report the day with your child — outings, meals, nap, and more.
-                      </span>
-                    )}
-                  </p>
-                  <span className="about-today-tile__cta">Open report →</span>
-                </button>
-              ),
-            },
-            {
-              id: 'reminders',
-              label: 'Reminders',
-              square: true,
-              children: (
-                <TodaySpaceTile
-                  icon={remindersIcon}
-                  count={reminderCount}
-                  preview={remindersPreview}
-                  hint="Parent notes for this day — tap to open."
-                  onClick={() => setRemindersOpen(true)}
-                />
-              ),
-            },
-            {
-              id: 'grocery',
-              label: 'Grocery',
-              square: true,
-              children: (
-                <TodaySpaceTile
-                  icon={groceryIcon}
-                  count={shoppingOpenCount}
-                  preview={groceryPreview}
-                  hint="Week grocery list — tap to add items."
-                  onClick={() => setGroceryOpen(true)}
-                />
-              ),
-            },
-            {
-              id: 'outings',
-              label: 'Outings',
-              square: true,
-              children: (
-                <TodaySpaceTile
-                  icon={outingsIcon}
-                  count={outings.outingsCount}
-                  preview={outings.outingsPreview}
-                  hint="Parking, tolls, and trip places — tap to add."
-                  onClick={() => setOutingsOpen(true)}
-                />
-              ),
-            },
-          ]}
-        />
+        <WorkspaceTileBoard workspaceId="today" tiles={todayBoardTiles} />
       </div>
 
       <AboutTodayModal
@@ -562,6 +624,8 @@ export default function KidJournalPage() {
         onRemoveManualLine={outings.removeManualLine}
         manualTotal={outings.manualTotal}
         customPlaces={outings.customPlaces}
+        locationsOpen={outings.locationsOpen}
+        onToggleLocationsOpen={() => outings.setLocationsOpen((o) => !o)}
         placeNickname={outings.placeNickname}
         onPlaceNicknameChange={outings.setPlaceNickname}
         placeRoundTrip={outings.placeRoundTrip}
@@ -569,6 +633,26 @@ export default function KidJournalPage() {
         placeFormErr={outings.placeFormErr}
         onAddCustomPlace={outings.addCustomPlace}
         onRemoveCustomPlace={outings.removeCustomPlace}
+      />
+
+      <TodayAddTileModal
+        open={addTileOpen}
+        onClose={() => setAddTileOpen(false)}
+        onCreated={(id) => {
+          setCustomTilesRev((r) => r + 1)
+          setOpenCustomTileId(id)
+        }}
+      />
+
+      <TodayCustomTileModal
+        open={Boolean(openCustomTile)}
+        tile={openCustomTile}
+        onClose={() => setOpenCustomTileId(null)}
+        onChange={() => setCustomTilesRev((r) => r + 1)}
+        onDelete={() => {
+          setOpenCustomTileId(null)
+          setCustomTilesRev((r) => r + 1)
+        }}
       />
     </div>
   )

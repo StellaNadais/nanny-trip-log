@@ -1,14 +1,14 @@
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import { OVERNIGHT_RATE } from '../data/bookingRates'
 
 /**
- * Booking form popup — dates come from calendar selection; times + details here.
+ * Inline booking form — soft-panel shell below the calendar after dates are picked.
  */
 export default function BookSchedulingDock({
   open,
   onClose,
+  onChangeDates,
   careDateHeadline,
-  careSpanSummary,
   overnightNights,
   overnightTotal,
   careStart,
@@ -31,6 +31,8 @@ export default function BookSchedulingDock({
   onSubmit,
   onClear,
 }) {
+  const panelRef = useRef(null)
+
   useEffect(() => {
     if (!open) return
     const onKey = (e) => {
@@ -40,57 +42,56 @@ export default function BookSchedulingDock({
     return () => window.removeEventListener('keydown', onKey)
   }, [open, onClose])
 
+  useEffect(() => {
+    if (!open || !panelRef.current) return
+    panelRef.current.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
+  }, [open])
+
   if (!open) return null
 
   return (
-    <div
-      className="book-modal book-scheduling-modal"
-      role="dialog"
-      aria-modal="true"
+    <section
+      ref={panelRef}
+      className="soft-panel soft-panel--booking soft-panel--book-popup"
       aria-labelledby="book-scheduling-title"
     >
-      <button
-        type="button"
-        className="book-modal__backdrop"
-        aria-label="Close"
-        onClick={onClose}
-      />
-      <div className="book-modal__sheet book-scheduling-modal__sheet">
-        <div className="book-modal__head">
-          <div className="book-modal__head-text">
-            <p className="book-modal__eyebrow">Your dates</p>
-            <h2 id="book-scheduling-title" className="book-modal__title">
-              Book
+      <div className="soft-panel__hero">
+        <div className="soft-panel__hero-row">
+          <div className="soft-panel__hero-copy">
+            <p className="soft-panel__eyebrow">Your dates</p>
+            <h2 id="book-scheduling-title" className="soft-panel__title">
+              Complete your request
             </h2>
-            <p className="book-modal__date">{careDateHeadline}</p>
-            <p className="book-modal__sub muted">
-              Set care times below, then add children and contact info.
+            <p className="soft-panel__meta">{careDateHeadline}</p>
+            <p className="soft-panel__lede">
+              Set care times, then add children and contact info.
             </p>
           </div>
           <button
             type="button"
-            className="btn btn--ghost book-modal__close"
-            aria-label="Close"
-            onClick={onClose}
+            className="btn btn--ghost soft-panel__hero-action"
+            onClick={onChangeDates}
           >
-            ×
+            Change dates
           </button>
         </div>
+      </div>
 
+      <div className="soft-panel__body soft-panel__body--booking">
         {selectedBookingsCount > 0 ? (
-          <p className="book-modal__note muted">
+          <p className="soft-panel__note muted">
             This start day already has {selectedBookingsCount} request
             {selectedBookingsCount > 1 ? 's' : ''}. Submit only if your caregiver approved overlapping
             gigs.
           </p>
         ) : null}
 
-        <form className="book-modal__form book-scheduling-modal__form" onSubmit={onSubmit}>
+        <form className="book-scheduling-form" onSubmit={onSubmit}>
           <div className="book-modal__hotel-card" aria-label="Care times">
             <div className="book-modal__hotel-dates">
               <div className="book-modal__hotel-col">
                 <span className="book-modal__hotel-kicker">Gig starts</span>
-                <p className="book-scheduling-modal__date-readout" aria-hidden>
+                <p className="book-scheduling-modal__date-readout">
                   {careDateHeadline.split(' → ')[0]}
                 </p>
                 <label className="book-modal__hotel-time-label">
@@ -104,10 +105,9 @@ export default function BookSchedulingDock({
                   />
                 </label>
               </div>
-              <div className="book-modal__hotel-rail" aria-hidden />
               <div className="book-modal__hotel-col">
                 <span className="book-modal__hotel-kicker">Gig ends</span>
-                <p className="book-scheduling-modal__date-readout" aria-hidden>
+                <p className="book-scheduling-modal__date-readout">
                   {careDateHeadline.includes(' → ')
                     ? careDateHeadline.split(' → ')[1]
                     : careDateHeadline.split(' → ')[0]}
@@ -124,9 +124,6 @@ export default function BookSchedulingDock({
                 </label>
               </div>
             </div>
-            {careSpanSummary ? (
-              <p className="book-modal__hotel-summary muted">{careSpanSummary}</p>
-            ) : null}
             {overnightNights > 0 ? (
               <p className="book-modal__overnight-rate" role="note">
                 Overnight total: {overnightNights} night{overnightNights === 1 ? '' : 's'} × $
@@ -204,13 +201,13 @@ export default function BookSchedulingDock({
 
           {careStartIsPast ? (
             <p className="book-modal__hint book-modal__hint--warn">
-              Start date has passed. Close and tap a future day on the calendar.
+              Start date has passed. Tap a future day on the calendar above.
             </p>
           ) : null}
 
-          <div className="book-modal__actions book-scheduling-modal__actions">
+          <div className="soft-panel__actions">
             <button type="button" className="btn btn--ghost" onClick={onClear}>
-              Clear dates
+              Clear
             </button>
             <button
               type="submit"
@@ -222,6 +219,10 @@ export default function BookSchedulingDock({
           </div>
         </form>
       </div>
-    </div>
+
+      <p className="soft-panel__footer">
+        Your caregiver will confirm availability after you submit.
+      </p>
+    </section>
   )
 }

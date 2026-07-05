@@ -7,6 +7,7 @@ export default function GroceryListPanel({
   onRemove,
   autoFocus = false,
   placeholder = 'Milk, bananas, diapers…',
+  flush = false,
 }) {
   const [draft, setDraft] = useState('')
   const inputRef = useRef(null)
@@ -53,26 +54,36 @@ export default function GroceryListPanel({
     setDraft('')
   }
 
+  const sectionClass = flush ? 'today-soft-section' : 'journal-mood-bar journal-panel about-today-modal__section'
+  const headClass = flush ? 'today-soft-section__head' : 'journal-mood-bar__head'
+  const titleClass = flush ? 'today-soft-section__title' : 'journal-mood-bar__title'
+  const bodyClass = flush ? 'today-soft-section__body' : 'journal-mood-bar__track journal-panel__body'
+  const fieldClass = flush ? 'today-soft-field' : 'journal-panel-field'
+  const fieldLabelClass = flush ? 'today-soft-field__label' : 'journal-panel-field__label'
+  const inputClass = flush
+    ? 'input input--line today-soft-field__input grocery-list-panel__input'
+    : 'input input--line journal-panel-field__input grocery-list-panel__input'
+
   return (
     <>
       <section
-        className="journal-mood-bar journal-panel journal-panel--meals about-today-modal__section"
+        className={`${sectionClass}${flush ? ' journal-panel--meals' : ' journal-panel journal-panel--meals'}`}
         aria-labelledby="grocery-add-label"
       >
-        <div className="journal-mood-bar__head">
-          <span className="journal-mood-bar__title" id="grocery-add-label">
+        <div className={headClass}>
+          <span className={titleClass} id="grocery-add-label">
             Add items
           </span>
         </div>
-        <div className="journal-mood-bar__track journal-panel__body">
+        <div className={bodyClass}>
           <form className="grocery-list-panel__composer" onSubmit={onSubmit}>
-            <label className="journal-panel-field" htmlFor="grocery-add-input">
-              <span className="journal-panel-field__label">Item</span>
+            <label className={fieldClass} htmlFor="grocery-add-input">
+              <span className={fieldLabelClass}>Item</span>
               <input
                 ref={inputRef}
                 id="grocery-add-input"
                 type="text"
-                className="input input--line journal-panel-field__input grocery-list-panel__input"
+                className={inputClass}
                 value={draft}
                 onChange={(e) => setDraft(e.target.value)}
                 onKeyDown={onKeyDown}
@@ -95,18 +106,18 @@ export default function GroceryListPanel({
       </section>
 
       <section
-        className="journal-mood-bar journal-panel journal-panel--about about-today-modal__section"
+        className={`${sectionClass}${flush ? '' : ' journal-panel journal-panel--about'}`}
         aria-labelledby="grocery-list-label"
       >
-        <div className="journal-mood-bar__head">
-          <span className="journal-mood-bar__title" id="grocery-list-label">
+        <div className={headClass}>
+          <span className={titleClass} id="grocery-list-label">
             To get
             {openCount > 0 ? (
               <span className="grocery-list-panel__open-count muted"> · {openCount}</span>
             ) : null}
           </span>
         </div>
-        <div className="journal-mood-bar__track journal-panel__body">
+        <div className={bodyClass}>
           <ul className="grocery-list-panel__list">
             {sorted.length === 0 ? (
               <li className="grocery-list-panel__empty muted">Nothing on the list yet.</li>
