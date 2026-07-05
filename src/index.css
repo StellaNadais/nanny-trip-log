@@ -5,7 +5,8 @@
   --paper: #ffffff;
   --paper2: #f0f0f0;
   --surface: #ffffff;
-  --line: #d8d4cf;
+  --line: #1a1a1a;
+  --line-soft: #d8d4cf;
   /* Accents: deep purple (icons, links, primary), gold trim, peach & bubblegum for warmth */
   --accent: #5c2d6e;
   --accent-soft: rgba(92, 45, 110, 0.16);
@@ -18,28 +19,34 @@
   --seafoam-2: #5cb4ab;
   --seafoam-3: #8fd4cc;
   --sky-gradient: linear-gradient(180deg, var(--seafoam-1) 0%, var(--seafoam-2) 45%, var(--seafoam-3) 100%);
-  --radius: 12px;
-  /* Edge strips: purple, peach, gold, seafoam, pink */
+  --radius: 8px;
+  /* Edge strips: sage green, sky blue, white, sunshine yellow */
   --rainbow-edge: linear-gradient(
     180deg,
-    #4a1f5c 0%,
-    #e8a090 20%,
-    #e0b14a 40%,
-    #5cb4ab 62%,
-    #d97aa8 82%,
-    #4a1f5c 100%
+    #22a06b 0%,
+    #2a90d0 18%,
+    #ffffff 38%,
+    #f5c542 58%,
+    #68c0f0 78%,
+    #7ad9a8 100%
   );
-  /* Preschool show vibe: soft rounded & very legible (Nunito) */
-  --font: 'Nunito', system-ui, -apple-system, 'Segoe UI', sans-serif;
-  /* 16px+ avoids iOS zoom on focused inputs */
-  font-family: var(--font);
-  font-size: 16px;
-  font-weight: 400;
-  line-height: 1.55;
-  letter-spacing: 0.01em;
+  --font: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-display: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-ui: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: ui-monospace, 'SF Mono', 'Cascadia Code', monospace;
+  --font-pixel: var(--font-ui);
+  --weight-body: 400;
+  --weight-label: 500;
+  --weight-title: 600;
+  font-family: var(--font-ui);
+  font-size: 15px;
+  font-weight: var(--weight-body);
+  line-height: 1.45;
+  letter-spacing: 0;
   color: var(--ink);
   background: transparent;
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
   -webkit-tap-highlight-color: rgba(92, 45, 110, 0.22);
 }
 
@@ -100,7 +107,7 @@ body::after {
 }
 
 @media (min-width: 600px) {
-  /* Hug the app column: strips sit in the margin just outside the 28rem shell (home → schedule → hub, etc.) */
+  /* Hug the app column: strips sit in the margin just outside the 28rem shell */
   body::before {
     right: auto;
     width: 10px;

@@ -1,11 +1,25 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { EVENT_LOCATIONS, groupFamilyEventsByLocation } from '../data/familyEvents'
-import { toISODateLocal, addDays } from '../utils/dates'
-import { monthGrid, WEEKDAYS, isSameDay } from '../utils/calendarMonth'
+import { OVERNIGHT_RATE } from '../data/bookingRates'
+import { toISODateLocal } from '../utils/dates'
+import { monthGrid, isSameDay } from '../utils/calendarMonth'
 import { useBookings } from '../hooks/useBookings'
+import { useParentReminders } from '../hooks/useParentReminders'
+import BookFollowUpModal from '../components/BookFollowUpModal'
+import BookSchedulingDock from '../components/BookSchedulingDock'
+import ScheduleCalendarFlip from '../components/ScheduleCalendarFlip'
+import BookTabBar from '../components/BookTabBar'
 import { bookingOccupiesCalendarSlot } from '../utils/bookingCalendar'
-import { careIntervalValid, expandBookingCalendarDates } from '../utils/bookingRange'
+import {
+  bookingEndMs,
+  bookingOvernightNightCount,
+  calendarSelectionRole,
+  careIntervalValid,
+  expandBookingCalendarDates,
+  suggestCareEndDateISO,
+} from '../utils/bookingRange'
+import { parseChildrenOnGig } from '../utils/bookingChildren'
 import { BOOK_THANKS_LEDE, BOOK_THANKS_SUPPORTERS } from '../data/bookThanks'
 
 function todayISO() {
@@ -18,15 +32,25 @@ function dateISOFromParts(y, m, dayNum) {
 
 const DEFAULT_CARE_START = '09:00'
 const DEFAULT_CARE_END = '17:00'
-const BOOK_END_DATE_SPAN_DAYS = 90
-
-/** Hover tooltip on “Book a gig” (styled bubble; copy matches user-requested wording). */
-const BOOK_GIG_HEADING_TIP =
-  'Tap a day to request a gig: set when the nanny’s shift starts and when it ends (including overnight). Then add your family details.'
 
 function phoneLooksReachable(value) {
   const digits = value.replace(/\D/g, '')
   return digits.length >= 7
+}
+
+function cellBookingMod(bookings) {
+  if (bookings.some((b) => b.responseStatus === 'accepted')) return 'accepted'
+  if (bookings.every((b) => b.responseStatus === 'declined')) return 'declined'
+  return 'pending'
+}
+
+function cellBookingLabel(bookings) {
+  const accepted = bookings.find((b) => b.responseStatus === 'accepted')
+  const active = accepted || bookings.find((b) => b.responseStatus !== 'declined') || bookings[0]
+  const raw = (active?.familyName || 'Gig').trim()
+  const first = raw.split(/\s+/)[0] || 'Gig'
+  if (bookings.length > 1) return `${first}+`
+  return first.length > 7 ? `${first.slice(0, 6)}…` : first
 }
 
 /**
@@ -34,25 +58,29 @@ function phoneLooksReachable(value) {
  */
 export default function BookPage() {
   const { bookings, addBooking } = useBookings()
+  const { addRemindersForBooking } = useParentReminders()
   const today = new Date()
   const [cursor, setCursor] = useState(
     () => new Date(today.getFullYear(), today.getMonth(), 1)
   )
-  const [selected, setSelected] = useState(() => new Date(today))
-  const [bookModalOpen, setBookModalOpen] = useState(false)
+  const [activeTab, setActiveTab] = useState('calendar')
+  const [schedulingOpen, setSchedulingOpen] = useState(false)
+  const [awaitingEndDate, setAwaitingEndDate] = useState(false)
   const [careStart, setCareStart] = useState(DEFAULT_CARE_START)
   const [careEnd, setCareEnd] = useState(DEFAULT_CARE_END)
-  const [careStartDateISO, setCareStartDateISO] = useState(() => toISODateLocal(new Date()))
-  const [careEndDateISO, setCareEndDateISO] = useState(() => toISODateLocal(new Date()))
-  const [kidCount, setKidCount] = useState('')
+  const [careStartDateISO, setCareStartDateISO] = useState('')
+  const [careEndDateISO, setCareEndDateISO] = useState('')
+  const [childrenOnGig, setChildrenOnGig] = useState('')
   const [familyName, setFamilyName] = useState('')
   const [phone, setPhone] = useState('')
   const [requestNotes, setRequestNotes] = useState('')
+  const [followUpBooking, setFollowUpBooking] = useState(null)
   const [bookToast, setBookToast] = useState('')
 
   const y = cursor.getFullYear()
   const m = cursor.getMonth()
   const cells = useMemo(() => monthGrid(y, m), [y, m])
+  const calendarRowCount = useMemo(() => Math.ceil(cells.length / 7), [cells.length])
 
   const bookingsByDate = useMemo(() => {
     const map = {}
@@ -66,6 +94,18 @@ export default function BookPage() {
     return map
   }, [bookings])
 
+  const upcoming = useMemo(() => {
+    const now = Date.now()
+    return [...bookings]
+      .filter((b) => b.dateISO && bookingOccupiesCalendarSlot(b) && bookingEndMs(b) >= now)
+      .sort((a, b) => {
+        const a0 = new Date(`${a.dateISO}T${a.careStart || '00:00'}:00`).getTime()
+        const b0 = new Date(`${b.dateISO}T${b.careStart || '00:00'}:00`).getTime()
+        if (a0 !== b0) return a0 - b0
+        return (a.createdAt ?? '').localeCompare(b.createdAt ?? '')
+      })
+  }, [bookings])
+
   const eventsByLocation = useMemo(() => groupFamilyEventsByLocation(), [])
 
   const title = cursor.toLocaleDateString(undefined, {
@@ -73,81 +113,129 @@ export default function BookPage() {
     year: 'numeric',
   })
 
-  const selectedISO = useMemo(() => toISODateLocal(selected), [selected])
+  const selectedBookings = careStartDateISO ? (bookingsByDate[careStartDateISO] ?? []) : []
+  const careStartIsPast = Boolean(careStartDateISO) && careStartDateISO < todayISO()
 
-  const selectedBookings = bookingsByDate[careStartDateISO] ?? []
-  const careStartIsPast = careStartDateISO < todayISO()
-
-  useEffect(() => {
-    if (!bookModalOpen) return
-    setSelected(new Date(`${careStartDateISO}T12:00:00`))
-  }, [bookModalOpen, careStartDateISO])
+  const resolvedEndDateISO = useMemo(() => {
+    if (!careStartDateISO) return ''
+    return suggestCareEndDateISO(careStartDateISO, careStart, careEndDateISO || careStartDateISO, careEnd)
+  }, [careStartDateISO, careStart, careEndDateISO, careEnd])
 
   const careDateHeadline = useMemo(() => {
+    if (!careStartDateISO) return 'Select dates on the calendar'
     const opts = { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' }
     const a = new Date(`${careStartDateISO}T12:00:00`).toLocaleDateString(undefined, opts)
-    const b = new Date(`${careEndDateISO}T12:00:00`).toLocaleDateString(undefined, opts)
-    if (careStartDateISO === careEndDateISO) return a
+    const b = new Date(`${resolvedEndDateISO}T12:00:00`).toLocaleDateString(undefined, opts)
+    if (careStartDateISO === resolvedEndDateISO) return a
     return `${a} → ${b}`
-  }, [careStartDateISO, careEndDateISO])
+  }, [careStartDateISO, resolvedEndDateISO])
 
   const careSpanSummary = useMemo(() => {
+    if (!careStartDateISO || !resolvedEndDateISO) return null
     const d0 = new Date(`${careStartDateISO}T12:00:00`)
-    const d1 = new Date(`${careEndDateISO}T12:00:00`)
+    const d1 = new Date(`${resolvedEndDateISO}T12:00:00`)
     const diff = Math.round((d1 - d0) / 86400000)
     if (diff === 0) return null
-    if (diff === 1) return 'Overnight gig · spans 2 days on the calendar'
-    return `${diff + 1} calendar days · this gig includes ${diff} overnight${diff === 1 ? '' : 's'}`
-  }, [careStartDateISO, careEndDateISO])
+    const nights = bookingOvernightNightCount({
+      dateISO: careStartDateISO,
+      careEndDateISO: resolvedEndDateISO,
+    })
+    const rateLine =
+      nights > 0 ? ` · ${nights} overnight${nights === 1 ? '' : 's'} × $${OVERNIGHT_RATE}` : ''
+    if (diff === 1) return `Overnight gig · spans 2 days on the calendar${rateLine}`
+    return `${diff + 1} calendar days · ${diff} overnight${diff === 1 ? '' : 's'}${rateLine}`
+  }, [careStartDateISO, resolvedEndDateISO])
 
-  const careEndDateMax = useMemo(
-    () => toISODateLocal(addDays(new Date(`${careStartDateISO}T12:00:00`), BOOK_END_DATE_SPAN_DAYS)),
-    [careStartDateISO]
-  )
+  const overnightNights = useMemo(() => {
+    if (!careStartDateISO) return 0
+    return bookingOvernightNightCount({
+      dateISO: careStartDateISO,
+      careEndDateISO: resolvedEndDateISO,
+    })
+  }, [careStartDateISO, resolvedEndDateISO])
+
+  const overnightTotal = overnightNights * OVERNIGHT_RATE
 
   const timeOk = useMemo(
-    () => careIntervalValid(careStartDateISO, careStart, careEndDateISO, careEnd),
-    [careStartDateISO, careStart, careEndDateISO, careEnd]
+    () => careIntervalValid(careStartDateISO, careStart, resolvedEndDateISO, careEnd),
+    [careStartDateISO, careStart, resolvedEndDateISO, careEnd]
   )
-  const kidsOk = useMemo(() => {
-    const k = Number(kidCount)
-    return kidCount !== '' && Number.isInteger(k) && k >= 1 && k <= 20
-  }, [kidCount])
+  const childrenParsed = useMemo(() => parseChildrenOnGig(childrenOnGig), [childrenOnGig])
+  const kidsOk = childrenParsed.valid
   const nameOk = familyName.trim().length > 0
   const phoneOk = phoneLooksReachable(phone)
 
-  function resetBookingModal(startISO) {
+  function applyCareEndTime(nextEndHM) {
+    setCareEnd(nextEndHM)
+    setCareEndDateISO((prev) =>
+      suggestCareEndDateISO(careStartDateISO, careStart, prev, nextEndHM)
+    )
+  }
+
+  function applyCareStartTime(nextStartHM) {
+    setCareStart(nextStartHM)
+    setCareEndDateISO((prev) =>
+      suggestCareEndDateISO(careStartDateISO, nextStartHM, prev, careEnd)
+    )
+  }
+
+  function resetBookingForm() {
     setCareStart(DEFAULT_CARE_START)
     setCareEnd(DEFAULT_CARE_END)
-    setCareStartDateISO(startISO)
-    setCareEndDateISO(startISO)
-    setKidCount('')
+    setCareStartDateISO('')
+    setCareEndDateISO('')
+    setChildrenOnGig('')
     setFamilyName('')
     setPhone('')
     setRequestNotes('')
+    setSchedulingOpen(false)
+    setAwaitingEndDate(false)
   }
 
-  function openBookingModal(dayNum) {
-    if (dayNum == null) return
-    const dayDate = new Date(y, m, dayNum)
-    const iso = toISODateLocal(dayDate)
-    setSelected(dayDate)
-    resetBookingModal(iso)
-    setBookModalOpen(true)
+  function clearScheduling() {
+    resetBookingForm()
   }
 
-  function closeBookingModal() {
-    setBookModalOpen(false)
-  }
+  function handleCalendarDateSelect(iso) {
+    if (iso < todayISO()) return
 
-  useEffect(() => {
-    if (!bookModalOpen) return
-    const onKey = (e) => {
-      if (e.key === 'Escape') closeBookingModal()
+    if (!schedulingOpen || !awaitingEndDate) {
+      setCareStartDateISO(iso)
+      setCareEndDateISO(iso)
+      setSchedulingOpen(true)
+      setAwaitingEndDate(true)
+      return
     }
-    window.addEventListener('keydown', onKey)
-    return () => window.removeEventListener('keydown', onKey)
-  }, [bookModalOpen])
+
+    if (iso < careStartDateISO) {
+      setCareStartDateISO(iso)
+      setCareEndDateISO(iso)
+      setAwaitingEndDate(true)
+      return
+    }
+
+    setCareEndDateISO(iso)
+    setAwaitingEndDate(false)
+  }
+
+  const selectionHint = useMemo(() => {
+    if (!schedulingOpen) return 'Tap your start day on the calendar'
+    if (awaitingEndDate) return 'Tap your end day on the calendar'
+    return 'Complete your booking in the popup'
+  }, [schedulingOpen, awaitingEndDate])
+
+  const dateSelectionRole = useMemo(
+    () => (iso) =>
+      schedulingOpen
+        ? calendarSelectionRole(iso, careStartDateISO, careEndDateISO)
+        : null,
+    [schedulingOpen, careStartDateISO, careEndDateISO]
+  )
+
+  function showBookToast(message) {
+    setBookToast(message)
+    window.setTimeout(() => setBookToast(''), 5000)
+  }
 
   function prevMonth() {
     setCursor(new Date(y, m - 1, 1))
@@ -159,384 +247,194 @@ export default function BookPage() {
 
   function submitBooking(e) {
     e.preventDefault()
-    if (careStartIsPast) return
+    if (!schedulingOpen || careStartIsPast) return
     if (!timeOk || !kidsOk || !nameOk || !phoneOk) return
     const start = careStartDateISO
-    addBooking({
+    const endDate = resolvedEndDateISO
+    const booking = addBooking({
       dateISO: start,
-      careEndDateISO,
+      careEndDateISO: endDate,
       familyName: familyName.trim(),
       contact: phone.trim(),
-      kidCount: Number(kidCount),
+      kidCount: childrenParsed.kidCount,
+      childrenNames: childrenParsed.childrenNames,
       careStart,
       careEnd,
       notes: requestNotes.trim(),
     })
-    closeBookingModal()
-    resetBookingModal(start)
-    setBookToast('Request sent! Your caregiver will follow up.')
-    window.setTimeout(() => setBookToast(''), 5000)
+    resetBookingForm()
+    if (booking?.id) {
+      setFollowUpBooking({
+        id: booking.id,
+        dateISO: start,
+        careEndDateISO: endDate,
+        familyName: familyName.trim(),
+      })
+    } else {
+      showBookToast('Request sent! Your caregiver will follow up.')
+    }
+  }
+
+  function closeFollowUp() {
+    setFollowUpBooking(null)
+    showBookToast('Request sent! Your caregiver will follow up.')
+  }
+
+  function saveFollowUp(reminderRows) {
+    if (followUpBooking?.id && reminderRows.length) {
+      addRemindersForBooking(followUpBooking.id, reminderRows)
+    }
+    setFollowUpBooking(null)
+    const hasExtras = reminderRows.length > 0
+    showBookToast(
+      hasExtras
+        ? 'Request sent with grocery and reminders!'
+        : 'Request sent! Your caregiver will follow up.'
+    )
   }
 
   return (
-    <div className="page page--calendar page--book page--parents-only work-ui">
-      <header className="calendar__head calendar__head--book book-workspace-head">
-        <p className="book-parents-banner" role="note">
-          Parent & family portal · this link is not the caregiver app
-        </p>
-        <p className="book-workspace-head__eyebrow">Availability request</p>
-        <h1
-          className="calendar__title calendar__title--book-tip"
-          id="book-page-heading"
-          aria-describedby="book-page-intro"
-          data-tooltip={BOOK_GIG_HEADING_TIP}
-        >
-          Book a gig
-        </h1>
-        <p className="book-workspace-head__sub muted">
-          Choose a start date, set shift hours (including overnights), and send your details—your caregiver reviews
-          everything in their schedule.
-        </p>
-        <p id="book-page-intro" className="sr-only">
-          {BOOK_GIG_HEADING_TIP} Dots show days that already have a request.
-        </p>
-      </header>
+    <div className="page page--calendar page--book page--book-portal page--schedule page--parents-only schedule-dashboard page--workspace work-ui">
+      <div className="book-portal__shell">
+        <header className="book-portal__head book-workspace-head">
+          <p className="book-parents-banner" role="note">
+            Parent & family portal · this link is not the caregiver app
+          </p>
+          <p className="book-workspace-head__eyebrow">Availability request</p>
+          <h1 id="book-page-heading" className="sr-only">
+            Book a gig
+          </h1>
+          <p className="book-workspace-head__sub muted">
+            Tap your start day, then end day on the calendar — same view your caregiver uses.
+          </p>
+        </header>
 
-      <div className="book-legend book-legend--work" role="group" aria-label="Calendar legend">
-        <span className="book-legend__item">
-          <span className="book-legend__dot book-legend__dot--booked" aria-hidden /> Request on file
-        </span>
-        <span className="book-legend__item">
-          <span className="book-legend__dot book-legend__dot--today" aria-hidden /> Today
-        </span>
-        <span className="book-legend__item book-legend__item--hours">
-          <strong>Shift length:</strong> choose end date and time after start for overnight or multi-day nanny gigs.
-        </span>
-      </div>
+        <BookTabBar activeTab={activeTab} onTabChange={setActiveTab} />
 
-      {bookToast ? (
-        <p className="book-toast" role="status">
-          {bookToast}
-        </p>
-      ) : null}
-
-      <div className="calendar__panel calendar__panel--book work-ui__calendar-card">
-        <div className="calendar__nav">
-          <button type="button" className="btn btn--ghost" onClick={prevMonth}>
-            ‹
-          </button>
-          <span className="calendar__month">{title}</span>
-          <button type="button" className="btn btn--ghost" onClick={nextMonth}>
-            ›
-          </button>
-        </div>
-        <div className="calendar__weekdays" aria-hidden>
-          {WEEKDAYS.map((w) => (
-            <span key={w} className="calendar__wd">
-              {w}
-            </span>
-          ))}
-        </div>
-        <div className="calendar__grid calendar__grid--book" role="grid" aria-label="Booking calendar">
-          {cells.map((dayNum, i) => {
-            if (dayNum == null) {
-              return (
-                <div
-                  key={i}
-                  className="calendar__cell calendar__cell--empty"
-                  role="gridcell"
-                />
-              )
-            }
-            const iso = dateISOFromParts(y, m, dayNum)
-            const dayBookings = bookingsByDate[iso] ?? []
-            const isBooked = dayBookings.length > 0
-            const isSel = isSameDay(selected, new Date(y, m, dayNum))
-            const isToday = isSameDay(today, new Date(y, m, dayNum))
-            const isPast = iso < todayISO()
-
-            const dayDate = new Date(y, m, dayNum)
-            const dateForAria = dayDate.toLocaleDateString(undefined, {
-              weekday: 'long',
-              month: 'long',
-              day: 'numeric',
-              year: 'numeric',
-            })
-            const ariaBits = [
-              dateForAria,
-              isBooked ? `${dayBookings.length} request${dayBookings.length > 1 ? 's' : ''}` : 'No requests yet',
-            ].filter(Boolean)
-
-            return (
-              <button
-                key={i}
-                type="button"
-                role="gridcell"
-                aria-label={ariaBits.join(', ')}
-                className={`calendar__cell ${isSel ? 'calendar__cell--selected' : ''} ${isToday ? 'calendar__cell--today' : ''} ${isBooked ? 'calendar__cell--booked' : ''} ${isPast ? 'calendar__cell--past' : ''}`}
-                onClick={() => openBookingModal(dayNum)}
-              >
-                <span className="calendar__cell-num">{dayNum}</span>
-                {isBooked ? (
-                  <span className="calendar__booked-mark" aria-hidden>
-                    {dayBookings.length > 1 ? (
-                      dayBookings.length
-                    ) : (
-                      <span className="calendar__booked-dot" />
-                    )}
-                  </span>
-                ) : null}
-              </button>
-            )
-          })}
-        </div>
-      </div>
-
-      <p className="book-request-hint muted">
-        Pick a start day on the calendar, then set gig start and end date-times in the form.
-      </p>
-
-      {bookModalOpen ? (
-        <div
-          className="book-modal"
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="book-modal-title"
-        >
-          <button
-            type="button"
-            className="book-modal__backdrop"
-            aria-label="Close booking form"
-            onClick={closeBookingModal}
-          />
-          <div className="book-modal__sheet">
-            <div className="book-modal__head">
-              <div className="book-modal__head-text">
-                <p className="book-modal__eyebrow">Booking</p>
-                <h2 id="book-modal-title" className="book-modal__title">
-                  Request details
-                </h2>
-                <p className="book-modal__date">{careDateHeadline}</p>
-                <p className="book-modal__sub muted">
-                  When does the gig start, and when does it end? You can cover evenings and overnights.
-                </p>
-              </div>
-              <button
-                type="button"
-                className="btn btn--ghost book-modal__close"
-                aria-label="Close"
-                onClick={closeBookingModal}
-              >
-                ×
-              </button>
-            </div>
-
-            {selectedBookings.length > 0 ? (
-              <p className="book-modal__note muted">
-                This start day already has {selectedBookings.length} request
-                {selectedBookings.length > 1 ? 's' : ''}. Submit only if your caregiver approved overlapping gigs.
-              </p>
-            ) : null}
-
-            <form className="book-modal__form" onSubmit={submitBooking}>
-              <div className="book-modal__hotel-card" aria-label="Gig start and end">
-                <div className="book-modal__hotel-dates">
-                  <div className="book-modal__hotel-col">
-                    <span className="book-modal__hotel-kicker">Gig starts</span>
-                    <input
-                      type="date"
-                      className="input input--line book-modal__hotel-date"
-                      value={careStartDateISO}
-                      onChange={(e) => {
-                        const v = e.target.value
-                        if (!v) return
-                        setCareStartDateISO(v)
-                        setCareEndDateISO((prev) => (prev < v ? v : prev))
-                      }}
-                      required
-                    />
-                    <label className="book-modal__hotel-time-label">
-                      <span>Start time</span>
-                      <input
-                        type="time"
-                        className="input input--line"
-                        value={careStart}
-                        onChange={(e) => setCareStart(e.target.value)}
-                        required
-                      />
-                    </label>
-                  </div>
-                  <div className="book-modal__hotel-rail" aria-hidden />
-                  <div className="book-modal__hotel-col">
-                    <span className="book-modal__hotel-kicker">Gig ends</span>
-                    <input
-                      type="date"
-                      className="input input--line book-modal__hotel-date"
-                      value={careEndDateISO}
-                      min={careStartDateISO}
-                      max={careEndDateMax}
-                      onChange={(e) => {
-                        let v = e.target.value
-                        if (!v || v < careStartDateISO) v = careStartDateISO
-                        setCareEndDateISO(v)
-                      }}
-                      required
-                    />
-                    <label className="book-modal__hotel-time-label">
-                      <span>End time</span>
-                      <input
-                        type="time"
-                        className="input input--line"
-                        value={careEnd}
-                        onChange={(e) => setCareEnd(e.target.value)}
-                        required
-                      />
-                    </label>
-                  </div>
-                </div>
-                {careSpanSummary ? (
-                  <p className="book-modal__hotel-summary muted">{careSpanSummary}</p>
-                ) : null}
-                {!timeOk && careStart && careEnd && careStartDateISO && careEndDateISO ? (
-                  <p className="book-modal__hint book-modal__hint--warn book-modal__hotel-warn">
-                    End date and time must be after the gig starts.
-                  </p>
-                ) : null}
-              </div>
-
-              <div className="book-modal__block">
-                <span className="book-modal__block-title">Children on this gig</span>
-                <label className="field-block book-modal__field-grow">
-                  <span className="field-block__label">How many</span>
-                  <input
-                    type="number"
-                    className="input input--line"
-                    min={1}
-                    max={20}
-                    step={1}
-                    value={kidCount}
-                    onChange={(e) => setKidCount(e.target.value)}
-                    placeholder="e.g. 2"
-                    inputMode="numeric"
-                  />
-                </label>
-              </div>
-
-              <div className="book-modal__block">
-                <span className="book-modal__block-title">Contact</span>
-                <label className="field-block book-modal__field-grow">
-                  <span className="field-block__label">Family / parent name</span>
-                  <input
-                    type="text"
-                    className="input input--line"
-                    value={familyName}
-                    onChange={(e) => setFamilyName(e.target.value)}
-                    placeholder="Your name"
-                    autoComplete="name"
-                  />
-                </label>
-                <label className="field-block book-modal__field-grow">
-                  <span className="field-block__label">Phone</span>
-                  <input
-                    type="tel"
-                    className="input input--line"
-                    value={phone}
-                    onChange={(e) => setPhone(e.target.value)}
-                    placeholder="Your phone number"
-                    autoComplete="tel"
-                  />
-                </label>
-                {phone.trim() && !phoneOk ? (
-                  <p className="book-modal__hint book-modal__hint--warn">
-                    Enter a phone number with at least 7 digits.
-                  </p>
-                ) : null}
-              </div>
-
-              <div className="book-modal__block">
-                <span className="book-modal__block-title">Notes for caregiver</span>
-                <label className="field-block book-modal__field-grow">
-                  <span className="field-block__label">Notes (optional)</span>
-                  <textarea
-                    className="input input--area book-modal__notes"
-                    value={requestNotes}
-                    onChange={(e) => setRequestNotes(e.target.value)}
-                    placeholder="Diet, routines, pickup plans, second parent contact…"
-                    rows={3}
-                    maxLength={2000}
-                    autoComplete="off"
-                  />
-                </label>
-              </div>
-
-              {careStartIsPast ? (
-                <p className="book-modal__hint book-modal__hint--warn">
-                  Gig start date has passed. Close and pick today or a future day on the calendar.
+        <main className="book-portal__canvas">
+          {activeTab === 'calendar' ? (
+            <div className="book-portal__panel" role="tabpanel" aria-labelledby="book-tab-calendar">
+              {bookToast ? (
+                <p className="book-toast" role="status">
+                  {bookToast}
                 </p>
               ) : null}
 
-              <div className="book-modal__actions">
-                <button type="button" className="btn btn--ghost" onClick={closeBookingModal}>
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="btn btn--primary btn--work-primary"
-                  disabled={careStartIsPast || !timeOk || !kidsOk || !nameOk || !phoneOk}
-                >
-                  Submit request
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      ) : null}
+              <section className="schedule__calendar-panel work-ui__panel" aria-label="Booking calendar">
+                <ScheduleCalendarFlip
+                  embedded
+                  title={title}
+                  cells={cells}
+                  y={y}
+                  m={m}
+                  today={today}
+                  calendarRowCount={calendarRowCount}
+                  bookingsByDate={bookingsByDate}
+                  upcoming={upcoming}
+                  dateISOFromParts={dateISOFromParts}
+                  todayISO={todayISO}
+                  isSameDay={isSameDay}
+                  cellBookingMod={cellBookingMod}
+                  cellBookingLabel={cellBookingLabel}
+                  onPrevMonth={prevMonth}
+                  onNextMonth={nextMonth}
+                  onDateSelect={handleCalendarDateSelect}
+                  dateSelectionRole={dateSelectionRole}
+                  selectionHint={selectionHint}
+                  showSelectionLegend
+                  listTitle="Your requests"
+                  listFlipLabel="Your requests"
+                  listEmptyMessage="No requests on file yet. Tap dates on the calendar to schedule."
+                />
+              </section>
+            </div>
+          ) : null}
 
-      <details className="book-events-details book-events-details--work">
-        <summary className="book-events__summary">
-          <span className="book-events__summary-title">Local events</span>
-          <span className="book-events__summary-hint muted">Moraga & Oakland · reference</span>
-        </summary>
-        <div className="book-events__panel">
-          <p className="muted book-events__lede">
-            Ideas near Moraga & Oakland — confirm times with each place. Your caregiver also has a full list in Tools →
-            Events.
-          </p>
-          <div className="book-events__grid">
-            {EVENT_LOCATIONS.map(({ id, label }) => (
-              <div key={id} className="book-events__col">
-                <h3 className="book-events__loc">{label}</h3>
-                <ul className="book-events__list">
-                  {eventsByLocation[id]?.map((ev) => (
-                    <li key={ev.id} className="book-events__item">
-                      <span className="book-events__item-title">{ev.title}</span>
-                      <span className="book-events__item-place muted">{ev.place}</span>
+          {activeTab === 'events' ? (
+            <div className="book-portal__panel" role="tabpanel" aria-labelledby="book-tab-events">
+              <section className="book-events__panel">
+                <h2 className="book-events__summary-title">Local events</h2>
+                <p className="muted book-events__lede">
+                  Ideas near Moraga & Oakland — confirm times with each place. Your caregiver also has a full list in
+                  Tools → Events.
+                </p>
+                <div className="book-events__grid">
+                  {EVENT_LOCATIONS.map(({ id, label }) => (
+                    <div key={id} className="book-events__col">
+                      <h3 className="book-events__loc">{label}</h3>
+                      <ul className="book-events__list">
+                        {eventsByLocation[id]?.map((ev) => (
+                          <li key={ev.id} className="book-events__item">
+                            <span className="book-events__item-title">{ev.title}</span>
+                            <span className="book-events__item-place muted">{ev.place}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  ))}
+                </div>
+                <Link to="/events" className="btn btn--ghost book-events__more">
+                  Open full events list
+                </Link>
+              </section>
+            </div>
+          ) : null}
+
+          {activeTab === 'thanks' ? (
+            <div className="book-portal__panel" role="tabpanel" aria-labelledby="book-tab-thanks">
+              <section className="book-thanks" aria-labelledby="book-thanks-heading">
+                <h2 id="book-thanks-heading" className="book-thanks__title">
+                  Thank you
+                </h2>
+                <p className="book-thanks__lede">{BOOK_THANKS_LEDE}</p>
+                <ul className="book-thanks__list">
+                  {BOOK_THANKS_SUPPORTERS.map((person) => (
+                    <li key={person.name} className="book-thanks__item">
+                      <strong className="book-thanks__name">{person.name}</strong>
+                      <span className="book-thanks__note">{person.note}</span>
                     </li>
                   ))}
                 </ul>
-              </div>
-            ))}
-          </div>
-          <Link to="/events" className="btn btn--ghost book-events__more">
-            Open full events list
-          </Link>
-        </div>
-      </details>
+              </section>
+            </div>
+          ) : null}
+        </main>
+      </div>
 
-      <section className="book-thanks" aria-labelledby="book-thanks-heading">
-        <h2 id="book-thanks-heading" className="book-thanks__title">
-          Thank you
-        </h2>
-        <p className="book-thanks__lede">{BOOK_THANKS_LEDE}</p>
-        <ul className="book-thanks__list">
-          {BOOK_THANKS_SUPPORTERS.map((person) => (
-            <li key={person.name} className="book-thanks__item">
-              <strong className="book-thanks__name">{person.name}</strong>
-              <span className="book-thanks__note">{person.note}</span>
-            </li>
-          ))}
-        </ul>
-      </section>
+      <BookSchedulingDock
+        open={schedulingOpen && !awaitingEndDate}
+        onClose={clearScheduling}
+        careDateHeadline={careDateHeadline}
+        careSpanSummary={careSpanSummary}
+        overnightNights={overnightNights}
+        overnightTotal={overnightTotal}
+        careStart={careStart}
+        careEnd={careEnd}
+        onCareStartTime={applyCareStartTime}
+        onCareEndTime={applyCareEndTime}
+        timeOk={timeOk}
+        childrenOnGig={childrenOnGig}
+        familyName={familyName}
+        phone={phone}
+        phoneOk={phoneOk}
+        requestNotes={requestNotes}
+        onChildrenOnGig={setChildrenOnGig}
+        onFamilyName={setFamilyName}
+        onPhone={setPhone}
+        onRequestNotes={setRequestNotes}
+        selectedBookingsCount={selectedBookings.length}
+        careStartIsPast={careStartIsPast}
+        canSubmit={!careStartIsPast && timeOk && kidsOk && nameOk && phoneOk}
+        onSubmit={submitBooking}
+        onClear={clearScheduling}
+      />
+
+      <BookFollowUpModal
+        open={Boolean(followUpBooking)}
+        booking={followUpBooking}
+        onClose={closeFollowUp}
+        onDone={saveFollowUp}
+      />
     </div>
   )
 }

@@ -66,9 +66,6 @@ export default function WelcomePage() {
       className="page page--welcome welcome__whole-tap"
       aria-label="Tap anywhere to start — open your schedule"
     >
-      <div className="page__badge" aria-hidden>
-        1
-      </div>
       <div className="welcome__body">
         <p className="welcome__greet">{greeting}</p>
         <p className="welcome__day">
@@ -78,9 +75,6 @@ export default function WelcomePage() {
       </div>
       <div className="welcome__actions">
         <span className="welcome__cta">Tap to start</span>
-        <p className="welcome__hints muted">
-          Your schedule and tools — parents use a separate booking link you share.
-        </p>
       </div>
     </Link>
   )

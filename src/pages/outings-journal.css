@@ -1,0 +1,75 @@
+/* Outings page — kid journal skin + two-column layout */
+
+.page--outings.page--kid-journal {
+  color: var(--journal-ink-on-page);
+  background: transparent;
+  transition: background 1.2s ease;
+}
+
+.page--outings.page--kid-journal.work-ui {
+  background: transparent;
+}
+
+.page--outings.page--kid-journal > * {
+  position: relative;
+  z-index: 1;
+}
+
+.page--outings.page--kid-journal .outings__layout,
+.page--outings.page--kid-journal .tool-workspace-head {
+  background: transparent;
+}
+
+.page--outings.page--kid-journal .outings__layout {
+  gap: 12px;
+  padding-bottom: max(16px, env(safe-area-inset-bottom, 0px));
+}
+
+.page--outings.page--kid-journal .outings__sky-phase {
+  margin: 0 0 4px;
+  text-align: left;
+}
+
+.page--outings.page--kid-journal .outings__columns {
+  gap: 12px;
+}
+
+.page--outings.page--kid-journal .outings__section {
+  margin: 0;
+}
+
+.page--outings.page--kid-journal .outings-expenses__lede a {
+  color: var(--journal-mint-deep);
+}
+
+.page--outings.page--kid-journal .outings-expenses__add-btn:hover,
+.page--outings.page--kid-journal .outings-expenses__add-btn:focus-visible {
+  border-color: var(--journal-mint-deep);
+  background: color-mix(in srgb, var(--journal-sage) 38%, var(--journal-surface-bright));
+  color: var(--journal-ink-front);
+}
+
+.page--outings.page--kid-journal .outings__place-remove:hover,
+.page--outings.page--kid-journal .outings__place-remove:active,
+.page--outings.page--kid-journal .outings__location-remove:hover,
+.page--outings.page--kid-journal .outings__location-remove:active {
+  background: color-mix(in srgb, var(--journal-sage) 40%, var(--journal-surface-bright));
+  color: var(--journal-mint-deep);
+}
+
+.page--outings.page--kid-journal .outings__journal-sign {
+  border-color: color-mix(in srgb, var(--journal-mint-deep) 35%, var(--journal-line));
+  background: color-mix(in srgb, var(--journal-sage) 28%, var(--journal-surface-bright));
+}
+
+.page--outings.page--kid-journal .outings__journal-sign-link {
+  color: var(--journal-mint-deep);
+}
+
+.page--outings.page--kid-journal .outings__to-journal:hover,
+.page--outings.page--kid-journal .outings__to-journal:active,
+.page--outings.page--kid-journal .outings__to-receipt:hover,
+.page--outings.page--kid-journal .outings__to-receipt:active {
+  background: color-mix(in srgb, var(--journal-sage) 40%, var(--journal-surface-bright));
+  color: var(--journal-ink-front);
+}

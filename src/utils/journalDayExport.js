@@ -1,22 +1,40 @@
+import { journalMoodDisplay } from '../data/journalMoods'
+import { pottyDisplayLine } from './journalLittleBooks'
+
 export function buildJournalDayExportText({
   dateISO,
   dateLabel,
   dayNotes,
   mealsText,
+  nap,
+  pottyTime,
+  pottyNotes,
+  wishes,
+  mood,
   morningNap,
   afternoonNap,
   handwrittenPhotoDataUrl,
   shoppingItems = [],
 }) {
+  const napLine =
+    String(nap ?? '').trim() ||
+    [morningNap, afternoonNap]
+      .map((s) => String(s ?? '').trim())
+      .filter(Boolean)
+      .join(' · ') ||
+    '—'
   const hasHandwrittenPhoto = Boolean(String(handwrittenPhotoDataUrl || '').trim())
   const shoppingLines =
     shoppingItems.length === 0
       ? ['(empty)']
       : shoppingItems.map((item) => `${item.done ? '[x]' : '[ ]'} ${item.text}`)
   const lines = [
-    'KID JOURNAL',
+    'TODAY',
     dateLabel,
     `Date (ISO): ${dateISO}`,
+    '',
+    '--- Mood ---',
+    journalMoodDisplay(mood) || '(not set)',
     '',
     '--- About today ---',
     String(dayNotes || '').trim() || '(empty)',
@@ -27,11 +45,16 @@ export function buildJournalDayExportText({
     '--- Meals ---',
     String(mealsText || '').trim() || '(empty)',
     '',
-    '--- Naps ---',
-    `Morning: ${String(morningNap || '').trim() || '—'}`,
-    `Afternoon: ${String(afternoonNap || '').trim() || '—'}`,
+    '--- Nap ---',
+    napLine,
     '',
-    '--- Shopping list (this week) ---',
+    '--- Potty ---',
+    pottyDisplayLine(pottyTime, pottyNotes) || '—',
+    '',
+    '--- Wishes ---',
+    String(wishes || '').trim() || '—',
+    '',
+    '--- Grocery list (this week) ---',
     ...shoppingLines,
     '',
     '---',

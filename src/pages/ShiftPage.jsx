@@ -1,15 +1,11 @@
 import { useEffect, useMemo, useState } from 'react'
-import { Link } from 'react-router-dom'
 import { DayStrip } from '../components/DayStrip'
+import HoldConfirmControl from '../components/HoldConfirmControl'
 import { addDays, formatWeekRange, startOfWeekMonday, toISODateLocal } from '../utils/dates'
-import {
-  countByKindYear,
-  MAX_SICK_DAYS_PER_YEAR,
-  MAX_VACATION_DAYS_PER_YEAR,
-  yearFromIso,
-} from '../utils/timeOffStorage'
 import { useShiftPunctuality } from '../hooks/useShiftPunctuality'
 import { formatCountdownMs, shiftTimeWindowStatus } from '../utils/shiftTimeWindow'
+import ShiftContractSection from '../components/ShiftContractSection'
+import WorkspaceTileBoard from '../components/WorkspaceTileBoard'
 
 const ARRIVAL_TIMES = ['8:00 AM', '8:05 AM', '8:10 AM']
 const END_TIMES = ['5:00 PM', '5:05 PM', '5:10 PM']
@@ -43,7 +39,7 @@ function splitTimeLabel(full) {
 }
 
 export default function ShiftPage() {
-  const { upsertShiftDay, timeOffEntries, addTimeOffEntry, removeTimeOffEntry } = useShiftPunctuality()
+  const { upsertShiftDay } = useShiftPunctuality()
   const [shiftWeekStart, setShiftWeekStart] = useState(() => startOfWeekMonday(new Date()))
   const [dayOffset, setDayOffset] = useState(() =>
     initialDayOffsetForWeek(startOfWeekMonday(new Date()))
@@ -81,30 +77,18 @@ export default function ShiftPage() {
     }
   }, [tick, shiftDate, arrival, end])
 
-  const [timeOffDate, setTimeOffDate] = useState(() => toISODateLocal(new Date()))
-  const [timeOffKind, setTimeOffKind] = useState('vacation')
-  const [timeOffFlash, setTimeOffFlash] = useState('')
-
-  const yearForTimeOff = useMemo(() => yearFromIso(timeOffDate), [timeOffDate])
-
-  const vacationUsed = useMemo(
-    () => countByKindYear(timeOffEntries, yearForTimeOff, 'vacation'),
-    [timeOffEntries, yearForTimeOff]
-  )
-
-  const sickUsed = useMemo(
-    () => countByKindYear(timeOffEntries, yearForTimeOff, 'sick'),
-    [timeOffEntries, yearForTimeOff]
-  )
-
-  const yearTimeOffList = useMemo(() => {
-    return [...timeOffEntries]
-      .filter((e) => yearFromIso(e.dateISO) === yearForTimeOff)
-      .sort((a, b) => (b.dateISO || '').localeCompare(a.dateISO || ''))
-  }, [timeOffEntries, yearForTimeOff])
-
   function shiftShiftWeek(delta) {
     setShiftWeekStart((w) => addDays(w, delta * 7))
+  }
+
+  function toggleArrival(t) {
+    setArrival((prev) => (prev === t ? '' : t))
+    setFlash('')
+  }
+
+  function toggleEnd(t) {
+    setEnd((prev) => (prev === t ? '' : t))
+    setFlash('')
   }
 
   function logArrival() {
@@ -124,65 +108,54 @@ export default function ShiftPage() {
     )
   }
 
-  function submitTimeOff(e) {
-    e.preventDefault()
-    setTimeOffFlash('')
-    const err = addTimeOffEntry({ dateISO: timeOffDate, kind: timeOffKind })
-    if (err) {
-      setTimeOffFlash(err)
-      return
-    }
-    setTimeOffFlash('Day off logged.')
-  }
-
   return (
-    <div className="page page--shift">
-      <header className="shift__head">
-        <Link to="/hub" className="page-back page-back--ghost">
-          ← Hub
-        </Link>
-        <h1 className="shift__title">
-          Shift <span className="placeholder__code">(A)</span>
-        </h1>
-        <p className="muted shift__lede">
-          Pick the week and day, tap arrival and end in the circles. Each side has its own{' '}
-          <strong>Log</strong> button that only works on that day, within ±5 minutes of the time you chose.
-          Paid time off is at the bottom of this page.
-        </p>
-      </header>
+    <div className="page page--shift page--kid-journal page--workspace work-ui">
 
-      <div className="journal__week-picker shift__week-picker">
-        <div className="trip-log__week-tools">
-          <button type="button" className="btn btn--ghost trip-log__week-btn" onClick={() => shiftShiftWeek(-1)}>
-            ← Previous week
-          </button>
-          <button type="button" className="btn btn--ghost trip-log__week-btn" onClick={() => shiftShiftWeek(1)}>
-            Next week →
-          </button>
-        </div>
-        <p className="journal__week-range muted" aria-live="polite">
-          {formatWeekRange(shiftWeekStart)}
-        </p>
-        <DayStrip
-          weekStart={shiftWeekStart}
-          selectedIso={shiftDate}
-          onSelect={(iso) => {
-            const a = new Date(weekKey + 'T12:00:00')
-            const b = new Date(iso + 'T12:00:00')
-            const diff = Math.round((b - a) / 86400000)
-            setDayOffset(Math.max(0, Math.min(6, diff)))
-          }}
-        />
-      </div>
+      <div className="journal__layout shift__layout">
+        <section className="journal__week-picker work-ui__panel" aria-label="Pick a day">
+          <div className="journal__week-picker-top">
+            <div className="trip-log__week-tools journal__week-tools">
+              <button type="button" className="btn btn--ghost trip-log__week-btn" onClick={() => shiftShiftWeek(-1)}>
+                ← Prev
+              </button>
+              <p className="journal__week-range" aria-live="polite">
+                {formatWeekRange(shiftWeekStart)}
+              </p>
+              <button type="button" className="btn btn--ghost trip-log__week-btn" onClick={() => shiftShiftWeek(1)}>
+                Next →
+              </button>
+            </div>
+            <p className="journal__selected-day" aria-live="polite">
+              {formatDayLabel(shiftDate)}
+            </p>
+          </div>
+          <DayStrip
+            weekStart={shiftWeekStart}
+            selectedIso={shiftDate}
+            onSelect={(iso) => {
+              const a = new Date(weekKey + 'T12:00:00')
+              const b = new Date(iso + 'T12:00:00')
+              const diff = Math.round((b - a) / 86400000)
+              setDayOffset(Math.max(0, Math.min(6, diff)))
+            }}
+          />
+        </section>
 
-      <div className="shift__form">
-        {!clock.isShiftToday ? (
-          <p className="shift__today-callout muted" role="note">
-            Select <strong>today</strong> in the strip above to unlock logging; each button only works on the
-            selected day within ±5 minutes of that wall time.
-          </p>
-        ) : null}
-
+        <WorkspaceTileBoard
+          workspaceId="shift"
+          tiles={[
+            {
+              id: 'clock',
+              label: 'Clock in',
+              span: 2,
+              hideHead: true,
+              children: (
+                <>
+        <section
+          className="journal-mood-bar journal-panel journal-panel--shift-log shift__card shift__card--log"
+          aria-label="Log shift times"
+        >
+          <div className="journal-mood-bar__track journal-panel__body shift__form">
         <fieldset className="shift__pick-field time-pick">
           <legend className="time-pick__legend">Arrival</legend>
           <div className="shift__circle-row" role="group" aria-label="Arrival time">
@@ -190,37 +163,45 @@ export default function ShiftPage() {
               const { clock: clockPart, ap } = splitTimeLabel(t)
               const on = arrival === t
               const slotLive = on && clock.isShiftToday && clock.arrivalSt?.status === 'inside'
+              const canHold = slotLive && clock.canLogArrival
               return (
-                <button
+                <HoldConfirmControl
                   key={t}
-                  type="button"
+                  enabled={canHold}
+                  onConfirm={logArrival}
+                  onClick={() => toggleArrival(t)}
                   className={`shift__time-circle ${on ? 'shift__time-circle--on' : ''} ${slotLive ? 'shift__time-circle--live' : ''}`}
-                  onClick={() => setArrival(t)}
                   aria-pressed={on}
-                  aria-label={`Arrival ${t}`}
+                  aria-label={
+                    on
+                      ? canHold
+                        ? `Hold to log arrival ${t}, or tap to clear`
+                        : `Clear arrival ${t}`
+                      : `Select arrival ${t}`
+                  }
                 >
                   <span className="shift__time-circle__clock">{clockPart}</span>
                   {ap ? <span className="shift__time-circle__ap">{ap}</span> : null}
-                </button>
+                </HoldConfirmControl>
               )
             })}
           </div>
-          <p className="shift__window-hint muted" aria-live="polite">
-            {!arrival ? (
-              'Tap the time you plan to arrive—circles gently pulse when you are in the live window.'
-            ) : !clock.isShiftToday ? (
-              'Switch to today in the week strip to align submit with the real clock.'
-            ) : clock.arrivalSt?.status === 'inside' ? (
-              <span className="shift__window-hint--ok">You are in the arrival window—log it while it feels true.</span>
-            ) : clock.arrivalSt?.status === 'before' ? (
-              <>
-                Unlocks in <strong className="shift__countdown">{formatCountdownMs(clock.arrivalSt.opensAt.getTime() - clock.now.getTime())}</strong> (±5 minutes around{' '}
-                {arrival}).
-              </>
-            ) : (
-              <>That ±5 minute window has passed for {arrival} today—tomorrow is a fresh chance, or pick another slot.</>
-            )}
-          </p>
+          {arrival && clock.isShiftToday && clock.arrivalSt?.status === 'inside' ? (
+            <p className="shift__window-hint shift__window-hint--ok" aria-live="polite">
+              Press and hold to log arrival
+            </p>
+          ) : arrival && clock.isShiftToday && clock.arrivalSt?.status === 'before' ? (
+            <p className="shift__window-hint muted" aria-live="polite">
+              Unlocks in{' '}
+              <strong className="shift__countdown">
+                {formatCountdownMs(clock.arrivalSt.opensAt.getTime() - clock.now.getTime())}
+              </strong>
+            </p>
+          ) : arrival && clock.isShiftToday && clock.arrivalSt?.status === 'after' ? (
+            <p className="shift__window-hint muted" aria-live="polite">
+              Window passed for {arrival}
+            </p>
+          ) : null}
         </fieldset>
 
         <fieldset className="shift__pick-field time-pick">
@@ -230,37 +211,45 @@ export default function ShiftPage() {
               const { clock: clockPart, ap } = splitTimeLabel(t)
               const on = end === t
               const slotLive = on && clock.isShiftToday && clock.endSt?.status === 'inside'
+              const canHold = slotLive && clock.canLogEnd
               return (
-                <button
+                <HoldConfirmControl
                   key={t}
-                  type="button"
+                  enabled={canHold}
+                  onConfirm={logEnd}
+                  onClick={() => toggleEnd(t)}
                   className={`shift__time-circle ${on ? 'shift__time-circle--on' : ''} ${slotLive ? 'shift__time-circle--live' : ''}`}
-                  onClick={() => setEnd(t)}
                   aria-pressed={on}
-                  aria-label={`End ${t}`}
+                  aria-label={
+                    on
+                      ? canHold
+                        ? `Hold to log end ${t}, or tap to clear`
+                        : `Clear end ${t}`
+                      : `Select end ${t}`
+                  }
                 >
                   <span className="shift__time-circle__clock">{clockPart}</span>
                   {ap ? <span className="shift__time-circle__ap">{ap}</span> : null}
-                </button>
+                </HoldConfirmControl>
               )
             })}
           </div>
-          <p className="shift__window-hint muted" aria-live="polite">
-            {!end ? (
-              'Tap when you expect to finish—same ±5 minute rule when you clock out for real.'
-            ) : !clock.isShiftToday ? (
-              'Switch to today in the week strip before the end-time window to submit.'
-            ) : clock.endSt?.status === 'inside' ? (
-              <span className="shift__window-hint--ok">You are in the end window—wrap the day when you are ready.</span>
-            ) : clock.endSt?.status === 'before' ? (
-              <>
-                Unlocks in <strong className="shift__countdown">{formatCountdownMs(clock.endSt.opensAt.getTime() - clock.now.getTime())}</strong> (±5 minutes around{' '}
-                {end}).
-              </>
-            ) : (
-              <>That ±5 minute window has passed for {end} today.</>
-            )}
-          </p>
+          {end && clock.isShiftToday && clock.endSt?.status === 'inside' ? (
+            <p className="shift__window-hint shift__window-hint--ok" aria-live="polite">
+              Press and hold to log end
+            </p>
+          ) : end && clock.isShiftToday && clock.endSt?.status === 'before' ? (
+            <p className="shift__window-hint muted" aria-live="polite">
+              Unlocks in{' '}
+              <strong className="shift__countdown">
+                {formatCountdownMs(clock.endSt.opensAt.getTime() - clock.now.getTime())}
+              </strong>
+            </p>
+          ) : end && clock.isShiftToday && clock.endSt?.status === 'after' ? (
+            <p className="shift__window-hint muted" aria-live="polite">
+              Window passed for {end}
+            </p>
+          ) : null}
         </fieldset>
 
         {flash ? (
@@ -277,147 +266,38 @@ export default function ShiftPage() {
         ) : null}
 
         <div className="shift__submit-row">
-          <button
-            type="button"
-            className={`btn btn--primary shift__submit-btn shift__submit-btn--arrival ${clock.canLogArrival ? 'shift__submit-btn--live' : ''}`}
+          <HoldConfirmControl
+            enabled={clock.canLogArrival}
+            onConfirm={logArrival}
             disabled={!clock.canLogArrival}
-            onClick={logArrival}
+            className={`btn btn--primary shift__submit-btn shift__submit-btn--arrival ${clock.canLogArrival ? 'shift__submit-btn--live' : ''}`}
+            aria-label="Press and hold to log arrival"
           >
             Log arrival
-          </button>
-          <button
-            type="button"
-            className={`btn btn--primary shift__submit-btn shift__submit-btn--end ${clock.canLogEnd ? 'shift__submit-btn--live' : ''}`}
+          </HoldConfirmControl>
+          <HoldConfirmControl
+            enabled={clock.canLogEnd}
+            onConfirm={logEnd}
             disabled={!clock.canLogEnd}
-            onClick={logEnd}
+            className={`btn btn--primary shift__submit-btn shift__submit-btn--end ${clock.canLogEnd ? 'shift__submit-btn--live' : ''}`}
+            aria-label="Press and hold to log end"
           >
             Log end
-          </button>
+          </HoldConfirmControl>
         </div>
-
-        <details className="shift__time-off-details shift__time-off-details--footer">
-          <summary className="shift__time-off-summary">
-            <span className="shift__time-off-summary-title">Paid vacation & paid sick days</span>
-            <span className="shift__time-off-summary-stats muted">
-              {yearForTimeOff}: {vacationUsed}/{MAX_VACATION_DAYS_PER_YEAR} paid vacation · {sickUsed}/
-              {MAX_SICK_DAYS_PER_YEAR} paid sick
-            </span>
-          </summary>
-
-          <div className="shift__time-off-panel">
-            <p className="muted shift__time-off-lede">
-              Per calendar year: up to <strong>{MAX_VACATION_DAYS_PER_YEAR}</strong> paid vacation days and{' '}
-              <strong>{MAX_SICK_DAYS_PER_YEAR}</strong> paid sick days. Pick a date below to see counts for that year.
-            </p>
-
-            <div className="shift__time-off-meters" aria-live="polite">
-              <div className="shift__meter">
-                <span className="shift__meter-label">Paid vacation ({yearForTimeOff})</span>
-                <span className="shift__meter-count">
-                  {vacationUsed} / {MAX_VACATION_DAYS_PER_YEAR}
-                </span>
-                <div className="shift__meter-bar" role="presentation">
-                  <div
-                    className="shift__meter-fill shift__meter-fill--vacation"
-                    style={{
-                      width: `${Math.min(100, (vacationUsed / MAX_VACATION_DAYS_PER_YEAR) * 100)}%`,
-                    }}
-                  />
-                </div>
-              </div>
-              <div className="shift__meter">
-                <span className="shift__meter-label">Paid sick days ({yearForTimeOff})</span>
-                <span className="shift__meter-count">
-                  {sickUsed} / {MAX_SICK_DAYS_PER_YEAR}
-                </span>
-                <div className="shift__meter-bar" role="presentation">
-                  <div
-                    className="shift__meter-fill shift__meter-fill--sick"
-                    style={{
-                      width: `${Math.min(100, (sickUsed / MAX_SICK_DAYS_PER_YEAR) * 100)}%`,
-                    }}
-                  />
-                </div>
-              </div>
-            </div>
-
-            <form className="shift__time-off-form" onSubmit={submitTimeOff}>
-              <label className="field-block">
-                <span className="field-block__label">Day off date</span>
-                <input
-                  type="date"
-                  className="input input--line"
-                  value={timeOffDate}
-                  onChange={(e) => setTimeOffDate(e.target.value)}
-                  required
-                />
-              </label>
-
-              <fieldset className="time-pick shift__time-off-kind">
-                <legend className="time-pick__legend">Type</legend>
-                <div className="time-pick__chips" role="group" aria-label="Day off type">
-                  <button
-                    type="button"
-                    className={`time-chip ${timeOffKind === 'vacation' ? 'time-chip--on' : ''}`}
-                    onClick={() => setTimeOffKind('vacation')}
-                  >
-                    Paid vacation
-                  </button>
-                  <button
-                    type="button"
-                    className={`time-chip ${timeOffKind === 'sick' ? 'time-chip--on' : ''}`}
-                    onClick={() => setTimeOffKind('sick')}
-                  >
-                    Paid sick days
-                  </button>
-                </div>
-              </fieldset>
-
-              {timeOffFlash ? (
-                <p
-                  className={`shift__flash ${timeOffFlash.startsWith('Day off') ? 'shift__flash--ok' : ''}`}
-                  role="status"
-                >
-                  {timeOffFlash}
-                </p>
-              ) : null}
-
-              <button type="submit" className="btn btn--primary shift__time-off-submit">
-                Log day off
-              </button>
-            </form>
-
-            {yearTimeOffList.length > 0 ? (
-              <ul className="shift__time-off-list">
-                {yearTimeOffList.map((row) => (
-                  <li key={row.id} className="shift__time-off-row">
-                    <span className="shift__time-off-date">{formatDayLabel(row.dateISO)}</span>
-                    <span className={`shift__time-off-tag ${row.kind === 'sick' ? 'shift__time-off-tag--sick' : ''}`}>
-                      {row.kind === 'vacation' ? 'Paid vacation' : 'Paid sick days'}
-                    </span>
-                    <button
-                      type="button"
-                      className="btn btn--ghost shift__time-off-remove"
-                      onClick={() => removeTimeOffEntry(row.id)}
-                    >
-                      Remove
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <p className="muted shift__time-off-empty">
-                No paid vacation or paid sick days logged for {yearForTimeOff} yet.
-              </p>
-            )}
           </div>
-        </details>
-      </div>
-
-      <div className="shift__links">
-        <Link to="/notes" className="page-back">
-          Open internal notes →
-        </Link>
+        </section>
+                </>
+              ),
+            },
+            {
+              id: 'contract',
+              label: 'Contract',
+              span: 2,
+              children: <ShiftContractSection selectedDateISO={shiftDate} />,
+            },
+          ]}
+        />
       </div>
     </div>
   )

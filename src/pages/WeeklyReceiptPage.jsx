@@ -5,5 +5,5 @@ export default function WeeklyReceiptPage() {
   const [searchParams] = useSearchParams()
   const next = new URLSearchParams(searchParams)
   next.set('receipt', 'open')
-  return <Navigate to={`/hub?${next.toString()}`} replace />
+  return <Navigate to={`/schedule?${next.toString()}`} replace />
 }

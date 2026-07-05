@@ -17,9 +17,9 @@
   .app {
     max-height: none;
     min-height: 100dvh;
-    border-left: 1px solid color-mix(in srgb, var(--line) 85%, transparent);
-    border-right: 1px solid color-mix(in srgb, var(--line) 85%, transparent);
-    box-shadow: 0 0 0 1px color-mix(in srgb, var(--surface) 88%, #e8e8e7) inset;
+    border-left: none;
+    border-right: none;
+    box-shadow: none;
   }
 }
 
@@ -271,12 +271,14 @@
 .input {
   font: inherit;
   font-size: 1rem;
+  font-weight: 600;
   color: var(--ink);
-  border: 1px solid var(--line);
-  border-radius: 8px;
+  border: none;
+  border-radius: 0;
   padding: 12px 12px;
-  background: var(--surface);
+  background: color-mix(in srgb, var(--paper2) 55%, var(--surface));
   width: 100%;
+  box-shadow: none;
 }
 
 @media (min-width: 600px) {
@@ -343,14 +345,16 @@
 .btn {
   font: inherit;
   font-weight: 600;
+  letter-spacing: 0.02em;
   font-size: 0.9375rem;
   min-height: 44px;
   padding: 10px 16px;
   border-radius: 0;
-  border: 1px solid var(--line);
+  border: none;
   background: var(--surface);
   color: var(--ink);
   cursor: pointer;
+  box-shadow: none;
 }
 
 @media (min-width: 600px) {
@@ -363,18 +367,20 @@
 
 .btn--primary {
   background: var(--accent);
-  border-color: var(--accent);
+  border: none;
   color: var(--surface);
+  box-shadow: none;
 }
 
 .btn--primary:hover,
 .btn--primary:active {
   filter: brightness(1.08);
-  box-shadow: 0 0 0 1px var(--gold);
+  box-shadow: none;
 }
 
 .btn--ghost {
   border-color: transparent;
+  box-shadow: none;
   background: transparent;
   min-width: 44px;
   min-height: 44px;

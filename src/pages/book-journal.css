@@ -1,0 +1,311 @@
+/* Book (/book) — kid journal skin for parent booking portal */
+
+.page--book.page--kid-journal {
+  color: var(--journal-ink-on-page);
+  background: transparent;
+  transition: background 1.2s ease;
+  position: relative;
+  isolation: isolate;
+}
+
+.page--book.page--kid-journal.work-ui {
+  background: transparent;
+}
+
+.page--book.page--kid-journal > * {
+  position: relative;
+  z-index: 1;
+}
+
+.page--book.page--kid-journal .book__layout {
+  gap: 12px;
+  padding-bottom: max(16px, env(safe-area-inset-bottom, 0px));
+}
+
+.page--book.page--kid-journal .book-workspace-head,
+.page--book.page--kid-journal .book__layout {
+  background: transparent;
+}
+
+.page--book.page--kid-journal .book__sky-phase {
+  margin: 2px 0 6px;
+  text-align: left;
+}
+
+/* Header on sky */
+.page--book.page--kid-journal .book-workspace-head__eyebrow {
+  color: var(--journal-ink-muted-on-page);
+  font-weight: 800;
+}
+
+.page--book.page--kid-journal .calendar__title {
+  color: #ffffff;
+  text-shadow: 0 1px 12px rgba(0, 0, 0, 0.12);
+}
+
+.page--book.page--kid-journal .book-workspace-head__sub {
+  color: var(--journal-ink-muted-on-page);
+  font-weight: 600;
+}
+
+.page--book.page--kid-journal .calendar__head--book .calendar__title--book-tip[data-tooltip]::after {
+  background: var(--journal-surface-bright);
+  border: 2px solid var(--journal-card-border);
+  color: var(--journal-ink-front);
+  box-shadow: 4px 4px 0 var(--journal-card-border);
+}
+
+/* Parent banner → journal chip card */
+.page--book.page--kid-journal .book-parents-banner {
+  border: 2px solid var(--journal-card-border);
+  border-radius: var(--radius);
+  background: color-mix(in srgb, var(--journal-sage) 45%, var(--journal-surface-bright));
+  box-shadow: 2px 2px 0 var(--journal-card-border);
+  color: var(--journal-mint-deep);
+  font-weight: 800;
+  padding: 8px 12px;
+  margin-bottom: 10px;
+}
+
+/* Legend */
+.page--book.page--kid-journal .book-legend--work {
+  border: 2px solid var(--journal-card-border);
+  border-radius: var(--radius);
+  background: var(--journal-surface-bright);
+  box-shadow: 4px 4px 0 var(--journal-card-border);
+  color: var(--journal-ink-muted-front);
+}
+
+.page--book.page--kid-journal .book-legend__item--hours {
+  border-top-color: var(--journal-card-border);
+  color: var(--journal-ink-front);
+}
+
+.page--book.page--kid-journal .book-legend__dot--booked {
+  background: var(--journal-mint-deep);
+  border-color: var(--journal-card-border);
+}
+
+.page--book.page--kid-journal .book-legend__dot--today {
+  background: transparent;
+  border: 2px solid var(--journal-gold);
+}
+
+/* Toast */
+.page--book.page--kid-journal .book-toast {
+  border: 2px solid var(--journal-mint-deep);
+  background: color-mix(in srgb, var(--journal-sage) 55%, var(--journal-surface-bright));
+  color: var(--journal-ink-front);
+  box-shadow: 2px 2px 0 var(--journal-card-border);
+  font-weight: 600;
+}
+
+/* Calendar panel */
+.page--book.page--kid-journal .calendar__panel--book {
+  border: 2px solid var(--journal-card-border);
+  border-radius: var(--radius);
+  background: var(--journal-surface-bright);
+  box-shadow: 4px 4px 0 var(--journal-card-border);
+  padding: 12px;
+}
+
+.page--book.page--kid-journal .calendar__nav .btn--ghost {
+  border: 2px solid var(--journal-card-border);
+  border-radius: 8px;
+  background: var(--journal-surface-bright);
+  color: var(--journal-ink-front);
+  box-shadow: 2px 2px 0 var(--journal-card-border);
+  font-weight: 700;
+  min-height: 40px;
+  min-width: 40px;
+}
+
+.page--book.page--kid-journal .calendar__nav .btn--ghost:active {
+  transform: scale(0.96);
+  border-color: var(--journal-mint-deep);
+  background: color-mix(in srgb, var(--journal-sage) 45%, var(--journal-surface-bright));
+}
+
+.page--book.page--kid-journal .calendar__month {
+  color: var(--journal-ink-front);
+  font-weight: 700;
+}
+
+.page--book.page--kid-journal .calendar__wd {
+  color: var(--journal-ink-muted-front);
+  font-weight: 600;
+}
+
+.page--book.page--kid-journal .calendar__grid--book .calendar__cell {
+  border: 2px solid var(--journal-card-border);
+  background: var(--journal-surface-bright);
+  color: var(--journal-ink-front);
+  border-radius: 8px;
+}
+
+.page--book.page--kid-journal .calendar__grid--book .calendar__cell--empty {
+  border-color: transparent;
+  background: transparent;
+}
+
+.page--book.page--kid-journal .calendar__cell--today {
+  border-color: var(--journal-gold);
+  background: color-mix(in srgb, var(--journal-gold) 22%, var(--journal-surface-bright));
+  box-shadow: 2px 2px 0 var(--journal-card-border);
+}
+
+.page--book.page--kid-journal .calendar__cell--booked {
+  border-color: var(--journal-mint-deep);
+  background: var(--journal-sage);
+}
+
+.page--book.page--kid-journal .calendar__booked-mark,
+.page--book.page--kid-journal .calendar__booked-dot {
+  color: var(--journal-mint-deep);
+}
+
+.page--book.page--kid-journal .calendar__booked-dot {
+  background: var(--journal-mint-deep);
+}
+
+/* CTA */
+.page--book.page--kid-journal .btn--work-primary {
+  background: var(--journal-mint-deep);
+  border: 2px solid var(--journal-card-border);
+  color: #fff;
+  border-radius: 8px;
+  box-shadow: 4px 4px 0 var(--journal-card-border);
+  font-weight: 800;
+  min-height: 48px;
+}
+
+.page--book.page--kid-journal .btn--work-primary:hover:not(:disabled) {
+  filter: brightness(1.05);
+  box-shadow:
+    4px 4px 0 var(--journal-card-border),
+    0 0 0 2px var(--journal-gold);
+}
+
+.page--book.page--kid-journal .btn--work-primary:active:not(:disabled) {
+  transform: scale(0.98);
+  box-shadow: 2px 2px 0 var(--journal-card-border);
+}
+
+/* Booking modal */
+.page--book.page--kid-journal .book-modal__sheet {
+  border: 2px solid var(--journal-card-border);
+  border-radius: var(--radius);
+  background: var(--journal-surface-bright);
+  box-shadow: 6px 6px 0 var(--journal-card-border);
+}
+
+.page--book.page--kid-journal .book-modal__eyebrow {
+  color: var(--journal-ink-muted-front);
+  font-weight: 600;
+}
+
+.page--book.page--kid-journal .book-modal__title {
+  color: var(--journal-ink-front);
+  font-weight: 700;
+}
+
+.page--book.page--kid-journal .book-modal__date {
+  color: var(--journal-mint-deep);
+  font-weight: 700;
+}
+
+.page--book.page--kid-journal .book-modal__hotel-card {
+  border: 2px solid var(--journal-card-border);
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--journal-sage) 30%, var(--journal-surface-bright));
+  box-shadow: 2px 2px 0 var(--journal-card-border);
+}
+
+.page--book.page--kid-journal .book-modal__block-title {
+  color: var(--journal-ink-front);
+  font-weight: 700;
+}
+
+.page--book.page--kid-journal .field-block__label {
+  color: var(--journal-ink-muted-front);
+}
+
+.page--book.page--kid-journal .book-modal__form .input {
+  border-color: var(--journal-card-border);
+  background: var(--journal-surface-bright);
+  color: var(--journal-ink-front);
+}
+
+.page--book.page--kid-journal .book-modal__actions {
+  border-top: 2px solid var(--journal-card-border);
+}
+
+.page--book.page--kid-journal .book-modal__close {
+  border: 2px solid var(--journal-card-border);
+  border-radius: 8px;
+  box-shadow: 2px 2px 0 var(--journal-card-border);
+}
+
+/* Local events */
+.page--book.page--kid-journal .book-events-details--work {
+  border: 2px solid var(--journal-card-border);
+  border-radius: var(--radius);
+  background: var(--journal-surface-bright);
+  box-shadow: 4px 4px 0 var(--journal-card-border);
+  border-top: 2px solid var(--journal-card-border);
+  padding: 0 12px;
+}
+
+.page--book.page--kid-journal .book-events__summary-title {
+  color: var(--journal-ink-front);
+  font-weight: 700;
+}
+
+.page--book.page--kid-journal .book-events__loc {
+  color: var(--journal-mint-deep);
+  font-weight: 700;
+}
+
+.page--book.page--kid-journal .book-events__item {
+  border-color: color-mix(in srgb, var(--journal-card-border) 65%, transparent);
+}
+
+.page--book.page--kid-journal .book-events__more {
+  border: 2px solid var(--journal-card-border);
+  border-radius: 8px;
+  box-shadow: 2px 2px 0 var(--journal-card-border);
+  font-weight: 700;
+}
+
+/* Thank you */
+.page--book.page--kid-journal .book-thanks {
+  border: 2px solid var(--journal-card-border);
+  border-radius: var(--radius);
+  background: var(--journal-surface-bright);
+  box-shadow: 4px 4px 0 var(--journal-card-border);
+  border-top: 2px solid var(--journal-card-border);
+}
+
+.page--book.page--kid-journal .book-thanks__title {
+  color: var(--journal-ink-front);
+}
+
+.page--book.page--kid-journal .book-thanks__lede,
+.page--book.page--kid-journal .book-thanks__note {
+  color: var(--journal-ink-muted-front);
+}
+
+.page--book.page--kid-journal .book-thanks__name {
+  color: var(--journal-ink-front);
+}
+
+.page--book.page--kid-journal .book-thanks__item {
+  border-bottom-color: color-mix(in srgb, var(--journal-card-border) 65%, transparent);
+}
+
+@media (min-width: 600px) {
+  .page--book.page--kid-journal {
+    border-left-color: color-mix(in srgb, var(--journal-mint-deep) 35%, #000);
+    border-right-color: color-mix(in srgb, var(--journal-mint-deep) 35%, #000);
+  }
+}

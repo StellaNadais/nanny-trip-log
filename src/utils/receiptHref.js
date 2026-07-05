@@ -18,7 +18,7 @@ export function nextAcceptedGigDateISO(bookings) {
 }
 
 /**
- * Hub with receipt popup open (`?receipt=open`). Gig date in query when after hours.
+ * Hub with receipt popup open (`?receipt=open`).
  * @param {object[]} bookings
  * @param {{ at?: Date, gigDateISO?: string }} [opts]
  */
@@ -35,7 +35,7 @@ export function receiptPagePath(bookings, opts = {}) {
       if (iso) params.set('gigDate', iso)
     }
   }
-  return `/hub?${params.toString()}`
+  return `/schedule?${params.toString()}`
 }
 
 export function receiptNavLabel() {

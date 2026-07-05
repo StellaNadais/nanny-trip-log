@@ -1,0 +1,215 @@
+/* Sleek typography — DM Sans body, IBM Plex Mono for small labels */
+
+.schedule-workspace-head__eyebrow,
+.book-workspace-head__eyebrow {
+  font-family: var(--font-mono);
+  font-weight: 500;
+  font-size: 0.625rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.schedule__title,
+.hub__title,
+.calendar__title,
+.welcome__greet,
+.tool-start__title,
+.notes__title,
+.events__loc-title {
+  font-family: var(--font-display);
+  font-weight: 600;
+  letter-spacing: -0.03em;
+}
+
+.schedule-workspace-head__sub,
+.book-workspace-head__sub,
+.welcome__hints,
+.hub-card__code {
+  font-weight: 400;
+  letter-spacing: -0.01em;
+}
+
+.hub-card,
+.hub-card__label,
+.hub__report,
+.welcome__cta {
+  font-weight: 500;
+  letter-spacing: -0.01em;
+}
+
+.hub-card__code {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+}
+
+.field-block__label,
+.time-pick__legend,
+.book-modal__eyebrow,
+.book-modal__block-title {
+  font-family: var(--font-mono);
+  font-weight: 500;
+  font-size: 0.625rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.calendar__month,
+.calendar__wd,
+.week-nav__range,
+.journal__week-range,
+.tool-week-picker__range,
+.shift__week-range {
+  font-weight: 500;
+  letter-spacing: 0.02em;
+}
+
+.journal__selected-day,
+.tool-week-picker__selected,
+.shift__selected-day {
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.journal__sky-phase {
+  font-family: var(--font-mono);
+  font-weight: 500;
+  font-size: 0.625rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.day-chip,
+.day-chip__num,
+.tool-week-picker .day-chip {
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+
+.day-chip__label {
+  font-family: var(--font-mono);
+  font-weight: 500;
+  font-size: 0.5rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.calendar__cell,
+.calendar__cell-num {
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+
+.shift__time-circle__clock,
+.shift__time-chip__clock {
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+}
+
+.shift__time-circle__ap,
+.shift__time-chip__ap {
+  font-family: var(--font-mono);
+  font-weight: 500;
+  font-size: 0.625rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.shift__submit-btn,
+.btn--work-primary,
+.book-request-cta .btn {
+  font-weight: 500;
+  font-size: 0.875rem;
+  letter-spacing: 0.01em;
+}
+
+.journal-mood-bar__picked {
+  font-weight: 500;
+  letter-spacing: -0.01em;
+}
+
+/* Page titles — clean, no chunky stroke */
+.page--shift .schedule-workspace-head .schedule__title,
+.page--book .calendar__title,
+.page--events .schedule-workspace-head .schedule__title,
+.page--events .schedule__title {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 1.375rem;
+  line-height: 1.2;
+  letter-spacing: -0.03em;
+  text-transform: none;
+  color: var(--ink);
+  -webkit-text-stroke: 0;
+  paint-order: normal;
+  text-shadow: none;
+}
+
+.page--kid-journal .schedule-workspace-head .schedule__title,
+.page--schedule.page--kid-journal .schedule__title,
+.page--book.page--kid-journal .calendar__title {
+  font-family: var(--font-ui);
+  font-weight: 600;
+  font-size: 1.25rem;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  text-transform: none;
+  color: #ffffff;
+  text-shadow: none;
+}
+
+.page--workspace .schedule-workspace-head .schedule__title,
+.workbook .schedule-workspace-head .schedule__title {
+  color: var(--ink);
+  text-shadow: none;
+}
+
+.page--shift.page--kid-journal .schedule-workspace-head__eyebrow,
+.page--schedule.page--kid-journal .schedule-workspace-head__eyebrow {
+  color: var(--journal-ink-muted-on-page);
+  font-weight: 800;
+}
+
+.page--book.page--kid-journal .book-workspace-head__eyebrow {
+  color: var(--journal-ink-muted-on-page);
+  font-weight: 800;
+}
+
+.page--book.page--kid-journal .book-workspace-head__sub {
+  color: var(--journal-ink-muted-on-page);
+  font-weight: 600;
+}
+
+.page--kid-journal .schedule-workspace-head__eyebrow {
+  color: var(--journal-ink-muted-on-page);
+}
+
+.page--kid-journal .journal__week-tools .trip-log__week-btn {
+  font-family: var(--font);
+  font-weight: 500;
+  font-size: 0.8125rem;
+  letter-spacing: -0.01em;
+}
+
+.page--kid-journal .day-chip--active {
+  font-weight: 600;
+}
+
+.journal-panel-field__label,
+.schedule-flip__upcoming-strip--gigs {
+  font-weight: 500;
+  letter-spacing: -0.01em;
+}
+
+.book-legend,
+.book-legend__item {
+  font-weight: 400;
+  letter-spacing: 0;
+}
+
+.schedule-requests-dock__tab-lbl {
+  font-weight: 500;
+  letter-spacing: -0.01em;
+}

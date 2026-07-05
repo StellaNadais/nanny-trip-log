@@ -11,7 +11,7 @@ export default function PlaceholderPage({ slug }) {
     <div className="page page--placeholder">
       <header className="placeholder__head">
         <Link to="/hub" className="page-back page-back--ghost">
-          ← Hub
+          ← Tools
         </Link>
         <h1 className="placeholder__title">
           {meta.title}

@@ -4,10 +4,8 @@ import { receiptNavLabel } from '../utils/receiptHref'
 
 const CARDS = [
   { to: '/shift', label: 'Shift', code: 'A' },
-  { to: '/journal', label: 'Kid Journal', code: 'B' },
-  { to: '/outings', label: 'Outings', code: 'C' },
-  { to: '/events', label: 'Events', code: 'D', stacked: true },
-  { to: '/notes', label: 'Internal notes', code: 'E' },
+  { to: '/journal', label: 'Today', code: 'B' },
+  { to: '/events', label: 'Events', code: 'C', stacked: true },
 ]
 
 export default function HubPage() {
@@ -28,16 +26,12 @@ export default function HubPage() {
   }
 
   return (
-    <div className={`page page--hub${receiptOpen ? ' page--hub-receipt-open' : ''}`}>
-      <div className="page__badge" aria-hidden>
-        5
-      </div>
+    <div className={`page page--hub work-ui${receiptOpen ? ' page--hub-receipt-open' : ''}`}>
       <div className="hub__stage" aria-hidden={receiptOpen}>
-        <header className="hub__head">
+        <header className="hub__head schedule-workspace-head">
           <Link to="/schedule" className="page-back page-back--ghost">
             ← Schedule
           </Link>
-          <h1 className="hub__title">Tools</h1>
         </header>
 
         <div className="hub__grid">

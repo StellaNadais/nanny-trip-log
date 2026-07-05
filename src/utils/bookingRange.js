@@ -7,6 +7,30 @@ export function getCareEndDateISO(b) {
   return b?.dateISO ?? ''
 }
 
+/** Highlight role for hotel-style calendar range (start / end / between / single). */
+export function calendarSelectionRole(iso, startISO, endISO) {
+  if (!startISO || !iso) return null
+  const end = endISO || startISO
+  const lo = startISO <= end ? startISO : end
+  const hi = startISO <= end ? end : startISO
+  if (iso < lo || iso > hi) return null
+  if (lo === hi) return 'single'
+  if (iso === lo) return 'start'
+  if (iso === hi) return 'end'
+  return 'between'
+}
+
+/** If end clock is before start on the same day, assume overnight and bump end date. */
+export function suggestCareEndDateISO(startISO, startHM, endISO, endHM) {
+  if (!startISO || !startHM || !endISO || !endHM) return endISO
+  if (endISO > startISO) return endISO
+  const t0 = new Date(`${startISO}T${startHM}:00`).getTime()
+  const t1 = new Date(`${endISO}T${endHM}:00`).getTime()
+  if (!Number.isFinite(t0) || !Number.isFinite(t1)) return endISO
+  if (t1 > t0) return endISO
+  return toISODateLocal(addDays(new Date(`${startISO}T12:00:00`), 1))
+}
+
 /** True when end datetime is after start datetime (local). */
 export function careIntervalValid(startISO, startHM, endISO, endHM) {
   if (!startISO || !endISO || !startHM || !endHM) return false

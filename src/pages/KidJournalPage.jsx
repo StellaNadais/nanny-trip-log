@@ -1,10 +1,5 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { useEffect, useMemo, useState } from 'react'
 import { DayStrip } from '../components/DayStrip'
-import MealsInlineField from '../components/MealsInlineField'
-import JournalParentMessageIdeas from '../components/JournalParentMessageIdeas'
-import TripPlacesField from '../components/TripPlacesField'
-import { TodoPanel } from '../components/TodoPanel'
 import { useKidJournal } from '../hooks/useKidJournal'
 import { getMealHealthSuggestions } from '../utils/mealSuggestions'
 import { countByCategory, parseMealsToParts } from '../utils/parseMeals'
@@ -20,20 +15,28 @@ import { notifyReceiptMileageUpdated, saveReceiptSettings } from '../utils/recei
 import { OUTINGS_UPDATED_EVENT } from '../utils/outingsStorage'
 import { loadKidJournalEntries } from '../utils/kidJournalStorage'
 import { loadState } from '../utils/storage'
-import JournalDayReceiptModal from '../components/JournalDayReceiptModal'
+import AboutTodayModal from '../components/AboutTodayModal'
+import GroceryModal from '../components/GroceryModal'
+import OutingsModal from '../components/OutingsModal'
+import RemindersModal from '../components/RemindersModal'
+import TodaySpaceTile from '../components/TodaySpaceTile'
+import { buildJournalDaySmsHref } from '../utils/journalDayExport'
 import {
-  buildJournalDayExportText,
-  buildJournalDaySmsHref,
-  downloadJournalDayFile,
-  journalDayFilename,
-} from '../utils/journalDayExport'
-import { fileToCompressedDataUrl } from '../utils/receiptImage'
-import {
-  addShoppingItem,
+  addShoppingItems,
   loadShoppingForWeek,
   removeShoppingItem,
   toggleShoppingItem,
 } from '../utils/journalShoppingStorage'
+import { napFromJournalEntry } from '../utils/journalNap'
+import { pottyFromJournalEntry } from '../utils/journalLittleBooks'
+import { useOutingsWeekData } from '../hooks/useOutingsWeekData'
+import WorkspaceTileBoard from '../components/WorkspaceTileBoard'
+import { useBookings } from '../hooks/useBookings'
+import { useParentReminders } from '../hooks/useParentReminders'
+import {
+  careDayReminderGroups,
+  countRemindersForCareDate,
+} from '../utils/parentReminderQueries'
 
 function loadDraftFromLatest(iso) {
   const ent = loadKidJournalEntries()
@@ -43,16 +46,23 @@ function loadDraftFromLatest(iso) {
     return {
       dayNotes: '',
       mealsText: '',
-      morningNap: '',
-      afternoonNap: '',
+      nap: '',
+      pottyTime: '',
+      pottyNotes: '',
+      wishes: '',
+      mood: '',
       handwrittenPhotoDataUrl: '',
     }
   }
+  const potty = pottyFromJournalEntry(latest)
   return {
     dayNotes: latest.dayNotes ?? '',
     mealsText: latest.mealsText ?? '',
-    morningNap: latest.morningNap ?? '',
-    afternoonNap: latest.afternoonNap ?? '',
+    nap: napFromJournalEntry(latest),
+    pottyTime: potty.pottyTime,
+    pottyNotes: potty.pottyNotes,
+    wishes: latest.wishes ?? '',
+    mood: latest.mood ?? '',
     handwrittenPhotoDataUrl: latest.handwrittenPhotoDataUrl ?? '',
   }
 }
@@ -78,6 +88,8 @@ function initialDayOffsetForWeek(mondayDate) {
 
 export default function KidJournalPage() {
   const { entries, addEntry } = useKidJournal()
+  const { bookings } = useBookings()
+  const { reminders } = useParentReminders()
   const [journalWeekStart, setJournalWeekStart] = useState(() => startOfWeekMonday(new Date()))
   const [dayOffset, setDayOffset] = useState(() =>
     initialDayOffsetForWeek(startOfWeekMonday(new Date()))
@@ -89,22 +101,36 @@ export default function KidJournalPage() {
     [journalWeekStart, dayOffset]
   )
 
+  const outings = useOutingsWeekData(weekKey)
+
   const [dayNotes, setDayNotes] = useState('')
   const [mealsText, setMealsText] = useState('')
-  const [morningNap, setMorningNap] = useState('')
-  const [afternoonNap, setAfternoonNap] = useState('')
+  const [nap, setNap] = useState('')
+  const [pottyTime, setPottyTime] = useState('')
+  const [pottyNotes, setPottyNotes] = useState('')
+  const [wishes, setWishes] = useState('')
+  const [mood, setMood] = useState('')
   const [handwrittenPhotoDataUrl, setHandwrittenPhotoDataUrl] = useState('')
-  const [handwrittenPhotoErr, setHandwrittenPhotoErr] = useState('')
-  const handwrittenFileRef = useRef(null)
-  const [journalReceiptOpen, setJournalReceiptOpen] = useState(false)
   const [suggestionClock, setSuggestionClock] = useState(() => Date.now())
   const [journalShareGateNow, setJournalShareGateNow] = useState(() => Date.now())
   const [outingsRev, setOutingsRev] = useState(0)
   const [shoppingItems, setShoppingItems] = useState([])
+  const [groceryOpen, setGroceryOpen] = useState(false)
+  const [outingsOpen, setOutingsOpen] = useState(false)
+  const [remindersOpen, setRemindersOpen] = useState(false)
+  const [aboutTodayOpen, setAboutTodayOpen] = useState(false)
 
   useEffect(() => {
     setShoppingItems(loadShoppingForWeek(weekKey))
   }, [weekKey])
+
+  useEffect(() => {
+    setGroceryOpen(false)
+    setOutingsOpen(false)
+    setRemindersOpen(false)
+    setAboutTodayOpen(false)
+    outings.resetOutingsForm()
+  }, [weekKey, outings.resetOutingsForm])
 
   useEffect(() => {
     const id = setInterval(() => setSuggestionClock(Date.now()), 5 * 60 * 1000)
@@ -126,10 +152,12 @@ export default function KidJournalPage() {
     const d = loadDraftFromLatest(dateISO)
     setDayNotes(d.dayNotes)
     setMealsText(d.mealsText)
-    setMorningNap(d.morningNap)
-    setAfternoonNap(d.afternoonNap)
+    setNap(d.nap)
+    setPottyTime(d.pottyTime)
+    setPottyNotes(d.pottyNotes)
+    setWishes(d.wishes)
+    setMood(d.mood)
     setHandwrittenPhotoDataUrl(d.handwrittenPhotoDataUrl)
-    setHandwrittenPhotoErr('')
   }, [dateISO])
 
   useEffect(() => {
@@ -170,17 +198,19 @@ export default function KidJournalPage() {
   )
 
   useEffect(() => {
-    setJournalReceiptOpen(false)
-  }, [dateISO])
-
-  const refreshJournalShareGate = useCallback(() => setJournalShareGateNow(Date.now()), [])
+    setGroceryOpen(false)
+    setOutingsOpen(false)
+    setRemindersOpen(false)
+    setAboutTodayOpen(false)
+    outings.resetOutingsForm()
+  }, [dateISO, outings.resetOutingsForm])
 
   function shiftJournalWeek(delta) {
     setJournalWeekStart((w) => addDays(w, delta * 7))
   }
 
-  function handleAddShopping(text) {
-    setShoppingItems(addShoppingItem(weekKey, text))
+  function handleAddGrocery(raw) {
+    setShoppingItems(addShoppingItems(weekKey, raw))
   }
 
   function handleToggleShopping(id) {
@@ -198,25 +228,25 @@ export default function KidJournalPage() {
     if (
       dayNotes !== (latest.dayNotes ?? '') ||
       mealsText !== (latest.mealsText ?? '') ||
-      morningNap !== (latest.morningNap ?? '') ||
-      afternoonNap !== (latest.afternoonNap ?? '') ||
+      nap !== (latest.nap ?? '') ||
+      pottyTime !== (latest.pottyTime ?? '') ||
+      pottyNotes !== (latest.pottyNotes ?? '') ||
+      wishes !== (latest.wishes ?? '') ||
+      mood !== (latest.mood ?? '') ||
       photo !== latestPhoto
     ) {
       addEntry({
         dateISO,
         dayNotes,
         mealsText,
-        morningNap,
-        afternoonNap,
+        nap,
+        pottyTime,
+        pottyNotes,
+        wishes,
+        mood,
         handwrittenPhotoDataUrl: photo,
       })
     }
-  }
-
-  function openJournalSlip() {
-    setJournalShareGateNow(Date.now())
-    persistJournalIfChanged()
-    setJournalReceiptOpen(true)
   }
 
   function beforeShareOrDownload() {
@@ -224,20 +254,32 @@ export default function KidJournalPage() {
     persistJournalIfChanged()
   }
 
-  async function onHandwrittenPhotoChange(e) {
-    const f = e.target.files?.[0]
-    e.target.value = ''
-    if (!f) return
-    setHandwrittenPhotoErr('')
-    try {
-      const url = await fileToCompressedDataUrl(f, 1000, 0.72)
-      setHandwrittenPhotoDataUrl(url)
-    } catch {
-      setHandwrittenPhotoErr('Could not use that image.')
+  const aboutTodayPreview = useMemo(() => {
+    const bits = [dayNotes, mealsText, mood, nap, wishes].map((s) => String(s || '').trim()).filter(Boolean)
+    if (!bits.length) return ''
+    if (dayNotes.trim()) {
+      const t = dayNotes.trim()
+      return t.length > 120 ? `${t.slice(0, 117)}…` : t
     }
-  }
+    return "Tap to add today's report…"
+  }, [dayNotes, mealsText, mood, nap, wishes])
 
   const journalDateLabel = formatJournalDate(dateISO)
+  const weekLabel = formatWeekRange(journalWeekStart)
+  const shoppingOpenCount = useMemo(
+    () => shoppingItems.filter((item) => !item.done).length,
+    [shoppingItems]
+  )
+
+  const reminderGroups = useMemo(
+    () => careDayReminderGroups(reminders, bookings, dateISO),
+    [reminders, bookings, dateISO]
+  )
+
+  const reminderCount = useMemo(
+    () => countRemindersForCareDate(reminders, bookings, dateISO),
+    [reminders, bookings, dateISO]
+  )
 
   const forwardJournalSmsHref = useMemo(
     () =>
@@ -246,8 +288,11 @@ export default function KidJournalPage() {
         dateLabel: journalDateLabel,
         dayNotes,
         mealsText,
-        morningNap,
-        afternoonNap,
+        nap,
+        pottyTime,
+        pottyNotes,
+        wishes,
+        mood,
         handwrittenPhotoDataUrl,
         shoppingItems,
       }),
@@ -256,231 +301,274 @@ export default function KidJournalPage() {
       journalDateLabel,
       dayNotes,
       mealsText,
-      morningNap,
-      afternoonNap,
+      nap,
+      pottyTime,
+      pottyNotes,
+      wishes,
+      mood,
       handwrittenPhotoDataUrl,
       shoppingItems,
     ]
   )
 
-  function journalDayExportPayload() {
-    return {
-      dateISO,
-      dateLabel: journalDateLabel,
-      dayNotes,
-      mealsText,
-      morningNap,
-      afternoonNap,
-      handwrittenPhotoDataUrl,
-      shoppingItems,
-    }
-  }
+  const groceryPreview = useMemo(() => {
+    const open = shoppingItems.filter((item) => !item.done)
+    if (!open.length) return ''
+    return open
+      .slice(0, 3)
+      .map((item) => item.text)
+      .join(', ')
+  }, [shoppingItems])
 
-  function downloadJournalOfTheDay() {
-    const text = buildJournalDayExportText(journalDayExportPayload())
-    downloadJournalDayFile(journalDayFilename(dateISO), text)
-  }
+  const remindersPreview = useMemo(() => {
+    if (!reminderGroups.length) return ''
+    for (const group of reminderGroups) {
+      const first = group.reminders[0]
+      if (first?.text) {
+        const prefix = first.childName ? `${first.childName}: ` : ''
+        const line = `${prefix}${first.text}`
+        return line.length > 72 ? `${line.slice(0, 69)}…` : line
+      }
+      if (group.notes) {
+        const line = group.notes.trim()
+        return line.length > 72 ? `${line.slice(0, 69)}…` : line
+      }
+    }
+    const family = reminderGroups[0]?.booking?.familyName
+    return family ? `${family} — no reminders yet` : ''
+  }, [reminderGroups])
+
+  const remindersIcon = (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="22"
+      height="22"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9" />
+      <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0" />
+    </svg>
+  )
+
+  const groceryIcon = (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="22"
+      height="22"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z" />
+      <line x1="3" y1="6" x2="21" y2="6" />
+      <path d="M16 10a4 4 0 0 1-8 0" />
+    </svg>
+  )
+
+  const outingsIcon = (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="22"
+      height="22"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <line x1="12" y1="1" x2="12" y2="23" />
+      <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+    </svg>
+  )
 
   return (
-    <div className="page page--kid-journal">
-      <header className="journal__head">
-        <Link to="/hub" className="page-back page-back--ghost">
-          ← Hub
-        </Link>
-        <h1 className="journal__title">
-          Kid journal <span className="placeholder__code">(B)</span>
-        </h1>
-      </header>
+    <div className="page page--kid-journal page--workspace work-ui">
+      <div className="journal__layout">
+        <section className="journal__week-picker work-ui__panel" aria-label="Pick a day">
+          <div className="journal__week-picker-top">
+            <div className="trip-log__week-tools journal__week-tools">
+              <button
+                type="button"
+                className="btn btn--ghost trip-log__week-btn"
+                onClick={() => shiftJournalWeek(-1)}
+              >
+                ← Prev
+              </button>
+              <p className="journal__week-range" aria-live="polite">
+                {formatWeekRange(journalWeekStart)}
+              </p>
+              <button
+                type="button"
+                className="btn btn--ghost trip-log__week-btn"
+                onClick={() => shiftJournalWeek(1)}
+              >
+                Next →
+              </button>
+            </div>
+            <p className="journal__selected-day" aria-live="polite">
+              {journalDateLabel}
+            </p>
+          </div>
+          <DayStrip
+            weekStart={journalWeekStart}
+            selectedIso={dateISO}
+            onSelect={(iso) => {
+              const a = new Date(weekKey + 'T12:00:00')
+              const b = new Date(iso + 'T12:00:00')
+              const diff = Math.round((b - a) / 86400000)
+              setDayOffset(Math.max(0, Math.min(6, diff)))
+            }}
+          />
+        </section>
 
-      <div className="journal__week-picker">
-        <div className="trip-log__week-tools">
-          <button
-            type="button"
-            className="btn btn--ghost trip-log__week-btn"
-            onClick={() => shiftJournalWeek(-1)}
-          >
-            ← Previous week
-          </button>
-          <button
-            type="button"
-            className="btn btn--ghost trip-log__week-btn"
-            onClick={() => shiftJournalWeek(1)}
-          >
-            Next week →
-          </button>
-        </div>
-        <p className="journal__week-range muted" aria-live="polite">
-          {formatWeekRange(journalWeekStart)}
-        </p>
-        <DayStrip
-          weekStart={journalWeekStart}
-          selectedIso={dateISO}
-          onSelect={(iso) => {
-            const a = new Date(weekKey + 'T12:00:00')
-            const b = new Date(iso + 'T12:00:00')
-            const diff = Math.round((b - a) / 86400000)
-            setDayOffset(Math.max(0, Math.min(6, diff)))
-          }}
+        <WorkspaceTileBoard
+          workspaceId="today"
+          tiles={[
+            {
+              id: 'about',
+              label: 'About today',
+              span: 2,
+              children: (
+                <button
+                  type="button"
+                  className="about-today-tile"
+                  onClick={() => setAboutTodayOpen(true)}
+                >
+                  <p className="about-today-tile__preview">
+                    {aboutTodayPreview || (
+                      <span className="about-today-tile__hint muted">
+                        Tap to report the day with your child — outings, meals, nap, and more.
+                      </span>
+                    )}
+                  </p>
+                  <span className="about-today-tile__cta">Open report →</span>
+                </button>
+              ),
+            },
+            {
+              id: 'reminders',
+              label: 'Reminders',
+              square: true,
+              children: (
+                <TodaySpaceTile
+                  icon={remindersIcon}
+                  count={reminderCount}
+                  preview={remindersPreview}
+                  hint="Parent notes for this day — tap to open."
+                  onClick={() => setRemindersOpen(true)}
+                />
+              ),
+            },
+            {
+              id: 'grocery',
+              label: 'Grocery',
+              square: true,
+              children: (
+                <TodaySpaceTile
+                  icon={groceryIcon}
+                  count={shoppingOpenCount}
+                  preview={groceryPreview}
+                  hint="Week grocery list — tap to add items."
+                  onClick={() => setGroceryOpen(true)}
+                />
+              ),
+            },
+            {
+              id: 'outings',
+              label: 'Outings',
+              square: true,
+              children: (
+                <TodaySpaceTile
+                  icon={outingsIcon}
+                  count={outings.outingsCount}
+                  preview={outings.outingsPreview}
+                  hint="Parking, tolls, and trip places — tap to add."
+                  onClick={() => setOutingsOpen(true)}
+                />
+              ),
+            },
+          ]}
         />
       </div>
 
-      <form
-        className="journal__form"
-        onSubmit={(e) => {
-          e.preventDefault()
-        }}
-      >
-        <div className="field-block journal__about-bundle">
-          <div className="journal__about-head">
-            <span className="field-block__label" id="kid-journal-about-label">
-              About today
-            </span>
-            <input
-              ref={handwrittenFileRef}
-              type="file"
-              accept="image/*"
-              capture="environment"
-              className="sr-only"
-              tabIndex={-1}
-              onChange={onHandwrittenPhotoChange}
-            />
-            <button
-              type="button"
-              className="journal__handwritten-pic-btn"
-              title="Photo of handwritten journal"
-              aria-label="Add photo of handwritten journal"
-              onClick={() => handwrittenFileRef.current?.click()}
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                <path
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"
-                />
-                <circle cx="12" cy="13" r="4" stroke="currentColor" strokeWidth="2" fill="none" />
-              </svg>
-            </button>
-          </div>
-          {handwrittenPhotoErr ? (
-            <p className="journal__handwritten-err muted" role="status">
-              {handwrittenPhotoErr}
-            </p>
-          ) : null}
-          {handwrittenPhotoDataUrl ? (
-            <div className="journal__handwritten-preview">
-              <img src={handwrittenPhotoDataUrl} alt="Handwritten journal" />
-              <button
-                type="button"
-                className="btn btn--ghost journal__handwritten-remove"
-                onClick={() => {
-                  setHandwrittenPhotoDataUrl('')
-                  setHandwrittenPhotoErr('')
-                }}
-              >
-                Remove photo
-              </button>
-            </div>
-          ) : null}
-          <TripPlacesField
-            id="kid-journal-day-notes"
-            value={dayNotes}
-            onChange={setDayNotes}
-            placeholder="Mood, play, outings, anything parents should know…"
-            aria-labelledby="kid-journal-about-label"
-            variant="journal"
-            nestedInAbout
-            receiptWeekKey={weekKey}
-          />
-          <JournalParentMessageIdeas dateISO={dateISO} variant="journal" />
-          <div className="journal__about-meals">
-            <span className="field-block__label field-block__label--sub" id="kid-journal-meals-label">
-              Meals today
-            </span>
-            <p className="journal__hint muted">
-              Use commas or new lines between foods; colors match food groups as you type.
-            </p>
-            <MealsInlineField
-              id="kid-journal-meals"
-              value={mealsText}
-              onChange={setMealsText}
-              placeholder="e.g. oatmeal, banana, milk, carrots, chicken, rice, yogurt"
-              aria-labelledby="kid-journal-meals-label"
-              suggestions={mealSuggestions}
-              className="meals-today-field--nested"
-            />
-          </div>
-        </div>
-
-        <div className="journal__nap-row">
-          <label className="field-block journal__nap-cell">
-            <span className="field-block__label">Morning nap</span>
-            <input
-              type="text"
-              className="input input--line"
-              value={morningNap}
-              onChange={(e) => setMorningNap(e.target.value)}
-              placeholder="e.g. 9:30–10:15 or none"
-            />
-          </label>
-
-          <label className="field-block journal__nap-cell">
-            <span className="field-block__label">Afternoon nap</span>
-            <input
-              type="text"
-              className="input input--line"
-              value={afternoonNap}
-              onChange={(e) => setAfternoonNap(e.target.value)}
-              placeholder="e.g. 1–3pm or car nap"
-            />
-          </label>
-        </div>
-
-        <div className="field-block journal__shopping">
-          <span className="field-block__label" id="kid-journal-shopping-label">
-            Shopping list
-          </span>
-          <p className="journal__hint muted">For this week — milk, snacks, supplies…</p>
-          <TodoPanel
-            todos={shoppingItems}
-            onAdd={handleAddShopping}
-            onToggle={handleToggleShopping}
-            onRemove={handleRemoveShopping}
-            placeholder="Add to shopping list…"
-            emptyMessage="Nothing on the list yet."
-          />
-        </div>
-
-        <div
-          className="journal__day-slip-actions"
-          role="group"
-          aria-label="Journal slip preview"
-        >
-          <button
-            type="button"
-            className="btn btn--primary journal__show-journal-btn"
-            onClick={openJournalSlip}
-          >
-            Show journal
-          </button>
-        </div>
-      </form>
-
-      <JournalDayReceiptModal
-        open={journalReceiptOpen}
-        onClose={() => setJournalReceiptOpen(false)}
+      <AboutTodayModal
+        open={aboutTodayOpen}
+        onClose={() => setAboutTodayOpen(false)}
         dateLabel={journalDateLabel}
         dayNotes={dayNotes}
+        onDayNotesChange={setDayNotes}
         mealsText={mealsText}
-        morningNap={morningNap}
-        afternoonNap={afternoonNap}
+        onMealsChange={setMealsText}
+        mealSuggestions={mealSuggestions}
+        nap={nap}
+        onNapChange={setNap}
+        pottyTime={pottyTime}
+        onPottyTimeChange={setPottyTime}
+        pottyNotes={pottyNotes}
+        onPottyNotesChange={setPottyNotes}
+        wishes={wishes}
+        onWishesChange={setWishes}
+        mood={mood}
+        onMoodChange={setMood}
         handwrittenPhotoDataUrl={handwrittenPhotoDataUrl}
         forwardSmsHref={forwardJournalSmsHref}
         canForward={canJournalSaveForward}
-        onDownload={downloadJournalOfTheDay}
         onBeforeShareAction={beforeShareOrDownload}
-        onHoldSheetOpen={refreshJournalShareGate}
+      />
+
+      <RemindersModal
+        open={remindersOpen}
+        onClose={() => setRemindersOpen(false)}
+        dateLabel={journalDateLabel}
+        groups={reminderGroups}
+      />
+
+      <GroceryModal
+        open={groceryOpen}
+        onClose={() => setGroceryOpen(false)}
+        weekLabel={weekLabel}
+        items={shoppingItems}
+        onAddItems={handleAddGrocery}
+        onToggle={handleToggleShopping}
+        onRemove={handleRemoveShopping}
+      />
+
+      <OutingsModal
+        open={outingsOpen}
+        onClose={() => {
+          setOutingsOpen(false)
+          outings.resetOutingsForm()
+        }}
+        weekLabel={weekLabel}
+        extras={outings.extras}
+        manualOpen={outings.manualOpen}
+        onToggleManualOpen={() => outings.setManualOpen((o) => !o)}
+        manualCat={outings.manualCat}
+        onManualCatChange={outings.setManualCat}
+        manualAmt={outings.manualAmt}
+        onManualAmtChange={outings.setManualAmt}
+        manualNote={outings.manualNote}
+        onManualNoteChange={outings.setManualNote}
+        onAddManualLine={outings.addManualLine}
+        onRemoveManualLine={outings.removeManualLine}
+        manualTotal={outings.manualTotal}
+        customPlaces={outings.customPlaces}
+        placeNickname={outings.placeNickname}
+        onPlaceNicknameChange={outings.setPlaceNickname}
+        placeRoundTrip={outings.placeRoundTrip}
+        onPlaceRoundTripChange={outings.setPlaceRoundTrip}
+        placeFormErr={outings.placeFormErr}
+        onAddCustomPlace={outings.addCustomPlace}
+        onRemoveCustomPlace={outings.removeCustomPlace}
       />
     </div>
   )

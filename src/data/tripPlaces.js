@@ -1,6 +1,14 @@
 /** Implicit start/end for every trip — not matched in journal text. */
 export const HOME_PLACE_ID = 'home'
 
+/** Matched in journal text; legs still start/end here. */
+export const HOME_PLACE = {
+  id: HOME_PLACE_ID,
+  label: 'Home',
+  aliases: ['home', 'back home'],
+  region: 'home',
+}
+
 /** IRS-style mileage rate. */
 export const MILE_RATE = 0.54
 
@@ -13,11 +21,12 @@ export const PLACES = [
     id: 'drop-off',
     label: "H's drop off",
     aliases: [
-      'Learn and Play',
-      'Learn & Play',
-      'Learn and Play School',
-      'Hs drop off',
       "H's drop off",
+      "H\u2019s drop off",
+      "h's drop off",
+      'Hs drop off',
+      'drop off',
+      'drop-off',
     ],
     region: 'moraga',
   },
@@ -31,6 +40,20 @@ export const PLACES = [
     id: 'laf-library',
     label: 'Lafayette Library',
     aliases: ['Laf Library', 'Lafayette library', 'storytime', 'story time'],
+    region: 'lafayette',
+  },
+  {
+    id: 'swim',
+    label: 'swim',
+    aliases: [
+      'Harriet Plummer Aquatic School',
+      'Harriet Plummer',
+      'Harriet Plummer Aquatics',
+      'swim school',
+      'swim lessons',
+      'Plummer swim',
+      'aquatic school',
+    ],
     region: 'lafayette',
   },
   {
@@ -49,6 +72,18 @@ export const PLACES = [
     id: 'moraga-library',
     label: 'Moraga Library',
     aliases: ['Moraga library'],
+    region: 'moraga',
+  },
+  {
+    id: 'school',
+    label: 'School',
+    aliases: ['school'],
+    region: 'moraga',
+  },
+  {
+    id: 'store',
+    label: 'Store',
+    aliases: ['store', 'the store', 'grocery store', 'grocery'],
     region: 'moraga',
   },
 ]

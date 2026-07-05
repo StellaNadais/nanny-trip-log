@@ -81,9 +81,6 @@ export default function ExtraExpenseModal({ open, onClose, receiptWeekKey }) {
         <h2 id={titleId} className="extra-expense-modal__title">
           Add expense
         </h2>
-        <p className="extra-expense-modal__lede muted">
-          Parking, tolls, and other reimbursements for this calendar week — same total as Weekly receipt.
-        </p>
         <form className="extra-expense-modal__form" onSubmit={submit}>
           <label className="field-block">
             <span className="field-block__label">Type</span>

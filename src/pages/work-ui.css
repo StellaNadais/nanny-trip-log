@@ -1,4 +1,4 @@
-/* Workspace surfaces: /book and /schedule — aligned with :root tokens (Nunito, --ink, --accent, --line). */
+/* Workspace surfaces: /book and /schedule — aligned with :root tokens (--font, --ink, --accent, --line). */
 
 .work-ui {
   background: linear-gradient(
@@ -17,6 +17,17 @@
       color-mix(in srgb, var(--paper) 94%, var(--accent-soft) 6%) 16%,
       var(--paper) 100%
     );
+  }
+
+  .work-ui.page--kid-journal {
+    background: linear-gradient(
+      168deg,
+      var(--journal-bg-deep, #1258a0) 0%,
+      var(--journal-bg-mid, #2a90d0) 38%,
+      var(--journal-bg-light, #68c0f0) 68%,
+      var(--journal-bg-deep, #1258a0) 100%
+    );
+    transition: background 1.2s ease;
   }
 }
 
@@ -37,11 +48,9 @@
 
 .work-ui .work-ui__calendar-card {
   background: var(--surface);
-  border: 1px solid var(--line);
+  border: 2px solid var(--line);
   border-radius: var(--radius);
-  box-shadow:
-    0 1px 2px color-mix(in srgb, var(--ink) 6%, transparent),
-    0 4px 12px color-mix(in srgb, var(--ink) 4%, transparent);
+  box-shadow: none;
 }
 
 .work-ui .calendar__nav {
@@ -98,11 +107,6 @@
   border-radius: 8px;
   font-weight: 600;
   color: var(--ink);
-}
-
-.work-ui.page--book .calendar__grid--book .calendar__cell:not(.calendar__cell--empty):not(.calendar__cell--past):hover {
-  border-color: color-mix(in srgb, var(--accent) 32%, var(--line));
-  background: var(--paper2);
 }
 
 .work-ui .calendar__cell--today:not(.calendar__cell--selected) {
@@ -162,8 +166,14 @@
   margin-top: 0;
   font-size: 1.375rem;
   font-weight: 700;
-  letter-spacing: -0.03em;
+  letter-spacing: 0.02em;
   color: var(--ink);
+}
+
+.page--events .schedule-workspace-head .schedule__title,
+.page--shift .schedule-workspace-head .schedule__title,
+.page--book .book-workspace-head .calendar__title {
+  margin-top: 4px;
 }
 
 .book-workspace-head__sub,
@@ -213,9 +223,8 @@
   color: var(--ink-muted);
 }
 
-.work-ui .book-request-hint {
-  color: var(--ink-muted);
-  margin-top: 16px;
+.work-ui .book-request-cta {
+  margin-top: 18px;
 }
 
 .work-ui .book-toast {
@@ -263,24 +272,42 @@
   border-top-color: var(--line);
 }
 
-/* Matches global .btn--primary (accent fill, gold hover ring) */
+/* Delicate primary — light outline, no purple fill */
+.work-ui .btn--primary,
 .work-ui .btn--work-primary {
-  background: var(--accent);
-  border-color: var(--accent);
-  color: var(--surface);
-  font-weight: 600;
-  border-radius: 0;
-  padding: 10px 16px;
-  min-height: 44px;
+  background: var(--paper);
+  border: 1px solid var(--line-soft);
+  color: var(--ink);
+  font-weight: 500;
+  font-size: 0.875rem;
+  letter-spacing: 0.01em;
+  border-radius: var(--radius);
+  padding: 9px 14px;
+  min-height: 42px;
+  box-shadow: none;
 }
 
-.work-ui .btn--work-primary:hover {
-  filter: brightness(1.08);
-  box-shadow: 0 0 0 1px var(--gold);
+.work-ui .btn--primary:hover:not(:disabled),
+.work-ui .btn--work-primary:hover:not(:disabled) {
+  filter: none;
+  background: var(--paper2);
+  border-color: color-mix(in srgb, var(--ink-muted) 28%, var(--line-soft));
+  color: var(--ink);
 }
 
-.work-ui .btn--work-primary:disabled {
-  opacity: 0.5;
+.work-ui .btn--primary:active:not(:disabled),
+.work-ui .btn--work-primary:active:not(:disabled) {
+  filter: none;
+  transform: scale(0.99);
+}
+
+.work-ui .btn--work-primary:disabled,
+.work-ui .btn--primary:disabled {
+  opacity: 1;
+  background: var(--paper);
+  color: color-mix(in srgb, var(--ink-muted) 70%, var(--paper));
+  border-color: color-mix(in srgb, var(--line-soft) 88%, var(--paper));
+  cursor: not-allowed;
 }
 
 .work-ui .book-events-details--work {
@@ -327,4 +354,170 @@
 
 .work-ui .schedule-accepted-gigs {
   border-top-color: var(--line);
+}
+
+.work-ui .schedule-celebrations-flip__card {
+  box-shadow:
+    0 1px 2px color-mix(in srgb, var(--ink) 6%, transparent),
+    0 4px 12px color-mix(in srgb, var(--ink) 4%, transparent);
+}
+
+.work-ui .schedule-celebrations-flip__flip-btn:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.work-ui.page--hub {
+  overflow: hidden;
+  position: relative;
+}
+
+.work-ui .hub-card {
+  background: var(--surface);
+  border-color: var(--line);
+  box-shadow:
+    0 1px 2px color-mix(in srgb, var(--ink) 6%, transparent),
+    0 4px 10px color-mix(in srgb, var(--ink) 5%, transparent);
+}
+
+.work-ui .hub-card:hover,
+.work-ui .hub-card:active {
+  border-color: color-mix(in srgb, var(--accent) 40%, var(--line));
+  background: color-mix(in srgb, var(--accent-soft) 45%, var(--surface));
+}
+
+.work-ui .hub__report {
+  border-radius: var(--radius);
+  font-weight: 700;
+}
+
+.work-ui .schedule-calendar-flip.work-ui__calendar-card,
+.work-ui .schedule-calendar-flip .work-ui__calendar-card {
+  box-shadow:
+    0 1px 2px color-mix(in srgb, var(--ink) 6%, transparent),
+    0 3px 10px color-mix(in srgb, var(--ink) 4%, transparent);
+}
+
+.work-ui .schedule-calendar-flip .calendar__nav {
+  padding: 4px 6px;
+  margin-bottom: 6px;
+}
+
+.work-ui .schedule-calendar-flip .calendar__nav .btn--ghost {
+  min-height: 36px;
+  padding: 4px 10px;
+}
+
+/* Shared tool workspace surfaces */
+.work-ui__panel {
+  background: var(--surface);
+  border: 2px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: none;
+  padding: 12px 14px;
+  margin-bottom: 12px;
+}
+
+.work-ui.page--internal-notes,
+.work-ui.page--events,
+.work-ui.page--outings {
+  justify-content: flex-start;
+  overflow-y: auto;
+}
+
+.work-ui.page--shift,
+.work-ui.page--kid-journal {
+  justify-content: flex-start;
+  overflow-y: auto;
+}
+
+.work-ui.page--kid-journal {
+  background: linear-gradient(
+    168deg,
+    var(--journal-bg-deep, #1258a0) 0%,
+    var(--journal-bg-mid, #2a90d0) 38%,
+    var(--journal-bg-light, #68c0f0) 68%,
+    var(--journal-bg-deep, #1258a0) 100%
+  );
+  transition: background 1.2s ease;
+}
+
+/* Journal-style tool cards: stay light on sky canvas */
+.work-ui.page--kid-journal .work-ui__panel {
+  background: var(--journal-surface-bright, #ffffff);
+  border-color: var(--journal-card-border, var(--line));
+}
+
+.tool-workspace-head {
+  flex-shrink: 0;
+  margin-bottom: 12px;
+}
+
+.tool-workspace-head .notes__cta {
+  margin-top: 12px;
+  width: auto;
+  max-width: 100%;
+  align-self: flex-start;
+}
+
+/* Press to start (isolated tools) */
+.page--tool-start {
+  justify-content: space-between;
+  text-align: center;
+}
+
+.tool-start__whole-tap {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  margin: 0;
+  padding: 24px 16px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font: inherit;
+  color: inherit;
+  text-decoration: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.tool-start__eyebrow {
+  margin: 0;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+}
+
+.tool-start__title {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  color: var(--ink);
+}
+
+.tool-start__hint {
+  margin: 0;
+  max-width: 20rem;
+  font-size: 0.9rem;
+  line-height: 1.45;
+}
+
+.tool-start__cta {
+  margin-top: 8px;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--accent);
+}
+
+.tool-start__back {
+  flex-shrink: 0;
+  align-self: flex-start;
+  margin-bottom: 4px;
 }

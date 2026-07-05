@@ -78,16 +78,58 @@ export const FAMILY_EVENTS = [
     when: 'Daylight hours',
     blurb: 'Shaded short trails; best with carrier or kids who can handle uneven ground.',
   },
+  // Lafayette
+  {
+    id: 'lf-1',
+    location: 'lafayette',
+    title: 'Story time & kids’ programs',
+    place: 'Lafayette Library',
+    when: 'Often weekday mornings — check CCCL calendar',
+    blurb: 'Free story times, crafts, and seasonal reading events; easy pairing with a downtown walk.',
+  },
+  {
+    id: 'lf-2',
+    location: 'lafayette',
+    title: 'Music classes & recitals',
+    place: 'Lamorinda Music (and nearby studios)',
+    when: 'Weekly lessons; recitals on select weekends',
+    blurb: 'Group classes, recitals, and drop-in events — confirm schedule with the studio.',
+  },
+  {
+    id: 'lf-3',
+    location: 'lafayette',
+    title: 'Reservoir loop walk',
+    place: 'Lafayette Reservoir',
+    when: 'Daily, daylight hours',
+    blurb: 'Paved loop, ducks and views — stroller-friendly; dogs on leash in allowed areas.',
+  },
+  {
+    id: 'lf-4',
+    location: 'lafayette',
+    title: 'Playground & picnic',
+    place: 'Lafayette Community Park',
+    when: 'Daily',
+    blurb: 'Play structures, grass, and picnic tables — good short outing between naps.',
+  },
+  {
+    id: 'lf-5',
+    location: 'lafayette',
+    title: 'Family shows & matinees',
+    place: 'Town Hall Theatre',
+    when: 'Seasonal — check box office calendar',
+    blurb: 'Occasional family-friendly plays and school-break shows; best for school age with an adult.',
+  },
 ]
 
 export const EVENT_LOCATIONS = [
   { id: 'moraga', label: 'Moraga' },
+  { id: 'lafayette', label: 'Lafayette' },
   { id: 'oakland', label: 'Oakland' },
 ]
 
-/** @returns {Record<'moraga'|'oakland', typeof FAMILY_EVENTS>} */
+/** @returns {Record<string, typeof FAMILY_EVENTS>} */
 export function groupFamilyEventsByLocation() {
-  const map = { moraga: [], oakland: [] }
+  const map = Object.fromEntries(EVENT_LOCATIONS.map((loc) => [loc.id, []]))
   for (const e of FAMILY_EVENTS) {
     if (map[e.location]) map[e.location].push(e)
   }
