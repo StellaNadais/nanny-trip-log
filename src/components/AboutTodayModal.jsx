@@ -1,6 +1,7 @@
 import { useEffect, useId } from 'react'
 import MealsInlineField from './MealsInlineField'
 import TripPlacesField from './TripPlacesField'
+import TripRouteBar from './TripRouteBar'
 import JournalLittleBooks from './JournalLittleBooks'
 import JournalMoodBar from './JournalMoodBar'
 
@@ -72,6 +73,8 @@ export default function AboutTodayModal({
 
         <div className="about-today-modal__scroll">
           <JournalMoodBar value={mood} onChange={onMoodChange} />
+
+          <TripRouteBar dayNotes={dayNotes} onDayNotesChange={onDayNotesChange} />
 
           <section
             className="journal-mood-bar journal-panel journal-panel--about about-today-modal__section"

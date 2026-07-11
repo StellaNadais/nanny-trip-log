@@ -5678,6 +5678,198 @@
   line-height: 1;
 }
 
+/* Route bar — equal segments like mood; drawer of caregiver places */
+.trip-route-bar {
+  margin: 0;
+}
+
+.trip-route-bar__track {
+  width: 100%;
+  margin: 0;
+  padding: 4px;
+  border: 2px solid var(--journal-card-border, var(--line));
+  border-radius: 10px;
+  background: var(--journal-surface-bright, var(--paper));
+  cursor: pointer;
+  font: inherit;
+  color: inherit;
+  transition:
+    transform 0.18s ease,
+    box-shadow 0.18s ease,
+    border-color 0.18s ease;
+}
+
+.trip-route-bar__track:hover,
+.trip-route-bar__track:focus-visible {
+  outline: none;
+  border-color: color-mix(in srgb, var(--journal-mint-deep, #22a06b) 45%, var(--journal-card-border, var(--line)));
+}
+
+.trip-route-bar__track--open {
+  border-radius: 10px 10px 0 0;
+  transform: translateY(2px);
+  box-shadow: inset 0 -1px 0 var(--line);
+}
+
+.trip-route-bar__seg {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 46px;
+  min-width: 0;
+  padding: 4px 6px;
+  border-radius: 8px;
+  border: 2px solid transparent;
+  background: color-mix(in srgb, var(--paper) 70%, var(--peach-soft, #f5ebe0) 30%);
+  pointer-events: none;
+}
+
+.trip-route-bar__seg + .trip-route-bar__seg {
+  margin-left: 0;
+}
+
+.trip-route-bar__seg--home {
+  background: color-mix(in srgb, var(--journal-surface-bright, var(--paper)) 88%, #94a3b8 12%);
+  color: var(--ink-muted);
+  font-weight: 700;
+}
+
+.trip-route-bar__seg--custom {
+  background: linear-gradient(180deg, rgba(124, 58, 237, 0.14), rgba(59, 130, 246, 0.1));
+  color: #4c1d95;
+  border-color: rgba(124, 58, 237, 0.22);
+  font-weight: 700;
+}
+
+.trip-route-bar__seg--moraga {
+  background: rgba(34, 100, 72, 0.12);
+  color: #1e4a38;
+  border-color: rgba(34, 100, 72, 0.2);
+  font-weight: 700;
+}
+
+.trip-route-bar__seg--lafayette {
+  background: rgba(120, 53, 15, 0.12);
+  color: #5c2d0a;
+  border-color: rgba(120, 53, 15, 0.2);
+  font-weight: 700;
+}
+
+.trip-route-bar__seg--place {
+  background: color-mix(in srgb, var(--journal-sage, #c8e6d0) 55%, var(--paper));
+  color: var(--ink);
+  font-weight: 700;
+}
+
+.trip-route-bar__label {
+  display: block;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.72rem;
+  line-height: 1.2;
+  text-align: center;
+}
+
+.trip-route-bar__drawer {
+  display: grid;
+  grid-template-rows: 0fr;
+  border: 2px solid transparent;
+  border-top: none;
+  border-radius: 0 0 10px 10px;
+  background: color-mix(in srgb, var(--journal-surface-bright, var(--paper)) 92%, #e4e2ef 8%);
+  overflow: hidden;
+  opacity: 0;
+  pointer-events: none;
+  transition:
+    grid-template-rows 0.22s ease,
+    opacity 0.18s ease,
+    border-color 0.18s ease;
+}
+
+.trip-route-bar__drawer--open {
+  grid-template-rows: 1fr;
+  opacity: 1;
+  pointer-events: auto;
+  border-color: var(--journal-card-border, var(--line));
+}
+
+.trip-route-bar__drawer-inner {
+  min-height: 0;
+  overflow: hidden;
+}
+
+.trip-route-bar__drawer--open .trip-route-bar__drawer-inner {
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  max-height: 11rem;
+  padding: 10px 10px 12px;
+}
+
+.trip-route-bar__pool {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.trip-route-bar__pool-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 44px;
+  margin: 0;
+  padding: 10px 14px;
+  border: 1px solid color-mix(in srgb, #c4bfd6 40%, var(--line));
+  border-radius: 10px;
+  background: linear-gradient(180deg, rgba(124, 58, 237, 0.1), rgba(59, 130, 246, 0.08));
+  color: #4c1d95;
+  font: inherit;
+  font-weight: 700;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition:
+    background 0.15s ease,
+    transform 0.12s ease;
+}
+
+.trip-route-bar__pool-btn:hover,
+.trip-route-bar__pool-btn:focus-visible {
+  outline: none;
+  background: linear-gradient(180deg, rgba(124, 58, 237, 0.16), rgba(59, 130, 246, 0.12));
+  transform: translateY(1px);
+}
+
+.trip-route-bar__empty {
+  margin: 0;
+  padding: 4px 2px;
+  font-size: 0.78rem;
+  line-height: 1.35;
+}
+
+.page--kid-journal .trip-route-bar.journal-mood-bar {
+  border: 2px solid var(--journal-card-border);
+  background: var(--journal-surface-bright);
+  box-shadow: 4px 4px 0 var(--journal-card-border);
+  border-radius: 12px;
+  padding: 10px 10px 12px;
+}
+
+.page--kid-journal .trip-route-bar .trip-route-bar__track {
+  border-color: var(--journal-card-border);
+  box-shadow: none;
+}
+
+.page--kid-journal .trip-route-bar .trip-route-bar__drawer--open {
+  border-color: var(--journal-card-border);
+}
+
 /* About today + meals today — same panel shell as mood bar */
 .page--kid-journal .journal-panel.journal-mood-bar {
   border: 2px solid var(--journal-card-border);
