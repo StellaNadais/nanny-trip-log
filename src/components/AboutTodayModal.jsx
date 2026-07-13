@@ -1,7 +1,6 @@
 import { useEffect, useId } from 'react'
 import MealsInlineField from './MealsInlineField'
 import TripPlacesField from './TripPlacesField'
-import TripRouteBar from './TripRouteBar'
 import JournalLittleBooks from './JournalLittleBooks'
 import JournalMoodBar from './JournalMoodBar'
 
@@ -14,8 +13,6 @@ export default function AboutTodayModal({
   dateLabel,
   dayNotes,
   onDayNotesChange,
-  routePlaceIds,
-  onRoutePlaceIdsChange,
   mealsText,
   onMealsChange,
   mealSuggestions,
@@ -86,15 +83,11 @@ export default function AboutTodayModal({
               </span>
             </div>
             <div className="journal-mood-bar__track journal-panel__body">
-              <TripRouteBar
-                routePlaceIds={routePlaceIds}
-                onRoutePlaceIdsChange={onRoutePlaceIdsChange}
-              />
               <TripPlacesField
                 id="about-today-day-notes"
                 value={dayNotes}
                 onChange={onDayNotesChange}
-                placeholder="e.g. park play, storytime, quiet afternoon"
+                placeholder="e.g. H's drop off, music, Commons"
                 aria-labelledby="about-today-notes-label"
                 nestedInAbout
               />

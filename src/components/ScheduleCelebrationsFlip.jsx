@@ -74,7 +74,10 @@ function CelebrationsFlipFaces({
               className="btn btn--ghost schedule-flip__back-btn"
               onClick={() => setShowWeeks(false)}
             >
-              ← List
+              <span className="schedule-flip__back-btn-arrow" aria-hidden>
+                ←
+              </span>
+              <span className="schedule-flip__back-btn-label">List</span>
             </button>
             <h2 className="schedule-flip__back-heading">Ideas & prep</h2>
           </div>

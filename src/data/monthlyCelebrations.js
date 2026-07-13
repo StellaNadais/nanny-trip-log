@@ -109,7 +109,7 @@ export const MONTHLY_CELEBRATIONS = [
       'Mini soccer in the yard or park',
       'Color flags for favorite teams',
       'World map hunt: find team countries',
-      'Halftime snack picnic (check Events → World Cup for times)',
+      'Halftime snack picnic',
     ],
   },
   {

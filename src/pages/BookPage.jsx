@@ -8,7 +8,6 @@ import { useBookings } from '../hooks/useBookings'
 import { useParentReminders } from '../hooks/useParentReminders'
 import BookFollowUpModal from '../components/BookFollowUpModal'
 import BookSchedulingDock from '../components/BookSchedulingDock'
-import OvernightDateModal from '../components/OvernightDateModal'
 import ScheduleCalendarFlip from '../components/ScheduleCalendarFlip'
 import BookTabBar from '../components/BookTabBar'
 import { bookingOccupiesCalendarSlot } from '../utils/bookingCalendar'
@@ -67,6 +66,7 @@ export default function BookPage() {
   const [activeTab, setActiveTab] = useState('calendar')
   const [schedulingOpen, setSchedulingOpen] = useState(false)
   const [awaitingEndDate, setAwaitingEndDate] = useState(false)
+  const [hoverDateISO, setHoverDateISO] = useState(null)
   const [careStart, setCareStart] = useState(DEFAULT_CARE_START)
   const [careEnd, setCareEnd] = useState(DEFAULT_CARE_END)
   const [careStartDateISO, setCareStartDateISO] = useState('')
@@ -191,6 +191,7 @@ export default function BookPage() {
     setRequestNotes('')
     setSchedulingOpen(false)
     setAwaitingEndDate(false)
+    setHoverDateISO(null)
   }
 
   function clearScheduling() {
@@ -203,6 +204,7 @@ export default function BookPage() {
     if (!schedulingOpen || !awaitingEndDate) {
       setCareStartDateISO(iso)
       setCareEndDateISO(iso)
+      setHoverDateISO(null)
       setSchedulingOpen(true)
       setAwaitingEndDate(true)
       return
@@ -211,48 +213,44 @@ export default function BookPage() {
     if (iso < careStartDateISO) {
       setCareStartDateISO(iso)
       setCareEndDateISO(iso)
+      setHoverDateISO(null)
       setAwaitingEndDate(true)
       return
     }
 
     setCareEndDateISO(iso)
+    setHoverDateISO(null)
     setAwaitingEndDate(false)
+  }
+
+  function handleCalendarDateHover(iso) {
+    if (!awaitingEndDate) {
+      setHoverDateISO(null)
+      return
+    }
+    setHoverDateISO(iso)
   }
 
   const selectionHint = useMemo(() => {
-    if (!schedulingOpen) return 'Tap your start day on the calendar'
-    if (awaitingEndDate) return 'Set overnight dates in the popup — or tap an end day'
-    return 'Complete your booking in the popup'
+    if (!schedulingOpen) {
+      return 'Tap your start day on the calendar, then the last day of care.'
+    }
+    if (awaitingEndDate) {
+      return 'Next, tap the last day of care. For overnight, choose a later day; for same-day only, tap this start day again.'
+    }
+    return 'Finish times and contact details in the popup.'
   }, [schedulingOpen, awaitingEndDate])
 
-  function applyOvernightStart(iso) {
-    if (!iso || iso < todayISO()) return
-    setCareStartDateISO(iso)
-    setCareEndDateISO((prev) => (prev && prev >= iso ? prev : iso))
-  }
+  const dateSelectionRole = useMemo(() => {
+    if (!schedulingOpen || !careStartDateISO) return () => null
 
-  function applyOvernightEnd(iso) {
-    if (!iso || !careStartDateISO) return
-    if (iso < careStartDateISO) {
-      setCareStartDateISO(iso)
-      setCareEndDateISO(careStartDateISO)
-      return
-    }
-    setCareEndDateISO(iso)
-  }
+    const previewEnd =
+      awaitingEndDate && hoverDateISO ? hoverDateISO : careEndDateISO || careStartDateISO
+    const start = careStartDateISO <= previewEnd ? careStartDateISO : previewEnd
+    const end = careStartDateISO <= previewEnd ? previewEnd : careStartDateISO
 
-  function continueFromOvernightDates() {
-    if (!careStartDateISO || !careEndDateISO || careEndDateISO < careStartDateISO) return
-    setAwaitingEndDate(false)
-  }
-
-  const dateSelectionRole = useMemo(
-    () => (iso) =>
-      schedulingOpen
-        ? calendarSelectionRole(iso, careStartDateISO, careEndDateISO)
-        : null,
-    [schedulingOpen, careStartDateISO, careEndDateISO]
-  )
+    return (iso) => calendarSelectionRole(iso, start, end)
+  }, [schedulingOpen, awaitingEndDate, careStartDateISO, careEndDateISO, hoverDateISO])
 
   function showBookToast(message) {
     setBookToast(message)
@@ -326,8 +324,8 @@ export default function BookPage() {
           <h1 id="book-page-heading" className="sr-only">
             Book a gig
           </h1>
-          <p className="book-workspace-head__sub muted">
-            Tap your start day, then end day on the calendar — same view your caregiver uses.
+          <p className="book-workspace-head__sub muted" role="status" aria-live="polite">
+            {selectionHint}
           </p>
         </header>
 
@@ -361,8 +359,8 @@ export default function BookPage() {
                   onPrevMonth={prevMonth}
                   onNextMonth={nextMonth}
                   onDateSelect={handleCalendarDateSelect}
+                  onDateHover={handleCalendarDateHover}
                   dateSelectionRole={dateSelectionRole}
-                  selectionHint={selectionHint}
                   showSelectionLegend
                   listTitle="Your requests"
                   listFlipLabel="Your requests"
@@ -422,17 +420,6 @@ export default function BookPage() {
           ) : null}
         </main>
       </div>
-
-      <OvernightDateModal
-        open={schedulingOpen && awaitingEndDate}
-        onClose={clearScheduling}
-        startISO={careStartDateISO}
-        endISO={careEndDateISO || careStartDateISO}
-        onStartChange={applyOvernightStart}
-        onEndChange={applyOvernightEnd}
-        onContinue={continueFromOvernightDates}
-        minISO={todayISO()}
-      />
 
       <BookSchedulingDock
         open={schedulingOpen && !awaitingEndDate}

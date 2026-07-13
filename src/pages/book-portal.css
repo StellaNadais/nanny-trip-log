@@ -45,6 +45,15 @@
 .page--book-portal .book-events__summary-title,
 .page--book-portal .book-thanks__title,
 .page--book-portal .book-modal__title,
+.page--book-portal .schedule-flip__back-btn {
+  border-radius: 999px;
+  min-height: 28px;
+  min-width: 0;
+  padding: 4px 8px;
+  font-size: 0.75rem;
+  white-space: nowrap;
+}
+
 .page--book-portal .schedule-flip__back-heading {
   font-family: var(--font-ui);
   font-weight: 600;
@@ -198,16 +207,7 @@
   width: 100%;
 }
 
-/* Calendar date picking — hotel-style range on same grid as Schedule */
-.page--book-portal .schedule-calendar-flip__selection-hint {
-  margin: 0 0 8px;
-  padding: 0 2px;
-  font-size: 0.8125rem;
-  font-weight: 600;
-  line-height: 1.4;
-  color: var(--ink-muted);
-}
-
+/* Calendar date picking — range highlight on same grid as Schedule */
 .page--book-portal .schedule-calendar-flip button.calendar__cell {
   font: inherit;
   color: inherit;
@@ -227,22 +227,60 @@
   outline-offset: 1px;
 }
 
-.page--book-portal .schedule-calendar-flip .calendar__cell--select-start,
-.page--book-portal .schedule-calendar-flip .calendar__cell--select-end,
+/* Hotel-style continuous range (start → end) */
 .page--book-portal .schedule-calendar-flip .calendar__cell--select-single {
   border-style: solid !important;
   border-width: 1.5px !important;
   border-color: var(--accent) !important;
-  background: color-mix(in srgb, var(--accent-soft) 65%, var(--paper)) !important;
+  border-radius: 999px !important;
+  background: color-mix(in srgb, var(--accent-soft) 72%, var(--paper)) !important;
   box-shadow: 0 2px 8px color-mix(in srgb, var(--accent) 14%, transparent);
   font-weight: 700;
+  z-index: 1;
+}
+
+.page--book-portal .schedule-calendar-flip .calendar__cell--select-start {
+  border-style: solid !important;
+  border-width: 1.5px !important;
+  border-color: var(--accent) !important;
+  border-radius: 999px 0 0 999px !important;
+  background: color-mix(in srgb, var(--accent-soft) 78%, var(--paper)) !important;
+  box-shadow: none;
+  font-weight: 700;
+  z-index: 1;
+}
+
+.page--book-portal .schedule-calendar-flip .calendar__cell--select-end {
+  border-style: solid !important;
+  border-width: 1.5px !important;
+  border-color: var(--accent) !important;
+  border-radius: 0 999px 999px 0 !important;
+  background: color-mix(in srgb, var(--accent-soft) 78%, var(--paper)) !important;
+  box-shadow: none;
+  font-weight: 700;
+  z-index: 1;
 }
 
 .page--book-portal .schedule-calendar-flip .calendar__cell--select-between {
   border-style: solid !important;
-  border-width: 1px !important;
-  border-color: color-mix(in srgb, var(--accent) 35%, var(--line)) !important;
-  background: color-mix(in srgb, var(--accent-soft) 45%, var(--paper)) !important;
+  border-width: 1px 0 !important;
+  border-color: color-mix(in srgb, var(--accent) 28%, transparent) !important;
+  border-radius: 0 !important;
+  background: color-mix(in srgb, var(--accent-soft) 52%, var(--paper)) !important;
+  box-shadow: none;
+}
+
+.page--book-portal .schedule-calendar-flip button.calendar__cell--selectable:hover:not(
+    .calendar__cell--select-start,
+    .calendar__cell--select-end,
+    .calendar__cell--select-single,
+    .calendar__cell--select-between
+  ) {
+  background: color-mix(in srgb, var(--accent-soft) 28%, var(--paper));
+}
+
+.page--book-portal .book-scheduling-modal.book-modal--clear .book-modal__backdrop {
+  background: transparent;
 }
 
 .schedule-calendar-flip__legend-item--select-start::before {
@@ -463,10 +501,6 @@
 
 .page--book-portal .book-thanks__note {
   color: var(--ink-muted);
-}
-
-.page--book-portal .schedule-calendar-flip__selection-hint {
-  color: #7a6bb5;
 }
 
 .page--book-portal .schedule-calendar-flip .calendar__booked-label {

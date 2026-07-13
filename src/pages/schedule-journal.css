@@ -160,15 +160,28 @@
 }
 
 .page--schedule.page--kid-journal.schedule-dashboard .schedule-calendar-flip .calendar__nav .btn--ghost,
-.page--schedule.page--kid-journal.schedule-dashboard .schedule-calendar-flip .schedule-flip__back-top .btn--ghost,
-.page--schedule.page--kid-journal.schedule-dashboard .schedule-fun-flip.schedule-calendar-flip .calendar__nav .btn--ghost,
-.page--schedule.page--kid-journal.schedule-dashboard .schedule-fun-flip.schedule-calendar-flip .schedule-flip__back-top .btn--ghost {
+.page--schedule.page--kid-journal.schedule-dashboard .schedule-fun-flip.schedule-calendar-flip .calendar__nav .btn--ghost {
   border: 2px solid var(--journal-card-border);
   border-radius: 8px;
   background: var(--journal-surface-bright);
   color: var(--journal-ink-front);
   box-shadow: 2px 2px 0 var(--journal-card-border);
   font-weight: 700;
+}
+
+.page--schedule.page--kid-journal.schedule-dashboard .schedule-calendar-flip .schedule-flip__back-top .btn--ghost,
+.page--schedule.page--kid-journal.schedule-dashboard .schedule-fun-flip.schedule-calendar-flip .schedule-flip__back-top .btn--ghost {
+  border: 1px solid var(--journal-card-border);
+  border-radius: 999px;
+  background: var(--journal-surface-bright);
+  color: var(--journal-ink-front);
+  box-shadow: none;
+  font-weight: 600;
+  font-size: 0.75rem;
+  min-height: 28px;
+  min-width: 0;
+  padding: 4px 8px;
+  white-space: nowrap;
 }
 
 .page--schedule.page--kid-journal.schedule-dashboard .schedule-calendar-flip .calendar__nav .btn--ghost:active,

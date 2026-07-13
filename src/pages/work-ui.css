@@ -81,11 +81,17 @@
   margin-bottom: 10px;
 }
 
-.work-ui .schedule-flip__back-top .btn--ghost {
-  border-radius: 0;
-  border: 1px solid transparent;
+.work-ui .schedule-flip__back-top .btn--ghost,
+.work-ui .schedule-flip__back-btn {
+  border-radius: 999px;
+  border: 1px solid var(--line-soft);
   color: var(--ink);
   font-weight: 600;
+  background: var(--surface);
+  padding: 4px 8px;
+  min-height: 28px;
+  min-width: 0;
+  white-space: nowrap;
 }
 
 .work-ui .calendar__month {
@@ -237,6 +243,10 @@
 
 .work-ui .book-modal__backdrop {
   background: color-mix(in srgb, var(--ink) 42%, transparent);
+}
+
+.work-ui .book-modal--clear .book-modal__backdrop {
+  background: transparent;
 }
 
 .work-ui .book-modal__sheet {

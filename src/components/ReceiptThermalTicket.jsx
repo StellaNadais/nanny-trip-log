@@ -29,8 +29,6 @@ export default function ReceiptThermalTicket({
         {printedAt ? <p className="receipt-ticket__printed">{printedAt}</p> : null}
         <p className="receipt-ticket__store" aria-hidden>
           *** THANK YOU ***
-          <br />
-          NO REFUNDS ON LOVE
         </p>
         <div className="receipt-ticket__rule" />
         <ul className="receipt-ticket__lines">

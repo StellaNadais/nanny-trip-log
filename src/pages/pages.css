@@ -844,6 +844,10 @@
   cursor: pointer;
 }
 
+.book-modal--clear .book-modal__backdrop {
+  background: transparent;
+}
+
 .book-modal__sheet {
   position: relative;
   z-index: 1;
@@ -1878,26 +1882,50 @@
 }
 
 .schedule-flip__back-top {
-  display: grid;
-  grid-template-columns: 1fr auto 1fr;
+  display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 10px;
   flex-shrink: 0;
   margin-bottom: 8px;
+  min-width: 0;
 }
 
 .schedule-flip__back-btn {
-  grid-column: 1;
-  justify-self: start;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  flex: 0 0 auto;
+  width: auto;
+  max-width: none;
+  min-width: 0;
+  min-height: 28px;
+  margin: 0;
+  padding: 4px 8px;
+  white-space: nowrap;
+  line-height: 1.2;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.schedule-flip__back-btn-arrow {
+  display: inline-block;
+  font-size: 0.85em;
+  line-height: 1;
+  translate: 0 -0.5px;
+}
+
+.schedule-flip__back-btn-label {
+  display: inline-block;
 }
 
 .schedule-flip__back-heading {
-  grid-column: 2;
+  flex: 1 1 auto;
+  min-width: 0;
   margin: 0;
   font-size: 1.05rem;
   font-weight: 700;
-  text-align: center;
-  justify-self: center;
+  text-align: left;
+  line-height: 1.25;
 }
 
 .schedule-flip__list-scroll {
@@ -1978,17 +2006,21 @@
 
 .schedule-flip__retro32 .schedule-flip__back-btn {
   font-family: inherit !important;
-  font-size: 0.85rem !important;
+  font-size: 0.75rem !important;
   font-weight: 600 !important;
-  line-height: 1.35 !important;
+  line-height: 1.2 !important;
   letter-spacing: 0.01em !important;
-  padding: 8px 12px !important;
+  padding: 4px 8px !important;
+  min-height: 28px !important;
+  min-width: 0 !important;
   color: var(--ink) !important;
   background: #fff !important;
   border: 1px solid var(--schedule-gigs-border) !important;
-  border-radius: 8px !important;
-  box-shadow: 0 1px 2px rgba(42, 38, 48, 0.06) !important;
+  border-radius: 999px !important;
+  box-shadow: none !important;
   text-transform: none !important;
+  white-space: nowrap !important;
+  width: auto !important;
 }
 
 .schedule-flip__retro32 .schedule-flip__back-btn:hover {
@@ -3353,7 +3385,7 @@
   border-left: 1px solid #c9c2b8;
   border-right: 1px solid #c9c2b8;
   box-sizing: border-box;
-  font-family: ui-monospace, 'Courier New', Courier, monospace;
+  font-family: var(--font);
   font-size: 0.8125rem;
   line-height: 1.4;
   color: #141210;
@@ -5705,212 +5737,6 @@
   line-height: 1;
 }
 
-/* Route bar — identical chrome to Day in progress (thin); nested in What we did */
-.trip-route-bar.journal-day-progress {
-  margin: 0 0 10px;
-}
-
-.journal-panel__body .trip-route-bar.journal-day-progress--thin {
-  margin: 0 0 10px;
-  padding: 0;
-  border: none;
-  background: transparent;
-}
-
-.trip-route-bar__selected {
-  list-style: none;
-  margin: 0 0 8px;
-  padding: 0;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-}
-
-.trip-route-bar__chip {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  max-width: 100%;
-  margin: 0;
-  padding: 5px 10px;
-  border: 1px solid color-mix(in srgb, var(--accent) 22%, var(--line-soft));
-  border-radius: 999px;
-  background: color-mix(in srgb, var(--accent-soft) 45%, var(--paper));
-  color: var(--ink);
-  font: inherit;
-  font-size: 0.75rem;
-  font-weight: 600;
-  line-height: 1.2;
-  cursor: pointer;
-}
-
-.trip-route-bar__chip span {
-  opacity: 0.55;
-  font-weight: 700;
-}
-
-.trip-route-bar__chip--home {
-  background: color-mix(in srgb, var(--paper) 70%, var(--line-soft));
-  border-color: color-mix(in srgb, var(--ink-muted) 25%, var(--line-soft));
-  color: var(--ink-muted);
-}
-
-.trip-route-bar__chip:hover,
-.trip-route-bar__chip:focus-visible {
-  outline: none;
-  background: color-mix(in srgb, var(--accent-soft) 65%, var(--paper));
-}
-
-.trip-route-bar__track.journal-day-progress__track {
-  position: relative;
-  display: block;
-  width: 100%;
-  height: 22px;
-  min-height: 0;
-  margin: 0;
-  padding: 0;
-  border: none;
-  cursor: pointer;
-  font: inherit;
-  color: inherit;
-  text-align: left;
-  appearance: none;
-  -webkit-appearance: none;
-  border-radius: 999px;
-  background: color-mix(in srgb, var(--line) 55%, var(--paper));
-  overflow: hidden;
-  box-shadow: inset 0 1px 2px color-mix(in srgb, var(--ink) 6%, transparent);
-}
-
-.trip-route-bar__path {
-  position: absolute;
-  inset: 0;
-  z-index: 1;
-  display: grid;
-  align-items: center;
-  pointer-events: none;
-}
-
-.trip-route-bar__path-seg {
-  min-width: 0;
-  padding: 0 3px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  font-size: 0.5625rem;
-  font-weight: 700;
-  letter-spacing: 0.01em;
-  text-align: center;
-  color: var(--ink);
-  text-shadow: 0 0 3px color-mix(in srgb, var(--paper) 90%, transparent);
-}
-
-.trip-route-bar__path-seg--home {
-  color: var(--ink-muted);
-  font-weight: 600;
-}
-
-.trip-route-bar__track:hover,
-.trip-route-bar__track:focus-visible {
-  outline: none;
-}
-
-.trip-route-bar__track:focus-visible {
-  box-shadow:
-    inset 0 1px 2px color-mix(in srgb, var(--ink) 6%, transparent),
-    0 0 0 2px color-mix(in srgb, var(--accent) 35%, transparent);
-}
-
-.trip-route-bar__track--open {
-  filter: brightness(0.98);
-}
-
-.trip-route-bar__drawer {
-  display: grid;
-  grid-template-rows: 0fr;
-  margin-top: 0;
-  overflow: hidden;
-  opacity: 0;
-  pointer-events: none;
-  transition:
-    grid-template-rows 0.22s ease,
-    opacity 0.18s ease,
-    margin-top 0.18s ease;
-}
-
-.trip-route-bar__drawer--open {
-  grid-template-rows: 1fr;
-  opacity: 1;
-  pointer-events: auto;
-  margin-top: 10px;
-}
-
-.trip-route-bar__drawer-inner {
-  min-height: 0;
-  overflow: hidden;
-}
-
-.trip-route-bar__drawer--open .trip-route-bar__drawer-inner {
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
-  max-height: 12rem;
-}
-
-.trip-route-bar__pool {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 6px;
-}
-
-.trip-route-bar__pool-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  min-height: 40px;
-  margin: 0;
-  padding: 8px 10px;
-  border: 1px solid color-mix(in srgb, var(--accent) 18%, var(--line));
-  border-radius: var(--radius);
-  background: color-mix(in srgb, var(--paper) 88%, var(--accent-soft));
-  color: var(--ink);
-  font: inherit;
-  font-weight: 600;
-  font-size: 0.8125rem;
-  line-height: 1.25;
-  text-align: center;
-  cursor: pointer;
-  transition:
-    background 0.15s ease,
-    transform 0.12s ease;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.trip-route-bar__pool-btn:hover,
-.trip-route-bar__pool-btn:focus-visible {
-  outline: none;
-  background: color-mix(in srgb, var(--paper) 70%, var(--accent-soft));
-  transform: translateY(1px);
-}
-
-.trip-route-bar__pool-btn--home {
-  font-weight: 700;
-  border-color: color-mix(in srgb, var(--ink-muted) 30%, var(--line));
-  background: color-mix(in srgb, var(--paper) 82%, var(--line-soft));
-}
-
-.trip-route-bar__empty {
-  margin: 0;
-  padding: 4px 2px;
-  font-size: 0.78rem;
-  line-height: 1.35;
-}
-
 /* About today + meals today — same panel shell as mood bar */
 .page--kid-journal .journal-panel.journal-mood-bar {
   border: 2px solid var(--journal-card-border);
@@ -6980,7 +6806,7 @@
   border-left: 1px solid #c9c2b8;
   border-right: 1px solid #c9c2b8;
   box-sizing: border-box;
-  font-family: ui-monospace, 'Courier New', Courier, monospace;
+  font-family: var(--font);
   font-size: 0.8125rem;
   line-height: 1.45;
   color: #141210;

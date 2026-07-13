@@ -45,7 +45,6 @@ function loadDraftFromLatest(iso) {
   if (!latest) {
     return {
       dayNotes: '',
-      routePlaceIds: [],
       mealsText: '',
       nap: '',
       pottyTime: '',
@@ -58,7 +57,6 @@ function loadDraftFromLatest(iso) {
   const potty = pottyFromJournalEntry(latest)
   return {
     dayNotes: latest.dayNotes ?? '',
-    routePlaceIds: Array.isArray(latest.routePlaceIds) ? latest.routePlaceIds.filter(Boolean) : [],
     mealsText: latest.mealsText ?? '',
     nap: napFromJournalEntry(latest),
     pottyTime: potty.pottyTime,
@@ -106,7 +104,6 @@ export default function KidJournalPage() {
   const outings = useOutingsWeekData(weekKey)
 
   const [dayNotes, setDayNotes] = useState('')
-  const [routePlaceIds, setRoutePlaceIds] = useState([])
   const [mealsText, setMealsText] = useState('')
   const [nap, setNap] = useState('')
   const [pottyTime, setPottyTime] = useState('')
@@ -154,7 +151,6 @@ export default function KidJournalPage() {
   useEffect(() => {
     const d = loadDraftFromLatest(dateISO)
     setDayNotes(d.dayNotes)
-    setRoutePlaceIds(d.routePlaceIds)
     setMealsText(d.mealsText)
     setNap(d.nap)
     setPottyTime(d.pottyTime)
@@ -169,13 +165,11 @@ export default function KidJournalPage() {
       const saved = loadState()
       const daysByIso = saved?.daysByIso && typeof saved.daysByIso === 'object' ? saved.daysByIso : {}
       const draft = { [dateISO]: dayNotes }
-      const draftRoutes = { [dateISO]: routePlaceIds }
       const { totalMiles, reimbursement, breakdown } = computeWeekTripMileage(
         journalWeekStart,
         daysByIso,
         entries,
-        draft,
-        draftRoutes
+        draft
       )
       saveReceiptSettings({
         mileageByWeek: {
@@ -191,7 +185,7 @@ export default function KidJournalPage() {
       notifyReceiptMileageUpdated()
     }, 450)
     return () => window.clearTimeout(t)
-  }, [journalWeekStart, weekKey, dateISO, dayNotes, routePlaceIds, entries, outingsRev])
+  }, [journalWeekStart, weekKey, dateISO, dayNotes, entries, outingsRev])
 
   const mealParts = useMemo(() => parseMealsToParts(mealsText), [mealsText])
   const mealSuggestions = useMemo(() => {
@@ -231,11 +225,8 @@ export default function KidJournalPage() {
     const latest = loadDraftFromLatest(dateISO)
     const photo = handwrittenPhotoDataUrl || ''
     const latestPhoto = latest.handwrittenPhotoDataUrl || ''
-    const routeChanged =
-      JSON.stringify(routePlaceIds) !== JSON.stringify(latest.routePlaceIds || [])
     if (
       dayNotes !== (latest.dayNotes ?? '') ||
-      routeChanged ||
       mealsText !== (latest.mealsText ?? '') ||
       nap !== (latest.nap ?? '') ||
       pottyTime !== (latest.pottyTime ?? '') ||
@@ -247,7 +238,6 @@ export default function KidJournalPage() {
       addEntry({
         dateISO,
         dayNotes,
-        routePlaceIds,
         mealsText,
         nap,
         pottyTime,
@@ -529,8 +519,6 @@ export default function KidJournalPage() {
         dateLabel={journalDateLabel}
         dayNotes={dayNotes}
         onDayNotesChange={setDayNotes}
-        routePlaceIds={routePlaceIds}
-        onRoutePlaceIdsChange={setRoutePlaceIds}
         mealsText={mealsText}
         onMealsChange={setMealsText}
         mealSuggestions={mealSuggestions}

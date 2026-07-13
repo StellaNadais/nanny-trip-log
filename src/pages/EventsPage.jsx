@@ -1,7 +1,5 @@
 import { useMemo, useState } from 'react'
 import { EVENT_LOCATIONS, groupFamilyEventsByLocation } from '../data/familyEvents'
-import { formatWorldCupMatch, upcomingWorldCupGames } from '../data/worldCup2026'
-import { toISODateLocal } from '../utils/dates'
 import EventsPanelModal from '../components/EventsPanelModal'
 import TodaySpaceTile from '../components/TodaySpaceTile'
 import WorkspaceTileBoard from '../components/WorkspaceTileBoard'
@@ -25,13 +23,6 @@ const LOCATION_ICONS = {
       <path d="M12 3v18M3 12h18" />
     </svg>
   ),
-  'world-cup': (
-    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-      <circle cx="12" cy="12" r="10" />
-      <path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20" />
-      <path d="M2 12h20" />
-    </svg>
-  ),
 }
 
 function locationPreview(events) {
@@ -43,11 +34,6 @@ function locationPreview(events) {
 export default function EventsPage() {
   const [openPanel, setOpenPanel] = useState(null)
   const byLocation = useMemo(() => groupFamilyEventsByLocation(), [])
-  const worldCupGames = useMemo(() => upcomingWorldCupGames(toISODateLocal(new Date())), [])
-
-  const worldCupPreview = worldCupGames.length
-    ? formatWorldCupMatch(worldCupGames[0])
-    : 'No upcoming games'
 
   function openEventsPanel(panel) {
     setOpenPanel(panel)
@@ -57,36 +43,20 @@ export default function EventsPage() {
     setOpenPanel(null)
   }
 
-  const tiles = [
-    ...EVENT_LOCATIONS.map(({ id, label }) => ({
-      id,
-      label,
-      square: true,
-      children: (
-        <TodaySpaceTile
-          icon={LOCATION_ICONS[id]}
-          count={byLocation[id]?.length ?? 0}
-          preview={locationPreview(byLocation[id])}
-          hint={`${label} outings — tap to open.`}
-          onClick={() => openEventsPanel(id)}
-        />
-      ),
-    })),
-    {
-      id: 'world-cup',
-      label: 'World Cup',
-      square: true,
-      children: (
-        <TodaySpaceTile
-          icon={LOCATION_ICONS['world-cup']}
-          count={worldCupGames.length}
-          preview={worldCupPreview}
-          hint="Tournament dates — tap to open."
-          onClick={() => openEventsPanel('world-cup')}
-        />
-      ),
-    },
-  ]
+  const tiles = EVENT_LOCATIONS.map(({ id, label }) => ({
+    id,
+    label,
+    square: true,
+    children: (
+      <TodaySpaceTile
+        icon={LOCATION_ICONS[id]}
+        count={byLocation[id]?.length ?? 0}
+        preview={locationPreview(byLocation[id])}
+        hint={`${label} outings — tap to open.`}
+        onClick={() => openEventsPanel(id)}
+      />
+    ),
+  }))
 
   return (
     <div className="page page--events page--workspace page--kid-journal work-ui">

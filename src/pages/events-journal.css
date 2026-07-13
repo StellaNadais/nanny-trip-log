@@ -37,16 +37,14 @@
   line-height: 1.45;
 }
 
-.about-today-modal .events__section--modal,
-.about-today-modal .world-cup-panel {
+.about-today-modal .events__section--modal {
   margin: 0;
   background: transparent;
   border: none;
   box-shadow: none;
 }
 
-.about-today-modal .events__list,
-.about-today-modal .world-cup-panel .events__list {
+.about-today-modal .events__list {
   gap: 10px;
   margin: 0;
   list-style: none;
@@ -78,41 +76,4 @@
 .about-today-modal .events__when {
   margin: 0 0 4px;
   color: var(--ink-muted);
-}
-
-.about-today-modal .world-cup-panel__intro {
-  margin: 0 0 10px;
-  font-size: 0.8125rem;
-  line-height: 1.45;
-}
-
-.about-today-modal .world-cup-panel__meta {
-  margin: 0 0 4px;
-  font-size: 0.75rem;
-  font-weight: 600;
-  letter-spacing: 0.02em;
-  text-transform: uppercase;
-  color: var(--ink-muted);
-}
-
-.about-today-modal .world-cup-panel__item--brazil {
-  padding: 10px 12px;
-  border: 1.5px solid color-mix(in srgb, #7a6bb5 55%, #009c3b);
-  border-radius: 12px;
-  background: color-mix(in srgb, #ebe8f5 40%, #fff);
-}
-
-.about-today-modal .world-cup-panel__item--argentina {
-  padding: 10px 12px;
-  border: 1.5px solid color-mix(in srgb, #7a6bb5 40%, #6cace4);
-  border-radius: 12px;
-  background: color-mix(in srgb, #f2eef8 45%, #fff);
-}
-
-.about-today-modal .world-cup-panel__item--brazil .events__item-title {
-  color: #5c2d6e;
-}
-
-.about-today-modal .world-cup-panel__item--argentina .events__item-title {
-  color: #5c4a8a;
 }

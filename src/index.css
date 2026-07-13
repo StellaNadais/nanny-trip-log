@@ -30,15 +30,15 @@
     #68c0f0 78%,
     #7ad9a8 100%
   );
-  --font: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
-  --font-display: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
-  --font-ui: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
-  --font-mono: ui-monospace, 'SF Mono', 'Cascadia Code', monospace;
-  --font-pixel: var(--font-ui);
+  --font: 'DM Sans', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-display: var(--font);
+  --font-ui: var(--font);
+  --font-mono: var(--font);
+  --font-pixel: var(--font);
   --weight-body: 400;
   --weight-label: 500;
   --weight-title: 600;
-  font-family: var(--font-ui);
+  font-family: var(--font);
   font-size: 15px;
   font-weight: var(--weight-body);
   line-height: 1.45;
@@ -54,6 +54,14 @@
 *::before,
 *::after {
   box-sizing: border-box;
+}
+
+button,
+input,
+textarea,
+select,
+optgroup {
+  font: inherit;
 }
 
 html {

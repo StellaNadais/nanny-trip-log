@@ -36,8 +36,8 @@ export default function ScheduleCalendarFlip({
   listFlipLabel = 'Upcoming gigs',
   listEmptyMessage = 'No upcoming gigs on the calendar yet. Share your booking link with families.',
   onDateSelect,
+  onDateHover,
   dateSelectionRole,
-  selectionHint,
   showSelectionLegend = false,
 }) {
   const [listFace, setListFace] = useState(false)
@@ -97,11 +97,6 @@ export default function ScheduleCalendarFlip({
                     </>
                   ) : null}
                 </div>
-                {selectionHint ? (
-                  <p className="schedule-calendar-flip__selection-hint muted" role="status">
-                    {selectionHint}
-                  </p>
-                ) : null}
               </div>
               <div className="schedule-calendar-section__grid-grow">
                 <div className="calendar__weekdays" aria-hidden>
@@ -111,7 +106,12 @@ export default function ScheduleCalendarFlip({
                     </span>
                   ))}
                 </div>
-                <div className="calendar__grid calendar__grid--book" role="grid" aria-label="Gig schedule">
+                <div
+                  className="calendar__grid calendar__grid--book"
+                  role="grid"
+                  aria-label="Gig schedule"
+                  onMouseLeave={() => onDateHover?.(null)}
+                >
                   {cells.map((dayNum, i) => {
                     if (dayNum == null) {
                       return (
@@ -163,6 +163,8 @@ export default function ScheduleCalendarFlip({
                           aria-pressed={selectionRole != null}
                           className={cellClass}
                           onClick={() => onDateSelect(iso)}
+                          onMouseEnter={() => onDateHover?.(iso)}
+                          onFocus={() => onDateHover?.(iso)}
                         >
                           {inner}
                         </button>
@@ -206,7 +208,10 @@ export default function ScheduleCalendarFlip({
                 className="btn btn--ghost schedule-flip__back-btn"
                 onClick={() => setListFace(false)}
               >
-                ← Calendar
+                <span className="schedule-flip__back-btn-arrow" aria-hidden>
+                  ←
+                </span>
+                <span className="schedule-flip__back-btn-label">Calendar</span>
               </button>
               <h2 className="schedule-flip__back-heading">{listTitle}</h2>
             </div>

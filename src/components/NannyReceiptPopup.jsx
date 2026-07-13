@@ -44,7 +44,7 @@ function IconDownload({ className }) {
   )
 }
 
-/** Register-tape nanny care receipt popup (Hours & details inside). */
+/** Register-tape nanny care receipt popup. */
 export default function NannyReceiptPopup({ open = true, onClose, backdropClassName = '' }) {
   const r = useNannyReceipt()
 
@@ -60,88 +60,6 @@ export default function NannyReceiptPopup({ open = true, onClose, backdropClassN
       photos={r.extras.photos}
       totalCentsDisplay={`$${r.combinedTotal.toFixed(2)}`}
     >
-      <details className="receipt-modal__adjust">
-        <summary className="receipt-modal__adjust-summary">Hours &amp; details</summary>
-        <div className="receipt-modal__adjust-body">
-          {r.gigReceiptMode ? (
-            <label className="field-block field-block--compact">
-              <span className="field-block__label">Gig date</span>
-              <input
-                type="date"
-                className="input input--line"
-                value={r.gigDateISO}
-                onChange={(e) => r.setGigDateISO(e.target.value)}
-              />
-              <p className="muted receipt-modal__adjust-hint">
-                Mileage week: {r.weekLabel}
-                {r.matchedGig ? ' · booking matched' : ''}
-              </p>
-            </label>
-          ) : (
-            <label className="field-block field-block--compact">
-              <span className="field-block__label">Week (Monday)</span>
-              <input
-                type="date"
-                className="input input--line"
-                value={r.weekOf}
-                onChange={(e) => r.setWeekOf(e.target.value)}
-              />
-            </label>
-          )}
-          <label className="field-block field-block--compact">
-            <span className="field-block__label">
-              {r.gigReceiptMode ? 'Hours this gig' : 'Hours this week'}
-            </span>
-            <input
-              type="number"
-              inputMode="decimal"
-              min="0"
-              step="0.25"
-              className="input input--line"
-              value={r.hours}
-              onChange={(e) => r.setHours(e.target.value)}
-            />
-          </label>
-          {r.gigReceiptMode ? (
-            <label className="field-block field-block--compact">
-              <span className="field-block__label">Overnights</span>
-              <input
-                type="number"
-                inputMode="numeric"
-                min="0"
-                step="1"
-                className="input input--line"
-                value={r.overnightNights}
-                onChange={(e) => r.setOvernightNights(e.target.value)}
-              />
-            </label>
-          ) : null}
-          <label className="field-block field-block--compact">
-            <span className="field-block__label">Children</span>
-            <input
-              type="number"
-              inputMode="numeric"
-              min="1"
-              step="1"
-              className="input input--line"
-              value={r.numChildren}
-              onChange={(e) => r.setNumChildren(e.target.value)}
-            />
-          </label>
-          <label className="field-block field-block--compact">
-            <span className="field-block__label">Venmo</span>
-            <input
-              type="text"
-              className="input input--line"
-              value={r.venmoHandle}
-              onChange={(e) => r.persistVenmo(e.target.value)}
-              placeholder="@YourVenmo"
-              autoComplete="off"
-            />
-          </label>
-        </div>
-      </details>
-
       {r.showVenmoActions ? (
         <>
           {r.venmoUrl ? (
@@ -174,7 +92,7 @@ export default function NannyReceiptPopup({ open = true, onClose, backdropClassN
         </>
       ) : (
         <>
-          <p className="muted receipt-modal__zero">Total is $0.00 — expand Hours &amp; details above.</p>
+          <p className="muted receipt-modal__zero">Total is $0.00.</p>
           <a
             href={r.forwardReceiptSmsHref}
             className="btn btn--primary receipt-modal__wide-btn"

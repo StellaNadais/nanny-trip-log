@@ -44,7 +44,7 @@ export default function BookSchedulingDock({
 
   return (
     <div
-      className="book-modal book-scheduling-modal"
+      className="book-modal book-scheduling-modal book-modal--clear"
       role="dialog"
       aria-modal="true"
       aria-labelledby="book-scheduling-title"

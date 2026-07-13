@@ -724,53 +724,6 @@
   background: transparent;
 }
 
-.overnight-date-modal {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-}
-
-.overnight-date-modal__lede {
-  margin: 0;
-  font-size: 0.8125rem;
-  line-height: 1.4;
-}
-
-.overnight-date-modal__fields {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
-}
-
-@media (max-width: 420px) {
-  .overnight-date-modal__fields {
-    grid-template-columns: 1fr;
-  }
-}
-
-.overnight-date-modal__field {
-  margin: 0;
-}
-
-.overnight-date-modal__rate {
-  margin: 0;
-  padding: 10px 12px;
-  border-radius: 10px;
-  border: 1px solid var(--line-soft);
-  background: color-mix(in srgb, var(--journal-surface-bright, var(--paper)) 88%, var(--journal-sage, #c8e6d0) 12%);
-  font-size: 0.875rem;
-  line-height: 1.4;
-  color: var(--ink);
-}
-
-.overnight-date-modal__rate strong {
-  font-weight: 700;
-}
-
-.overnight-date-modal__rate--zero {
-  background: var(--paper);
-}
-
 .about-today-modal__sheet {
   position: relative;
   z-index: 1;
