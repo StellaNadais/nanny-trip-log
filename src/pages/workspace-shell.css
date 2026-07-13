@@ -1021,15 +1021,23 @@
 
 .about-today-modal .schedule-celebrations-flip--embedded,
 .about-today-modal .schedule-fun-flip.schedule-calendar-flip--embedded {
-  min-height: 16rem;
+  min-height: 18rem;
+  border-radius: 14px;
+  background:
+    radial-gradient(ellipse 90% 55% at 12% 0%, color-mix(in srgb, var(--gold-soft) 70%, transparent), transparent 55%),
+    radial-gradient(ellipse 80% 50% at 100% 8%, color-mix(in srgb, var(--peach-soft) 55%, transparent), transparent 50%),
+    linear-gradient(165deg, #fffdf8 0%, #fff7f0 48%, #f3faf8 100%);
+  border: 1px solid color-mix(in srgb, var(--peach) 28%, var(--line-soft));
+  box-shadow: inset 0 1px 0 color-mix(in srgb, #fff 70%, transparent);
+  overflow: hidden;
 }
 
 .about-today-modal .schedule-celebrations-flip--embedded .schedule-flip__scene,
 .about-today-modal .schedule-fun-flip.schedule-calendar-flip--embedded .schedule-flip__scene,
 .about-today-modal .schedule-celebrations-flip--embedded .schedule-celebrations-flip__scene,
 .about-today-modal .schedule-fun-flip.schedule-calendar-flip--embedded .schedule-celebrations-flip__scene {
-  min-height: 14rem;
-  height: min(48dvh, 22rem);
+  min-height: 16rem;
+  height: min(52dvh, 24rem);
   max-height: none;
   flex: 1;
 }
@@ -1038,6 +1046,76 @@
   min-height: 100%;
   height: 100%;
   transform-style: preserve-3d;
+}
+
+.about-today-modal .schedule-fun-flip .schedule-celebrations-flip__title {
+  font-size: 0.9375rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+}
+
+.about-today-modal .schedule-fun-flip .schedule-celebrations-flip__month-label {
+  color: color-mix(in srgb, var(--peach) 35%, var(--ink-muted));
+  font-weight: 600;
+}
+
+.about-today-modal .schedule-fun-flip .schedule-celebrations-flip__list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 4px 2px 8px;
+}
+
+.about-today-modal .schedule-fun-flip .schedule-celebrations-flip__item {
+  gap: 3px;
+  padding: 10px 12px;
+  border: 1px solid color-mix(in srgb, var(--peach) 22%, var(--line-soft));
+  border-radius: 12px;
+  border-bottom: 1px solid color-mix(in srgb, var(--peach) 22%, var(--line-soft));
+  background: color-mix(in srgb, #fff 88%, var(--peach-soft));
+}
+
+.about-today-modal .schedule-fun-flip .schedule-celebrations-flip__item:nth-child(even) {
+  background: color-mix(in srgb, #fff 90%, var(--gold-soft));
+  border-color: color-mix(in srgb, var(--gold) 24%, var(--line-soft));
+}
+
+.about-today-modal .schedule-fun-flip .schedule-celebrations-flip__item time {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--seafoam-1) 55%, var(--ink-muted));
+}
+
+.about-today-modal .schedule-fun-flip .schedule-celebrations-flip__item-title {
+  font-size: 0.9375rem;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.about-today-modal .schedule-fun-flip .schedule-celebrations-flip__item-theme {
+  font-size: 0.75rem;
+  color: var(--ink-muted);
+}
+
+.about-today-modal .schedule-fun-flip .schedule-celebrations-flip__empty {
+  margin: 0;
+  padding: 28px 16px;
+  text-align: center;
+  font-size: 0.875rem;
+  line-height: 1.45;
+  color: var(--ink-muted);
+  border: 1px dashed color-mix(in srgb, var(--peach) 30%, var(--line-soft));
+  border-radius: 12px;
+  background: color-mix(in srgb, #fff 70%, transparent);
+}
+
+.about-today-modal .schedule-fun-flip .schedule-flip__gigs-flip-btn {
+  border-radius: 12px;
+  border-color: color-mix(in srgb, var(--seafoam-2) 35%, var(--line-soft));
+  background: color-mix(in srgb, var(--seafoam-3) 28%, #fff);
 }
 
 .caregiver-shell--workbook .about-today-modal__preview {

@@ -3789,71 +3789,64 @@
   border-radius: 0 0 8px 8px;
 }
 
-/* Highlight layer only: keep font metrics identical to textarea (no italic/mono/padding drift). */
+/* Highlight layer only: keep font metrics identical to textarea (no bold/padding drift). */
 .meals-inline-mirror .trip-place {
-  border-radius: 4px;
+  border-radius: 0.2em;
   padding: 0;
   margin: 0;
   box-decoration-break: clone;
   -webkit-box-decoration-break: clone;
-  font-family: inherit;
+  font: inherit;
   font-style: normal;
-  font-weight: 600;
-  font-size: inherit;
-  line-height: inherit;
+  font-weight: inherit;
+  letter-spacing: inherit;
+  vertical-align: baseline;
+  box-shadow: none;
 }
 
 .meals-inline-mirror .trip-place--counted.trip-place--moraga {
-  background: rgba(34, 100, 72, 0.1);
+  background: rgba(34, 100, 72, 0.14);
   color: #1e4a38;
-  box-shadow: inset 0 0 0 1px rgba(34, 100, 72, 0.22);
 }
 
 .meals-inline-mirror .trip-place--counted.trip-place--lafayette {
-  background: rgba(120, 53, 15, 0.1);
+  background: rgba(120, 53, 15, 0.14);
   color: #5c2d0a;
-  box-shadow: inset 0 0 0 1px rgba(120, 53, 15, 0.22);
 }
 
 .meals-inline-mirror .trip-place--counted.trip-place--client {
-  background: rgba(30, 58, 95, 0.12);
+  background: rgba(30, 58, 95, 0.14);
   color: #1a3a5c;
-  box-shadow: inset 0 0 0 1px rgba(30, 58, 95, 0.2);
 }
 
 .meals-inline-mirror .trip-place--counted.trip-place--park {
-  background: rgba(34, 100, 72, 0.1);
+  background: rgba(34, 100, 72, 0.14);
   color: #1e4a38;
-  box-shadow: inset 0 0 0 1px rgba(34, 100, 72, 0.22);
 }
 
 .meals-inline-mirror .trip-place--counted.trip-place--museum {
-  background: rgba(120, 53, 15, 0.1);
+  background: rgba(120, 53, 15, 0.14);
   color: #5c2d0a;
-  box-shadow: inset 0 0 0 1px rgba(120, 53, 15, 0.22);
 }
 
 .meals-inline-mirror .trip-place--counted.trip-place--downtown {
-  background: rgba(180, 83, 9, 0.1);
+  background: rgba(180, 83, 9, 0.14);
   color: #7c2d12;
-  box-shadow: inset 0 0 0 1px rgba(180, 83, 9, 0.22);
 }
 
 .meals-inline-mirror .trip-place--counted.trip-place--outing {
-  background: rgba(13, 148, 136, 0.1);
+  background: rgba(13, 148, 136, 0.14);
   color: #115e59;
-  box-shadow: inset 0 0 0 1px rgba(13, 148, 136, 0.22);
 }
 
 .meals-inline-mirror .trip-place--unknown {
   color: var(--ink-muted);
-  background: rgba(92, 83, 74, 0.08);
+  background: rgba(92, 83, 74, 0.1);
 }
 
 .meals-inline-mirror .trip-place--counted.trip-place--custom {
-  background: linear-gradient(180deg, rgba(124, 58, 237, 0.12), rgba(59, 130, 246, 0.1));
-  color: #4c1d95;
-  box-shadow: inset 0 0 0 1px rgba(124, 58, 237, 0.25);
+  background: color-mix(in srgb, var(--seafoam-2) 16%, transparent);
+  color: var(--seafoam-1);
 }
 
 .trip-places-foot-details {
@@ -5806,8 +5799,7 @@
 }
 
 .page--kid-journal .journal-panel:focus-within .journal-panel-field__input,
-.page--kid-journal .journal-panel:focus-within .journal-panel-field__textarea,
-.page--kid-journal .journal-panel:focus-within .meals-inline-ta {
+.page--kid-journal .journal-panel:focus-within .journal-panel-field__textarea {
   border-color: color-mix(in srgb, var(--journal-section-accent) 70%, var(--journal-card-border));
   box-shadow: 0 0 0 2px color-mix(in srgb, var(--journal-section-accent) 20%, transparent);
 }
@@ -5901,14 +5893,34 @@
   font-size: 1rem;
   line-height: 1.5;
   padding: 12px;
-  color: var(--journal-ink-front);
   letter-spacing: 0.01em;
   -webkit-font-smoothing: antialiased;
-  text-rendering: optimizeLegibility;
+  text-rendering: geometricPrecision;
 }
 
+.page--kid-journal .journal-mood-bar .meals-inline-mirror,
+.page--kid-journal .journal-panel__body .meals-inline-mirror {
+  color: var(--journal-ink-front);
+}
+
+.page--kid-journal .journal-mood-bar .meals-inline-ta,
 .page--kid-journal .journal-panel__body .meals-inline-ta {
+  color: transparent;
   caret-color: var(--journal-mint-deep);
+  background: transparent;
+  box-shadow: none;
+  border: none;
+}
+
+.page--kid-journal .journal-panel__body .meals-inline-mirror .trip-place,
+.page--kid-journal .journal-mood-bar .meals-inline-mirror .trip-place,
+.page--kid-journal .journal-panel__body .meals-inline-mirror .meals-inline-food,
+.page--kid-journal .journal-mood-bar .meals-inline-mirror .meals-inline-food,
+.page--kid-journal .journal-panel__body .meals-inline-mirror .meals-inline-delim,
+.page--kid-journal .journal-mood-bar .meals-inline-mirror .meals-inline-delim {
+  font: inherit;
+  font-weight: inherit;
+  letter-spacing: inherit;
 }
 
 .page--kid-journal .journal-panel--about .journal__handwritten-err,
@@ -6516,18 +6528,15 @@
   font-family: inherit;
   pointer-events: none;
   color: var(--ink);
-  text-rendering: auto;
+  text-rendering: geometricPrecision;
   -webkit-font-smoothing: antialiased;
 }
 
 /* Match textarea metrics exactly — color-only differentiation for foods */
 .meals-inline-mirror .meals-inline-food {
-  font-family: inherit;
-  font-size: inherit;
-  font-weight: 600;
+  font: inherit;
   font-style: normal;
-  line-height: inherit;
-  letter-spacing: normal;
+  letter-spacing: inherit;
   margin: 0;
   padding: 0;
   border: none;
@@ -6540,12 +6549,9 @@
 
 .meals-inline-delim {
   color: var(--ink-muted);
-  font-weight: 600;
-  font-family: inherit;
+  font: inherit;
   font-style: normal;
-  font-size: inherit;
-  line-height: inherit;
-  letter-spacing: normal;
+  letter-spacing: inherit;
   margin: 0;
   padding: 0;
   vertical-align: baseline;
@@ -6573,7 +6579,7 @@
   white-space: pre-wrap;
   word-break: break-word;
   overflow-wrap: break-word;
-  text-rendering: auto;
+  text-rendering: geometricPrecision;
   -webkit-font-smoothing: antialiased;
   box-sizing: border-box;
 }

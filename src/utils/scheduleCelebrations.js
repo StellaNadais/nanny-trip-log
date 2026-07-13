@@ -53,7 +53,7 @@ function withActivityPrep(c) {
 }
 
 /**
- * Important dates in this month that are still ahead (or today).
+ * Important dates in this month that are still ahead, today, or ongoing.
  * @param {number} year
  * @param {number} monthIndex 0–11
  * @param {string} [todayIso]
@@ -64,7 +64,7 @@ export function upcomingCelebrationsInMonth(
   todayIso = toISODateLocal(new Date())
 ) {
   return celebrationsInMonth(year, monthIndex)
-    .filter((c) => c.dateISO >= todayIso)
+    .filter((c) => (c.endISO || c.dateISO) >= todayIso)
     .map(withActivityPrep)
 }
 

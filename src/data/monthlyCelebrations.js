@@ -152,6 +152,31 @@ export const MONTHLY_CELEBRATIONS = [
     ],
   },
   {
+    id: 'mandela-day',
+    month: 7,
+    day: 18,
+    title: 'Nelson Mandela International Day',
+    theme: 'Service & kindness',
+    activities: [
+      '67 minutes of helping: tidy a shared space or make cards',
+      'Read an age-appropriate Mandela story',
+      'Kindness chain: write one good deed each',
+    ],
+  },
+  {
+    id: 'christmas-in-july',
+    month: 7,
+    day: 25,
+    spanDays: 2,
+    title: 'Christmas in July',
+    theme: 'Silly summer holiday',
+    activities: [
+      'Indoor “snow” craft with cotton or paper flakes',
+      'Cocoa in summer (or iced cocoa) + holiday playlist',
+      'Gift-wrap a small surprise for someone at home',
+    ],
+  },
+  {
     id: 'back-to-school',
     month: 8,
     day: 15,
