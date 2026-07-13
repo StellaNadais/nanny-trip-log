@@ -1,6 +1,6 @@
 # Nanny Trip Log
 
-A mobile-first React app for caregivers to schedule gigs, log kid journals, track shift punctuality, and generate weekly receipts. Parents use the separate `/book` route to request care.
+A mobile-first React app for caregivers to schedule gigs, log kid journals, and generate weekly receipts. Parents use the separate `/book` route to request care.
 
 ## Live Demo
 
