@@ -1,100 +1,71 @@
-Nanny Trip Log
-A mobile-first React app for caregivers: schedule gigs, log kid journals, track shift punctuality, and build weekly receipts. Parents book via a separate /book link you share.
+# Nanny Trip Log
 
-Live demo: nanny-trip-log.vercel.app
+A mobile-first React app for caregivers to schedule gigs, log kid journals, track shift punctuality, and generate weekly receipts. Parents use the separate `/book` route to request care.
 
-Quick start
-Parents: visit /book to browse available nannies and book a gig
-Caregivers: visit /journal to log trips, shifts, and kid activities
+## Live Demo
 
-Tech stack
-Frontend: React (Vite), mobile-first responsive design
+- [Caregiver Journal](https://nanny-trip-log-git-cursor-trip-route-bar-stella-nadais-projects.vercel.app/journal)
+- [Parent Booking](https://nanny-trip-log-git-cursor-trip-route-bar-stella-nadais-projects.vercel.app/book)
 
-Routing: React Router (client-side)
+## Features
 
-Storage: localStorage (device-only, no backend, no login)
+- Caregiver workflow with schedule, shift logging, journaling, events, and weekly receipts.
+- Parent-facing booking flow on `/book`.
+- Mobile-first UI optimized for quick logging on the go.
+- Local-only storage with `localStorage` for privacy and offline-friendly use.
+- Legacy redirects for older routes like `/hub` and `/receipt`.
 
-Deployment: Vercel (auto-deploy from GitHub)
+## Tech Stack
 
-Run locally
-bash
+- React
+- Vite
+- React Router
+- localStorage
+- Vercel
+
+## Getting Started
+
+```bash
 npm install
 npm run dev
+```
+
+## Build
+
+```bash
 npm run build
 npm run preview
-Routes
-Path	Purpose	User
-/	Welcome / onboarding	Caregivers
-/schedule	Calendar + tool links + weekly receipt	Caregivers
-/shift	Arrival/end time logging + punctuality	Caregivers
-/journal	Kid trip/activity journal	Caregivers
-/notes	Nanny hub (punctuality score, notes)	Caregivers
-/events	Local event ideas for kids	Caregivers
-/book	Parent booking flow (browse nannies, request gigs)	Parents/Families
-/receipt	Redirects to Schedule with receipt open	Caregivers
-/hub	Legacy → redirects to /schedule	Caregivers
-User flows
-Caregiver flow
-Welcome → tap to start → Schedule
+```
 
-From Schedule, access any tool: Shift, Kid journal, Events, Nanny hub
+## Routes
 
-Each tool shows Press to start, then its workspace
+| Path | Purpose |
+|------|---------|
+| `/` | Welcome / onboarding |
+| `/schedule` | Calendar, tool links, and weekly receipt |
+| `/shift` | Arrival and end logging |
+| `/journal` | Kid trip and activity journal |
+| `/notes` | Nanny hub and punctuality score |
+| `/events` | Local event ideas |
+| `/book` | Parent booking flow |
+| `/receipt` | Redirects to Schedule with receipt open |
+| `/hub` | Legacy redirect to `/schedule` |
 
-← Schedule returns from any tool
+## Data Storage
 
-Generate weekly Receipt from Schedule
+All app data is stored in `localStorage` on the current device only.  
+There is no login, cloud sync, or backend database.
 
-Parent/Family flow
-Visit /book (shared by nanny or found via search)
+## Customization
 
-Browse available nannies in the Bay Area
+- `src/data/tripPlaces.js` — place nicknames for the trip journal
+- `src/data/tripSegments.js` — trip segment labels
+- `src/data/bookThanks.js` — thank-you message for the booking page
 
-Select a nanny, view their profile, availability, and rates
+## Deployment
 
-Submit a booking request
+This project is deployed on Vercel and auto-deploys from GitHub.
 
-Receive confirmation (stored locally for session)
+## Notes
 
-Data & privacy
-All data is stored in localStorage on the user's device
-
-No login required
-
-No cloud sync or backend database
-
-Data does not persist across devices or browsers
-
-Ideal for privacy-first, offline-capable use
-
-Customizing
-File	Purpose
-src/data/tripPlaces.js	Customize place nicknames for trip journal
-src/data/tripSegments.js	Customize trip segment labels
-src/data/bookThanks.js	Customize thank-you message on Book page
-src/data/nannies.js	Add/edit nanny profiles for booking (parents)
-Deployment
-This app is deployed on Vercel from the cursor-trip-route-bar branch.
-
-Caregiver URL: https://nanny-trip-log-git-cursor-trip-route-bar-stella-nadais-projects.vercel.app/journal
-
-Parent booking URL: https://nanny-trip-log-git-cursor-trip-route-bar-stella-nadais-projects.vercel.app/book
-
-To add new routes or features:
-
-Edit files in GitHub or locally
-
-Commit and push
-
-Vercel auto-deploys within 1-2 minutes
-
-Future ideas
-Add real booking form with date/time picker on /book
-
-Connect nannies + families via shared localStorage keys or simple backend
-
-Add push notifications for booking confirmations
-
-Bay Area-specific event suggestions (parks, museums, activities)
-
-Custom domain (e.g., gigprotocol.com) for professional branding
+This project is designed as a privacy-first, mobile-friendly tool for caregivers and families.
