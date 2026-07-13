@@ -89,7 +89,7 @@ export default function EventsPage() {
   ]
 
   return (
-    <div className="page page--events page--workspace work-ui">
+    <div className="page page--events page--workspace page--kid-journal work-ui">
       <div className="journal__layout events__layout">
         <WorkspaceTileBoard workspaceId="events" tiles={tiles} />
       </div>

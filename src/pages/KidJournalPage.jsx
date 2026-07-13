@@ -45,6 +45,7 @@ function loadDraftFromLatest(iso) {
   if (!latest) {
     return {
       dayNotes: '',
+      routePlaceIds: [],
       mealsText: '',
       nap: '',
       pottyTime: '',
@@ -57,6 +58,7 @@ function loadDraftFromLatest(iso) {
   const potty = pottyFromJournalEntry(latest)
   return {
     dayNotes: latest.dayNotes ?? '',
+    routePlaceIds: Array.isArray(latest.routePlaceIds) ? latest.routePlaceIds.filter(Boolean) : [],
     mealsText: latest.mealsText ?? '',
     nap: napFromJournalEntry(latest),
     pottyTime: potty.pottyTime,
@@ -104,6 +106,7 @@ export default function KidJournalPage() {
   const outings = useOutingsWeekData(weekKey)
 
   const [dayNotes, setDayNotes] = useState('')
+  const [routePlaceIds, setRoutePlaceIds] = useState([])
   const [mealsText, setMealsText] = useState('')
   const [nap, setNap] = useState('')
   const [pottyTime, setPottyTime] = useState('')
@@ -151,6 +154,7 @@ export default function KidJournalPage() {
   useEffect(() => {
     const d = loadDraftFromLatest(dateISO)
     setDayNotes(d.dayNotes)
+    setRoutePlaceIds(d.routePlaceIds)
     setMealsText(d.mealsText)
     setNap(d.nap)
     setPottyTime(d.pottyTime)
@@ -165,11 +169,13 @@ export default function KidJournalPage() {
       const saved = loadState()
       const daysByIso = saved?.daysByIso && typeof saved.daysByIso === 'object' ? saved.daysByIso : {}
       const draft = { [dateISO]: dayNotes }
+      const draftRoutes = { [dateISO]: routePlaceIds }
       const { totalMiles, reimbursement, breakdown } = computeWeekTripMileage(
         journalWeekStart,
         daysByIso,
         entries,
-        draft
+        draft,
+        draftRoutes
       )
       saveReceiptSettings({
         mileageByWeek: {
@@ -185,7 +191,7 @@ export default function KidJournalPage() {
       notifyReceiptMileageUpdated()
     }, 450)
     return () => window.clearTimeout(t)
-  }, [journalWeekStart, weekKey, dateISO, dayNotes, entries, outingsRev])
+  }, [journalWeekStart, weekKey, dateISO, dayNotes, routePlaceIds, entries, outingsRev])
 
   const mealParts = useMemo(() => parseMealsToParts(mealsText), [mealsText])
   const mealSuggestions = useMemo(() => {
@@ -225,8 +231,11 @@ export default function KidJournalPage() {
     const latest = loadDraftFromLatest(dateISO)
     const photo = handwrittenPhotoDataUrl || ''
     const latestPhoto = latest.handwrittenPhotoDataUrl || ''
+    const routeChanged =
+      JSON.stringify(routePlaceIds) !== JSON.stringify(latest.routePlaceIds || [])
     if (
       dayNotes !== (latest.dayNotes ?? '') ||
+      routeChanged ||
       mealsText !== (latest.mealsText ?? '') ||
       nap !== (latest.nap ?? '') ||
       pottyTime !== (latest.pottyTime ?? '') ||
@@ -238,6 +247,7 @@ export default function KidJournalPage() {
       addEntry({
         dateISO,
         dayNotes,
+        routePlaceIds,
         mealsText,
         nap,
         pottyTime,
@@ -338,6 +348,23 @@ export default function KidJournalPage() {
     return family ? `${family} — no reminders yet` : ''
   }, [reminderGroups])
 
+  const aboutTodayIcon = (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="22"
+      height="22"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M12 20h9" />
+      <path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z" />
+    </svg>
+  )
+
   const remindersIcon = (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -436,22 +463,15 @@ export default function KidJournalPage() {
             {
               id: 'about',
               label: 'About today',
-              span: 2,
+              square: true,
               children: (
-                <button
-                  type="button"
-                  className="about-today-tile"
+                <TodaySpaceTile
+                  icon={aboutTodayIcon}
+                  preview={aboutTodayPreview}
+                  hint="Tap to report the day with your child — outings, meals, nap, and more."
+                  cta="Open report →"
                   onClick={() => setAboutTodayOpen(true)}
-                >
-                  <p className="about-today-tile__preview">
-                    {aboutTodayPreview || (
-                      <span className="about-today-tile__hint muted">
-                        Tap to report the day with your child — outings, meals, nap, and more.
-                      </span>
-                    )}
-                  </p>
-                  <span className="about-today-tile__cta">Open report →</span>
-                </button>
+                />
               ),
             },
             {
@@ -502,10 +522,15 @@ export default function KidJournalPage() {
 
       <AboutTodayModal
         open={aboutTodayOpen}
-        onClose={() => setAboutTodayOpen(false)}
+        onClose={() => {
+          persistJournalIfChanged()
+          setAboutTodayOpen(false)
+        }}
         dateLabel={journalDateLabel}
         dayNotes={dayNotes}
         onDayNotesChange={setDayNotes}
+        routePlaceIds={routePlaceIds}
+        onRoutePlaceIdsChange={setRoutePlaceIds}
         mealsText={mealsText}
         onMealsChange={setMealsText}
         mealSuggestions={mealSuggestions}

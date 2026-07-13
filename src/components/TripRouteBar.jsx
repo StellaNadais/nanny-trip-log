@@ -2,24 +2,17 @@ import { useEffect, useId, useMemo, useState } from 'react'
 import { HOME_PLACE_ID } from '../data/tripPlaces'
 import { loadOutingsPlaces, OUTINGS_UPDATED_EVENT } from '../utils/outingsStorage'
 import {
-  appendPlaceToDayNotes,
-  availableCustomPlacesForRoute,
-  routeStopsForBar,
+  appendPlaceToRouteIds,
+  availablePlacesForRoute,
+  resolveRoutePlaces,
+  routeStopsFromIds,
 } from '../utils/tripRouteBar'
 
-function segClass(region, isHome) {
-  if (isHome) return 'trip-route-bar__seg--home'
-  if (region === 'custom') return 'trip-route-bar__seg--custom'
-  if (region === 'moraga') return 'trip-route-bar__seg--moraga'
-  if (region === 'lafayette') return 'trip-route-bar__seg--lafayette'
-  return 'trip-route-bar__seg--place'
-}
-
 /**
- * Equal-width route bar: Home → stops → Home.
- * Tap opens a drawer of caregiver places; tap a place to add it to the route.
+ * Route inside What we did: selected places above the bar; bar is from→to visual.
+ * Does not write into day notes.
  */
-export default function TripRouteBar({ dayNotes, onDayNotesChange }) {
+export default function TripRouteBar({ routePlaceIds = [], onRoutePlaceIdsChange }) {
   const titleId = useId()
   const panelId = useId()
   const [open, setOpen] = useState(false)
@@ -31,48 +24,79 @@ export default function TripRouteBar({ dayNotes, onDayNotesChange }) {
     return () => window.removeEventListener(OUTINGS_UPDATED_EVENT, sync)
   }, [])
 
-  const stops = useMemo(() => routeStopsForBar(dayNotes), [dayNotes])
-  const pool = useMemo(
-    () => availableCustomPlacesForRoute(dayNotes, customRows),
-    [dayNotes, customRows],
-  )
+  const ids = Array.isArray(routePlaceIds) ? routePlaceIds : []
+  const selected = useMemo(() => resolveRoutePlaces(ids, customRows), [ids, customRows])
+  const stops = useMemo(() => routeStopsFromIds(ids, customRows), [ids, customRows])
+  const pool = useMemo(() => availablePlacesForRoute(ids, customRows), [ids, customRows])
+
+  const awayCount = selected.length
+  const fillPercent =
+    awayCount <= 0 ? 0 : Math.min(100, Math.round((awayCount / (awayCount + 1)) * 100))
+  const routeLabel = stops.map((s) => s.label).join(' → ')
+  const hintLabel = open ? 'Tap a place' : awayCount > 0 ? `${awayCount} stop${awayCount === 1 ? '' : 's'}` : 'Tap bar for places'
 
   const addPlace = (place) => {
-    onDayNotesChange(appendPlaceToDayNotes(dayNotes, place))
+    onRoutePlaceIdsChange?.(appendPlaceToRouteIds(ids, place))
+  }
+
+  const removeAt = (index) => {
+    onRoutePlaceIdsChange?.(ids.filter((_, i) => i !== index))
   }
 
   return (
-    <section className="trip-route-bar journal-mood-bar" aria-labelledby={titleId}>
-      <div className="journal-mood-bar__head">
-        <span className="journal-mood-bar__title" id={titleId}>
+    <section
+      className="journal-day-progress journal-day-progress--thin trip-route-bar"
+      aria-labelledby={titleId}
+    >
+      {selected.length > 0 ? (
+        <ul className="trip-route-bar__selected" aria-label="Places on today's route">
+          {selected.map((place, i) => (
+            <li key={`${place.id}-${i}`}>
+              <button
+                type="button"
+                className={`trip-route-bar__chip${place.id === HOME_PLACE_ID ? ' trip-route-bar__chip--home' : ''}`}
+                onClick={() => removeAt(i)}
+                aria-label={`Remove ${place.label} from route`}
+                title={`Remove ${place.label}`}
+              >
+                {place.label}
+                <span aria-hidden>×</span>
+              </button>
+            </li>
+          ))}
+        </ul>
+      ) : null}
+
+      <div className="journal-day-progress__head">
+        <span className="journal-day-progress__title" id={titleId}>
           Route
         </span>
-        <span className="journal-mood-bar__picked muted">
-          {open ? 'Tap a place to add' : 'Tap bar for places'}
-        </span>
+        <span className="journal-day-progress__label muted">{hintLabel}</span>
       </div>
 
       <button
         type="button"
-        className={`trip-route-bar__track journal-mood-bar__track${open ? ' trip-route-bar__track--open' : ''}`}
+        className={`journal-day-progress__track trip-route-bar__track${open ? ' trip-route-bar__track--open' : ''}`}
         aria-expanded={open}
         aria-controls={panelId}
-        aria-label="Today's route. Tap to show places."
+        aria-label={`Route from-to: ${routeLabel}. Tap to ${open ? 'hide' : 'show'} places.`}
         onClick={() => setOpen((v) => !v)}
-        style={{ gridTemplateColumns: `repeat(${stops.length}, minmax(0, 1fr))` }}
       >
-        {stops.map((stop, i) => {
-          const isHome = stop.id === HOME_PLACE_ID
-          return (
+        <div className="journal-day-progress__fill" style={{ width: `${fillPercent}%` }} aria-hidden />
+        <div
+          className="trip-route-bar__path"
+          style={{ gridTemplateColumns: `repeat(${stops.length}, minmax(0, 1fr))` }}
+          aria-hidden
+        >
+          {stops.map((stop, i) => (
             <span
               key={`${stop.id}-${i}`}
-              className={`trip-route-bar__seg ${segClass(stop.region, isHome)}`}
-              title={stop.label}
+              className={`trip-route-bar__path-seg${stop.id === HOME_PLACE_ID ? ' trip-route-bar__path-seg--home' : ''}`}
             >
-              <span className="trip-route-bar__label">{stop.label}</span>
+              {stop.label}
             </span>
-          )
-        })}
+          ))}
+        </div>
       </button>
 
       <div
@@ -90,8 +114,11 @@ export default function TripRouteBar({ dayNotes, onDayNotesChange }) {
                 <li key={place.id}>
                   <button
                     type="button"
-                    className="trip-route-bar__pool-btn"
-                    onClick={() => addPlace(place)}
+                    className={`trip-route-bar__pool-btn${place.id === HOME_PLACE_ID ? ' trip-route-bar__pool-btn--home' : ''}`}
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      addPlace(place)
+                    }}
                     aria-label={`Add ${place.label} to route`}
                     tabIndex={open ? 0 : -1}
                   >
@@ -101,11 +128,7 @@ export default function TripRouteBar({ dayNotes, onDayNotesChange }) {
               ))}
             </ul>
           ) : (
-            <p className="trip-route-bar__empty muted">
-              {customRows.length === 0
-                ? 'Add places under Outings → Locations first.'
-                : 'All your places are already on the route.'}
-            </p>
+            <p className="trip-route-bar__empty muted">All places are already on the route.</p>
           )}
         </div>
       </div>

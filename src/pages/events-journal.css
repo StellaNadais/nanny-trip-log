@@ -1,4 +1,4 @@
-/* Events page — plain white workbook sheet */
+/* Events page — periwinkle tiles (inherits .page--kid-journal card chrome) */
 
 .page--events.work-ui {
   background: #fff;
@@ -22,7 +22,7 @@
 
 .page--events .workspace-tile-board {
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 10px;
+  gap: 12px;
   padding: 12px 12px 16px;
 }
 
@@ -57,12 +57,14 @@
 
 .about-today-modal .events__item {
   margin: 0;
-  padding: 10px 0;
-  border-bottom: 1px solid color-mix(in srgb, var(--line) 35%, transparent);
+  padding: 10px 12px;
+  border: 1px solid color-mix(in srgb, #7a6bb5 14%, var(--line-soft));
+  border-radius: 12px;
+  background: color-mix(in srgb, #ebe8f5 28%, #fff);
 }
 
 .about-today-modal .events__item:last-child {
-  border-bottom: none;
+  border-bottom: 1px solid color-mix(in srgb, #7a6bb5 14%, var(--line-soft));
 }
 
 .about-today-modal .events__item-title {
@@ -95,31 +97,22 @@
 
 .about-today-modal .world-cup-panel__item--brazil {
   padding: 10px 12px;
-  border: 1.5px solid #009c3b;
-  border-radius: var(--radius);
-  background: color-mix(in srgb, #009c3b 6%, #fff);
+  border: 1.5px solid color-mix(in srgb, #7a6bb5 55%, #009c3b);
+  border-radius: 12px;
+  background: color-mix(in srgb, #ebe8f5 40%, #fff);
 }
 
 .about-today-modal .world-cup-panel__item--argentina {
   padding: 10px 12px;
-  border: 1.5px solid #6cace4;
-  border-radius: var(--radius);
-  background: color-mix(in srgb, #6cace4 10%, #fff);
+  border: 1.5px solid color-mix(in srgb, #7a6bb5 40%, #6cace4);
+  border-radius: 12px;
+  background: color-mix(in srgb, #f2eef8 45%, #fff);
 }
 
 .about-today-modal .world-cup-panel__item--brazil .events__item-title {
-  color: #006b2d;
+  color: #5c2d6e;
 }
 
 .about-today-modal .world-cup-panel__item--argentina .events__item-title {
-  color: #4a7ab0;
-}
-
-.page--events .workspace-tile,
-.page--events .workspace-tile__head {
-  background: #fff;
-}
-
-.page--events .workspace-tile__label {
-  color: var(--ink-muted);
+  color: #5c4a8a;
 }

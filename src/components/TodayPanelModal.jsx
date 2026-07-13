@@ -10,6 +10,8 @@ export default function TodayPanelModal({
   dateLabel,
   children,
   footer,
+  transparentBackdrop = false,
+  sheetClassName = '',
 }) {
   const titleId = useId()
 
@@ -33,10 +35,19 @@ export default function TodayPanelModal({
 
   if (!open) return null
 
+  const rootClass = [
+    'about-today-modal',
+    transparentBackdrop ? 'about-today-modal--clear' : '',
+  ]
+    .filter(Boolean)
+    .join(' ')
+
+  const sheetClass = ['about-today-modal__sheet', sheetClassName].filter(Boolean).join(' ')
+
   return createPortal(
-    <div className="about-today-modal" role="dialog" aria-modal="true" aria-labelledby={titleId}>
+    <div className={rootClass} role="dialog" aria-modal="true" aria-labelledby={titleId}>
       <button type="button" className="about-today-modal__backdrop" aria-label="Close" onClick={onClose} />
-      <div className="about-today-modal__sheet">
+      <div className={sheetClass}>
         <header className="about-today-modal__head">
           <div>
             {eyebrow ? <p className="about-today-modal__eyebrow">{eyebrow}</p> : null}

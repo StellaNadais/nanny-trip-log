@@ -8,6 +8,7 @@ import { useBookings } from '../hooks/useBookings'
 import { useParentReminders } from '../hooks/useParentReminders'
 import BookFollowUpModal from '../components/BookFollowUpModal'
 import BookSchedulingDock from '../components/BookSchedulingDock'
+import OvernightDateModal from '../components/OvernightDateModal'
 import ScheduleCalendarFlip from '../components/ScheduleCalendarFlip'
 import BookTabBar from '../components/BookTabBar'
 import { bookingOccupiesCalendarSlot } from '../utils/bookingCalendar'
@@ -220,9 +221,30 @@ export default function BookPage() {
 
   const selectionHint = useMemo(() => {
     if (!schedulingOpen) return 'Tap your start day on the calendar'
-    if (awaitingEndDate) return 'Tap your end day on the calendar'
+    if (awaitingEndDate) return 'Set overnight dates in the popup — or tap an end day'
     return 'Complete your booking in the popup'
   }, [schedulingOpen, awaitingEndDate])
+
+  function applyOvernightStart(iso) {
+    if (!iso || iso < todayISO()) return
+    setCareStartDateISO(iso)
+    setCareEndDateISO((prev) => (prev && prev >= iso ? prev : iso))
+  }
+
+  function applyOvernightEnd(iso) {
+    if (!iso || !careStartDateISO) return
+    if (iso < careStartDateISO) {
+      setCareStartDateISO(iso)
+      setCareEndDateISO(careStartDateISO)
+      return
+    }
+    setCareEndDateISO(iso)
+  }
+
+  function continueFromOvernightDates() {
+    if (!careStartDateISO || !careEndDateISO || careEndDateISO < careStartDateISO) return
+    setAwaitingEndDate(false)
+  }
 
   const dateSelectionRole = useMemo(
     () => (iso) =>
@@ -400,6 +422,17 @@ export default function BookPage() {
           ) : null}
         </main>
       </div>
+
+      <OvernightDateModal
+        open={schedulingOpen && awaitingEndDate}
+        onClose={clearScheduling}
+        startISO={careStartDateISO}
+        endISO={careEndDateISO || careStartDateISO}
+        onStartChange={applyOvernightStart}
+        onEndChange={applyOvernightEnd}
+        onContinue={continueFromOvernightDates}
+        minISO={todayISO()}
+      />
 
       <BookSchedulingDock
         open={schedulingOpen && !awaitingEndDate}

@@ -14,6 +14,8 @@ export default function AboutTodayModal({
   dateLabel,
   dayNotes,
   onDayNotesChange,
+  routePlaceIds,
+  onRoutePlaceIdsChange,
   mealsText,
   onMealsChange,
   mealSuggestions,
@@ -74,8 +76,6 @@ export default function AboutTodayModal({
         <div className="about-today-modal__scroll">
           <JournalMoodBar value={mood} onChange={onMoodChange} />
 
-          <TripRouteBar dayNotes={dayNotes} onDayNotesChange={onDayNotesChange} />
-
           <section
             className="journal-mood-bar journal-panel journal-panel--about about-today-modal__section"
             aria-label="Day notes"
@@ -86,11 +86,15 @@ export default function AboutTodayModal({
               </span>
             </div>
             <div className="journal-mood-bar__track journal-panel__body">
+              <TripRouteBar
+                routePlaceIds={routePlaceIds}
+                onRoutePlaceIdsChange={onRoutePlaceIdsChange}
+              />
               <TripPlacesField
                 id="about-today-day-notes"
                 value={dayNotes}
                 onChange={onDayNotesChange}
-                placeholder="e.g. H's drop off, music, Commons"
+                placeholder="e.g. park play, storytime, quiet afternoon"
                 aria-labelledby="about-today-notes-label"
                 nestedInAbout
               />
