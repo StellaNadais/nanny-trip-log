@@ -7,7 +7,6 @@ import WelcomePage from './pages/WelcomePage'
 import BookPage from './pages/BookPage'
 import SchedulePage from './pages/SchedulePage'
 import WeeklyReceiptPage from './pages/WeeklyReceiptPage'
-import ShiftPage from './pages/ShiftPage'
 import KidJournalPage from './pages/KidJournalPage'
 import EventsPage from './pages/EventsPage'
 import CaregiverFlowLayout from './layouts/CaregiverFlowLayout'
@@ -46,7 +45,7 @@ export default function App() {
                 <Route path="/schedule" element={<SchedulePage />} />
                 <Route path="/hub" element={<Navigate to="/schedule" replace />} />
                 <Route path="/today" element={<Navigate to="/journal" replace />} />
-                <Route path="/shift" element={<ShiftPage />} />
+                <Route path="/shift" element={<Navigate to="/journal" replace />} />
                 <Route path="/journal" element={<KidJournalPage />} />
                 <Route path="/outings" element={<Navigate to="/journal" replace />} />
                 <Route path="/events" element={<EventsPage />} />
