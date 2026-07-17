@@ -2,9 +2,9 @@ import EventsLocationList from './EventsLocationList'
 import TodayPanelModal from './TodayPanelModal'
 
 const PANEL_META = {
-  moraga: { eyebrow: 'East Bay', title: 'Moraga', dateLabel: 'Local family ideas' },
-  lafayette: { eyebrow: 'East Bay', title: 'Lafayette', dateLabel: 'Local family ideas' },
-  oakland: { eyebrow: 'East Bay', title: 'Oakland', dateLabel: 'Local family ideas' },
+  moraga: { eyebrow: 'Demo area', title: 'Cedar Grove', dateLabel: 'Local family ideas' },
+  lafayette: { eyebrow: 'Demo area', title: 'Riverview', dateLabel: 'Local family ideas' },
+  oakland: { eyebrow: 'Demo area', title: 'Bayfront', dateLabel: 'Local family ideas' },
 }
 
 export default function EventsPanelModal({ open, onClose, panel, byLocation }) {

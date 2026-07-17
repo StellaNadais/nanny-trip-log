@@ -375,8 +375,8 @@ export default function BookPage() {
               <section className="book-events__panel">
                 <h2 className="book-events__summary-title">Local events</h2>
                 <p className="muted book-events__lede">
-                  Ideas near Moraga & Oakland — confirm times with each place. Your caregiver also has a full list in
-                  Tools → Events.
+                  Sample outing ideas near Cedar Grove & Bayfront — confirm times with each place. Your caregiver also
+                  has a full list in Tools → Events.
                 </p>
                 <div className="book-events__grid">
                   {EVENT_LOCATIONS.map(({ id, label }) => (
