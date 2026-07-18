@@ -23,41 +23,43 @@ export default function BookFamilyGate({ family, onUnlocked }) {
 
   return (
     <div className="page page--book page--book-portal page--book-access work-ui">
-      <div className="book-access">
-        <header className="book-access__head">
-          <p className="book-access__eyebrow">Parent & family portal</p>
-          <h1 className="book-access__title">Password</h1>
-        </header>
+      <header className="book-access__head">
+        <p className="book-access__eyebrow">Parent & family portal</p>
+        <h1 className="book-access__title">Password</h1>
+      </header>
 
-        <form className="book-access__form" onSubmit={handleSubmit}>
-          <label className="field-block">
-            <span className="field-block__label">Password</span>
-            <input
-              type="password"
-              className="input input--line"
-              value={password}
-              onChange={(e) => {
-                setPassword(e.target.value)
-                setError('')
-              }}
-              autoComplete="current-password"
-              autoFocus
-              required
-            />
-          </label>
-          {error ? (
-            <p className="book-access__error" role="alert">
-              {error}
-            </p>
-          ) : null}
-          <button type="submit" className="btn btn--primary book-access__submit">
-            Continue
-          </button>
-        </form>
+      <div className="book-access__stage">
+        <div className="book-access">
+          <form className="book-access__form" onSubmit={handleSubmit}>
+            <label className="field-block">
+              <span className="field-block__label">Password</span>
+              <input
+                type="password"
+                className="input input--line"
+                value={password}
+                onChange={(e) => {
+                  setPassword(e.target.value)
+                  setError('')
+                }}
+                autoComplete="current-password"
+                autoFocus
+                required
+              />
+            </label>
+            {error ? (
+              <p className="book-access__error" role="alert">
+                {error}
+              </p>
+            ) : null}
+            <button type="submit" className="btn btn--primary book-access__submit">
+              Continue
+            </button>
+          </form>
 
-        <Link to="/book" className="book-access__back">
-          ← Start over
-        </Link>
+          <Link to="/book" className="book-access__back">
+            ← Start over
+          </Link>
+        </div>
       </div>
     </div>
   )

@@ -49,74 +49,76 @@ export default function BookAccessPage() {
 
   return (
     <div className="page page--book page--book-portal page--book-access work-ui">
-      <div className="book-access">
-        <header className="book-access__head">
-          <p className="book-access__eyebrow">Parent & family portal</p>
-          <h1 className="book-access__title">
-            {step === 'nickname' ? 'Family nickname' : 'Password'}
-          </h1>
-        </header>
+      <header className="book-access__head">
+        <p className="book-access__eyebrow">Parent & family portal</p>
+        <h1 className="book-access__title">
+          {step === 'nickname' ? 'Family nickname' : 'Password'}
+        </h1>
+      </header>
 
-        {step === 'nickname' ? (
-          <form className="book-access__form" onSubmit={handleNicknameSubmit}>
-            <label className="field-block">
-              <span className="field-block__label">Type your family nickname</span>
-              <input
-                type="text"
-                className="input input--line"
-                value={nickname}
-                onChange={(e) => {
-                  setNickname(e.target.value)
-                  setError('')
-                }}
-                autoComplete="username"
-                autoFocus
-                required
-              />
-            </label>
-            {error ? (
-              <p className="book-access__error" role="alert">
-                {error}
-              </p>
-            ) : null}
-            <button type="submit" className="btn btn--primary book-access__submit">
-              Continue
-            </button>
-          </form>
-        ) : (
-          <form className="book-access__form" onSubmit={handlePasswordSubmit}>
-            <label className="field-block">
-              <span className="field-block__label">Password</span>
-              <input
-                type="password"
-                className="input input--line"
-                value={password}
-                onChange={(e) => {
-                  setPassword(e.target.value)
-                  setError('')
-                }}
-                autoComplete="current-password"
-                autoFocus
-                required
-              />
-            </label>
-            {error ? (
-              <p className="book-access__error" role="alert">
-                {error}
-              </p>
-            ) : null}
-            <button type="submit" className="btn btn--primary book-access__submit">
-              Continue
-            </button>
-            <button
-              type="button"
-              className="btn btn--ghost book-access__back-btn"
-              onClick={goBackToNickname}
-            >
-              Use a different nickname
-            </button>
-          </form>
-        )}
+      <div className="book-access__stage">
+        <div className="book-access">
+          {step === 'nickname' ? (
+            <form className="book-access__form" onSubmit={handleNicknameSubmit}>
+              <label className="field-block">
+                <span className="field-block__label">Type your family nickname</span>
+                <input
+                  type="text"
+                  className="input input--line"
+                  value={nickname}
+                  onChange={(e) => {
+                    setNickname(e.target.value)
+                    setError('')
+                  }}
+                  autoComplete="username"
+                  autoFocus
+                  required
+                />
+              </label>
+              {error ? (
+                <p className="book-access__error" role="alert">
+                  {error}
+                </p>
+              ) : null}
+              <button type="submit" className="btn btn--primary book-access__submit">
+                Continue
+              </button>
+            </form>
+          ) : (
+            <form className="book-access__form" onSubmit={handlePasswordSubmit}>
+              <label className="field-block">
+                <span className="field-block__label">Password</span>
+                <input
+                  type="password"
+                  className="input input--line"
+                  value={password}
+                  onChange={(e) => {
+                    setPassword(e.target.value)
+                    setError('')
+                  }}
+                  autoComplete="current-password"
+                  autoFocus
+                  required
+                />
+              </label>
+              {error ? (
+                <p className="book-access__error" role="alert">
+                  {error}
+                </p>
+              ) : null}
+              <button type="submit" className="btn btn--primary book-access__submit">
+                Continue
+              </button>
+              <button
+                type="button"
+                className="btn btn--ghost book-access__back-btn"
+                onClick={goBackToNickname}
+              >
+                Use a different nickname
+              </button>
+            </form>
+          )}
+        </div>
       </div>
     </div>
   )
