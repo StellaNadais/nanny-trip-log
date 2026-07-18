@@ -4,6 +4,7 @@ import { KidJournalProvider } from './context/KidJournalProvider'
 import { BookingsProvider } from './context/BookingsProvider'
 import { ParentRemindersProvider } from './context/ParentRemindersProvider'
 import WelcomePage from './pages/WelcomePage'
+import BookAccessPage from './pages/BookAccessPage'
 import BookPage from './pages/BookPage'
 import SchedulePage from './pages/SchedulePage'
 import WeeklyReceiptPage from './pages/WeeklyReceiptPage'
@@ -34,7 +35,8 @@ export default function App() {
         <BookingsProvider>
           <ParentRemindersProvider>
           <Routes>
-            <Route path="/book" element={<BookPage />} />
+            <Route path="/book" element={<BookAccessPage />} />
+            <Route path="/book/:family" element={<BookPage />} />
             <Route element={<CaregiverShellLayout />}>
               <Route element={<CaregiverFlowLayout />}>
                 <Route path="/" element={<WelcomePage />} />

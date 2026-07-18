@@ -11,6 +11,7 @@ export default function BookSchedulingDock({
   careSpanSummary,
   overnightNights,
   overnightTotal,
+  overnightRate = OVERNIGHT_RATE,
   careStart,
   careEnd,
   onCareStartTime,
@@ -30,6 +31,7 @@ export default function BookSchedulingDock({
   canSubmit,
   onSubmit,
   onClear,
+  familyNameLocked = false,
 }) {
   useEffect(() => {
     if (!open) return
@@ -130,7 +132,7 @@ export default function BookSchedulingDock({
             {overnightNights > 0 ? (
               <p className="book-modal__overnight-rate" role="note">
                 Overnight total: {overnightNights} night{overnightNights === 1 ? '' : 's'} × $
-                {OVERNIGHT_RATE} = <strong>${overnightTotal}</strong>
+                {overnightRate} = <strong>${overnightTotal}</strong>
               </p>
             ) : null}
             {!timeOk && careStart && careEnd ? (
@@ -167,6 +169,7 @@ export default function BookSchedulingDock({
                 onChange={(e) => onFamilyName(e.target.value)}
                 placeholder="Your name"
                 autoComplete="name"
+                readOnly={familyNameLocked}
               />
             </label>
             <label className="field-block book-modal__field-grow">

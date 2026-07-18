@@ -26,6 +26,8 @@ export default function OutingsModal({
   onPlaceMilesChange,
   placeTripKind,
   onPlaceTripKindChange,
+  placeFormOpen,
+  onTogglePlaceFormOpen,
   placeFormErr,
   onAddCustomPlace,
   onRemoveCustomPlace,
@@ -58,7 +60,10 @@ export default function OutingsModal({
         />
       </section>
 
-      <section className="about-today-modal__section" aria-labelledby="outings-locations-heading">
+      <section
+        className="about-today-modal__section about-today-modal__section--locations"
+        aria-labelledby="outings-locations-heading"
+      >
         <LocationHeading
           id="outings-locations-heading"
           className="schedule-overview__requests-title"
@@ -71,6 +76,8 @@ export default function OutingsModal({
           onPlaceMilesChange={onPlaceMilesChange}
           placeTripKind={placeTripKind}
           onPlaceTripKindChange={onPlaceTripKindChange}
+          placeFormOpen={placeFormOpen}
+          onTogglePlaceFormOpen={onTogglePlaceFormOpen}
           placeFormErr={placeFormErr}
           onAddCustomPlace={onAddCustomPlace}
           onRemoveCustomPlace={onRemoveCustomPlace}

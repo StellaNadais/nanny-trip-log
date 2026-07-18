@@ -12,6 +12,8 @@ export default function OutingsLocationsModal({
   onPlaceMilesChange,
   placeTripKind,
   onPlaceTripKindChange,
+  placeFormOpen,
+  onTogglePlaceFormOpen,
   placeFormErr,
   onAddCustomPlace,
   onRemoveCustomPlace,
@@ -22,6 +24,7 @@ export default function OutingsLocationsModal({
       onClose={onClose}
       eyebrow="Saved nicknames"
       title={<LocationHeading as="span" className="about-today-modal__title-inline" />}
+      sheetClassName="about-today-modal__sheet--locations"
     >
       <OutingsLocationsPanel
         customPlaces={customPlaces}
@@ -31,6 +34,8 @@ export default function OutingsLocationsModal({
         onPlaceMilesChange={onPlaceMilesChange}
         placeTripKind={placeTripKind}
         onPlaceTripKindChange={onPlaceTripKindChange}
+        placeFormOpen={placeFormOpen}
+        onTogglePlaceFormOpen={onTogglePlaceFormOpen}
         placeFormErr={placeFormErr}
         onAddCustomPlace={onAddCustomPlace}
         onRemoveCustomPlace={onRemoveCustomPlace}

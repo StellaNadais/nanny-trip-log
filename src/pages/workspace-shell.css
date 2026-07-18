@@ -811,7 +811,7 @@
   cursor: not-allowed;
 }
 
-.about-today-modal .outings__locations-form .btn--primary,
+.about-today-modal .outings-locations__submit,
 .about-today-modal .outings-expenses__submit {
   width: 100%;
   justify-content: center;
@@ -837,10 +837,40 @@
   border-top: 1px solid var(--line-soft);
 }
 
+.about-today-modal__section--locations {
+  margin: 0 -4px;
+  padding: 12px 12px 14px;
+  border-radius: 16px;
+  border: 1px solid color-mix(in srgb, #7eb8a0 26%, var(--line-soft));
+  background:
+    linear-gradient(
+      165deg,
+      color-mix(in srgb, #dff3eb 55%, var(--paper)) 0%,
+      color-mix(in srgb, #eef8f3 70%, var(--surface)) 100%
+    );
+  border-top: 1px solid color-mix(in srgb, #7eb8a0 26%, var(--line-soft));
+}
+
+.about-today-modal__section--locations + .about-today-modal__section:not(.journal-mood-bar),
+.about-today-modal__section + .about-today-modal__section--locations {
+  border-top: none;
+  padding-top: 12px;
+}
+
+.about-today-modal__sheet--locations .about-today-modal__scroll {
+  background: color-mix(in srgb, #e8f6f0 35%, var(--paper));
+}
+
 .about-today-modal__section .outings-locations__panel {
   display: flex;
   flex-direction: column;
   gap: 10px;
+}
+
+.about-today-modal__section .outings-locations__lede {
+  margin: 0;
+  font-size: 0.8125rem;
+  line-height: 1.45;
 }
 
 .about-today-modal__section .outings__journal-sign-text {
@@ -1228,6 +1258,9 @@
 .caregiver-shell--workbook .outings-expenses__chip,
 .caregiver-shell--workbook .outings-expenses__add-btn,
 .caregiver-shell--workbook .outings-expenses__form,
+.caregiver-shell--workbook .outings-locations__chip,
+.caregiver-shell--workbook .outings-locations__add-btn,
+.caregiver-shell--workbook .outings-locations__form,
 .caregiver-shell--workbook .hub-card {
   border: none !important;
   outline: none;

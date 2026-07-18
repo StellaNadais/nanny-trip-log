@@ -51,7 +51,7 @@ export function buildJournalDayExportText({
     '--- Potty ---',
     pottyDisplayLine(pottyTime, pottyNotes) || '—',
     '',
-    '--- Wishes ---',
+    '--- Wishes + song requests ---',
     String(wishes || '').trim() || '—',
     '',
     '--- Grocery list (this week) ---',

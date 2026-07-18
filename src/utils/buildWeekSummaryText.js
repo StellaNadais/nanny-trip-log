@@ -80,7 +80,7 @@ export function buildWeekSummaryText({ weekMondayIso, weekLabel, receiptText }) 
           : pottyTime || pottyNotes || String(e.potty ?? '').trim()
       if (potty) lines.push(`      Potty: ${potty}`)
       const wishes = String(e.wishes ?? '').trim()
-      if (wishes) lines.push(`      Wishes: ${wishes}`)
+      if (wishes) lines.push(`      Wishes + song requests: ${wishes}`)
     }
     if (!tripLog && !dayNotes && jrows.length === 0) {
       lines.push('    (no trip log or journal for this date)')

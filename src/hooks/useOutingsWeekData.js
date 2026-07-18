@@ -32,10 +32,12 @@ export function useOutingsWeekData(weekKey) {
   const [placeNickname, setPlaceNickname] = useState('')
   const [placeMiles, setPlaceMiles] = useState('')
   const [placeTripKind, setPlaceTripKind] = useState('roundTrip')
+  const [placeFormOpen, setPlaceFormOpen] = useState(false)
   const [placeFormErr, setPlaceFormErr] = useState('')
 
   useEffect(() => {
     setManualOpen(false)
+    setPlaceFormOpen(false)
   }, [weekKey])
 
   useEffect(() => {
@@ -168,6 +170,7 @@ export function useOutingsWeekData(weekKey) {
     ])
     setPlaceNickname('')
     setPlaceMiles('')
+    setPlaceFormOpen(false)
   }
 
   function removeCustomPlace(id) {
@@ -176,6 +179,7 @@ export function useOutingsWeekData(weekKey) {
 
   const resetOutingsForm = useCallback(() => {
     setManualOpen(false)
+    setPlaceFormOpen(false)
   }, [])
 
   return {
@@ -196,6 +200,8 @@ export function useOutingsWeekData(weekKey) {
     setPlaceMiles,
     placeTripKind,
     setPlaceTripKind,
+    placeFormOpen,
+    setPlaceFormOpen,
     placeFormErr,
     expensesPreview,
     locationsPreview,
