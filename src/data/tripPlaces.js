@@ -19,8 +19,8 @@ export const MILE_RATE = 0.54
 export const PLACES = [
   {
     id: 'drop-off',
-    label: 'Drop-off',
-    aliases: ['drop-off', 'drop off', 'school drop-off', 'pickup', 'pick-up'],
+    label: 'School run',
+    aliases: ['school run', 'pickup', 'pick-up', 'morning pickup'],
     region: 'moraga',
   },
   {
