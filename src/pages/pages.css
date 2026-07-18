@@ -7302,10 +7302,84 @@
   font-size: 0.875rem;
 }
 
+.location-heading {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4em;
+  margin: 0;
+}
+
+.location-heading__icon {
+  flex-shrink: 0;
+  width: 1.05em;
+  height: 1.05em;
+  color: currentColor;
+  opacity: 0.9;
+}
+
+.location-heading__text {
+  line-height: 1.2;
+}
+
+.about-today-modal__title .location-heading,
+.about-today-modal__title-inline.location-heading {
+  font: inherit;
+  letter-spacing: inherit;
+  text-transform: none;
+  color: inherit;
+}
+
+.schedule-overview__requests-title.location-heading {
+  margin: 0 0 8px;
+}
+
 .outings__locations-form {
   display: flex;
   flex-direction: column;
   gap: 12px;
+}
+
+.outings__trip-kind {
+  margin: 0;
+  padding: 0;
+  border: none;
+  min-width: 0;
+}
+
+.outings__trip-kind .field-block__label {
+  display: block;
+  margin-bottom: 6px;
+}
+
+.outings__trip-kind-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.outings__trip-kind-option {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+  padding: 8px 12px;
+  border: 1px solid var(--line-soft);
+  border-radius: 10px;
+  background: var(--surface);
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.outings__trip-kind-option:has(input:checked) {
+  border-color: color-mix(in srgb, var(--accent) 35%, var(--line-soft));
+  background: color-mix(in srgb, var(--accent-soft) 45%, var(--surface));
+}
+
+.outings__trip-kind-option input {
+  margin: 0;
+  accent-color: var(--accent);
 }
 
 .outings__locations-err {

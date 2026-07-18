@@ -577,8 +577,10 @@ export default function KidJournalPage() {
         customPlaces={outings.customPlaces}
         placeNickname={outings.placeNickname}
         onPlaceNicknameChange={outings.setPlaceNickname}
-        placeRoundTrip={outings.placeRoundTrip}
-        onPlaceRoundTripChange={outings.setPlaceRoundTrip}
+        placeMiles={outings.placeMiles}
+        onPlaceMilesChange={outings.setPlaceMiles}
+        placeTripKind={outings.placeTripKind}
+        onPlaceTripKindChange={outings.setPlaceTripKind}
         placeFormErr={outings.placeFormErr}
         onAddCustomPlace={outings.addCustomPlace}
         onRemoveCustomPlace={outings.removeCustomPlace}

@@ -30,7 +30,8 @@ export function useOutingsWeekData(weekKey) {
   const [mileageRev, setMileageRev] = useState(0)
   const [customPlaces, setCustomPlaces] = useState(() => loadOutingsPlaces())
   const [placeNickname, setPlaceNickname] = useState('')
-  const [placeRoundTrip, setPlaceRoundTrip] = useState('')
+  const [placeMiles, setPlaceMiles] = useState('')
+  const [placeTripKind, setPlaceTripKind] = useState('roundTrip')
   const [placeFormErr, setPlaceFormErr] = useState('')
 
   useEffect(() => {
@@ -143,15 +144,16 @@ export function useOutingsWeekData(weekKey) {
   function addCustomPlace(e) {
     e.preventDefault()
     const nick = placeNickname.trim()
-    const rt = parseFloat(String(placeRoundTrip).replace(',', '.'))
+    const miles = parseFloat(String(placeMiles).replace(',', '.'))
     if (!nick) {
       setPlaceFormErr('Enter a nickname only — no street addresses.')
       return
     }
-    if (!Number.isFinite(rt) || rt < 0) {
-      setPlaceFormErr('Enter round-trip miles (0 or more).')
+    if (!Number.isFinite(miles) || miles < 0) {
+      setPlaceFormErr('Enter miles (0 or more).')
       return
     }
+    const rounded = Math.round(miles * 100) / 100
     setPlaceFormErr('')
     commitCustomPlaces([
       ...customPlaces,
@@ -159,11 +161,13 @@ export function useOutingsWeekData(weekKey) {
         id: uid(),
         label: nick,
         nickname: '',
-        milesRoundTrip: Math.round(rt * 100) / 100,
+        ...(placeTripKind === 'oneWay'
+          ? { milesOneWay: rounded }
+          : { milesRoundTrip: rounded }),
       },
     ])
     setPlaceNickname('')
-    setPlaceRoundTrip('')
+    setPlaceMiles('')
   }
 
   function removeCustomPlace(id) {
@@ -188,8 +192,10 @@ export function useOutingsWeekData(weekKey) {
     customPlaces,
     placeNickname,
     setPlaceNickname,
-    placeRoundTrip,
-    setPlaceRoundTrip,
+    placeMiles,
+    setPlaceMiles,
+    placeTripKind,
+    setPlaceTripKind,
     placeFormErr,
     expensesPreview,
     locationsPreview,
