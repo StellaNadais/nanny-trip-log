@@ -20,15 +20,16 @@
   --seafoam-3: #8fd4cc;
   --sky-gradient: linear-gradient(180deg, var(--seafoam-1) 0%, var(--seafoam-2) 45%, var(--seafoam-3) 100%);
   --radius: 8px;
-  /* Edge strips: sage green, sky blue, white, sunshine yellow */
+  /* Edge strips: full rainbow spectrum */
   --rainbow-edge: linear-gradient(
     180deg,
-    #22a06b 0%,
-    #2a90d0 18%,
-    #ffffff 38%,
-    #f5c542 58%,
-    #68c0f0 78%,
-    #7ad9a8 100%
+    #e85d5d 0%,
+    #f08a3a 14%,
+    #f0c93a 28%,
+    #4caf70 44%,
+    #3d9fd9 60%,
+    #6b6bbf 76%,
+    #c45a9a 100%
   );
   --font: 'DM Sans', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
   --font-display: var(--font);
