@@ -332,18 +332,18 @@
   margin: 0 0 8px;
   padding: 10px 14px;
   border-radius: 14px;
-  border: 1px solid color-mix(in srgb, #7a6bb5 16%, var(--line-soft));
+  border: 1px solid color-mix(in srgb, #d8d4ce 55%, var(--line-soft));
   background:
     linear-gradient(
       135deg,
       #ffffff 0%,
-      color-mix(in srgb, #ebe8f5 50%, #ffffff) 100%
+      color-mix(in srgb, #f4f2ee 70%, #ffffff) 100%
     );
   color: var(--ink);
   font-size: 0.8125rem;
   text-transform: none;
   letter-spacing: 0;
-  box-shadow: 0 4px 14px color-mix(in srgb, #7a6bb5 8%, transparent);
+  box-shadow: 0 4px 14px color-mix(in srgb, #cfcbc4 10%, transparent);
 }
 
 .page--book-portal .book-workspace-head__eyebrow {
@@ -362,28 +362,28 @@
   margin: 0;
   padding: 10px 14px;
   border-radius: 12px;
-  border: 1px solid color-mix(in srgb, #7a6bb5 28%, var(--line-soft));
-  background: linear-gradient(135deg, #f2eef8 0%, #ebe8f5 100%);
+  border: 1px solid color-mix(in srgb, #d8d4ce 55%, var(--line-soft));
+  background: linear-gradient(135deg, #faf9f7 0%, #f3f0ec 100%);
   font-size: 0.8125rem;
   font-weight: 600;
-  color: #5c2d6e;
+  color: var(--ink);
 }
 
 .page--book-portal .schedule__calendar-panel.work-ui__panel,
 .page--book-portal .book-events__panel,
 .page--book-portal .book-thanks {
-  border: 1px solid color-mix(in srgb, #7a6bb5 16%, var(--line-soft));
+  border: 1px solid color-mix(in srgb, #d8d4ce 50%, var(--line-soft));
   border-radius: 16px;
   background:
     linear-gradient(
       165deg,
       #ffffff 0%,
-      color-mix(in srgb, #ebe8f5 42%, #ffffff) 55%,
-      color-mix(in srgb, #ddd4f5 28%, #ffffff) 100%
+      color-mix(in srgb, #f7f5f2 55%, #ffffff) 55%,
+      color-mix(in srgb, #f0eee9 45%, #ffffff) 100%
     );
   box-shadow:
     0 1px 0 color-mix(in srgb, #fff 80%, transparent) inset,
-    0 6px 18px color-mix(in srgb, #7a6bb5 10%, transparent);
+    0 6px 18px color-mix(in srgb, #cfcbc4 12%, transparent);
   padding: 14px;
   overflow: hidden;
 }
@@ -420,8 +420,8 @@
 .page--book-portal .book-events__col {
   padding: 12px;
   border-radius: 14px;
-  border: 1px solid color-mix(in srgb, #7a6bb5 12%, var(--line-soft));
-  background: color-mix(in srgb, #fff 78%, #ebe8f5);
+  border: 1px solid color-mix(in srgb, #d8d4ce 45%, var(--line-soft));
+  background: color-mix(in srgb, #fff 70%, #f4f2ee);
 }
 
 .page--book-portal .book-events__loc {
@@ -448,7 +448,7 @@
   gap: 2px;
   padding: 10px 12px;
   border-radius: 12px;
-  border: 1px solid color-mix(in srgb, #7a6bb5 12%, var(--line-soft));
+  border: 1px solid color-mix(in srgb, #d8d4ce 45%, var(--line-soft));
   background: #fff;
   font-size: 0.8125rem;
   line-height: 1.4;
@@ -488,8 +488,8 @@
 .page--book-portal .book-thanks__item {
   padding: 12px;
   border-radius: 12px;
-  border: 1px solid color-mix(in srgb, #7a6bb5 12%, var(--line-soft));
-  background: color-mix(in srgb, #fff 82%, #ebe8f5);
+  border: 1px solid color-mix(in srgb, #d8d4ce 45%, var(--line-soft));
+  background: color-mix(in srgb, #fff 72%, #f4f2ee);
   font-size: 0.8125rem;
   line-height: 1.45;
 }
@@ -533,15 +533,15 @@
 
 .page--book-portal .book-follow-up__section .journal-mood-bar,
 .page--book-portal .book-follow-up__section .journal-panel {
-  border: 1px solid color-mix(in srgb, #7a6bb5 16%, var(--line-soft));
+  border: 1px solid color-mix(in srgb, #d8d4ce 50%, var(--line-soft));
   border-radius: 14px;
   background:
     linear-gradient(
       165deg,
       #ffffff 0%,
-      color-mix(in srgb, #ebe8f5 40%, #ffffff) 100%
+      color-mix(in srgb, #f4f2ee 55%, #ffffff) 100%
     );
-  box-shadow: 0 4px 14px color-mix(in srgb, #7a6bb5 8%, transparent);
+  box-shadow: 0 4px 14px color-mix(in srgb, #cfcbc4 10%, transparent);
 }
 
 .page--book-portal .book-follow-up__section .journal-mood-bar__title {
