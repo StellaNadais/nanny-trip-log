@@ -338,75 +338,6 @@ export default function KidJournalPage() {
     return family ? `${family} — no reminders yet` : ''
   }, [reminderGroups])
 
-  const aboutTodayIcon = (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width="22"
-      height="22"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M12 20h9" />
-      <path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z" />
-    </svg>
-  )
-
-  const remindersIcon = (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width="22"
-      height="22"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9" />
-      <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0" />
-    </svg>
-  )
-
-  const groceryIcon = (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width="22"
-      height="22"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z" />
-      <line x1="3" y1="6" x2="21" y2="6" />
-      <path d="M16 10a4 4 0 0 1-8 0" />
-    </svg>
-  )
-
-  const outingsIcon = (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width="22"
-      height="22"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <line x1="12" y1="1" x2="12" y2="23" />
-      <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
-    </svg>
-  )
-
   return (
     <div className="page page--kid-journal page--workspace work-ui">
       <div className="journal__layout">
@@ -456,7 +387,6 @@ export default function KidJournalPage() {
               square: true,
               children: (
                 <TodaySpaceTile
-                  icon={aboutTodayIcon}
                   preview={aboutTodayPreview}
                   hint="Tap to report the day with your child — outings, meals, nap, and more."
                   cta="Open report →"
@@ -470,7 +400,6 @@ export default function KidJournalPage() {
               square: true,
               children: (
                 <TodaySpaceTile
-                  icon={remindersIcon}
                   count={reminderCount}
                   preview={remindersPreview}
                   hint="Parent notes for this day — tap to open."
@@ -484,7 +413,6 @@ export default function KidJournalPage() {
               square: true,
               children: (
                 <TodaySpaceTile
-                  icon={groceryIcon}
                   count={shoppingOpenCount}
                   preview={groceryPreview}
                   hint="Week grocery list — tap to add items."
@@ -498,7 +426,6 @@ export default function KidJournalPage() {
               square: true,
               children: (
                 <TodaySpaceTile
-                  icon={outingsIcon}
                   count={outings.outingsCount}
                   preview={outings.outingsPreview}
                   hint="Parking, tolls, and trip places — tap to add."
