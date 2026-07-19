@@ -9,10 +9,10 @@ function gigResponseStatus(b) {
   return 'pending'
 }
 
-function gigStatusLabel(status) {
+function gigStatusLabel(status, pendingStatusLabel) {
   if (status === 'accepted') return 'Confirmed'
   if (status === 'declined') return 'Declined'
-  return 'Request'
+  return pendingStatusLabel
 }
 
 export default function ScheduleCalendarFlip({
@@ -35,6 +35,7 @@ export default function ScheduleCalendarFlip({
   listTitle = 'Upcoming gigs',
   listFlipLabel = 'Upcoming gigs',
   listEmptyMessage = 'No upcoming gigs on the calendar yet. Share your booking link with families.',
+  pendingStatusLabel = 'Request',
   onDateSelect,
   onDateHover,
   dateSelectionRole,
@@ -81,7 +82,7 @@ export default function ScheduleCalendarFlip({
                     Confirmed
                   </span>
                   <span className="schedule-calendar-flip__legend-item schedule-calendar-flip__legend-item--pending">
-                    Request
+                    {pendingStatusLabel}
                   </span>
                   {showSelectionLegend ? (
                     <>
@@ -236,7 +237,7 @@ export default function ScheduleCalendarFlip({
                           <div className="schedule-gig-row__head">
                             <strong>{b.familyName}</strong>
                             <span className={`schedule-gig-status schedule-gig-status--${status}`}>
-                              {gigStatusLabel(status)}
+                              {gigStatusLabel(status, pendingStatusLabel)}
                             </span>
                           </div>
                           <span className="muted">{b.contact}</span>

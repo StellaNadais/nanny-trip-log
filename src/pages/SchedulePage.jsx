@@ -202,44 +202,43 @@ export default function SchedulePage() {
         </p>
       ) : (
         <div className="schedule-upcoming-carousel">
-          <div className="schedule-upcoming-carousel__nav" aria-label="Browse requested dates">
-            <button
-              type="button"
-              className="btn btn--ghost schedule-upcoming-carousel__arrow"
-              onClick={goPrevGig}
-              disabled={upcoming.length <= 1}
-              aria-label="Previous request"
-            >
-              ‹
-            </button>
-            <span className="schedule-upcoming-carousel__count muted">
-              {carouselIndex + 1} / {upcoming.length}
-            </span>
-            <button
-              type="button"
-              className="btn btn--ghost schedule-upcoming-carousel__arrow"
-              onClick={goNextGig}
-              disabled={upcoming.length <= 1}
-              aria-label="Next request"
-            >
-              ›
-            </button>
-          </div>
-
           <div className="schedule-upcoming-carousel__window">
             {currentGig ? (
               <div
                 className={`schedule-upcoming-card book-upcoming__row ${enterAnim === 'next' ? 'schedule-upcoming-card--enter-next' : ''} ${enterAnim === 'prev' ? 'schedule-upcoming-card--enter-prev' : ''}`}
                 key={currentGig.id}
               >
-                <time className="book-upcoming__date" dateTime={currentGig.dateISO}>
-                  {new Date(currentGig.dateISO + 'T12:00:00').toLocaleDateString(undefined, {
-                    weekday: 'short',
-                    month: 'short',
-                    day: 'numeric',
-                    year: 'numeric',
-                  })}
-                </time>
+                <div className="schedule-upcoming-card__date-nav" aria-label="Browse requested dates">
+                  <button
+                    type="button"
+                    className="btn btn--ghost schedule-upcoming-card__date-arrow"
+                    onClick={goPrevGig}
+                    disabled={upcoming.length <= 1}
+                    aria-label="Previous request"
+                  >
+                    ‹
+                  </button>
+                  <time className="book-upcoming__date" dateTime={currentGig.dateISO}>
+                    {new Date(currentGig.dateISO + 'T12:00:00').toLocaleDateString(undefined, {
+                      weekday: 'short',
+                      month: 'short',
+                      day: 'numeric',
+                      year: 'numeric',
+                    })}
+                  </time>
+                  <button
+                    type="button"
+                    className="btn btn--ghost schedule-upcoming-card__date-arrow"
+                    onClick={goNextGig}
+                    disabled={upcoming.length <= 1}
+                    aria-label="Next request"
+                  >
+                    ›
+                  </button>
+                  <span className="schedule-upcoming-card__date-count muted">
+                    {carouselIndex + 1} / {upcoming.length}
+                  </span>
+                </div>
                 <div className="book-upcoming__body">
                   <strong>{currentGig.familyName}</strong>
                   <span className="muted">{currentGig.contact}</span>

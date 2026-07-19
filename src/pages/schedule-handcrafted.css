@@ -315,8 +315,18 @@
   border-style: dotted;
 }
 
+.page--schedule .schedule-calendar-flip .calendar__cell--booked-accepted {
+  border-color: #16824b;
+  background: color-mix(
+    in srgb,
+    #31b86b 28%,
+    var(--journal-surface-bright, var(--peri-surface))
+  );
+  box-shadow: 0 2px 8px color-mix(in srgb, #16824b 18%, transparent);
+}
+
 .page--schedule .schedule-calendar-flip .calendar__cell--booked-accepted .calendar__booked-label {
-  color: var(--journal-mint-deep, var(--peri-accent));
+  color: #146c3b;
 }
 
 .page--schedule .schedule-calendar-section__grid-grow .calendar__grid--book .calendar__cell:not(.calendar__cell--empty) {
@@ -408,7 +418,8 @@
 }
 
 .caregiver-shell--workbook .schedule-calendar-flip .calendar__cell--booked-accepted {
-  background: color-mix(in srgb, var(--journal-sage, var(--accent-soft)) 42%, var(--paper)) !important;
+  border-color: #16824b !important;
+  background: color-mix(in srgb, #31b86b 28%, var(--paper)) !important;
 }
 
 .caregiver-shell--workbook .schedule-calendar-flip .calendar__cell--booked-pending {

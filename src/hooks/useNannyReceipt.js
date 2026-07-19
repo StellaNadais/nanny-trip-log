@@ -210,24 +210,21 @@ export function useNannyReceipt() {
 
   const receiptText = useMemo(() => {
     const head = gigReceiptMode
-      ? [`Nanny receipt (gig)`, `Gig date: ${gigDateISO}`, `Mileage & extras week: ${weekLabel}`, `Children: ${n}`, ``]
-      : [`Weekly nanny receipt`, `Week: ${weekLabel}`, `Children: ${n}`, ``]
-    const lines = [...head]
+      ? [`Gig date: ${gigDateISO}`, `Mileage & extras week: ${weekLabel}`]
+      : [`Week: ${weekLabel}`]
+    const lines = [...head, ``, `Children: ${n}`, ``]
     if (hoursValid) {
       lines.push(`$${BASE_RATE}/hr × ${h} hr (base) = $${lineBase.toFixed(2)}`)
       if (extraKids > 0) {
         lines.push(
-          `+$${EXTRA_CHILD_PER_HOUR}/hr × ${extraKids} extra × ${h} hr = $${lineExtra.toFixed(2)}`
+          `+$${EXTRA_CHILD_PER_HOUR}/hr × ${extraKids} extra child${extraKids === 1 ? '' : 'ren'} × ${h} hr = $${lineExtra.toFixed(2)}`
         )
       }
-      lines.push(``, `Gig wages subtotal: $${laborTotal.toFixed(2)}`)
-    } else {
-      lines.push(`(Enter hours for wage line items.)`, ``)
     }
+    lines.push(``, `Gig wages subtotal: $${laborTotal.toFixed(2)}`)
     if (gigReceiptMode && overnightTotal > 0) {
       lines.push(
-        `Overnight at family’s house: ${overnightNum} night(s) × $${OVERNIGHT_RATE} = $${overnightTotal.toFixed(2)}`,
-        ``
+        `Overnight at family’s house: ${overnightNum} night${overnightNum === 1 ? '' : 's'} × $${OVERNIGHT_RATE} = $${overnightTotal.toFixed(2)}`
       )
     }
     if (mileageEntry && mileReimb > 0) {
@@ -244,11 +241,11 @@ export function useNannyReceipt() {
       lines.push(`Reimbursements subtotal: $${manualTotal.toFixed(2)}`)
     }
     if (extras.photos.length > 0) {
-      lines.push(``, `Receipt photos on file: ${extras.photos.length}`)
+      lines.push(`Receipt photos on file: ${extras.photos.length}`)
     }
     lines.push(``, `Total due: $${combinedTotal.toFixed(2)}`)
     if (hoursValid) {
-      lines.push(`Effective rate (wage only): $${rate.toFixed(2)}/hr`)
+      lines.push(``, `Effective rate (wage only): $${rate.toFixed(2)}/hr`)
     }
     if (normalizeVenmo(venmoHandle)) {
       lines.push(``, `Pay: Venmo @${normalizeVenmo(venmoHandle)}`)

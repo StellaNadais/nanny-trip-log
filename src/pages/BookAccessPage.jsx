@@ -55,9 +55,7 @@ export default function BookAccessPage() {
     >
       <header className="book-access__head">
         <p className="book-access__eyebrow">Parent & family portal</p>
-        <h1 className="book-access__title">
-          {step === 'nickname' ? 'Family nickname' : 'Password'}
-        </h1>
+        {step === 'password' ? <h1 className="book-access__title">Password</h1> : null}
       </header>
 
       <div className="book-access__stage">

@@ -339,6 +339,12 @@
   color: var(--ink);
 }
 
+.page--book-portal .book-scheduling-modal__repeat-hint {
+  margin: 6px 0 0;
+  font-size: 0.75rem;
+  line-height: 1.4;
+}
+
 .page--book-portal .book-scheduling-modal__actions {
   flex-shrink: 0;
   padding-top: 4px;
@@ -521,8 +527,18 @@
   color: var(--ink-muted);
 }
 
+.page--book-portal .schedule-calendar-flip .calendar__cell--booked-accepted {
+  border-color: #16824b;
+  background: color-mix(in srgb, #31b86b 28%, var(--journal-surface-bright, var(--surface)));
+  box-shadow: 0 2px 8px color-mix(in srgb, #16824b 18%, transparent);
+}
+
 .page--book-portal .schedule-calendar-flip .calendar__booked-label {
   color: #7a6bb5;
+}
+
+.page--book-portal .schedule-calendar-flip .calendar__cell--booked-accepted .calendar__booked-label {
+  color: #146c3b;
 }
 
 .page--book-portal .book-portal-tabs .workbook-tabs__tab--active {

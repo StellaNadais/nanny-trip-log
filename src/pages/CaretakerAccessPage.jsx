@@ -1,10 +1,11 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { checkCaretakerCredentials } from '../data/caretakerCredentials'
 import { unlockCaretaker } from '../utils/caretakerAccess'
 
 export default function CaretakerAccessPage() {
   const navigate = useNavigate()
+  const location = useLocation()
   const [nickname, setNickname] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
@@ -18,7 +19,7 @@ export default function CaretakerAccessPage() {
     }
 
     unlockCaretaker()
-    navigate('/schedule', { replace: true })
+    navigate(location.state?.from ?? '/schedule', { replace: true })
   }
 
   return (

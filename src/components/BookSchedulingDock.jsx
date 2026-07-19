@@ -15,8 +15,12 @@ export default function BookSchedulingDock({
   overnightRate = OVERNIGHT_RATE,
   careStart,
   careEnd,
+  repeatDateISO,
+  repeatDateOk,
+  repeatDateMin,
   onCareStartTime,
   onCareEndTime,
+  onRepeatDateChange,
   timeOk,
   childrenOnGig,
   familyName,
@@ -141,6 +145,28 @@ export default function BookSchedulingDock({
             {!timeOk && careStart && careEnd ? (
               <p className="book-modal__hint book-modal__hint--warn book-modal__hotel-warn">
                 End time must be after start (or counts as overnight the next day).
+              </p>
+            ) : null}
+          </div>
+
+          <div className="book-modal__block">
+            <span className="book-modal__block-title">Repeat this booking</span>
+            <label className="field-block book-modal__field-grow">
+              <span className="field-block__label">Also request these times on (optional)</span>
+              <input
+                type="date"
+                className="input input--line"
+                value={repeatDateISO}
+                min={repeatDateMin}
+                onChange={(e) => onRepeatDateChange(e.target.value)}
+              />
+            </label>
+            <p className="book-scheduling-modal__repeat-hint muted">
+              We’ll send a separate pending request with the same times, children, notes, and extras.
+            </p>
+            {!repeatDateOk ? (
+              <p className="book-modal__hint book-modal__hint--warn">
+                Choose a different future date for the repeated request.
               </p>
             ) : null}
           </div>

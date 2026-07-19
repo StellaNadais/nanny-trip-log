@@ -44,12 +44,14 @@ export default function App() {
                 <Route path="/" element={<WelcomePage />} />
                 <Route path="/caretaker" element={<CaretakerAccessPage />} />
               </Route>
+              <Route element={<WorkbookLayout />}>
+                <Route path="/schedule" element={<SchedulePage />} />
+                <Route path="/hub" element={<Navigate to="/schedule" replace />} />
+              </Route>
               <Route element={<CaretakerGate />}>
                 <Route path="/trip-log" element={<Navigate to="/journal" replace />} />
                 <Route path="/receipt" element={<WeeklyReceiptPage />} />
                 <Route element={<WorkbookLayout />}>
-                  <Route path="/schedule" element={<SchedulePage />} />
-                  <Route path="/hub" element={<Navigate to="/schedule" replace />} />
                   <Route path="/today" element={<Navigate to="/journal" replace />} />
                   <Route path="/shift" element={<Navigate to="/journal" replace />} />
                   <Route path="/journal" element={<KidJournalPage />} />

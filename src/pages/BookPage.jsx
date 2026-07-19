@@ -34,6 +34,12 @@ function dateISOFromParts(y, m, dayNum) {
   return toISODateLocal(new Date(y, m, dayNum))
 }
 
+function shiftISODate(iso, days) {
+  const date = new Date(`${iso}T12:00:00`)
+  date.setDate(date.getDate() + days)
+  return toISODateLocal(date)
+}
+
 const DEFAULT_CARE_START = '09:00'
 const DEFAULT_CARE_END = '17:00'
 
@@ -101,6 +107,7 @@ export default function BookPage() {
   const [careEnd, setCareEnd] = useState(DEFAULT_CARE_END)
   const [careStartDateISO, setCareStartDateISO] = useState('')
   const [careEndDateISO, setCareEndDateISO] = useState('')
+  const [repeatDateISO, setRepeatDateISO] = useState('')
   const [childrenOnGig, setChildrenOnGig] = useState('')
   const [familyName, setFamilyName] = useState('')
   const [phone, setPhone] = useState('')
@@ -204,6 +211,8 @@ export default function BookPage() {
     () => careIntervalValid(careStartDateISO, careStart, resolvedEndDateISO, careEnd),
     [careStartDateISO, careStart, resolvedEndDateISO, careEnd]
   )
+  const repeatDateOk =
+    !repeatDateISO || (repeatDateISO >= todayISO() && repeatDateISO !== careStartDateISO)
   const childrenParsed = useMemo(() => parseChildrenOnGig(childrenOnGig), [childrenOnGig])
   const kidsOk = childrenParsed.valid
   const nameOk = familyName.trim().length > 0
@@ -228,6 +237,7 @@ export default function BookPage() {
     setCareEnd(DEFAULT_CARE_END)
     setCareStartDateISO('')
     setCareEndDateISO('')
+    setRepeatDateISO('')
     setChildrenOnGig('')
     setFamilyName(family?.lastName || '')
     setPhone('')
@@ -328,11 +338,11 @@ export default function BookPage() {
   function submitBooking(e) {
     e.preventDefault()
     if (!schedulingOpen || careStartIsPast) return
-    if (!timeOk || !kidsOk || !nameOk || !phoneOk) return
+    if (!timeOk || !repeatDateOk || !kidsOk || !nameOk || !phoneOk) return
     const start = careStartDateISO
     const endDate = resolvedEndDateISO
     const extrasSnapshot = [...bookingExtras]
-    const booking = addBooking({
+    const details = {
       dateISO: start,
       careEndDateISO: endDate,
       familyName: familyName.trim(),
@@ -344,40 +354,74 @@ export default function BookPage() {
       careEnd,
       notes: requestNotes.trim(),
       extras: extrasSnapshot,
-    })
+    }
+    const booking = addBooking(details)
+    const repeatBooking = repeatDateISO
+      ? addBooking({
+          ...details,
+          dateISO: repeatDateISO,
+          careEndDateISO: shiftISODate(
+            repeatDateISO,
+            Math.round(
+              (new Date(`${endDate}T12:00:00`) - new Date(`${start}T12:00:00`)) / 86400000
+            )
+          ),
+          extras: [...extrasSnapshot],
+        })
+      : null
     resetBookingForm()
     if (booking?.id) {
       applyBookingExtras(booking.id, start, extrasSnapshot)
+      if (repeatBooking?.id) applyBookingExtras(repeatBooking.id, repeatDateISO, extrasSnapshot)
       if (extrasSnapshot.length > 0) {
-        showBookToast('Request sent with extras for your caregiver!')
+        showBookToast(
+          repeatBooking
+            ? 'Both requests were sent with extras for your caregiver!'
+            : 'Request sent with extras for your caregiver!'
+        )
       } else {
         setFollowUpBooking({
           id: booking.id,
           dateISO: start,
           careEndDateISO: endDate,
           familyName: familyName.trim(),
+          includesRepeat: Boolean(repeatBooking),
         })
       }
     } else {
-      showBookToast('Request sent! Your caregiver will follow up.')
+      showBookToast(
+        repeatBooking
+          ? 'Both requests were sent! Your caregiver will follow up.'
+          : 'Request sent! Your caregiver will follow up.'
+      )
     }
   }
 
   function closeFollowUp() {
+    const includesRepeat = followUpBooking?.includesRepeat
     setFollowUpBooking(null)
-    showBookToast('Request sent! Your caregiver will follow up.')
+    showBookToast(
+      includesRepeat
+        ? 'Both requests were sent! Your caregiver will follow up.'
+        : 'Request sent! Your caregiver will follow up.'
+    )
   }
 
   function saveFollowUp(reminderRows) {
     if (followUpBooking?.id && reminderRows.length) {
       addRemindersForBooking(followUpBooking.id, reminderRows)
     }
+    const includesRepeat = followUpBooking?.includesRepeat
     setFollowUpBooking(null)
     const hasExtras = reminderRows.length > 0
     showBookToast(
       hasExtras
-        ? 'Request sent with grocery and reminders!'
-        : 'Request sent! Your caregiver will follow up.'
+        ? includesRepeat
+          ? 'Both requests were sent with grocery and reminders!'
+          : 'Request sent with grocery and reminders!'
+        : includesRepeat
+          ? 'Both requests were sent! Your caregiver will follow up.'
+          : 'Request sent! Your caregiver will follow up.'
     )
   }
 
@@ -444,9 +488,10 @@ export default function BookPage() {
                   onDateHover={handleCalendarDateHover}
                   dateSelectionRole={dateSelectionRole}
                   showSelectionLegend
-                  listTitle="Your requests"
-                  listFlipLabel="Your requests"
-                  listEmptyMessage="No requests on file yet. Tap dates on the calendar to schedule."
+                  listTitle="Your sent requests"
+                  listFlipLabel="Your sent requests"
+                  listEmptyMessage="No sent requests yet. Tap dates on the calendar to schedule."
+                  pendingStatusLabel="Request sent"
                 />
               </section>
             </div>
@@ -513,8 +558,12 @@ export default function BookPage() {
         overnightRate={overnightRate}
         careStart={careStart}
         careEnd={careEnd}
+        repeatDateISO={repeatDateISO}
+        repeatDateOk={repeatDateOk}
+        repeatDateMin={todayISO()}
         onCareStartTime={applyCareStartTime}
         onCareEndTime={applyCareEndTime}
+        onRepeatDateChange={setRepeatDateISO}
         timeOk={timeOk}
         childrenOnGig={childrenOnGig}
         familyName={familyName}
@@ -529,7 +578,7 @@ export default function BookPage() {
         onRequestNotes={setRequestNotes}
         selectedBookingsCount={selectedBookings.length}
         careStartIsPast={careStartIsPast}
-        canSubmit={!careStartIsPast && timeOk && kidsOk && nameOk && phoneOk}
+        canSubmit={!careStartIsPast && timeOk && repeatDateOk && kidsOk && nameOk && phoneOk}
         onSubmit={submitBooking}
         onClear={clearScheduling}
         familyNameLocked
