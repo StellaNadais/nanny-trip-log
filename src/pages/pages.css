@@ -329,6 +329,18 @@
   background: var(--accent-soft);
   border-color: var(--accent);
   color: var(--ink);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 34%, transparent);
+}
+
+button.calendar__cell:not(:disabled):active {
+  background: color-mix(in srgb, var(--accent-soft) 66%, var(--surface));
+  border-color: var(--accent);
+  transform: scale(0.95);
+}
+
+button.calendar__cell:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
 }
 
 .calendar__footer {
@@ -5833,12 +5845,14 @@
     background 0.12s ease;
 }
 
-.journal-mood-bar__seg:hover {
-  background: color-mix(in srgb, var(--paper) 55%, var(--peach-soft) 45%);
-}
+@media (hover: hover) {
+  .journal-mood-bar__seg:hover {
+    background: color-mix(in srgb, var(--paper) 55%, var(--peach-soft) 45%);
+  }
 
-.page--kid-journal .journal-mood-bar__seg:hover {
-  background: var(--journal-sage);
+  .page--kid-journal .journal-mood-bar__seg:hover {
+    background: var(--journal-sage);
+  }
 }
 
 .page--kid-journal .journal-mood-bar__seg--on {

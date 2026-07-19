@@ -236,6 +236,12 @@
   outline-offset: 1px;
 }
 
+.page--book-portal .schedule-calendar-flip button.calendar__cell--selectable:active {
+  background: color-mix(in srgb, var(--accent-soft) 68%, var(--paper)) !important;
+  border-color: var(--accent) !important;
+  transform: scale(0.94);
+}
+
 /* Hotel-style continuous range (start → end) */
 .page--book-portal .schedule-calendar-flip .calendar__cell--select-single {
   border-style: solid !important;
@@ -279,13 +285,15 @@
   box-shadow: none;
 }
 
-.page--book-portal .schedule-calendar-flip button.calendar__cell--selectable:hover:not(
+@media (hover: hover) {
+  .page--book-portal .schedule-calendar-flip button.calendar__cell--selectable:hover:not(
     .calendar__cell--select-start,
     .calendar__cell--select-end,
     .calendar__cell--select-single,
     .calendar__cell--select-between
   ) {
-  background: color-mix(in srgb, var(--accent-soft) 28%, var(--paper));
+    background: color-mix(in srgb, var(--accent-soft) 28%, var(--paper));
+  }
 }
 
 .page--book-portal .book-scheduling-modal.book-modal--clear .book-modal__backdrop {
@@ -679,10 +687,15 @@
   text-decoration: none;
 }
 
-.book-access__back:hover,
+.book-access__back:active,
 .book-access__back:focus-visible {
   color: var(--ink);
-  outline: none;
+}
+
+@media (hover: hover) {
+  .book-access__back:hover {
+    color: var(--ink);
+  }
 }
 
 .book-family-availability {
@@ -700,10 +713,15 @@
   text-decoration: none;
 }
 
-.book-family-switch:hover,
+.book-family-switch:active,
 .book-family-switch:focus-visible {
   color: var(--ink);
-  outline: none;
+}
+
+@media (hover: hover) {
+  .book-family-switch:hover {
+    color: var(--ink);
+  }
 }
 
 /* Compact extras under notes (+ reminder / grocery / errand) */
@@ -750,9 +768,9 @@
 }
 
 .page--book-portal .book-extras-field__chip-remove {
-  width: 1.75rem;
-  height: 1.75rem;
-  margin: 0;
+  width: 44px;
+  height: 44px;
+  margin: -8px -8px -8px 0;
   padding: 0;
   border: none;
   border-radius: 999px;
@@ -763,11 +781,17 @@
   cursor: pointer;
 }
 
-.page--book-portal .book-extras-field__chip-remove:hover,
-.page--book-portal .book-extras-field__chip-remove:focus-visible {
+.page--book-portal .book-extras-field__chip-remove:active {
   color: var(--ink);
-  background: color-mix(in srgb, #ebe8e3 55%, #fff);
-  outline: none;
+  background: color-mix(in srgb, #ebe8f5 65%, #fff);
+  transform: scale(0.92);
+}
+
+@media (hover: hover) {
+  .page--book-portal .book-extras-field__chip-remove:hover {
+    color: var(--ink);
+    background: color-mix(in srgb, #ebe8e3 55%, #fff);
+  }
 }
 
 .page--book-portal .book-extras-field__choices {
@@ -792,6 +816,7 @@
 }
 
 .page--book-portal .book-extras-field__choice {
+  min-height: 44px;
   margin: 0;
   padding: 6px 12px;
   border: 1px dashed color-mix(in srgb, #d8d4ce 55%, var(--line-soft));
@@ -804,12 +829,19 @@
   cursor: pointer;
 }
 
-.page--book-portal .book-extras-field__choice:hover,
-.page--book-portal .book-extras-field__choice:focus-visible {
+.page--book-portal .book-extras-field__choice:active {
   color: var(--ink);
-  border-color: color-mix(in srgb, #7a6bb5 28%, var(--line-soft));
-  background: color-mix(in srgb, #ebe8f5 35%, #fff);
-  outline: none;
+  border-color: #7a6bb5;
+  background: color-mix(in srgb, #ebe8f5 62%, #fff);
+  transform: scale(0.96);
+}
+
+@media (hover: hover) {
+  .page--book-portal .book-extras-field__choice:hover {
+    color: var(--ink);
+    border-color: color-mix(in srgb, #7a6bb5 28%, var(--line-soft));
+    background: color-mix(in srgb, #ebe8f5 35%, #fff);
+  }
 }
 
 .page--book-portal .book-extras-field__composer {

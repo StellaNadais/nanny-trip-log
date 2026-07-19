@@ -158,9 +158,21 @@
   margin-bottom: -1px;
 }
 
-.tabs__btn:hover,
 .tabs__btn:active {
   color: var(--ink);
+  background: color-mix(in srgb, var(--accent-soft) 58%, var(--surface));
+}
+
+@media (hover: hover) {
+  .tabs__btn:hover {
+    color: var(--ink);
+    background: color-mix(in srgb, var(--accent-soft) 35%, var(--surface));
+  }
+}
+
+.tabs__btn:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
 }
 
 .tabs__btn--on {
@@ -208,6 +220,18 @@
   background: var(--accent-soft);
   color: var(--ink);
   font-weight: 600;
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 35%, transparent);
+}
+
+.day-chip:active:not(:disabled) {
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent-soft) 72%, var(--surface));
+  transform: scale(0.97);
+}
+
+.day-chip:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
 }
 
 .day-chip__label {
@@ -372,10 +396,16 @@
   box-shadow: none;
 }
 
-.btn--primary:hover,
 .btn--primary:active {
   filter: brightness(1.08);
-  box-shadow: none;
+  box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--surface) 36%, transparent);
+  transform: scale(0.98);
+}
+
+@media (hover: hover) {
+  .btn--primary:hover {
+    filter: brightness(1.08);
+  }
 }
 
 .btn--ghost {
@@ -387,9 +417,20 @@
   padding: 8px 12px;
 }
 
-.btn--ghost:hover,
 .btn--ghost:active {
-  background: var(--paper2);
+  background: color-mix(in srgb, var(--accent-soft) 55%, var(--paper2));
+  transform: scale(0.97);
+}
+
+@media (hover: hover) {
+  .btn--ghost:hover {
+    background: var(--paper2);
+  }
+}
+
+.btn:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
 }
 
 .btn--small {
