@@ -1,4 +1,4 @@
-/** Event ideas for one East Bay area — used inside Events popup. */
+/** Event ideas for one demo area — used inside Events popup. */
 export default function EventsLocationList({ events }) {
   if (!events?.length) {
     return <p className="muted events__empty">No ideas listed for this area yet.</p>

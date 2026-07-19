@@ -1,3 +1,4 @@
+import LocationHeading from './LocationHeading'
 import OutingsExpensesPanel from './OutingsExpensesPanel'
 import OutingsLocationsPanel from './OutingsLocationsPanel'
 import TodayPanelModal from './TodayPanelModal'
@@ -21,8 +22,12 @@ export default function OutingsModal({
   customPlaces,
   placeNickname,
   onPlaceNicknameChange,
-  placeRoundTrip,
-  onPlaceRoundTripChange,
+  placeMiles,
+  onPlaceMilesChange,
+  placeTripKind,
+  onPlaceTripKindChange,
+  placeFormOpen,
+  onTogglePlaceFormOpen,
   placeFormErr,
   onAddCustomPlace,
   onRemoveCustomPlace,
@@ -55,16 +60,24 @@ export default function OutingsModal({
         />
       </section>
 
-      <section className="about-today-modal__section" aria-labelledby="outings-locations-heading">
-        <h3 id="outings-locations-heading" className="schedule-overview__requests-title">
-          Locations
-        </h3>
+      <section
+        className="about-today-modal__section about-today-modal__section--locations"
+        aria-labelledby="outings-locations-heading"
+      >
+        <LocationHeading
+          id="outings-locations-heading"
+          className="schedule-overview__requests-title"
+        />
         <OutingsLocationsPanel
           customPlaces={customPlaces}
           placeNickname={placeNickname}
           onPlaceNicknameChange={onPlaceNicknameChange}
-          placeRoundTrip={placeRoundTrip}
-          onPlaceRoundTripChange={onPlaceRoundTripChange}
+          placeMiles={placeMiles}
+          onPlaceMilesChange={onPlaceMilesChange}
+          placeTripKind={placeTripKind}
+          onPlaceTripKindChange={onPlaceTripKindChange}
+          placeFormOpen={placeFormOpen}
+          onTogglePlaceFormOpen={onTogglePlaceFormOpen}
           placeFormErr={placeFormErr}
           onAddCustomPlace={onAddCustomPlace}
           onRemoveCustomPlace={onRemoveCustomPlace}

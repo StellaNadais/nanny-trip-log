@@ -1,15 +1,32 @@
 import { toISODateLocal } from './dates'
 
-const KEY = 'nanny-shift-contract-v1'
+/** Bumped when default season / leave balances change. */
+const KEY = 'nanny-shift-contract-v2'
+
+function seedUsedDays(kind, count, year, month) {
+  const out = []
+  for (let i = 0; i < count; i++) {
+    const day = String(i + 1).padStart(2, '0')
+    const dateISO = `${year}-${String(month).padStart(2, '0')}-${day}`
+    out.push({ id: `${kind}-seed-${dateISO}`, dateISO, kind })
+  }
+  return out
+}
 
 function defaultContractYear() {
   const y = new Date().getFullYear()
+  const vacationAllowance = 10
+  const sickAllowance = 5
   return {
     contractStartISO: `${y}-06-01`,
-    contractEndISO: `${y + 1}-05-31`,
-    vacationAllowance: 10,
-    sickAllowance: 5,
-    timeOff: [],
+    contractEndISO: `${y}-08-21`,
+    vacationAllowance,
+    sickAllowance,
+    // Demo default: all leave already used
+    timeOff: [
+      ...seedUsedDays('vacation', vacationAllowance, y, 6),
+      ...seedUsedDays('sick', sickAllowance, y, 7),
+    ],
   }
 }
 

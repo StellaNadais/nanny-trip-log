@@ -4,10 +4,10 @@ import { KidJournalProvider } from './context/KidJournalProvider'
 import { BookingsProvider } from './context/BookingsProvider'
 import { ParentRemindersProvider } from './context/ParentRemindersProvider'
 import WelcomePage from './pages/WelcomePage'
+import BookAccessPage from './pages/BookAccessPage'
 import BookPage from './pages/BookPage'
 import SchedulePage from './pages/SchedulePage'
 import WeeklyReceiptPage from './pages/WeeklyReceiptPage'
-import ShiftPage from './pages/ShiftPage'
 import KidJournalPage from './pages/KidJournalPage'
 import EventsPage from './pages/EventsPage'
 import CaregiverFlowLayout from './layouts/CaregiverFlowLayout'
@@ -35,7 +35,8 @@ export default function App() {
         <BookingsProvider>
           <ParentRemindersProvider>
           <Routes>
-            <Route path="/book" element={<BookPage />} />
+            <Route path="/book" element={<BookAccessPage />} />
+            <Route path="/book/:family" element={<BookPage />} />
             <Route element={<CaregiverShellLayout />}>
               <Route element={<CaregiverFlowLayout />}>
                 <Route path="/" element={<WelcomePage />} />
@@ -46,7 +47,7 @@ export default function App() {
                 <Route path="/schedule" element={<SchedulePage />} />
                 <Route path="/hub" element={<Navigate to="/schedule" replace />} />
                 <Route path="/today" element={<Navigate to="/journal" replace />} />
-                <Route path="/shift" element={<ShiftPage />} />
+                <Route path="/shift" element={<Navigate to="/journal" replace />} />
                 <Route path="/journal" element={<KidJournalPage />} />
                 <Route path="/outings" element={<Navigate to="/journal" replace />} />
                 <Route path="/events" element={<EventsPage />} />

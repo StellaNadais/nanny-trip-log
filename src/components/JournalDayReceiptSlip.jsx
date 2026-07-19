@@ -69,7 +69,7 @@ export default function JournalDayReceiptSlip({
               {pottyDisplayLine(pottyTime, pottyNotes) || '—'}
             </p>
             <div className="journal-day-modal__rule" />
-            <p className="journal-day-modal__section-hdr">Wishes</p>
+            <p className="journal-day-modal__section-hdr">Wishes + song requests</p>
             <p className="journal-day-modal__body">{wishes?.trim() || '—'}</p>
             <div className="journal-day-modal__rule journal-day-modal__rule--bold" />
           </div>

@@ -18,11 +18,10 @@ import {
   bookingOvernightNightCount,
   expandBookingCalendarDates,
 } from '../utils/bookingRange'
-import { OVERNIGHT_RATE } from '../data/bookingRates'
+import { EXTRA_CHILD_PER_HOUR, HOURLY_RATE, OVERNIGHT_RATE } from '../data/bookingRates'
 import { isWeeklyReceiptBusinessHours } from '../utils/receiptWindowMode'
 
-const BASE_RATE = 31
-const EXTRA_CHILD_PER_HOUR = 5
+const BASE_RATE = HOURLY_RATE
 
 function normalizeVenmo(s) {
   return String(s || '')

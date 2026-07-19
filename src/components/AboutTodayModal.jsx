@@ -87,7 +87,7 @@ export default function AboutTodayModal({
                 id="about-today-day-notes"
                 value={dayNotes}
                 onChange={onDayNotesChange}
-                placeholder="e.g. H's drop off, music, Commons"
+                placeholder="e.g. school run, music, park"
                 aria-labelledby="about-today-notes-label"
                 nestedInAbout
               />

@@ -1,11 +1,14 @@
-import { useMemo, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { useEffect, useMemo, useState } from 'react'
+import { Link, Navigate, useParams } from 'react-router-dom'
 import { EVENT_LOCATIONS, groupFamilyEventsByLocation } from '../data/familyEvents'
+import { getBookFamily } from '../data/bookFamilies'
 import { OVERNIGHT_RATE } from '../data/bookingRates'
-import { toISODateLocal } from '../utils/dates'
+import { startOfWeekMonday, toISODateLocal } from '../utils/dates'
+import { addShoppingItems } from '../utils/journalShoppingStorage'
 import { monthGrid, isSameDay } from '../utils/calendarMonth'
 import { useBookings } from '../hooks/useBookings'
 import { useParentReminders } from '../hooks/useParentReminders'
+import BookFamilyGate from '../components/BookFamilyGate'
 import BookFollowUpModal from '../components/BookFollowUpModal'
 import BookSchedulingDock from '../components/BookSchedulingDock'
 import ScheduleCalendarFlip from '../components/ScheduleCalendarFlip'
@@ -21,6 +24,7 @@ import {
 } from '../utils/bookingRange'
 import { parseChildrenOnGig } from '../utils/bookingChildren'
 import { BOOK_THANKS_LEDE, BOOK_THANKS_SUPPORTERS } from '../data/bookThanks'
+import { isBookFamilyUnlocked } from '../utils/bookFamilyAccess'
 
 function todayISO() {
   return toISODateLocal(new Date())
@@ -38,13 +42,29 @@ function phoneLooksReachable(value) {
   return digits.length >= 7
 }
 
+function bookingBelongsToFamily(booking, family) {
+  if (!family) return false
+  const name = String(booking?.familyName || '').toLowerCase()
+  return (
+    name.includes(family.lastName.toLowerCase()) ||
+    name.includes(family.nickname.toLowerCase()) ||
+    booking?.familySlug === family.slug
+  )
+}
+
 function cellBookingMod(bookings) {
   if (bookings.some((b) => b.responseStatus === 'accepted')) return 'accepted'
   if (bookings.every((b) => b.responseStatus === 'declined')) return 'declined'
   return 'pending'
 }
 
-function cellBookingLabel(bookings) {
+function cellBookingLabel(bookings, family) {
+  if (family) {
+    const mine = bookings.filter((b) => bookingBelongsToFamily(b, family))
+    if (mine.length === 0) return 'Busy'
+    if (mine.length > 1) return `${family.nickname.slice(0, 5)}+`
+    return family.nickname.length > 7 ? `${family.nickname.slice(0, 6)}…` : family.nickname
+  }
   const accepted = bookings.find((b) => b.responseStatus === 'accepted')
   const active = accepted || bookings.find((b) => b.responseStatus !== 'declined') || bookings[0]
   const raw = (active?.familyName || 'Gig').trim()
@@ -54,9 +74,19 @@ function cellBookingLabel(bookings) {
 }
 
 /**
- * Parent-only booking page. Share /book as a direct link — not part of the caregiver app flow.
+ * Parent-only booking page for one family: /book/:family
  */
 export default function BookPage() {
+  const { family: familySlug } = useParams()
+  const family = useMemo(() => getBookFamily(familySlug), [familySlug])
+  const [unlocked, setUnlocked] = useState(() =>
+    familySlug ? isBookFamilyUnlocked(familySlug) : false
+  )
+
+  useEffect(() => {
+    setUnlocked(familySlug ? isBookFamilyUnlocked(familySlug) : false)
+  }, [familySlug])
+
   const { bookings, addBooking } = useBookings()
   const { addRemindersForBooking } = useParentReminders()
   const today = new Date()
@@ -75,8 +105,15 @@ export default function BookPage() {
   const [familyName, setFamilyName] = useState('')
   const [phone, setPhone] = useState('')
   const [requestNotes, setRequestNotes] = useState('')
+  const [bookingExtras, setBookingExtras] = useState([])
   const [followUpBooking, setFollowUpBooking] = useState(null)
   const [bookToast, setBookToast] = useState('')
+
+  const overnightRate = family?.overnightRate ?? OVERNIGHT_RATE
+
+  useEffect(() => {
+    if (family) setFamilyName(family.lastName)
+  }, [family])
 
   const y = cursor.getFullYear()
   const m = cursor.getMonth()
@@ -98,14 +135,20 @@ export default function BookPage() {
   const upcoming = useMemo(() => {
     const now = Date.now()
     return [...bookings]
-      .filter((b) => b.dateISO && bookingOccupiesCalendarSlot(b) && bookingEndMs(b) >= now)
+      .filter(
+        (b) =>
+          b.dateISO &&
+          bookingOccupiesCalendarSlot(b) &&
+          bookingEndMs(b) >= now &&
+          (!family || bookingBelongsToFamily(b, family))
+      )
       .sort((a, b) => {
         const a0 = new Date(`${a.dateISO}T${a.careStart || '00:00'}:00`).getTime()
         const b0 = new Date(`${b.dateISO}T${b.careStart || '00:00'}:00`).getTime()
         if (a0 !== b0) return a0 - b0
         return (a.createdAt ?? '').localeCompare(b.createdAt ?? '')
       })
-  }, [bookings])
+  }, [bookings, family])
 
   const eventsByLocation = useMemo(() => groupFamilyEventsByLocation(), [])
 
@@ -142,10 +185,10 @@ export default function BookPage() {
       careEndDateISO: resolvedEndDateISO,
     })
     const rateLine =
-      nights > 0 ? ` · ${nights} overnight${nights === 1 ? '' : 's'} × $${OVERNIGHT_RATE}` : ''
+      nights > 0 ? ` · ${nights} overnight${nights === 1 ? '' : 's'} × $${overnightRate}` : ''
     if (diff === 1) return `Overnight gig · spans 2 days on the calendar${rateLine}`
     return `${diff + 1} calendar days · ${diff} overnight${diff === 1 ? '' : 's'}${rateLine}`
-  }, [careStartDateISO, resolvedEndDateISO])
+  }, [careStartDateISO, resolvedEndDateISO, overnightRate])
 
   const overnightNights = useMemo(() => {
     if (!careStartDateISO) return 0
@@ -155,7 +198,7 @@ export default function BookPage() {
     })
   }, [careStartDateISO, resolvedEndDateISO])
 
-  const overnightTotal = overnightNights * OVERNIGHT_RATE
+  const overnightTotal = overnightNights * overnightRate
 
   const timeOk = useMemo(
     () => careIntervalValid(careStartDateISO, careStart, resolvedEndDateISO, careEnd),
@@ -186,12 +229,29 @@ export default function BookPage() {
     setCareStartDateISO('')
     setCareEndDateISO('')
     setChildrenOnGig('')
-    setFamilyName('')
+    setFamilyName(family?.lastName || '')
     setPhone('')
     setRequestNotes('')
+    setBookingExtras([])
     setSchedulingOpen(false)
     setAwaitingEndDate(false)
     setHoverDateISO(null)
+  }
+
+  function applyBookingExtras(bookingId, startISO, extras) {
+    if (!bookingId || !extras?.length) return
+    const weekKey = toISODateLocal(startOfWeekMonday(new Date(`${startISO}T12:00:00`)))
+    const groceryBits = extras.filter((x) => x.kind === 'grocery').map((x) => x.text)
+    if (groceryBits.length) addShoppingItems(weekKey, groceryBits.join(', '))
+
+    const reminderRows = extras
+      .filter((x) => x.kind === 'reminder' || x.kind === 'errand')
+      .map((x) => ({
+        dateISO: startISO,
+        childName: x.kind === 'errand' ? 'Errand' : '',
+        text: x.text,
+      }))
+    if (reminderRows.length) addRemindersForBooking(bookingId, reminderRows)
   }
 
   function clearScheduling() {
@@ -271,10 +331,12 @@ export default function BookPage() {
     if (!timeOk || !kidsOk || !nameOk || !phoneOk) return
     const start = careStartDateISO
     const endDate = resolvedEndDateISO
+    const extrasSnapshot = [...bookingExtras]
     const booking = addBooking({
       dateISO: start,
       careEndDateISO: endDate,
       familyName: familyName.trim(),
+      familySlug: family?.slug,
       contact: phone.trim(),
       kidCount: childrenParsed.kidCount,
       childrenNames: childrenParsed.childrenNames,
@@ -284,12 +346,17 @@ export default function BookPage() {
     })
     resetBookingForm()
     if (booking?.id) {
-      setFollowUpBooking({
-        id: booking.id,
-        dateISO: start,
-        careEndDateISO: endDate,
-        familyName: familyName.trim(),
-      })
+      applyBookingExtras(booking.id, start, extrasSnapshot)
+      if (extrasSnapshot.length > 0) {
+        showBookToast('Request sent with extras for your caregiver!')
+      } else {
+        setFollowUpBooking({
+          id: booking.id,
+          dateISO: start,
+          careEndDateISO: endDate,
+          familyName: familyName.trim(),
+        })
+      }
     } else {
       showBookToast('Request sent! Your caregiver will follow up.')
     }
@@ -313,20 +380,34 @@ export default function BookPage() {
     )
   }
 
+  if (!family) {
+    return <Navigate to="/book" replace />
+  }
+
+  if (!unlocked) {
+    return <BookFamilyGate family={family} onUnlocked={() => setUnlocked(true)} />
+  }
+
   return (
     <div className="page page--calendar page--book page--book-portal page--schedule page--parents-only schedule-dashboard page--workspace work-ui">
       <div className="book-portal__shell">
         <header className="book-portal__head book-workspace-head">
           <p className="book-parents-banner" role="note">
-            Parent & family portal · this link is not the caregiver app
+            {family.nickname} · parent portal
           </p>
           <p className="book-workspace-head__eyebrow">Availability request</p>
           <h1 id="book-page-heading" className="sr-only">
-            Book a gig
+            Book a gig — {family.nickname}
           </h1>
+          {family.availabilityNote ? (
+            <p className="book-family-availability muted">{family.availabilityNote}</p>
+          ) : null}
           <p className="book-workspace-head__sub muted" role="status" aria-live="polite">
             {selectionHint}
           </p>
+          <Link to="/book" className="book-family-switch">
+            Switch family
+          </Link>
         </header>
 
         <BookTabBar activeTab={activeTab} onTabChange={setActiveTab} />
@@ -355,7 +436,7 @@ export default function BookPage() {
                   todayISO={todayISO}
                   isSameDay={isSameDay}
                   cellBookingMod={cellBookingMod}
-                  cellBookingLabel={cellBookingLabel}
+                  cellBookingLabel={(dayBookings) => cellBookingLabel(dayBookings, family)}
                   onPrevMonth={prevMonth}
                   onNextMonth={nextMonth}
                   onDateSelect={handleCalendarDateSelect}
@@ -375,8 +456,8 @@ export default function BookPage() {
               <section className="book-events__panel">
                 <h2 className="book-events__summary-title">Local events</h2>
                 <p className="muted book-events__lede">
-                  Ideas near Moraga & Oakland — confirm times with each place. Your caregiver also has a full list in
-                  Tools → Events.
+                  Sample outing ideas near Cedar Grove & Bayfront — confirm times with each place. Your caregiver also
+                  has a full list in Tools → Events.
                 </p>
                 <div className="book-events__grid">
                   {EVENT_LOCATIONS.map(({ id, label }) => (
@@ -428,6 +509,7 @@ export default function BookPage() {
         careSpanSummary={careSpanSummary}
         overnightNights={overnightNights}
         overnightTotal={overnightTotal}
+        overnightRate={overnightRate}
         careStart={careStart}
         careEnd={careEnd}
         onCareStartTime={applyCareStartTime}
@@ -438,6 +520,8 @@ export default function BookPage() {
         phone={phone}
         phoneOk={phoneOk}
         requestNotes={requestNotes}
+        bookingExtras={bookingExtras}
+        onBookingExtrasChange={setBookingExtras}
         onChildrenOnGig={setChildrenOnGig}
         onFamilyName={setFamilyName}
         onPhone={setPhone}
@@ -447,6 +531,7 @@ export default function BookPage() {
         canSubmit={!careStartIsPast && timeOk && kidsOk && nameOk && phoneOk}
         onSubmit={submitBooking}
         onClear={clearScheduling}
+        familyNameLocked
       />
 
       <BookFollowUpModal

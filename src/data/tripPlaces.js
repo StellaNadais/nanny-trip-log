@@ -13,65 +13,50 @@ export const HOME_PLACE = {
 export const MILE_RATE = 0.54
 
 /**
- * Saved place nicknames only — no addresses or coordinates in code.
- * region: highlight color in trip/journal mirror only
+ * Portfolio-safe place nicknames only — no real client or venue names.
+ * region: highlight color in trip/journal mirror only (internal key)
  */
 export const PLACES = [
   {
     id: 'drop-off',
-    label: "H's drop off",
-    aliases: [
-      "H's drop off",
-      "H\u2019s drop off",
-      "h's drop off",
-      'Hs drop off',
-      'drop off',
-      'drop-off',
-    ],
+    label: 'School run',
+    aliases: ['school run', 'pickup', 'pick-up', 'morning pickup'],
     region: 'moraga',
   },
   {
     id: 'music',
-    label: 'Lamorinda music',
-    aliases: ['music', 'Lamorinda', 'Lamorinda Music'],
+    label: 'Music',
+    aliases: ['music', 'music class', 'music lesson', 'lessons'],
     region: 'lafayette',
   },
   {
     id: 'laf-library',
-    label: 'Lafayette Library',
-    aliases: ['Laf Library', 'Lafayette library', 'storytime', 'story time'],
+    label: 'Town library',
+    aliases: ['town library', 'city library', 'library', 'storytime', 'story time'],
     region: 'lafayette',
   },
   {
     id: 'swim',
-    label: 'swim',
-    aliases: [
-      'Harriet Plummer Aquatic School',
-      'Harriet Plummer',
-      'Harriet Plummer Aquatics',
-      'swim school',
-      'swim lessons',
-      'Plummer swim',
-      'aquatic school',
-    ],
+    label: 'Swim',
+    aliases: ['swim', 'swim school', 'swim lessons', 'pool', 'aquatics'],
     region: 'lafayette',
   },
   {
     id: 'commons',
-    label: 'Commons',
-    aliases: ['commons', 'Moraga Commons', 'Moraga commons'],
+    label: 'Park',
+    aliases: ['park', 'commons', 'town park', 'playground'],
     region: 'moraga',
   },
   {
     id: 'hacienda',
-    label: 'Hacienda de las Flores',
-    aliases: ['Hacienda', 'las Flores', 'Hacienda de las Flores'],
+    label: 'Garden',
+    aliases: ['garden', 'community garden', 'gardens'],
     region: 'moraga',
   },
   {
     id: 'moraga-library',
-    label: 'Moraga Library',
-    aliases: ['Moraga library'],
+    label: 'Branch library',
+    aliases: ['branch library', 'neighborhood library'],
     region: 'moraga',
   },
   {

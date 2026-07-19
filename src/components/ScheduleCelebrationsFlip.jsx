@@ -13,7 +13,14 @@ function CelebrationsFlipFaces({
   monthTitle,
   celebrations,
   byActivityWeek,
+  activeIndex,
+  onNext,
+  onPrev,
 }) {
+  const current = celebrations[activeIndex] || null
+  const countLabel =
+    celebrations.length > 0 ? `${activeIndex + 1} / ${celebrations.length}` : ''
+
   return (
     <div className="schedule-flip__scene schedule-celebrations-flip__scene">
       <div
@@ -26,26 +33,62 @@ function CelebrationsFlipFaces({
         >
           <div className="schedule-celebrations-flip__main schedule-flip__calendar-main">
             <div className="schedule-flip__calendar-top">
-              <h2 className="schedule-celebrations-flip__title">Do fun list</h2>
+              <h2 className="schedule-celebrations-flip__title">Do fun</h2>
               <p className="calendar__month schedule-celebrations-flip__month-label">{monthTitle}</p>
             </div>
-            <div className="schedule-celebrations-flip__scroll">
+
+            <div className="schedule-celebrations-flip__one">
               {celebrations.length === 0 ? (
                 <p className="muted schedule-celebrations-flip__empty">Nothing this month.</p>
-              ) : (
-                <ul className="schedule-celebrations-flip__list">
-                  {celebrations.map((c) => (
-                    <li key={c.id} className="schedule-celebrations-flip__item">
-                      <time dateTime={c.dateISO}>{c.dateLabel}</time>
-                      <span className="schedule-celebrations-flip__item-title">{c.title}</span>
-                      {c.theme ? (
-                        <span className="schedule-celebrations-flip__item-theme muted">{c.theme}</span>
-                      ) : null}
-                    </li>
-                  ))}
-                </ul>
-              )}
+              ) : current ? (
+                <div className="schedule-celebrations-flip__card">
+                  {celebrations.length > 1 ? (
+                    <button
+                      type="button"
+                      className="schedule-celebrations-flip__one-arrow schedule-celebrations-flip__one-arrow--prev"
+                      onClick={onPrev}
+                      aria-label="Previous celebration"
+                    >
+                      ‹
+                    </button>
+                  ) : null}
+
+                  <button
+                    type="button"
+                    className="schedule-celebrations-flip__card-btn"
+                    onClick={onNext}
+                    aria-label={
+                      celebrations.length > 1
+                        ? `Next celebration. Showing ${countLabel}: ${current.title}`
+                        : current.title
+                    }
+                  >
+                    <time dateTime={current.dateISO}>{current.dateLabel}</time>
+                    <span className="schedule-celebrations-flip__item-title">{current.title}</span>
+                    {current.theme ? (
+                      <span className="schedule-celebrations-flip__item-theme muted">
+                        {current.theme}
+                      </span>
+                    ) : null}
+                    {celebrations.length > 1 ? (
+                      <span className="schedule-celebrations-flip__tap-hint muted">{countLabel}</span>
+                    ) : null}
+                  </button>
+
+                  {celebrations.length > 1 ? (
+                    <button
+                      type="button"
+                      className="schedule-celebrations-flip__one-arrow schedule-celebrations-flip__one-arrow--next"
+                      onClick={onNext}
+                      aria-label="Next celebration"
+                    >
+                      ›
+                    </button>
+                  ) : null}
+                </div>
+              ) : null}
             </div>
+
             <div className="schedule-flip__calendar-footer">
               <button
                 type="button"
@@ -77,7 +120,7 @@ function CelebrationsFlipFaces({
               <span className="schedule-flip__back-btn-arrow" aria-hidden>
                 ←
               </span>
-              <span className="schedule-flip__back-btn-label">List</span>
+              <span className="schedule-flip__back-btn-label">Do fun</span>
             </button>
             <h2 className="schedule-flip__back-heading">Ideas & prep</h2>
           </div>
@@ -115,7 +158,7 @@ function CelebrationsFlipFaces({
 }
 
 /**
- * Do fun list (front) ↔ prep weeks & ideas (back). Month follows the schedule calendar.
+ * Do fun (one at a time) ↔ prep weeks & ideas (back). Month follows the schedule calendar.
  */
 export default function ScheduleCelebrationsFlip({
   year,
@@ -123,6 +166,7 @@ export default function ScheduleCelebrationsFlip({
   embedded = false,
 }) {
   const [showWeeks, setShowWeeks] = useState(false)
+  const [activeIndex, setActiveIndex] = useState(0)
 
   const monthTitle = useMemo(() => monthCelebrationsTitle(monthIndex, year), [monthIndex, year])
   const todayIso = useMemo(() => toISODateLocal(new Date()), [])
@@ -140,12 +184,31 @@ export default function ScheduleCelebrationsFlip({
 
   useEffect(() => {
     setShowWeeks(false)
+    setActiveIndex(0)
   }, [year, monthIndex])
+
+  useEffect(() => {
+    if (celebrations.length === 0) {
+      setActiveIndex(0)
+      return
+    }
+    setActiveIndex((i) => Math.min(i, celebrations.length - 1))
+  }, [celebrations.length])
+
+  function goNext() {
+    if (celebrations.length <= 1) return
+    setActiveIndex((i) => (i + 1) % celebrations.length)
+  }
+
+  function goPrev() {
+    if (celebrations.length <= 1) return
+    setActiveIndex((i) => (i - 1 + celebrations.length) % celebrations.length)
+  }
 
   return (
     <section
       className={`schedule-celebrations-flip schedule-celebrations-flip--embedded schedule-fun-flip schedule-flip schedule-calendar-flip${embedded ? ' schedule-calendar-flip--embedded' : ''}`}
-      aria-label={`Do fun list for ${monthTitle}`}
+      aria-label={`Do fun for ${monthTitle}`}
     >
       <CelebrationsFlipFaces
         showWeeks={showWeeks}
@@ -153,6 +216,9 @@ export default function ScheduleCelebrationsFlip({
         monthTitle={monthTitle}
         celebrations={celebrations}
         byActivityWeek={byActivityWeek}
+        activeIndex={activeIndex}
+        onNext={goNext}
+        onPrev={goPrev}
       />
     </section>
   )

@@ -99,20 +99,6 @@ export const MONTHLY_CELEBRATIONS = [
     activities: ['Coupon book for Dad', 'Outdoor game: catch or bubbles', 'Interview: “favorite memory”'],
   },
   {
-    id: 'world-cup-2026',
-    month: 6,
-    day: 11,
-    spanDays: 20,
-    title: 'FIFA World Cup 2026',
-    theme: 'World soccer',
-    activities: [
-      'Mini soccer in the yard or park',
-      'Color flags for favorite teams',
-      'World map hunt: find team countries',
-      'Halftime snack picnic',
-    ],
-  },
-  {
     id: 'juneteenth',
     month: 6,
     day: 19,
@@ -136,20 +122,6 @@ export const MONTHLY_CELEBRATIONS = [
     title: 'Fourth of July',
     theme: 'Summer & fireworks',
     activities: ['Red-white-blue snack board', 'Parade with instruments', 'Sparkler safety talk (no real sparklers for littles)'],
-  },
-  {
-    id: 'world-cup-knockouts',
-    month: 7,
-    day: 1,
-    spanDays: 18,
-    title: 'World Cup knockout round',
-    theme: 'World soccer',
-    activities: [
-      'Penalty shootout game (socks + laundry basket goal)',
-      'Team jersey or color day',
-      'Watch a knockout match together',
-      'Victory dance / celebration parade at home',
-    ],
   },
   {
     id: 'mandela-day',

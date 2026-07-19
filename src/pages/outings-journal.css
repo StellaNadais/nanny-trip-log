@@ -43,7 +43,9 @@
 }
 
 .page--outings.page--kid-journal .outings-expenses__add-btn:hover,
-.page--outings.page--kid-journal .outings-expenses__add-btn:focus-visible {
+.page--outings.page--kid-journal .outings-expenses__add-btn:focus-visible,
+.page--outings.page--kid-journal .outings-locations__add-btn:hover,
+.page--outings.page--kid-journal .outings-locations__add-btn:focus-visible {
   border-color: var(--journal-mint-deep);
   background: color-mix(in srgb, var(--journal-sage) 38%, var(--journal-surface-bright));
   color: var(--journal-ink-front);
@@ -51,8 +53,8 @@
 
 .page--outings.page--kid-journal .outings__place-remove:hover,
 .page--outings.page--kid-journal .outings__place-remove:active,
-.page--outings.page--kid-journal .outings__location-remove:hover,
-.page--outings.page--kid-journal .outings__location-remove:active {
+.page--outings.page--kid-journal .outings-locations__chip-remove:hover,
+.page--outings.page--kid-journal .outings-locations__chip-remove:active {
   background: color-mix(in srgb, var(--journal-sage) 40%, var(--journal-surface-bright));
   color: var(--journal-mint-deep);
 }

@@ -1,8 +1,8 @@
-import { HOME_PLACE_ID } from './tripPlaces'
+import { HOME_PLACE_ID, PLACE_BY_ID } from './tripPlaces'
 
 /**
  * One-way driving miles between nicknamed stops (undirected).
- * Add rows here as you measure new legs — no addresses stored.
+ * Sample distances for demo / portfolio — not real measured legs.
  *
  * @type {{ from: string, to: string, miles: number }[]}
  */
@@ -21,18 +21,7 @@ export const TRIP_SEGMENTS = [
 
 function placeShort(id) {
   if (id === HOME_PLACE_ID) return 'Home'
-  const labels = {
-    'drop-off': "H's drop off",
-    music: 'music',
-    'laf-library': 'Laf library',
-    swim: 'swim',
-    commons: 'Commons',
-    hacienda: 'Hacienda',
-    'moraga-library': 'Moraga library',
-    school: 'School',
-    store: 'Store',
-  }
-  return labels[id] ?? id
+  return PLACE_BY_ID[id]?.label ?? id
 }
 
 /** Human-readable leg list for Outings UI. */

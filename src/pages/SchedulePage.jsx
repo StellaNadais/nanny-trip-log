@@ -5,12 +5,12 @@ import { useBookings } from '../hooks/useBookings'
 import { bookingOccupiesCalendarSlot } from '../utils/bookingCalendar'
 import { expandBookingCalendarDates, formatCareBookingWindow, bookingEndMs } from '../utils/bookingRange'
 import { formatBookingChildrenLabel } from '../utils/bookingChildren'
-import { upcomingCelebrationsInMonth } from '../utils/scheduleCelebrations'
 import ScheduleCalendarFlip from '../components/ScheduleCalendarFlip'
 import ScheduleFunModal from '../components/ScheduleFunModal'
 import ScheduleOverviewModal from '../components/ScheduleOverviewModal'
 import TodaySpaceTile from '../components/TodaySpaceTile'
 import WorkspaceTileBoard from '../components/WorkspaceTileBoard'
+import { upcomingCelebrationsInMonth } from '../utils/scheduleCelebrations'
 
 function todayISO() {
   return toISODateLocal(new Date())
@@ -178,39 +178,6 @@ export default function SchedulePage() {
     [y, m]
   )
 
-  const funIcon = (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width="22"
-      height="22"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
-    </svg>
-  )
-
-  const overviewIcon = (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width="22"
-      height="22"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M3 3v18h18" />
-      <path d="M7 16l4-4 4 4 6-6" />
-    </svg>
-  )
-
   const requestsPanel = (
     <section
       className="schedule-overview__requests"
@@ -333,7 +300,6 @@ export default function SchedulePage() {
 
   return (
     <div className="page page--schedule schedule-dashboard page--kid-journal page--workspace work-ui">
-
       <div className="journal__layout schedule__layout">
         <section className="schedule__calendar-panel work-ui__panel" aria-label="Gig calendar">
           <ScheduleCalendarFlip
@@ -365,7 +331,6 @@ export default function SchedulePage() {
               square: true,
               children: (
                 <TodaySpaceTile
-                  icon={overviewIcon}
                   count={upcoming.length}
                   preview={overviewPreview}
                   hint="Queue and requests — tap to open."
@@ -379,7 +344,6 @@ export default function SchedulePage() {
               square: true,
               children: (
                 <TodaySpaceTile
-                  icon={funIcon}
                   count={funCount}
                   preview={funPreview}
                   hint="Celebrations this month — tap to open."

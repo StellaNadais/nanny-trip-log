@@ -3,7 +3,6 @@ import NannyReceiptPopup from '../components/NannyReceiptPopup'
 import { receiptNavLabel } from '../utils/receiptHref'
 
 const CARDS = [
-  { to: '/shift', label: 'Shift', code: 'A' },
   { to: '/journal', label: 'Today', code: 'B' },
   { to: '/events', label: 'Events', code: 'C', stacked: true },
 ]
