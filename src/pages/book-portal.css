@@ -3,8 +3,12 @@
 .page--book-portal {
   display: flex;
   flex-direction: column;
-  min-height: 100dvh;
+  /* Keep the page height stable while mobile browser chrome appears or hides. */
+  min-height: 100svh;
   max-height: none;
+  min-width: 0;
+  overflow-x: hidden;
+  overflow-x: clip;
   padding: 0;
   background: #fff;
   color: var(--ink);
@@ -161,6 +165,7 @@
   flex-direction: column;
   flex: 1;
   min-height: 0;
+  min-width: 0;
   width: 100%;
   max-width: none;
   background: #fff;
@@ -182,8 +187,12 @@
 .page--book-portal .book-portal__canvas {
   flex: 1;
   min-height: 0;
+  min-width: 0;
   overflow-y: auto;
+  overflow-x: hidden;
+  overflow-x: clip;
   -webkit-overflow-scrolling: touch;
+  overscroll-behavior-y: contain;
   padding: 0 12px max(16px, env(safe-area-inset-bottom, 0px));
 }
 
@@ -302,6 +311,7 @@
   max-height: min(92dvh, 40rem);
   display: flex;
   flex-direction: column;
+  min-width: 0;
   overflow: hidden;
 }
 
@@ -576,9 +586,12 @@
 
 /* Family access (/book) + per-family header */
 .page--book-access {
-  min-height: 100dvh;
+  min-height: 100svh;
   display: flex;
   flex-direction: column;
+  min-width: 0;
+  overflow-x: hidden;
+  overflow-x: clip;
   background: #fff;
 }
 
@@ -588,6 +601,7 @@
   flex-direction: column;
   gap: 6px;
   width: min(28rem, 100%);
+  min-width: 0;
   margin: 0 auto;
   padding: max(20px, env(safe-area-inset-top, 0px)) 18px 0;
 }
@@ -599,11 +613,14 @@
   justify-content: center;
   width: 100%;
   min-height: 0;
+  min-width: 0;
+  box-sizing: border-box;
   padding: 16px 18px max(28px, env(safe-area-inset-bottom, 0px));
 }
 
 .book-access {
   width: min(28rem, 100%);
+  min-width: 0;
   margin: 0 auto;
   display: flex;
   flex-direction: column;
@@ -631,6 +648,7 @@
   display: flex;
   flex-direction: column;
   gap: 12px;
+  min-width: 0;
   padding: 14px;
   border-radius: 16px;
   border: 1px solid var(--line-soft);
@@ -845,4 +863,54 @@
   min-height: 2.25rem;
   padding-inline: 12px;
   white-space: nowrap;
+}
+
+/*
+ * Phone browsers resize the visual viewport for their address bar and keyboard.
+ * Keep access forms anchored directly below the header instead of re-centering
+ * them on every resize, and anchor the long booking sheet to the bottom.
+ */
+@media (max-width: 599px) {
+  .book-access__stage {
+    align-items: flex-start;
+    justify-content: flex-start;
+    overflow-y: auto;
+    overscroll-behavior-y: contain;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /*
+   * The nickname screen is short enough to sit in the stable small-viewport
+   * space below its fixed header. This keeps it centered without following
+   * the visual viewport as iOS browser chrome or the keyboard changes.
+   */
+  .page--book-access--nickname .book-access__stage {
+    align-items: center;
+    justify-content: center;
+  }
+
+  .page--book-portal .book-scheduling-modal {
+    align-items: flex-end;
+    padding:
+      12px
+      max(12px, env(safe-area-inset-right, 0px))
+      max(12px, env(safe-area-inset-bottom, 0px))
+      max(12px, env(safe-area-inset-left, 0px));
+  }
+
+  .page--book-portal .book-scheduling-modal__sheet {
+    width: 100%;
+    max-height: min(
+      calc(100dvh - max(24px, env(safe-area-inset-top, 0px) + env(safe-area-inset-bottom, 0px))),
+      40rem
+    );
+    border-bottom-right-radius: 0;
+    border-bottom-left-radius: 0;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .page--book-portal .book-scheduling-modal__form {
+    overscroll-behavior-y: contain;
+  }
 }

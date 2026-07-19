@@ -48,7 +48,11 @@ export default function BookAccessPage() {
   }
 
   return (
-    <div className="page page--book page--book-portal page--book-access work-ui">
+    <div
+      className={`page page--book page--book-portal page--book-access work-ui${
+        step === 'nickname' ? ' page--book-access--nickname' : ''
+      }`}
+    >
       <header className="book-access__head">
         <p className="book-access__eyebrow">Parent & family portal</p>
         <h1 className="book-access__title">

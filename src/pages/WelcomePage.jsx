@@ -62,9 +62,9 @@ export default function WelcomePage() {
 
   return (
     <Link
-      to="/schedule"
+      to="/caretaker"
       className="page page--welcome welcome__whole-tap"
-      aria-label="Tap anywhere to start — open your schedule"
+      aria-label="Tap anywhere to start — sign in to your schedule"
     >
       <div className="welcome__body">
         <p className="welcome__greet">{greeting}</p>

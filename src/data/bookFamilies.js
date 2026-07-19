@@ -72,6 +72,15 @@ export const BOOK_FAMILIES = [
     overnightRate: OVERNIGHT_RATE,
     availabilityNote: 'Request dates on the calendar — I’ll confirm what works.',
   },
+  {
+    slug: 'tytycyber',
+    nickname: 'tytycyber',
+    lastName: 'Almeida',
+    hourlyRate: HOURLY_RATE,
+    extraChildPerHour: EXTRA_CHILD_PER_HOUR,
+    overnightRate: OVERNIGHT_RATE,
+    availabilityNote: 'Request dates on the calendar — I’ll confirm what works.',
+  },
 ]
 
 export function getBookFamily(slug) {
