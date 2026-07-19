@@ -25,6 +25,8 @@ import {
 import { parseChildrenOnGig } from '../utils/bookingChildren'
 import { BOOK_THANKS_LEDE, BOOK_THANKS_SUPPORTERS } from '../data/bookThanks'
 import { isBookFamilyUnlocked } from '../utils/bookFamilyAccess'
+import { BRING_ALONG_TOYS } from '../data/bringAlongToys'
+import BringAlongGrid from '../components/BringAlongGrid'
 
 function todayISO() {
   return toISODateLocal(new Date())
@@ -113,6 +115,7 @@ export default function BookPage() {
   const [phone, setPhone] = useState('')
   const [requestNotes, setRequestNotes] = useState('')
   const [bookingExtras, setBookingExtras] = useState([])
+  const [bringAlongIds, setBringAlongIds] = useState([])
   const [followUpBooking, setFollowUpBooking] = useState(null)
   const [bookToast, setBookToast] = useState('')
 
@@ -243,6 +246,7 @@ export default function BookPage() {
     setPhone('')
     setRequestNotes('')
     setBookingExtras([])
+    setBringAlongIds([])
     setSchedulingOpen(false)
     setAwaitingEndDate(false)
     setHoverDateISO(null)
@@ -266,6 +270,12 @@ export default function BookPage() {
 
   function clearScheduling() {
     resetBookingForm()
+  }
+
+  function toggleBringAlong(toyId) {
+    setBringAlongIds((current) =>
+      current.includes(toyId) ? current.filter((id) => id !== toyId) : [...current, toyId]
+    )
   }
 
   function handleCalendarDateSelect(iso) {
@@ -342,6 +352,9 @@ export default function BookPage() {
     const start = careStartDateISO
     const endDate = resolvedEndDateISO
     const extrasSnapshot = [...bookingExtras]
+    const bringAlongSnapshot = BRING_ALONG_TOYS.filter((toy) => bringAlongIds.includes(toy.id)).map(
+      (toy) => toy.name
+    )
     const details = {
       dateISO: start,
       careEndDateISO: endDate,
@@ -354,6 +367,7 @@ export default function BookPage() {
       careEnd,
       notes: requestNotes.trim(),
       extras: extrasSnapshot,
+      bringAlong: bringAlongSnapshot,
     }
     const booking = addBooking(details)
     const repeatBooking = repeatDateISO
@@ -494,6 +508,13 @@ export default function BookPage() {
                   pendingStatusLabel="Request sent"
                 />
               </section>
+
+              <BringAlongGrid
+                heading="Bring with you"
+                description="Pick any toys you plan to send along. They’ll be included with your care request."
+                selectedIds={bringAlongIds}
+                onToggle={toggleBringAlong}
+              />
             </div>
           ) : null}
 

@@ -1,0 +1,162 @@
+.bring-along {
+  padding: 14px;
+  border: 1px solid color-mix(in srgb, #d8d4ce 54%, var(--line-soft));
+  border-radius: 16px;
+  background:
+    linear-gradient(155deg, #fffdf9 0%, #f7f4ee 100%);
+  color: var(--ink);
+}
+
+.bring-along__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.bring-along__eyebrow {
+  margin: 0 0 3px;
+  color: var(--ink-muted);
+  font-size: 0.625rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.bring-along__title {
+  margin: 0;
+  font-family: var(--font-ui);
+  font-size: 1.0625rem;
+  font-weight: 650;
+  letter-spacing: -0.02em;
+}
+
+.bring-along__count {
+  flex: 0 0 auto;
+  padding: 5px 9px;
+  border: 1px solid #d9d0c1;
+  border-radius: 999px;
+  background: #fff;
+  color: var(--ink-muted);
+  font-size: 0.6875rem;
+  font-weight: 600;
+}
+
+.bring-along__lede {
+  margin: 6px 0 14px;
+  color: var(--ink-muted);
+  font-size: 0.8125rem;
+  line-height: 1.45;
+}
+
+.bring-along__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.bring-along__card {
+  display: flex;
+  min-width: 0;
+  min-height: 154px;
+  padding: 0;
+  overflow: hidden;
+  flex-direction: column;
+  align-items: flex-start;
+  border: 1px solid #e0dbd1;
+  border-radius: 13px;
+  background: #fff;
+  color: var(--ink);
+  text-align: left;
+  box-shadow: 0 2px 7px rgba(77, 65, 49, 0.06);
+}
+
+button.bring-along__card {
+  cursor: pointer;
+  font: inherit;
+}
+
+.bring-along__art {
+  display: grid;
+  width: 100%;
+  height: 88px;
+  place-items: center;
+  border-bottom: 1px solid rgba(86, 73, 52, 0.09);
+  font-size: 2.5rem;
+}
+
+.bring-along__art--sand { background: #f4e2b6; }
+.bring-along__art--coral { background: #f6cec1; }
+.bring-along__art--sky { background: #cce5ed; }
+.bring-along__art--rose { background: #efd8df; }
+.bring-along__art--mint { background: #d9e9d9; }
+.bring-along__art--gold { background: #f3e5bc; }
+
+.bring-along__card-name {
+  display: block;
+  width: 100%;
+  padding: 9px 10px 3px;
+  overflow-wrap: anywhere;
+  font-size: 0.8125rem;
+  font-weight: 650;
+  line-height: 1.2;
+}
+
+.bring-along__card-action {
+  display: block;
+  padding: 0 10px 9px;
+  color: var(--ink-muted);
+  font-size: 0.6875rem;
+}
+
+button.bring-along__card--selected {
+  border-color: #8c9b7b;
+  background: #fbfdf7;
+  box-shadow: 0 0 0 2px rgba(140, 155, 123, 0.18);
+}
+
+button.bring-along__card--selected .bring-along__card-action {
+  color: #587046;
+  font-weight: 700;
+}
+
+button.bring-along__card:focus-visible {
+  outline: 2px solid #7a6bb5;
+  outline-offset: 2px;
+}
+
+@media (hover: hover) {
+  button.bring-along__card:hover {
+    transform: translateY(-2px);
+    border-color: #c9bca6;
+    box-shadow: 0 6px 14px rgba(77, 65, 49, 0.11);
+  }
+}
+
+@media (min-width: 520px) {
+  .bring-along__grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.schedule-upcoming-card__bring-along {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin: 10px 0 0;
+  padding: 9px 10px;
+  border: 1px solid color-mix(in srgb, #d8d4ce 55%, var(--line-soft));
+  border-radius: 10px;
+  background: #faf8f3;
+  color: var(--ink);
+  font-size: 0.75rem;
+  line-height: 1.4;
+}
+
+.schedule-upcoming-card__bring-along span {
+  color: var(--ink-muted);
+  font-size: 0.625rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
