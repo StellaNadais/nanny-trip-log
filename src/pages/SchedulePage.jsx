@@ -69,12 +69,20 @@ export default function SchedulePage() {
     return [...bookings]
       .filter((b) => b.dateISO && bookingEndMs(b) >= now)
       .sort((a, b) => {
+        const aPending = gigResponseStatus(a) === 'pending'
+        const bPending = gigResponseStatus(b) === 'pending'
+        if (aPending !== bPending) return aPending ? -1 : 1
         const a0 = new Date(`${a.dateISO}T${a.careStart || '00:00'}:00`).getTime()
         const b0 = new Date(`${b.dateISO}T${b.careStart || '00:00'}:00`).getTime()
         if (a0 !== b0) return a0 - b0
         return (a.createdAt ?? '').localeCompare(b.createdAt ?? '')
       })
   }, [bookings])
+
+  const pendingUpcoming = useMemo(
+    () => upcoming.filter((booking) => gigResponseStatus(booking) === 'pending'),
+    [upcoming]
+  )
 
   const acceptedUpcoming = useMemo(() => {
     const now = Date.now()
@@ -158,11 +166,13 @@ export default function SchedulePage() {
     setCursor(new Date(y, m + 1, 1))
   }
 
-  const overviewPreview = useMemo(() => {
-    const bits = [`${upcoming.length} in queue`, `${acceptedUpcoming.length} confirmed`]
-    if (currentGig?.familyName) bits.push(currentGig.familyName)
-    return bits.join(' · ')
-  }, [upcoming.length, acceptedUpcoming.length, currentGig?.familyName])
+  const overviewPreview = [
+    `${pendingUpcoming.length} new request${pendingUpcoming.length === 1 ? '' : 's'}`,
+    `${acceptedUpcoming.length} confirmed`,
+    currentGig?.familyName,
+  ]
+    .filter(Boolean)
+    .join(' · ')
 
   const funPreview = useMemo(() => {
     const list = upcomingCelebrationsInMonth(y, m, todayISO())
@@ -241,10 +251,22 @@ export default function SchedulePage() {
                     </span>
                   ) : null}
                   {currentGig.notes ? <p className="book-upcoming__notes">{currentGig.notes}</p> : null}
+                  {currentGig.extras?.length ? (
+                    <ul className="book-upcoming__meta muted" aria-label="Added for this gig">
+                      {currentGig.extras.map((extra) => (
+                        <li key={extra.id}>
+                          {extra.kind}: {extra.text}
+                        </li>
+                      ))}
+                    </ul>
+                  ) : null}
 
                   <div className="schedule-upcoming-card__actions">
                     {gigStatus === 'pending' ? (
                       <>
+                        <p className="schedule-upcoming-card__status schedule-upcoming-card__status--pending">
+                          New request
+                        </p>
                         <button
                           type="button"
                           className="btn btn--primary schedule-upcoming-card__btn"
@@ -333,7 +355,11 @@ export default function SchedulePage() {
                 <TodaySpaceTile
                   count={upcoming.length}
                   preview={overviewPreview}
-                  hint="Queue and requests — tap to open."
+                  hint={
+                    pendingUpcoming.length
+                      ? 'New requests are ready to review — tap to open.'
+                      : 'Queue and requests — tap to open.'
+                  }
                   onClick={() => openSchedulePanel('overview')}
                 />
               ),

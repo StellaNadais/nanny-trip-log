@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
-import { loadBookings, saveBookings } from '../utils/bookingsStorage'
+import { BOOKINGS_STORAGE_KEY, loadBookings, saveBookings } from '../utils/bookingsStorage'
 import { BookingsContext } from './bookingsContext'
 
 function newId() {
@@ -13,10 +13,21 @@ export function BookingsProvider({ children }) {
     saveBookings(bookings)
   }, [bookings])
 
+  useEffect(() => {
+    function syncBookings(event) {
+      if (event.key !== BOOKINGS_STORAGE_KEY) return
+      setBookings(loadBookings())
+    }
+
+    window.addEventListener('storage', syncBookings)
+    return () => window.removeEventListener('storage', syncBookings)
+  }, [])
+
   const addBooking = useCallback((payload) => {
     const booking = {
       id: newId(),
       createdAt: new Date().toISOString(),
+      responseStatus: 'pending',
       ...payload,
     }
     setBookings((prev) => [booking, ...prev])

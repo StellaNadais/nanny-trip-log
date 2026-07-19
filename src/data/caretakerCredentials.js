@@ -2,10 +2,16 @@
  * Caretaker access credentials.
  * Passwords use the same last-name-plus-year convention as the family portal.
  */
-export const CARETAKER_CREDENTIALS = {
-  nickname: 'stelli',
-  password: 'nadais2026',
-}
+export const CARETAKER_CREDENTIALS = [
+  {
+    nickname: 'stelli',
+    password: 'nadais2026',
+  },
+  {
+    nickname: 'merick',
+    password: 'nadais2026',
+  },
+]
 
 export function normalizeCaretakerCredential(value) {
   return String(value || '')
@@ -15,8 +21,12 @@ export function normalizeCaretakerCredential(value) {
 }
 
 export function checkCaretakerCredentials(nickname, password) {
-  return (
-    normalizeCaretakerCredential(nickname) === CARETAKER_CREDENTIALS.nickname &&
-    normalizeCaretakerCredential(password) === CARETAKER_CREDENTIALS.password
+  const normalizedNickname = normalizeCaretakerCredential(nickname)
+  const normalizedPassword = normalizeCaretakerCredential(password)
+
+  return CARETAKER_CREDENTIALS.some(
+    (credential) =>
+      normalizedNickname === credential.nickname &&
+      normalizedPassword === credential.password,
   )
 }

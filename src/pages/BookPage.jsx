@@ -343,6 +343,7 @@ export default function BookPage() {
       careStart,
       careEnd,
       notes: requestNotes.trim(),
+      extras: extrasSnapshot,
     })
     resetBookingForm()
     if (booking?.id) {

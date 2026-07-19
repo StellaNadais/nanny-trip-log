@@ -2668,6 +2668,11 @@ button.calendar__cell:focus-visible {
   color: var(--ink-muted);
 }
 
+.schedule-upcoming-card__status--pending {
+  flex: 1 1 100%;
+  color: var(--accent);
+}
+
 .schedule-upcoming-card__status--declined {
   margin: 0;
   flex: 1 1 auto;
