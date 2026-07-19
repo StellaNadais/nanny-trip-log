@@ -3,7 +3,8 @@ import { Link, Navigate, useParams } from 'react-router-dom'
 import { EVENT_LOCATIONS, groupFamilyEventsByLocation } from '../data/familyEvents'
 import { getBookFamily } from '../data/bookFamilies'
 import { OVERNIGHT_RATE } from '../data/bookingRates'
-import { toISODateLocal } from '../utils/dates'
+import { startOfWeekMonday, toISODateLocal } from '../utils/dates'
+import { addShoppingItems } from '../utils/journalShoppingStorage'
 import { monthGrid, isSameDay } from '../utils/calendarMonth'
 import { useBookings } from '../hooks/useBookings'
 import { useParentReminders } from '../hooks/useParentReminders'
@@ -104,6 +105,7 @@ export default function BookPage() {
   const [familyName, setFamilyName] = useState('')
   const [phone, setPhone] = useState('')
   const [requestNotes, setRequestNotes] = useState('')
+  const [bookingExtras, setBookingExtras] = useState([])
   const [followUpBooking, setFollowUpBooking] = useState(null)
   const [bookToast, setBookToast] = useState('')
 
@@ -230,9 +232,26 @@ export default function BookPage() {
     setFamilyName(family?.lastName || '')
     setPhone('')
     setRequestNotes('')
+    setBookingExtras([])
     setSchedulingOpen(false)
     setAwaitingEndDate(false)
     setHoverDateISO(null)
+  }
+
+  function applyBookingExtras(bookingId, startISO, extras) {
+    if (!bookingId || !extras?.length) return
+    const weekKey = toISODateLocal(startOfWeekMonday(new Date(`${startISO}T12:00:00`)))
+    const groceryBits = extras.filter((x) => x.kind === 'grocery').map((x) => x.text)
+    if (groceryBits.length) addShoppingItems(weekKey, groceryBits.join(', '))
+
+    const reminderRows = extras
+      .filter((x) => x.kind === 'reminder' || x.kind === 'errand')
+      .map((x) => ({
+        dateISO: startISO,
+        childName: x.kind === 'errand' ? 'Errand' : '',
+        text: x.text,
+      }))
+    if (reminderRows.length) addRemindersForBooking(bookingId, reminderRows)
   }
 
   function clearScheduling() {
@@ -312,6 +331,7 @@ export default function BookPage() {
     if (!timeOk || !kidsOk || !nameOk || !phoneOk) return
     const start = careStartDateISO
     const endDate = resolvedEndDateISO
+    const extrasSnapshot = [...bookingExtras]
     const booking = addBooking({
       dateISO: start,
       careEndDateISO: endDate,
@@ -326,12 +346,17 @@ export default function BookPage() {
     })
     resetBookingForm()
     if (booking?.id) {
-      setFollowUpBooking({
-        id: booking.id,
-        dateISO: start,
-        careEndDateISO: endDate,
-        familyName: familyName.trim(),
-      })
+      applyBookingExtras(booking.id, start, extrasSnapshot)
+      if (extrasSnapshot.length > 0) {
+        showBookToast('Request sent with extras for your caregiver!')
+      } else {
+        setFollowUpBooking({
+          id: booking.id,
+          dateISO: start,
+          careEndDateISO: endDate,
+          familyName: familyName.trim(),
+        })
+      }
     } else {
       showBookToast('Request sent! Your caregiver will follow up.')
     }
@@ -495,6 +520,8 @@ export default function BookPage() {
         phone={phone}
         phoneOk={phoneOk}
         requestNotes={requestNotes}
+        bookingExtras={bookingExtras}
+        onBookingExtrasChange={setBookingExtras}
         onChildrenOnGig={setChildrenOnGig}
         onFamilyName={setFamilyName}
         onPhone={setPhone}

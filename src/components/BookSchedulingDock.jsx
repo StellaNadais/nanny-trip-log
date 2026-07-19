@@ -1,5 +1,6 @@
 import { useEffect } from 'react'
 import { OVERNIGHT_RATE } from '../data/bookingRates'
+import BookExtrasField from './BookExtrasField'
 
 /**
  * Booking form popup — dates come from calendar selection; times + details here.
@@ -22,6 +23,8 @@ export default function BookSchedulingDock({
   phone,
   phoneOk,
   requestNotes,
+  bookingExtras,
+  onBookingExtrasChange,
   onChildrenOnGig,
   onFamilyName,
   onPhone,
@@ -203,6 +206,7 @@ export default function BookSchedulingDock({
                 autoComplete="off"
               />
             </label>
+            <BookExtrasField items={bookingExtras} onChange={onBookingExtrasChange} />
           </div>
 
           {careStartIsPast ? (

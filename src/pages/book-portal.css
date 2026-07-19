@@ -687,3 +687,162 @@
   color: var(--ink);
   outline: none;
 }
+
+/* Compact extras under notes (+ reminder / grocery / errand) */
+.page--book-portal .book-extras-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.page--book-portal .book-extras-field__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.page--book-portal .book-extras-field__chip {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 8px;
+  align-items: center;
+  padding: 8px 10px;
+  border-radius: 10px;
+  border: 1px solid var(--line-soft);
+  background: color-mix(in srgb, #f7f5f2 70%, #fff);
+  font-size: 0.8125rem;
+}
+
+.page--book-portal .book-extras-field__chip-kind {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+}
+
+.page--book-portal .book-extras-field__chip-text {
+  min-width: 0;
+  color: var(--ink);
+  line-height: 1.35;
+}
+
+.page--book-portal .book-extras-field__chip-remove {
+  width: 1.75rem;
+  height: 1.75rem;
+  margin: 0;
+  padding: 0;
+  border: none;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--ink-muted);
+  font-size: 1.15rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.page--book-portal .book-extras-field__chip-remove:hover,
+.page--book-portal .book-extras-field__chip-remove:focus-visible {
+  color: var(--ink);
+  background: color-mix(in srgb, #ebe8e3 55%, #fff);
+  outline: none;
+}
+
+.page--book-portal .book-extras-field__choices {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+
+.page--book-portal .book-extras-field__plus-ico {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, #ebe8f5 55%, #fff);
+  color: #7a6bb5;
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.page--book-portal .book-extras-field__choice {
+  margin: 0;
+  padding: 6px 12px;
+  border: 1px dashed color-mix(in srgb, #d8d4ce 55%, var(--line-soft));
+  border-radius: 999px;
+  background: color-mix(in srgb, #faf9f7 80%, #fff);
+  color: var(--ink-muted);
+  font: inherit;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.page--book-portal .book-extras-field__choice:hover,
+.page--book-portal .book-extras-field__choice:focus-visible {
+  color: var(--ink);
+  border-color: color-mix(in srgb, #7a6bb5 28%, var(--line-soft));
+  background: color-mix(in srgb, #ebe8f5 35%, #fff);
+  outline: none;
+}
+
+.page--book-portal .book-extras-field__composer {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 12px;
+  border-radius: 14px;
+  border: 1px solid var(--line-soft);
+  background: color-mix(in srgb, #faf9f7 85%, #fff);
+}
+
+.page--book-portal .book-extras-field__composer-top {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.page--book-portal .book-extras-field__kind {
+  flex: 0 1 10rem;
+  min-width: 8rem;
+  margin: 0;
+}
+
+.page--book-portal .book-extras-field__text {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  margin: 0;
+}
+
+.page--book-portal .book-extras-field__kind-select {
+  width: 100%;
+}
+
+.page--book-portal .book-extras-field__area {
+  width: 100%;
+  min-height: 4.5rem;
+  resize: vertical;
+}
+
+.page--book-portal .book-extras-field__actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.page--book-portal .book-extras-field__add-btn,
+.page--book-portal .book-extras-field__cancel {
+  min-height: 2.25rem;
+  padding-inline: 12px;
+  white-space: nowrap;
+}
