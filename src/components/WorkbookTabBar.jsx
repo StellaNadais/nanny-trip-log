@@ -5,7 +5,7 @@ export const WORKBOOK_TABS = [
   { to: '/schedule', label: 'Schedule', end: true },
   // Shift hidden for now — re-add { to: '/shift', label: 'Shift' } when ready
   { to: '/journal', label: 'Today' },
-  { to: '/events', label: 'Events' },
+  // Events hidden for now — re-add { to: '/events', label: 'Events' } when ready
 ]
 
 export default function WorkbookTabBar({ onReceiptClick, receiptDisabled = false }) {

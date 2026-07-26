@@ -1,4 +1,5 @@
 import { useEffect } from 'react'
+import { createPortal } from 'react-dom'
 import { OVERNIGHT_RATE } from '../data/bookingRates'
 
 /**
@@ -48,9 +49,9 @@ export default function BookSchedulingDock({
 
   if (!open) return null
 
-  return (
+  return createPortal(
     <div
-      className="book-modal book-scheduling-modal book-modal--clear"
+      className="book-modal book-scheduling-modal"
       role="dialog"
       aria-modal="true"
       aria-labelledby="book-scheduling-title"
@@ -251,6 +252,7 @@ export default function BookSchedulingDock({
           </div>
         </form>
       </div>
-    </div>
+    </div>,
+    document.body
   )
 }

@@ -1,6 +1,6 @@
 const BOOK_TABS = [
   { id: 'calendar', label: 'Calendar' },
-  { id: 'events', label: 'Events' },
+  // Events hidden for now — re-add { id: 'events', label: 'Events' } when ready
   { id: 'thanks', label: 'Thank you' },
 ]
 

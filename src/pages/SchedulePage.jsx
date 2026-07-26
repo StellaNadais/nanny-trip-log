@@ -11,6 +11,7 @@ import ScheduleOverviewModal from '../components/ScheduleOverviewModal'
 import TodayPanelModal from '../components/TodayPanelModal'
 import TodaySpaceTile from '../components/TodaySpaceTile'
 import WorkspaceTileBoard from '../components/WorkspaceTileBoard'
+import ScheduleBringAlongTile from '../components/ScheduleBringAlongTile'
 import { upcomingCelebrationsInMonth } from '../utils/scheduleCelebrations'
 
 function todayISO() {
@@ -94,6 +95,24 @@ export default function SchedulePage() {
         const b0 = new Date(`${b.dateISO}T${b.careStart || '00:00'}:00`).getTime()
         if (a0 !== b0) return a0 - b0
         return (a.createdAt ?? '').localeCompare(b.createdAt ?? '')
+      })
+  }, [bookings])
+
+  const rentedToyVisits = useMemo(() => {
+    const now = Date.now()
+    return [...bookings]
+      .filter(
+        (booking) =>
+          booking.dateISO &&
+          bookingEndMs(booking) >= now &&
+          gigResponseStatus(booking) !== 'declined' &&
+          Array.isArray(booking.bringAlong) &&
+          booking.bringAlong.length > 0
+      )
+      .sort((a, b) => {
+        const a0 = new Date(`${a.dateISO}T${a.careStart || '00:00'}:00`).getTime()
+        const b0 = new Date(`${b.dateISO}T${b.careStart || '00:00'}:00`).getTime()
+        return a0 - b0
       })
   }, [bookings])
 
@@ -385,6 +404,12 @@ export default function SchedulePage() {
                   onClick={() => openSchedulePanel('fun')}
                 />
               ),
+            },
+            {
+              id: 'bring-along',
+              label: 'Bring with me',
+              span: 2,
+              children: <ScheduleBringAlongTile bookings={rentedToyVisits} />,
             },
           ]}
         />

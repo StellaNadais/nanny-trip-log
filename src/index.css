@@ -68,7 +68,9 @@ optgroup {
 button,
 [role='button'],
 [role='tab'],
-[role='gridcell'] {
+[role='gridcell'],
+a[href],
+summary {
   touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
 }
@@ -99,18 +101,36 @@ summary:focus-visible {
 html {
   height: 100%;
   background: var(--sky-gradient);
+  overflow-x: hidden;
+  overflow-x: clip;
 }
 
 body {
   margin: 0;
   min-height: 100%;
   min-height: 100dvh;
+  min-height: 100svh;
   background: transparent;
   position: relative;
   /* Inset main column so fixed rainbow strips stay visible on the left/right */
   padding-left: max(8px, env(safe-area-inset-left, 0px));
   padding-right: max(8px, env(safe-area-inset-right, 0px));
   box-sizing: border-box;
+  overflow-x: hidden;
+  overflow-x: clip;
+}
+
+/*
+ * Safari enlarges the visual viewport when a focused form control computes
+ * below 16px, which can leave the page looking zoomed after the keyboard
+ * closes. Keep all editable controls at the iOS threshold on phones.
+ */
+@media (max-width: 599px) {
+  input:not([type='checkbox']):not([type='radio']),
+  textarea,
+  select {
+    font-size: 16px !important;
+  }
 }
 
 @media (min-width: 600px) {
@@ -166,6 +186,7 @@ body::after {
   max-width: 100%;
   min-height: 100%;
   min-height: 100dvh;
+  min-height: 100svh;
   margin: 0;
   position: relative;
   z-index: 1;

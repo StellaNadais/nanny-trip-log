@@ -545,7 +545,7 @@ export default function BookPage() {
               </section>
 
               {hasBookingActivity ? (
-                <>
+                <div className="book-portal__post-booking-tools">
                   <BringAlongCarousel selectedIds={bringAlongIds} onToggle={toggleBringAlong} />
                   <BookAppreciationFooter
                     value={appreciationNote}
@@ -556,7 +556,7 @@ export default function BookPage() {
                       }))
                     }
                   />
-                </>
+                </div>
               ) : null}
             </div>
           ) : null}

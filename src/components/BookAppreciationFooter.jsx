@@ -5,7 +5,6 @@ export default function BookAppreciationFooter({ value, onChange }) {
   return (
     <section className="book-appreciation-footer" aria-label="Appreciation note">
       <label className="book-appreciation-footer__field">
-        <span className="book-appreciation-footer__label">A little thank-you</span>
         <textarea
           value={value}
           onChange={(event) => onChange(event.target.value)}

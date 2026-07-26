@@ -5,13 +5,33 @@ import JournalMoodBar from './JournalMoodBar'
 import { splitTripLogForMirror } from '../utils/parseTripPlaces'
 
 function routePreviewPlaces(routeText) {
-  return splitTripLogForMirror(routeText)
-    .filter((chunk) => (chunk.type === 'place' || chunk.type === 'token') && chunk.place)
-    .map((chunk) => ({
-      id: chunk.place.id,
-      label: String(chunk.value).toLocaleLowerCase(),
-      region: chunk.place.region || 'unknown',
-    }))
+  const places = []
+
+  for (const chunk of splitTripLogForMirror(routeText)) {
+    if ((chunk.type === 'place' || chunk.type === 'token') && chunk.place) {
+      places.push({
+        id: chunk.place.id,
+        label: String(chunk.value).toLocaleLowerCase(),
+        region: chunk.place.region || 'unknown',
+      })
+      continue
+    }
+
+    // Keep unmatched words visible too, including the word currently being typed.
+    // Known multi-word places remain one colored pill because the scanner returns
+    // them as a `place` chunk before this fallback runs.
+    if (chunk.type === 'text') {
+      for (const match of chunk.value.matchAll(/[\p{L}\p{N}]+(?:['’-][\p{L}\p{N}]+)*/gu)) {
+        places.push({
+          id: `draft-${chunk.start + match.index}`,
+          label: match[0].toLocaleLowerCase(),
+          region: 'unknown',
+        })
+      }
+    }
+  }
+
+  return places
 }
 
 /**

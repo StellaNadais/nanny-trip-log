@@ -1661,6 +1661,7 @@
 .about-today-modal__route-pill {
   display: block;
   padding: 3px 8px 4px;
+  border: 1px solid color-mix(in srgb, var(--ink-muted) 35%, transparent);
   border-radius: 999px;
   color: var(--ink-muted);
   background: color-mix(in srgb, var(--line-soft) 60%, transparent);
@@ -1674,32 +1675,38 @@
 .about-today-modal__route-pill.trip-place--moraga,
 .about-today-modal__route-pill.trip-place--park {
   color: #1e4a38;
+  border-color: rgba(34, 100, 72, 0.4);
   background: rgba(34, 100, 72, 0.14);
 }
 
 .about-today-modal__route-pill.trip-place--lafayette,
 .about-today-modal__route-pill.trip-place--museum {
   color: #5c2d0a;
+  border-color: rgba(120, 53, 15, 0.4);
   background: rgba(120, 53, 15, 0.14);
 }
 
 .about-today-modal__route-pill.trip-place--client {
   color: #1a3a5c;
+  border-color: rgba(30, 58, 95, 0.4);
   background: rgba(30, 58, 95, 0.14);
 }
 
 .about-today-modal__route-pill.trip-place--downtown {
   color: #7c2d12;
+  border-color: rgba(180, 83, 9, 0.4);
   background: rgba(180, 83, 9, 0.14);
 }
 
 .about-today-modal__route-pill.trip-place--outing {
   color: #115e59;
+  border-color: rgba(13, 148, 136, 0.4);
   background: rgba(13, 148, 136, 0.14);
 }
 
 .about-today-modal__route-pill.trip-place--custom {
   color: var(--seafoam-1);
+  border-color: color-mix(in srgb, var(--seafoam-1) 45%, transparent);
   background: color-mix(in srgb, var(--seafoam-2) 16%, transparent);
 }
 

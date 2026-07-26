@@ -219,19 +219,46 @@
 }
 
 /*
- * Once the family's play kit is available, let the calendar stop at its
- * natural grid height and give the remaining workspace to the kit. Keeping
- * the calendar flexible here left unused space inside its panel while the
- * carousel below stayed unnecessarily short.
+ * The post-booking tools share the calendar's column. The calendar takes the
+ * remaining height while the play kit and pink note retain compact, visible
+ * rows at the bottom of the workspace.
  */
-.page--book-portal .book-portal__panel:has(.bring-along-carousel) .schedule__calendar-panel {
-  flex: 0 1 auto;
+.page--book-portal .book-portal__post-booking-tools {
+  display: flex;
+  flex: 0 0 auto;
+  flex-direction: column;
+  gap: 6px;
+  min-height: 0;
 }
 
-.page--book-portal .book-portal__panel:has(.bring-along-carousel) .bring-along-carousel {
-  flex: 1 1 12rem;
-  min-height: 12rem;
+.page--book-portal .book-portal__panel:has(.book-portal__post-booking-tools) .schedule__calendar-panel {
+  flex: 1 1 0;
+  min-height: 0;
+}
+
+/* Override the embedded calendar's natural-height rules in this compact portal. */
+.page--book-portal
+  .book-portal__panel:has(.book-portal__post-booking-tools)
+  .schedule__calendar-panel
+  .schedule-calendar-flip--embedded,
+.page--book-portal
+  .book-portal__panel:has(.book-portal__post-booking-tools)
+  .schedule__calendar-panel
+  .schedule-calendar-flip--embedded
+  .schedule-flip__scene {
+  min-height: 0;
+  height: 100%;
+}
+
+.page--book-portal .book-portal__post-booking-tools .bring-along-carousel {
+  flex: 0 0 clamp(7rem, 17svh, 9rem);
+  min-height: 0;
   min-width: 0;
+}
+
+.page--book-portal .book-portal__post-booking-tools .bring-along-carousel__card,
+.page--book-portal .book-portal__post-booking-tools .bring-along-carousel__card .bring-along__art {
+  min-height: 0;
 }
 
 .page--book-portal .book-request-cta {
@@ -357,10 +384,6 @@
   }
 }
 
-.page--book-portal .book-scheduling-modal.book-modal--clear .book-modal__backdrop {
-  background: transparent;
-}
-
 .schedule-calendar-flip__legend-item--select-start::before {
   border: 1.5px solid var(--accent);
   background: color-mix(in srgb, var(--accent-soft) 55%, var(--paper));
@@ -376,7 +399,7 @@
   background: color-mix(in srgb, var(--accent-soft) 40%, var(--paper));
 }
 
-.page--book-portal .book-scheduling-modal__sheet {
+.book-scheduling-modal__sheet {
   width: min(100%, 29rem);
   max-height: min(
     calc(100dvh - max(24px, env(safe-area-inset-top, 0px) + env(safe-area-inset-bottom, 0px))),
@@ -389,7 +412,7 @@
   padding: 14px 16px 16px;
 }
 
-.page--book-portal .book-scheduling-modal__form {
+.book-scheduling-modal__form {
   flex: 1;
   min-height: 0;
   overflow-y: auto;
@@ -397,55 +420,55 @@
   -webkit-overflow-scrolling: touch;
 }
 
-.page--book-portal .book-scheduling-modal .book-modal__head {
+.book-scheduling-modal .book-modal__head {
   margin-bottom: 8px;
 }
 
-.page--book-portal .book-scheduling-modal .book-modal__date {
+.book-scheduling-modal .book-modal__date {
   margin-top: 4px;
 }
 
-.page--book-portal .book-scheduling-modal .book-modal__sub {
+.book-scheduling-modal .book-modal__sub {
   margin-top: 3px;
 }
 
-.page--book-portal .book-scheduling-modal .book-modal__hotel-card {
+.book-scheduling-modal .book-modal__hotel-card {
   padding: 10px;
 }
 
-.page--book-portal .book-scheduling-modal .book-modal__hotel-dates {
+.book-scheduling-modal .book-modal__hotel-dates {
   gap: 7px;
 }
 
-.page--book-portal .book-scheduling-modal .book-modal__hotel-col {
+.book-scheduling-modal .book-modal__hotel-col {
   gap: 4px;
 }
 
-.page--book-portal .book-scheduling-modal .book-modal__hotel-summary {
+.book-scheduling-modal .book-modal__hotel-summary {
   margin-top: 6px;
 }
 
-.page--book-portal .book-scheduling-modal .book-modal__block {
+.book-scheduling-modal .book-modal__block {
   gap: 6px;
   padding-top: 0;
 }
 
-.page--book-portal .book-scheduling-modal .field-block {
+.book-scheduling-modal .field-block {
   gap: 3px;
 }
 
-.page--book-portal .book-scheduling-modal .input--line {
+.book-scheduling-modal .input--line {
   min-height: 38px;
   padding: 7px 9px;
 }
 
-.page--book-portal .book-scheduling-modal .book-modal__notes {
+.book-scheduling-modal .book-modal__notes {
   min-height: 3.25rem;
   max-height: 4.5rem;
   padding: 7px 9px;
 }
 
-.page--book-portal .book-scheduling-modal__date-readout {
+.book-scheduling-modal__date-readout {
   margin: 0;
   font-family: var(--font-ui);
   font-size: 0.9375rem;
@@ -454,13 +477,13 @@
   color: var(--ink);
 }
 
-.page--book-portal .book-scheduling-modal__repeat-hint {
+.book-scheduling-modal__repeat-hint {
   margin: 2px 0 0;
   font-size: 0.75rem;
   line-height: 1.4;
 }
 
-.page--book-portal .book-scheduling-modal__actions {
+.book-scheduling-modal__actions {
   flex-shrink: 0;
   padding-top: 8px;
   border-top: 1px solid var(--line-soft);
@@ -1030,34 +1053,26 @@
 
 /* A quiet, in-flow note directly below the family's play kit. */
 .page--book-portal .book-appreciation-footer {
-  padding: 2px 0 12px;
+  flex: 0 0 auto;
+  padding: 0;
 }
 
 .page--book-portal .book-appreciation-footer__field {
-  display: grid;
-  grid-template-columns: max-content minmax(0, 1fr);
-  align-items: center;
-  gap: 8px;
-  color: #786b5c;
-  font-size: 0.75rem;
-  font-weight: 650;
-}
-
-.page--book-portal .book-appreciation-footer__label {
-  white-space: nowrap;
+  display: block;
 }
 
 .page--book-portal .book-appreciation-footer__field textarea {
   display: block;
   width: 100%;
   box-sizing: border-box;
-  min-height: 2.25rem;
+  height: 2.5rem;
+  min-height: 2.5rem;
   resize: none;
   padding: 6px 9px;
   border: 1px solid #ded7cd;
   border-radius: 8px;
   outline: none;
-  background: #fdfbf7;
+  background: #fff0f5;
   color: var(--ink);
   font: inherit;
   font-size: 0.8125rem;
@@ -1069,8 +1084,8 @@
 }
 
 .page--book-portal .book-appreciation-footer__field textarea:focus {
-  border-color: #a79c8f;
-  box-shadow: 0 0 0 3px rgb(167 156 143 / 16%);
+  border-color: #e9a9bd;
+  box-shadow: 0 0 0 3px rgb(233 169 189 / 20%);
 }
 
 /*
@@ -1098,7 +1113,7 @@
     justify-content: center;
   }
 
-  .page--book-portal .book-scheduling-modal {
+  .book-scheduling-modal {
     align-items: center;
     justify-content: center;
     padding:
@@ -1108,7 +1123,7 @@
       max(8px, env(safe-area-inset-left, 0px));
   }
 
-  .page--book-portal .book-scheduling-modal__sheet {
+  .book-scheduling-modal__sheet {
     width: 100%;
     max-height: min(
       calc(100dvh - max(16px, env(safe-area-inset-top, 0px) + env(safe-area-inset-bottom, 0px))),
@@ -1119,44 +1134,44 @@
     -webkit-overflow-scrolling: touch;
   }
 
-  .page--book-portal .book-scheduling-modal__form {
+  .book-scheduling-modal__form {
     overscroll-behavior-y: contain;
   }
 }
 
 @media (max-width: 599px) and (max-height: 650px) {
-  .page--book-portal .book-scheduling-modal__sheet {
+  .book-scheduling-modal__sheet {
     padding: 10px 12px 12px;
   }
 
-  .page--book-portal .book-scheduling-modal .book-modal__head {
+  .book-scheduling-modal .book-modal__head {
     margin-bottom: 6px;
   }
 
-  .page--book-portal .book-scheduling-modal .book-modal__sub,
-  .page--book-portal .book-scheduling-modal__repeat-hint {
+  .book-scheduling-modal .book-modal__sub,
+  .book-scheduling-modal__repeat-hint {
     display: none;
   }
 
-  .page--book-portal .book-scheduling-modal .book-modal__hotel-card {
+  .book-scheduling-modal .book-modal__hotel-card {
     padding: 8px;
   }
 
-  .page--book-portal .book-scheduling-modal .book-modal__form {
+  .book-scheduling-modal .book-modal__form {
     gap: 7px;
   }
 
-  .page--book-portal .book-scheduling-modal .input--line {
+  .book-scheduling-modal .input--line {
     min-height: 36px;
     padding-block: 5px;
   }
 
-  .page--book-portal .book-scheduling-modal .book-modal__notes {
+  .book-scheduling-modal .book-modal__notes {
     min-height: 2.75rem;
     max-height: 3.5rem;
   }
 
-  .page--book-portal .book-scheduling-modal__actions {
+  .book-scheduling-modal__actions {
     padding-top: 6px;
   }
 }
