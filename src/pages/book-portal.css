@@ -218,6 +218,22 @@
   min-width: 0;
 }
 
+/*
+ * Once the family's play kit is available, let the calendar stop at its
+ * natural grid height and give the remaining workspace to the kit. Keeping
+ * the calendar flexible here left unused space inside its panel while the
+ * carousel below stayed unnecessarily short.
+ */
+.page--book-portal .book-portal__panel:has(.bring-along-carousel) .schedule__calendar-panel {
+  flex: 0 1 auto;
+}
+
+.page--book-portal .book-portal__panel:has(.bring-along-carousel) .bring-along-carousel {
+  flex: 1 1 12rem;
+  min-height: 12rem;
+  min-width: 0;
+}
+
 .page--book-portal .book-request-cta {
   margin: 10px 0 0;
   padding: 0 2px;
@@ -361,18 +377,72 @@
 }
 
 .page--book-portal .book-scheduling-modal__sheet {
-  max-height: min(92dvh, 40rem);
+  width: min(100%, 29rem);
+  max-height: min(
+    calc(100dvh - max(24px, env(safe-area-inset-top, 0px) + env(safe-area-inset-bottom, 0px))),
+    38rem
+  );
   display: flex;
   flex-direction: column;
   min-width: 0;
   overflow: hidden;
+  padding: 14px 16px 16px;
 }
 
 .page--book-portal .book-scheduling-modal__form {
   flex: 1;
   min-height: 0;
   overflow-y: auto;
+  gap: 10px;
   -webkit-overflow-scrolling: touch;
+}
+
+.page--book-portal .book-scheduling-modal .book-modal__head {
+  margin-bottom: 8px;
+}
+
+.page--book-portal .book-scheduling-modal .book-modal__date {
+  margin-top: 4px;
+}
+
+.page--book-portal .book-scheduling-modal .book-modal__sub {
+  margin-top: 3px;
+}
+
+.page--book-portal .book-scheduling-modal .book-modal__hotel-card {
+  padding: 10px;
+}
+
+.page--book-portal .book-scheduling-modal .book-modal__hotel-dates {
+  gap: 7px;
+}
+
+.page--book-portal .book-scheduling-modal .book-modal__hotel-col {
+  gap: 4px;
+}
+
+.page--book-portal .book-scheduling-modal .book-modal__hotel-summary {
+  margin-top: 6px;
+}
+
+.page--book-portal .book-scheduling-modal .book-modal__block {
+  gap: 6px;
+  padding-top: 0;
+}
+
+.page--book-portal .book-scheduling-modal .field-block {
+  gap: 3px;
+}
+
+.page--book-portal .book-scheduling-modal .input--line {
+  min-height: 38px;
+  padding: 7px 9px;
+}
+
+.page--book-portal .book-scheduling-modal .book-modal__notes {
+  min-height: 3.25rem;
+  max-height: 4.5rem;
+  padding: 7px 9px;
 }
 
 .page--book-portal .book-scheduling-modal__date-readout {
@@ -385,16 +455,16 @@
 }
 
 .page--book-portal .book-scheduling-modal__repeat-hint {
-  margin: 6px 0 0;
+  margin: 2px 0 0;
   font-size: 0.75rem;
   line-height: 1.4;
 }
 
 .page--book-portal .book-scheduling-modal__actions {
   flex-shrink: 0;
-  padding-top: 4px;
+  padding-top: 8px;
   border-top: 1px solid var(--line-soft);
-  margin-top: 4px;
+  margin-top: 0;
 }
 
 .page--book-portal .book-parents-banner {
@@ -1006,7 +1076,8 @@
 /*
  * Phone browsers resize the visual viewport for their address bar and keyboard.
  * Keep access forms anchored directly below the header instead of re-centering
- * them on every resize, and anchor the long booking sheet to the bottom.
+ * them on every resize. The booking modal remains centered and is compacted
+ * to fit within the visual viewport.
  */
 @media (max-width: 599px) {
   .book-access__stage {
@@ -1028,27 +1099,64 @@
   }
 
   .page--book-portal .book-scheduling-modal {
-    align-items: flex-end;
+    align-items: center;
+    justify-content: center;
     padding:
-      12px
-      max(12px, env(safe-area-inset-right, 0px))
-      max(12px, env(safe-area-inset-bottom, 0px))
-      max(12px, env(safe-area-inset-left, 0px));
+      max(8px, env(safe-area-inset-top, 0px))
+      max(8px, env(safe-area-inset-right, 0px))
+      max(8px, env(safe-area-inset-bottom, 0px))
+      max(8px, env(safe-area-inset-left, 0px));
   }
 
   .page--book-portal .book-scheduling-modal__sheet {
     width: 100%;
     max-height: min(
-      calc(100dvh - max(24px, env(safe-area-inset-top, 0px) + env(safe-area-inset-bottom, 0px))),
-      40rem
+      calc(100dvh - max(16px, env(safe-area-inset-top, 0px) + env(safe-area-inset-bottom, 0px))),
+      38rem
     );
-    border-bottom-right-radius: 0;
-    border-bottom-left-radius: 0;
+    border-radius: 12px;
     overscroll-behavior: contain;
     -webkit-overflow-scrolling: touch;
   }
 
   .page--book-portal .book-scheduling-modal__form {
     overscroll-behavior-y: contain;
+  }
+}
+
+@media (max-width: 599px) and (max-height: 650px) {
+  .page--book-portal .book-scheduling-modal__sheet {
+    padding: 10px 12px 12px;
+  }
+
+  .page--book-portal .book-scheduling-modal .book-modal__head {
+    margin-bottom: 6px;
+  }
+
+  .page--book-portal .book-scheduling-modal .book-modal__sub,
+  .page--book-portal .book-scheduling-modal__repeat-hint {
+    display: none;
+  }
+
+  .page--book-portal .book-scheduling-modal .book-modal__hotel-card {
+    padding: 8px;
+  }
+
+  .page--book-portal .book-scheduling-modal .book-modal__form {
+    gap: 7px;
+  }
+
+  .page--book-portal .book-scheduling-modal .input--line {
+    min-height: 36px;
+    padding-block: 5px;
+  }
+
+  .page--book-portal .book-scheduling-modal .book-modal__notes {
+    min-height: 2.75rem;
+    max-height: 3.5rem;
+  }
+
+  .page--book-portal .book-scheduling-modal__actions {
+    padding-top: 6px;
   }
 }
