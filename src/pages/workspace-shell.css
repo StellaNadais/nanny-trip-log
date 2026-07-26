@@ -1437,16 +1437,16 @@
   display: block;
   width: 100%;
   padding: clamp(19px, 4vw, 29px);
-  border: 2px solid #596552;
+  border: 2px solid #d5846a;
   border-radius: 21px 17px 24px 15px / 17px 24px 15px 22px;
   background:
-    linear-gradient(115deg, transparent 97%, rgba(89, 101, 82, 0.11) 97.4%, transparent 98%),
-    linear-gradient(180deg, #fffdf7, #fbf7ed);
+    linear-gradient(115deg, transparent 97%, rgba(213, 132, 106, 0.16) 97.4%, transparent 98%),
+    linear-gradient(180deg, #ffe9df, #ffdbcf);
   color: inherit;
   text-align: left;
   font: inherit;
   cursor: pointer;
-  box-shadow: 3px 4px 0 rgba(89, 101, 82, 0.08);
+  box-shadow: 3px 4px 0 rgba(213, 132, 106, 0.12);
   transform: rotate(-0.15deg);
 }
 
@@ -1560,7 +1560,7 @@
   gap: 12px;
   margin: 19px 0 0;
   padding: 13px 0 0;
-  border-top: 1px solid #d9d1c2;
+  border-top: 1px solid #e7ab97;
 }
 
 .today-journal-preview__details div {
@@ -1568,7 +1568,7 @@
 }
 
 .today-journal-preview__details dt {
-  color: #7a6b51;
+  color: #a4513c;
   font-size: 0.6875rem;
   font-weight: 700;
   letter-spacing: 0.06em;
@@ -1722,10 +1722,10 @@
   aspect-ratio: 1;
   min-height: 0;
   padding: clamp(16px, 4vw, 24px);
-  border: 1.5px solid #cfc8b8;
+  border: 1.5px solid #9caee8;
   border-radius: 14px 17px 13px 16px / 16px 13px 17px 14px;
-  background: #fcfaf3;
-  color: #39493d;
+  background: #e0e7ff;
+  color: #33405f;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -1735,7 +1735,9 @@
 }
 
 .today-journal-preview__links button:nth-child(2) {
-  background: #f8f1e6;
+  border-color: #82b99a;
+  background: #ddf3e4;
+  color: #285440;
   transform: rotate(0.18deg);
 }
 
@@ -1753,20 +1755,38 @@
 
 .today-journal-preview__links button small {
   margin-top: 7px;
-  color: #6e746a;
+  color: #566585;
   font-size: 0.75rem;
   font-weight: 600;
   line-height: 1.3;
 }
 
-.today-journal-preview__links button:hover,
-.today-journal-preview__links button:focus-visible {
-  color: #245437;
+.today-journal-preview__links button:nth-child(2) small {
+  color: #47735b;
 }
 
-.today-journal-preview__story:focus-visible,
+.today-journal-preview__links button:hover,
 .today-journal-preview__links button:focus-visible {
-  outline: 2px solid #6d9a72;
+  color: #28375c;
+}
+
+.today-journal-preview__links button:nth-child(2):hover,
+.today-journal-preview__links button:nth-child(2):focus-visible {
+  color: #1e5138;
+}
+
+.today-journal-preview__story:focus-visible {
+  outline: 2px solid #d5846a;
+  outline-offset: 3px;
+}
+
+.today-journal-preview__links button:focus-visible {
+  outline: 2px solid #778ed8;
+  outline-offset: 3px;
+}
+
+.today-journal-preview__links button:nth-child(2):focus-visible {
+  outline-color: #5da579;
   outline-offset: 3px;
 }
 
