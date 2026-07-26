@@ -1770,9 +1770,122 @@
   outline-offset: 3px;
 }
 
+@media (max-width: 599px) {
+  /*
+   * The workbook tabs consume part of the browser viewport. Let Today use the
+   * canvas height that remains, rather than its default screen-height minimum.
+   */
+  .caregiver-shell--workbook .workbook__canvas > .page--kid-journal {
+    min-height: 0;
+    height: 100%;
+    max-height: none;
+    padding: 6px max(12px, env(safe-area-inset-right, 0px)) max(8px, env(safe-area-inset-bottom, 0px))
+      max(12px, env(safe-area-inset-left, 0px));
+    overflow: hidden;
+  }
+
+  .page--kid-journal .journal__layout {
+    gap: 8px;
+    overflow: hidden;
+  }
+
+  .page--workspace.page--kid-journal .journal__week-picker {
+    padding: 3px 8px 5px;
+  }
+
+  .page--kid-journal .today-journal-preview {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin: 0 auto;
+    overflow: hidden;
+  }
+
+  .page--kid-journal .today-journal-preview__story {
+    flex: 1;
+    min-height: 0;
+    padding: 12px;
+    overflow: hidden;
+  }
+
+  .today-journal-preview__opening {
+    font-size: 1rem;
+    line-height: 1.2;
+  }
+
+  .today-journal-preview__lead,
+  .today-journal-preview__route,
+  .today-journal-preview__summary {
+    margin-top: 8px;
+  }
+
+  .today-journal-preview__summary p {
+    font-size: 0.8125rem;
+    line-height: 1.35;
+    display: -webkit-box;
+    overflow: hidden;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+  }
+
+  .today-journal-preview__details {
+    gap: 8px;
+    margin-top: 8px;
+    padding-top: 8px;
+  }
+
+  .today-journal-preview__details dt {
+    font-size: 0.625rem;
+  }
+
+  .today-journal-preview__details dd {
+    margin-top: 2px;
+    font-size: 0.75rem;
+  }
+
+  .today-journal-preview__empty {
+    padding: 16px 0 8px;
+  }
+
+  .today-journal-preview__links {
+    /*
+     * Keep the cards square and small enough for the story to retain the
+     * remaining canvas height, including short phone viewports.
+     */
+    --today-tool-size: clamp(5.75rem, min(24vw, 18svh), 7.75rem);
+    flex: 0 0 auto;
+    align-self: center;
+    width: min(100%, calc(var(--today-tool-size) * 2 + 8px));
+    grid-template-columns: repeat(2, minmax(0, var(--today-tool-size)));
+    grid-auto-rows: var(--today-tool-size);
+    gap: 8px;
+    margin-top: 0;
+  }
+
+  .today-journal-preview__links button {
+    width: 100%;
+    height: 100%;
+    max-width: var(--today-tool-size);
+    max-height: var(--today-tool-size);
+    min-height: 0;
+    padding: 10px;
+  }
+
+  .today-journal-preview__links button span {
+    font-size: 0.875rem;
+  }
+
+  .today-journal-preview__links button small {
+    margin-top: 4px;
+    font-size: 0.6875rem;
+  }
+}
+
 @media (max-width: 320px) {
   .today-journal-preview__links {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, minmax(0, var(--today-tool-size)));
   }
 
   .today-journal-preview__details {
