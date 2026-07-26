@@ -33,7 +33,7 @@ function dayNotesConcatForDate(journalEntries, iso) {
   if (!Array.isArray(journalEntries) || !iso) return ''
   return journalEntries
     .filter((e) => e.dateISO === iso)
-    .map((e) => e.dayNotes || '')
+    .map((e) => e.routeText || e.route || e.dayNotes || '')
     .filter(Boolean)
     .join('\n')
 }

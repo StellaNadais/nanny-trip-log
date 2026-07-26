@@ -1,8 +1,18 @@
 import { useEffect, useId } from 'react'
 import MealsInlineField from './MealsInlineField'
-import TripPlacesField from './TripPlacesField'
 import JournalLittleBooks from './JournalLittleBooks'
 import JournalMoodBar from './JournalMoodBar'
+import { splitTripLogForMirror } from '../utils/parseTripPlaces'
+
+function routePreviewPlaces(routeText) {
+  return splitTripLogForMirror(routeText)
+    .filter((chunk) => (chunk.type === 'place' || chunk.type === 'token') && chunk.place)
+    .map((chunk) => ({
+      id: chunk.place.id,
+      label: String(chunk.value).toLocaleLowerCase(),
+      region: chunk.place.region || 'unknown',
+    }))
+}
 
 /**
  * Popup for reporting the day with the child.
@@ -11,8 +21,12 @@ export default function AboutTodayModal({
   open,
   onClose,
   dateLabel,
-  dayNotes,
-  onDayNotesChange,
+  routeText,
+  onRouteTextChange,
+  title,
+  onTitleChange,
+  paragraph,
+  onParagraphChange,
   mealsText,
   onMealsChange,
   mealSuggestions,
@@ -31,6 +45,7 @@ export default function AboutTodayModal({
   onBeforeShareAction,
 }) {
   const titleId = useId()
+  const routePreview = routePreviewPlaces(routeText)
 
   useEffect(() => {
     if (!open) return
@@ -75,22 +90,62 @@ export default function AboutTodayModal({
 
           <section
             className="journal-mood-bar journal-panel journal-panel--about about-today-modal__section"
-            aria-label="Day notes"
+            aria-label="Today's journal"
           >
             <div className="journal-mood-bar__head">
-              <span className="journal-mood-bar__title" id="about-today-notes-label">
-                What we did
+              <span className="journal-mood-bar__title">
+                Today&apos;s journal
               </span>
             </div>
             <div className="journal-mood-bar__track journal-panel__body">
-              <TripPlacesField
-                id="about-today-day-notes"
-                value={dayNotes}
-                onChange={onDayNotesChange}
-                placeholder="e.g. school run, music, park"
-                aria-labelledby="about-today-notes-label"
-                nestedInAbout
-              />
+              <div className="about-today-modal__journal-fields">
+                <label
+                  className="about-today-modal__field about-today-modal__field--route"
+                  htmlFor="about-today-route"
+                >
+                  <span>Route</span>
+                  <textarea
+                    id="about-today-route"
+                    className="input input--area about-today-modal__route-input"
+                    value={routeText}
+                    onChange={(event) => onRouteTextChange(event.target.value)}
+                    placeholder="e.g. Home → Park → Library"
+                    rows={2}
+                  />
+                  {routePreview.length ? (
+                    <ol className="about-today-modal__route-preview" aria-label="Route places">
+                      {routePreview.map((place, index) => (
+                        <li key={`${place.id}-${index}`}>
+                          <span className={`about-today-modal__route-pill trip-place--${place.region}`}>
+                            {place.label}
+                          </span>
+                        </li>
+                      ))}
+                    </ol>
+                  ) : null}
+                </label>
+                <label className="about-today-modal__field" htmlFor="about-today-title">
+                  <span>Title</span>
+                  <input
+                    id="about-today-title"
+                    className="input input--line"
+                    value={title}
+                    onChange={(event) => onTitleChange(event.target.value)}
+                    placeholder="A sunny park morning"
+                  />
+                </label>
+                <label className="about-today-modal__field" htmlFor="about-today-paragraph">
+                  <span>Paragraph</span>
+                  <textarea
+                    id="about-today-paragraph"
+                    className="input input--area"
+                    value={paragraph}
+                    onChange={(event) => onParagraphChange(event.target.value)}
+                    placeholder="Write the details of today's little story..."
+                    rows={5}
+                  />
+                </label>
+              </div>
             </div>
           </section>
 

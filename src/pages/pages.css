@@ -5598,6 +5598,36 @@ button.calendar__cell:focus-visible {
   box-shadow: 0 0 0 2px var(--reminder-gold-soft);
 }
 
+.reminders-modal__sections {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.reminders-modal__section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.reminders-modal__section + .reminders-modal__section {
+  padding-top: 20px;
+  border-top: 1px solid color-mix(in srgb, var(--line) 75%, transparent);
+}
+
+.reminders-modal__section-title {
+  margin: 0;
+  font-size: 0.9375rem;
+  font-weight: 800;
+  color: var(--journal-ink-front, var(--ink));
+}
+
+.reminders-modal__section-hint {
+  margin: 3px 0 0;
+  font-size: 0.8125rem;
+  line-height: 1.4;
+}
+
 .parent-reminders-panel__day {
   margin: 0 0 10px;
   font-size: 0.8125rem;

@@ -1422,3 +1422,354 @@
     border-right: none !important;
   }
 }
+
+/* Today — a small handwritten daily journal, with two supporting cards below. */
+.page--kid-journal .today-journal-preview {
+  width: min(100% - 24px, 52rem);
+  margin: 0 auto 16px;
+  background: transparent;
+  color: #26342d;
+  font-family: var(--font-ui);
+}
+
+.page--kid-journal .today-journal-preview__story {
+  position: relative;
+  display: block;
+  width: 100%;
+  padding: clamp(19px, 4vw, 29px);
+  border: 2px solid #596552;
+  border-radius: 21px 17px 24px 15px / 17px 24px 15px 22px;
+  background:
+    linear-gradient(115deg, transparent 97%, rgba(89, 101, 82, 0.11) 97.4%, transparent 98%),
+    linear-gradient(180deg, #fffdf7, #fbf7ed);
+  color: inherit;
+  text-align: left;
+  font: inherit;
+  cursor: pointer;
+  box-shadow: 3px 4px 0 rgba(89, 101, 82, 0.08);
+  transform: rotate(-0.15deg);
+}
+
+.today-journal-preview__opening {
+  max-width: 34rem;
+  margin: 0;
+  color: #28382f;
+  font-family: var(--font-display, var(--font-ui));
+  font-size: clamp(1.12rem, 3.8vw, 1.4rem);
+  font-weight: 600;
+  line-height: 1.32;
+  letter-spacing: -0.025em;
+}
+
+.today-journal-preview__lead {
+  margin-top: 20px;
+}
+
+.today-journal-preview__route,
+.today-journal-preview__summary {
+  margin-top: 15px;
+}
+
+.today-journal-preview__route-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.today-journal-preview__route-list li {
+  display: flex;
+}
+
+.today-journal-preview__place-pill {
+  display: block;
+  padding: 3px 9px 4px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.today-journal-preview__place-pill.trip-place--moraga,
+.today-journal-preview__place-pill.trip-place--park {
+  background: rgba(34, 100, 72, 0.14);
+  color: #1e4a38;
+}
+
+.today-journal-preview__place-pill.trip-place--lafayette,
+.today-journal-preview__place-pill.trip-place--museum {
+  background: rgba(120, 53, 15, 0.14);
+  color: #5c2d0a;
+}
+
+.today-journal-preview__place-pill.trip-place--client {
+  background: rgba(30, 58, 95, 0.14);
+  color: #1a3a5c;
+}
+
+.today-journal-preview__place-pill.trip-place--downtown {
+  background: rgba(180, 83, 9, 0.14);
+  color: #7c2d12;
+}
+
+.today-journal-preview__place-pill.trip-place--outing {
+  background: rgba(13, 148, 136, 0.14);
+  color: #115e59;
+}
+
+.today-journal-preview__place-pill.trip-place--custom {
+  background: color-mix(in srgb, var(--seafoam-2) 16%, transparent);
+  color: var(--seafoam-1);
+}
+
+.today-journal-preview__place-pill.trip-place--unknown {
+  background: rgba(92, 83, 74, 0.1);
+  color: var(--ink-muted);
+}
+
+.today-journal-preview__route-empty,
+.today-journal-preview__empty span {
+  margin: 9px 0 0;
+  color: #756f63;
+  font-size: 0.875rem;
+  line-height: 1.45;
+}
+
+.today-journal-preview__summary p {
+  margin: 6px 0 0;
+  color: #4a514c;
+  font-size: 0.9375rem;
+  line-height: 1.55;
+  white-space: pre-wrap;
+}
+
+.today-journal-preview__summary .today-journal-preview__meals {
+  color: #37453c;
+}
+
+.today-journal-preview__meals span {
+  color: #7a6b51;
+  font-weight: 700;
+}
+
+.today-journal-preview__details {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin: 19px 0 0;
+  padding: 13px 0 0;
+  border-top: 1px solid #d9d1c2;
+}
+
+.today-journal-preview__details div {
+  min-width: 0;
+}
+
+.today-journal-preview__details dt {
+  color: #7a6b51;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.today-journal-preview__details dd {
+  margin: 5px 0 0;
+  overflow: hidden;
+  color: #37453c;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  line-height: 1.4;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.today-journal-preview__empty {
+  padding: 32px 0 14px;
+}
+
+.today-journal-preview__empty p {
+  margin: 0;
+  color: #37453c;
+  font-family: var(--font-display, var(--font-ui));
+  font-size: 1.125rem;
+  font-weight: 650;
+  letter-spacing: -0.025em;
+}
+
+.about-today-modal__journal-template {
+  margin: 9px 0 0;
+  color: #756f63;
+  font-size: 0.8125rem;
+  line-height: 1.45;
+}
+
+.about-today-modal__journal-fields {
+  display: grid;
+  gap: 12px;
+}
+
+.about-today-modal__field--route {
+  margin-bottom: 12px;
+}
+
+.about-today-modal__field {
+  display: grid;
+  gap: 6px;
+  color: var(--ink-muted);
+  font-family: var(--font-ui);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.about-today-modal__field .input {
+  width: 100%;
+  color: var(--ink);
+  font-family: var(--font-ui);
+  font-size: 0.9375rem;
+  font-weight: 400;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.about-today-modal__field .input--area {
+  min-height: 7rem;
+  resize: vertical;
+}
+
+.about-today-modal__field .about-today-modal__route-input {
+  min-height: 4.5rem;
+}
+
+.about-today-modal__route-preview {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.about-today-modal__route-preview li {
+  display: flex;
+}
+
+.about-today-modal__route-pill {
+  display: block;
+  padding: 3px 8px 4px;
+  border-radius: 999px;
+  color: var(--ink-muted);
+  background: color-mix(in srgb, var(--line-soft) 60%, transparent);
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: 0;
+  text-transform: lowercase;
+}
+
+.about-today-modal__route-pill.trip-place--moraga,
+.about-today-modal__route-pill.trip-place--park {
+  color: #1e4a38;
+  background: rgba(34, 100, 72, 0.14);
+}
+
+.about-today-modal__route-pill.trip-place--lafayette,
+.about-today-modal__route-pill.trip-place--museum {
+  color: #5c2d0a;
+  background: rgba(120, 53, 15, 0.14);
+}
+
+.about-today-modal__route-pill.trip-place--client {
+  color: #1a3a5c;
+  background: rgba(30, 58, 95, 0.14);
+}
+
+.about-today-modal__route-pill.trip-place--downtown {
+  color: #7c2d12;
+  background: rgba(180, 83, 9, 0.14);
+}
+
+.about-today-modal__route-pill.trip-place--outing {
+  color: #115e59;
+  background: rgba(13, 148, 136, 0.14);
+}
+
+.about-today-modal__route-pill.trip-place--custom {
+  color: var(--seafoam-1);
+  background: color-mix(in srgb, var(--seafoam-2) 16%, transparent);
+}
+
+.today-journal-preview__links {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 13px;
+}
+
+.today-journal-preview__links button {
+  min-width: 0;
+  min-height: 98px;
+  padding: 17px 16px;
+  border: 1.5px solid #cfc8b8;
+  border-radius: 14px 17px 13px 16px / 16px 13px 17px 14px;
+  background: #fcfaf3;
+  color: #39493d;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.today-journal-preview__links button:nth-child(2) {
+  background: #f8f1e6;
+  transform: rotate(0.18deg);
+}
+
+.today-journal-preview__links button span,
+.today-journal-preview__links button small {
+  display: block;
+}
+
+.today-journal-preview__links button span {
+  font-family: var(--font-display, var(--font-ui));
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.today-journal-preview__links button small {
+  margin-top: 7px;
+  color: #6e746a;
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.today-journal-preview__links button:hover,
+.today-journal-preview__links button:focus-visible {
+  color: #245437;
+}
+
+.today-journal-preview__story:focus-visible,
+.today-journal-preview__links button:focus-visible {
+  outline: 2px solid #6d9a72;
+  outline-offset: 3px;
+}
+
+@media (max-width: 420px) {
+  .today-journal-preview__links {
+    grid-template-columns: 1fr;
+  }
+
+  .today-journal-preview__details {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .today-journal-preview__details dd {
+    font-size: 0.75rem;
+  }
+}

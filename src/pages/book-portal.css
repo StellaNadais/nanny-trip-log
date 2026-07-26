@@ -3,10 +3,12 @@
 .page--book-portal {
   display: flex;
   flex-direction: column;
-  /* Keep the page height stable while mobile browser chrome appears or hides. */
-  min-height: 100svh;
-  max-height: none;
+  /* Keep the booking workspace within the visible browser viewport. */
+  height: 100svh;
+  min-height: 0;
+  max-height: 100svh;
   min-width: 0;
+  overflow: hidden;
   overflow-x: hidden;
   overflow-x: clip;
   padding: 0;
@@ -23,6 +25,11 @@
   --journal-mint-deep: #7a6bb5;
   --journal-sage: #ebe8f5;
   --journal-sage-deep: #b8a9e0;
+}
+
+.page--calendar.page--book.page--book-portal {
+  min-height: 0;
+  overflow: hidden;
 }
 
 /* Workbook-matched type — system UI, not journal mono/chunky weights */
@@ -188,7 +195,7 @@
   flex: 1;
   min-height: 0;
   min-width: 0;
-  overflow-y: auto;
+  overflow: hidden;
   overflow-x: hidden;
   overflow-x: clip;
   -webkit-overflow-scrolling: touch;
@@ -197,12 +204,16 @@
 }
 
 .page--book-portal .book-portal__panel {
+  height: 100%;
+  min-height: 0;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 6px;
 }
 
 .page--book-portal .schedule__calendar-panel {
+  flex: 1 1 auto;
+  min-height: 0;
   width: 100%;
   min-width: 0;
 }
@@ -214,6 +225,40 @@
 
 .page--book-portal .book-request-cta .btn {
   width: 100%;
+}
+
+/* The calendar shares the viewport with the play kit instead of growing the page. */
+.page--book-portal.page--workspace .schedule__calendar-panel {
+  margin: 0;
+  padding: 8px;
+}
+
+.page--book-portal .schedule__calendar-panel .schedule-calendar-flip--embedded,
+.page--book-portal .schedule__calendar-panel .schedule-calendar-flip--embedded .schedule-flip__scene {
+  min-height: 0;
+  height: 100%;
+}
+
+.page--book-portal .schedule__calendar-panel .schedule-calendar-flip--embedded {
+  flex: 1;
+}
+
+.page--book-portal .schedule-calendar-flip--embedded .schedule-flip__calendar-top {
+  min-height: 0;
+}
+
+.page--book-portal .schedule-calendar-flip--embedded .schedule-calendar-flip__legend {
+  display: none;
+}
+
+.page--book-portal .schedule-calendar-flip--embedded .schedule-flip__gigs-flip-btn {
+  min-height: 36px;
+  padding: 7px 10px;
+  font-size: 0.8125rem;
+}
+
+.page--book-portal .schedule-calendar-flip--embedded .schedule-flip__list-scroll {
+  overscroll-behavior: contain;
 }
 
 /* Calendar date picking — range highlight on same grid as Schedule */
@@ -911,6 +956,51 @@
   min-height: 2.25rem;
   padding-inline: 12px;
   white-space: nowrap;
+}
+
+/* A quiet, in-flow note directly below the family's play kit. */
+.page--book-portal .book-appreciation-footer {
+  padding: 2px 0 12px;
+}
+
+.page--book-portal .book-appreciation-footer__field {
+  display: grid;
+  grid-template-columns: max-content minmax(0, 1fr);
+  align-items: center;
+  gap: 8px;
+  color: #786b5c;
+  font-size: 0.75rem;
+  font-weight: 650;
+}
+
+.page--book-portal .book-appreciation-footer__label {
+  white-space: nowrap;
+}
+
+.page--book-portal .book-appreciation-footer__field textarea {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  min-height: 2.25rem;
+  resize: none;
+  padding: 6px 9px;
+  border: 1px solid #ded7cd;
+  border-radius: 8px;
+  outline: none;
+  background: #fdfbf7;
+  color: var(--ink);
+  font: inherit;
+  font-size: 0.8125rem;
+  line-height: 1.25;
+}
+
+.page--book-portal .book-appreciation-footer__field textarea::placeholder {
+  color: #9a9085;
+}
+
+.page--book-portal .book-appreciation-footer__field textarea:focus {
+  border-color: #a79c8f;
+  box-shadow: 0 0 0 3px rgb(167 156 143 / 16%);
 }
 
 /*

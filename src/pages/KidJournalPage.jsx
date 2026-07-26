@@ -16,10 +16,9 @@ import { OUTINGS_UPDATED_EVENT } from '../utils/outingsStorage'
 import { loadKidJournalEntries } from '../utils/kidJournalStorage'
 import { loadState } from '../utils/storage'
 import AboutTodayModal from '../components/AboutTodayModal'
-import GroceryModal from '../components/GroceryModal'
 import OutingsModal from '../components/OutingsModal'
 import RemindersModal from '../components/RemindersModal'
-import TodaySpaceTile from '../components/TodaySpaceTile'
+import TodayJournalPreview from '../components/TodayJournalPreview'
 import { buildJournalDaySmsHref } from '../utils/journalDayExport'
 import {
   addShoppingItems,
@@ -29,8 +28,8 @@ import {
 } from '../utils/journalShoppingStorage'
 import { napFromJournalEntry } from '../utils/journalNap'
 import { pottyFromJournalEntry } from '../utils/journalLittleBooks'
+import { combineJournalPost, journalPostFromEntry } from '../utils/journalPost'
 import { useOutingsWeekData } from '../hooks/useOutingsWeekData'
-import WorkspaceTileBoard from '../components/WorkspaceTileBoard'
 import { useBookings } from '../hooks/useBookings'
 import { useParentReminders } from '../hooks/useParentReminders'
 import {
@@ -45,6 +44,9 @@ function loadDraftFromLatest(iso) {
   if (!latest) {
     return {
       dayNotes: '',
+      routeText: '',
+      title: '',
+      paragraph: '',
       mealsText: '',
       nap: '',
       pottyTime: '',
@@ -55,8 +57,12 @@ function loadDraftFromLatest(iso) {
     }
   }
   const potty = pottyFromJournalEntry(latest)
+  const post = journalPostFromEntry(latest)
   return {
     dayNotes: latest.dayNotes ?? '',
+    routeText: post.routeText,
+    title: post.title,
+    paragraph: post.paragraph,
     mealsText: latest.mealsText ?? '',
     nap: napFromJournalEntry(latest),
     pottyTime: potty.pottyTime,
@@ -104,6 +110,9 @@ export default function KidJournalPage() {
   const outings = useOutingsWeekData(weekKey)
 
   const [dayNotes, setDayNotes] = useState('')
+  const [routeText, setRouteText] = useState('')
+  const [title, setTitle] = useState('')
+  const [paragraph, setParagraph] = useState('')
   const [mealsText, setMealsText] = useState('')
   const [nap, setNap] = useState('')
   const [pottyTime, setPottyTime] = useState('')
@@ -115,7 +124,6 @@ export default function KidJournalPage() {
   const [journalShareGateNow, setJournalShareGateNow] = useState(() => Date.now())
   const [outingsRev, setOutingsRev] = useState(0)
   const [shoppingItems, setShoppingItems] = useState([])
-  const [groceryOpen, setGroceryOpen] = useState(false)
   const [outingsOpen, setOutingsOpen] = useState(false)
   const [remindersOpen, setRemindersOpen] = useState(false)
   const [aboutTodayOpen, setAboutTodayOpen] = useState(false)
@@ -125,7 +133,6 @@ export default function KidJournalPage() {
   }, [weekKey])
 
   useEffect(() => {
-    setGroceryOpen(false)
     setOutingsOpen(false)
     setRemindersOpen(false)
     setAboutTodayOpen(false)
@@ -151,6 +158,9 @@ export default function KidJournalPage() {
   useEffect(() => {
     const d = loadDraftFromLatest(dateISO)
     setDayNotes(d.dayNotes)
+    setRouteText(d.routeText)
+    setTitle(d.title)
+    setParagraph(d.paragraph)
     setMealsText(d.mealsText)
     setNap(d.nap)
     setPottyTime(d.pottyTime)
@@ -164,7 +174,7 @@ export default function KidJournalPage() {
     const t = window.setTimeout(() => {
       const saved = loadState()
       const daysByIso = saved?.daysByIso && typeof saved.daysByIso === 'object' ? saved.daysByIso : {}
-      const draft = { [dateISO]: dayNotes }
+      const draft = { [dateISO]: routeText || dayNotes }
       const { totalMiles, reimbursement, breakdown } = computeWeekTripMileage(
         journalWeekStart,
         daysByIso,
@@ -185,7 +195,7 @@ export default function KidJournalPage() {
       notifyReceiptMileageUpdated()
     }, 450)
     return () => window.clearTimeout(t)
-  }, [journalWeekStart, weekKey, dateISO, dayNotes, entries, outingsRev])
+  }, [journalWeekStart, weekKey, dateISO, dayNotes, routeText, entries, outingsRev])
 
   const mealParts = useMemo(() => parseMealsToParts(mealsText), [mealsText])
   const mealSuggestions = useMemo(() => {
@@ -198,7 +208,6 @@ export default function KidJournalPage() {
   )
 
   useEffect(() => {
-    setGroceryOpen(false)
     setOutingsOpen(false)
     setRemindersOpen(false)
     setAboutTodayOpen(false)
@@ -225,8 +234,11 @@ export default function KidJournalPage() {
     const latest = loadDraftFromLatest(dateISO)
     const photo = handwrittenPhotoDataUrl || ''
     const latestPhoto = latest.handwrittenPhotoDataUrl || ''
+    const combinedDayNotes = combineJournalPost({ routeText, title, paragraph })
     if (
-      dayNotes !== (latest.dayNotes ?? '') ||
+      routeText !== (latest.routeText ?? '') ||
+      title !== (latest.title ?? '') ||
+      paragraph !== (latest.paragraph ?? '') ||
       mealsText !== (latest.mealsText ?? '') ||
       nap !== (latest.nap ?? '') ||
       pottyTime !== (latest.pottyTime ?? '') ||
@@ -237,7 +249,10 @@ export default function KidJournalPage() {
     ) {
       addEntry({
         dateISO,
-        dayNotes,
+        dayNotes: combinedDayNotes,
+        routeText,
+        title,
+        paragraph,
         mealsText,
         nap,
         pottyTime,
@@ -253,16 +268,6 @@ export default function KidJournalPage() {
     setJournalShareGateNow(Date.now())
     persistJournalIfChanged()
   }
-
-  const aboutTodayPreview = useMemo(() => {
-    const bits = [dayNotes, mealsText, mood, nap, wishes].map((s) => String(s || '').trim()).filter(Boolean)
-    if (!bits.length) return ''
-    if (dayNotes.trim()) {
-      const t = dayNotes.trim()
-      return t.length > 120 ? `${t.slice(0, 117)}…` : t
-    }
-    return "Tap to add today's report…"
-  }, [dayNotes, mealsText, mood, nap, wishes])
 
   const journalDateLabel = formatJournalDate(dateISO)
   const weekLabel = formatWeekRange(journalWeekStart)
@@ -286,7 +291,10 @@ export default function KidJournalPage() {
       buildJournalDaySmsHref({
         dateISO,
         dateLabel: journalDateLabel,
-        dayNotes,
+        dayNotes: combineJournalPost({ routeText, title, paragraph }),
+        routeText,
+        title,
+        paragraph,
         mealsText,
         nap,
         pottyTime,
@@ -299,7 +307,9 @@ export default function KidJournalPage() {
     [
       dateISO,
       journalDateLabel,
-      dayNotes,
+      routeText,
+      title,
+      paragraph,
       mealsText,
       nap,
       pottyTime,
@@ -310,33 +320,6 @@ export default function KidJournalPage() {
       shoppingItems,
     ]
   )
-
-  const groceryPreview = useMemo(() => {
-    const open = shoppingItems.filter((item) => !item.done)
-    if (!open.length) return ''
-    return open
-      .slice(0, 3)
-      .map((item) => item.text)
-      .join(', ')
-  }, [shoppingItems])
-
-  const remindersPreview = useMemo(() => {
-    if (!reminderGroups.length) return ''
-    for (const group of reminderGroups) {
-      const first = group.reminders[0]
-      if (first?.text) {
-        const prefix = first.childName ? `${first.childName}: ` : ''
-        const line = `${prefix}${first.text}`
-        return line.length > 72 ? `${line.slice(0, 69)}…` : line
-      }
-      if (group.notes) {
-        const line = group.notes.trim()
-        return line.length > 72 ? `${line.slice(0, 69)}…` : line
-      }
-    }
-    const family = reminderGroups[0]?.booking?.familyName
-    return family ? `${family} — no reminders yet` : ''
-  }, [reminderGroups])
 
   return (
     <div className="page page--kid-journal page--workspace work-ui">
@@ -378,62 +361,23 @@ export default function KidJournalPage() {
           />
         </section>
 
-        <WorkspaceTileBoard
-          workspaceId="today"
-          tiles={[
-            {
-              id: 'about',
-              label: 'About today',
-              square: true,
-              children: (
-                <TodaySpaceTile
-                  preview={aboutTodayPreview}
-                  hint="Tap to report the day with your child — outings, meals, nap, and more."
-                  cta="Open report →"
-                  onClick={() => setAboutTodayOpen(true)}
-                />
-              ),
-            },
-            {
-              id: 'reminders',
-              label: 'Reminders',
-              square: true,
-              children: (
-                <TodaySpaceTile
-                  count={reminderCount}
-                  preview={remindersPreview}
-                  hint="Parent notes for this day — tap to open."
-                  onClick={() => setRemindersOpen(true)}
-                />
-              ),
-            },
-            {
-              id: 'grocery',
-              label: 'Grocery',
-              square: true,
-              children: (
-                <TodaySpaceTile
-                  count={shoppingOpenCount}
-                  preview={groceryPreview}
-                  hint="Week grocery list — tap to add items."
-                  onClick={() => setGroceryOpen(true)}
-                />
-              ),
-            },
-            {
-              id: 'outings',
-              label: 'Outings',
-              square: true,
-              children: (
-                <TodaySpaceTile
-                  count={outings.outingsCount}
-                  preview={outings.outingsPreview}
-                  hint="Parking, tolls, and trip places — tap to add."
-                  onClick={() => setOutingsOpen(true)}
-                />
-              ),
-            },
-          ]}
+        <TodayJournalPreview
+          dateLabel={journalDateLabel}
+          dayNotes={dayNotes}
+          routeText={routeText}
+          title={title}
+          paragraph={paragraph}
+          mealsText={mealsText}
+          mood={mood}
+          nap={nap}
+          pottyTime={pottyTime}
+          pottyNotes={pottyNotes}
+          wishes={wishes}
+          reminderCount={reminderCount}
+          groceryCount={shoppingOpenCount}
+          onOpen={() => setAboutTodayOpen(true)}
+          onOpenReminders={() => setRemindersOpen(true)}
+          onOpenOutings={() => setOutingsOpen(true)}
         />
       </div>
 
@@ -444,8 +388,12 @@ export default function KidJournalPage() {
           setAboutTodayOpen(false)
         }}
         dateLabel={journalDateLabel}
-        dayNotes={dayNotes}
-        onDayNotesChange={setDayNotes}
+        routeText={routeText}
+        onRouteTextChange={setRouteText}
+        title={title}
+        onTitleChange={setTitle}
+        paragraph={paragraph}
+        onParagraphChange={setParagraph}
         mealsText={mealsText}
         onMealsChange={setMealsText}
         mealSuggestions={mealSuggestions}
@@ -470,16 +418,10 @@ export default function KidJournalPage() {
         onClose={() => setRemindersOpen(false)}
         dateLabel={journalDateLabel}
         groups={reminderGroups}
-      />
-
-      <GroceryModal
-        open={groceryOpen}
-        onClose={() => setGroceryOpen(false)}
-        weekLabel={weekLabel}
-        items={shoppingItems}
-        onAddItems={handleAddGrocery}
-        onToggle={handleToggleShopping}
-        onRemove={handleRemoveShopping}
+        shoppingItems={shoppingItems}
+        onAddShoppingItems={handleAddGrocery}
+        onToggleShopping={handleToggleShopping}
+        onRemoveShopping={handleRemoveShopping}
       />
 
       <OutingsModal

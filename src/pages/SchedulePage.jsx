@@ -11,7 +11,6 @@ import ScheduleOverviewModal from '../components/ScheduleOverviewModal'
 import TodayPanelModal from '../components/TodayPanelModal'
 import TodaySpaceTile from '../components/TodaySpaceTile'
 import WorkspaceTileBoard from '../components/WorkspaceTileBoard'
-import BringAlongGrid from '../components/BringAlongGrid'
 import { upcomingCelebrationsInMonth } from '../utils/scheduleCelebrations'
 
 function todayISO() {
@@ -101,18 +100,6 @@ export default function SchedulePage() {
   const [carouselIndex, setCarouselIndex] = useState(0)
   const [enterAnim, setEnterAnim] = useState(null)
   const [openPanel, setOpenPanel] = useState(null)
-  const [bringAlongIds, setBringAlongIds] = useState(() => {
-    try {
-      return JSON.parse(localStorage.getItem('nanny-bring-along-v1')) ?? []
-    } catch {
-      return []
-    }
-  })
-
-  useEffect(() => {
-    localStorage.setItem('nanny-bring-along-v1', JSON.stringify(bringAlongIds))
-  }, [bringAlongIds])
-
   useEffect(() => {
     if (upcoming.length === 0) {
       setCarouselIndex(0)
@@ -137,12 +124,6 @@ export default function SchedulePage() {
 
   function closeSchedulePanel() {
     setOpenPanel(null)
-  }
-
-  function toggleBringAlong(toyId) {
-    setBringAlongIds((current) =>
-      current.includes(toyId) ? current.filter((id) => id !== toyId) : [...current, toyId]
-    )
   }
 
   const currentGig = upcoming.length > 0 ? upcoming[carouselIndex] : null
@@ -279,10 +260,14 @@ export default function SchedulePage() {
                     </ul>
                   ) : null}
                   {currentGig.bringAlong?.length ? (
-                    <p className="schedule-upcoming-card__bring-along">
+                    <section className="schedule-upcoming-card__bring-along" aria-label="Family requested toys">
                       <span>Family is bringing</span>
-                      {currentGig.bringAlong.join(' · ')}
-                    </p>
+                      <ul>
+                        {currentGig.bringAlong.map((toy) => (
+                          <li key={toy}>{toy}</li>
+                        ))}
+                      </ul>
+                    </section>
                   ) : null}
 
                   <div className="schedule-upcoming-card__actions">
@@ -401,19 +386,6 @@ export default function SchedulePage() {
                 />
               ),
             },
-            {
-              id: 'bring-along',
-              label: 'Bring with me',
-              square: true,
-              children: (
-                <TodaySpaceTile
-                  count={bringAlongIds.length}
-                  preview={bringAlongIds.length ? 'Toys packed for your next gig' : 'Pick toys for your next gig'}
-                  hint="Your play kit — tap to browse."
-                  onClick={() => openSchedulePanel('bring-along')}
-                />
-              ),
-            },
           ]}
         />
       </div>
@@ -435,21 +407,6 @@ export default function SchedulePage() {
         monthIndex={m}
       />
 
-      <TodayPanelModal
-        open={openPanel === 'bring-along'}
-        onClose={closeSchedulePanel}
-        eyebrow="Play kit"
-        title="Bring with me"
-        dateLabel="Choose a few favorites to pack."
-        sheetClassName="bring-along-modal"
-      >
-        <BringAlongGrid
-          heading="Bring with me"
-          description="A small, ready-to-go toy shelf for the next gig."
-          selectedIds={bringAlongIds}
-          onToggle={toggleBringAlong}
-        />
-      </TodayPanelModal>
     </div>
   )
 }

@@ -26,7 +26,8 @@ import { parseChildrenOnGig } from '../utils/bookingChildren'
 import { BOOK_THANKS_LEDE, BOOK_THANKS_SUPPORTERS } from '../data/bookThanks'
 import { isBookFamilyUnlocked } from '../utils/bookFamilyAccess'
 import { BRING_ALONG_TOYS } from '../data/bringAlongToys'
-import BringAlongGrid from '../components/BringAlongGrid'
+import BringAlongCarousel from '../components/BringAlongCarousel'
+import BookAppreciationFooter from '../components/BookAppreciationFooter'
 
 function todayISO() {
   return toISODateLocal(new Date())
@@ -44,6 +45,20 @@ function shiftISODate(iso, days) {
 
 const DEFAULT_CARE_START = '09:00'
 const DEFAULT_CARE_END = '17:00'
+const APPRECIATION_NOTE_STORAGE_PREFIX = 'nanny-book-appreciation-note'
+
+function appreciationNoteStorageKey(familySlug) {
+  return `${APPRECIATION_NOTE_STORAGE_PREFIX}:${familySlug}`
+}
+
+function loadAppreciationNote(familySlug) {
+  if (!familySlug) return ''
+  try {
+    return localStorage.getItem(appreciationNoteStorageKey(familySlug)) ?? ''
+  } catch {
+    return ''
+  }
+}
 
 function phoneLooksReachable(value) {
   const digits = value.replace(/\D/g, '')
@@ -116,14 +131,28 @@ export default function BookPage() {
   const [requestNotes, setRequestNotes] = useState('')
   const [bookingExtras, setBookingExtras] = useState([])
   const [bringAlongIds, setBringAlongIds] = useState([])
+  const [appreciationNotes, setAppreciationNotes] = useState(() => ({
+    [familySlug]: loadAppreciationNote(familySlug),
+  }))
   const [followUpBooking, setFollowUpBooking] = useState(null)
   const [bookToast, setBookToast] = useState('')
 
   const overnightRate = family?.overnightRate ?? OVERNIGHT_RATE
+  const appreciationNote =
+    appreciationNotes[familySlug] ?? loadAppreciationNote(familySlug)
 
   useEffect(() => {
     if (family) setFamilyName(family.lastName)
   }, [family])
+
+  useEffect(() => {
+    if (!familySlug) return
+    try {
+      localStorage.setItem(appreciationNoteStorageKey(familySlug), appreciationNote)
+    } catch {
+      /* The note remains usable for this session when storage is unavailable. */
+    }
+  }, [familySlug, appreciationNote])
 
   const y = cursor.getFullYear()
   const m = cursor.getMonth()
@@ -159,6 +188,11 @@ export default function BookPage() {
         return (a.createdAt ?? '').localeCompare(b.createdAt ?? '')
       })
   }, [bookings, family])
+
+  const hasBookingActivity = useMemo(
+    () => bookings.some((booking) => bookingBelongsToFamily(booking, family)),
+    [bookings, family]
+  )
 
   const eventsByLocation = useMemo(() => groupFamilyEventsByLocation(), [])
 
@@ -366,6 +400,7 @@ export default function BookPage() {
       careStart,
       careEnd,
       notes: requestNotes.trim(),
+      ...(appreciationNote.trim() ? { appreciationNote: appreciationNote.trim() } : {}),
       extras: extrasSnapshot,
       bringAlong: bringAlongSnapshot,
     }
@@ -509,12 +544,20 @@ export default function BookPage() {
                 />
               </section>
 
-              <BringAlongGrid
-                heading="Bring with you"
-                description="Pick any toys you plan to send along. They’ll be included with your care request."
-                selectedIds={bringAlongIds}
-                onToggle={toggleBringAlong}
-              />
+              {hasBookingActivity ? (
+                <>
+                  <BringAlongCarousel selectedIds={bringAlongIds} onToggle={toggleBringAlong} />
+                  <BookAppreciationFooter
+                    value={appreciationNote}
+                    onChange={(nextNote) =>
+                      setAppreciationNotes((current) => ({
+                        ...current,
+                        [familySlug]: nextNote,
+                      }))
+                    }
+                  />
+                </>
+              ) : null}
             </div>
           ) : null}
 
