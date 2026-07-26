@@ -1719,12 +1719,16 @@
 
 .today-journal-preview__links button {
   min-width: 0;
-  min-height: 98px;
-  padding: 17px 16px;
+  aspect-ratio: 1;
+  min-height: 0;
+  padding: clamp(16px, 4vw, 24px);
   border: 1.5px solid #cfc8b8;
   border-radius: 14px 17px 13px 16px / 16px 13px 17px 14px;
   background: #fcfaf3;
   color: #39493d;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
   font: inherit;
   text-align: left;
   cursor: pointer;
@@ -1766,7 +1770,7 @@
   outline-offset: 3px;
 }
 
-@media (max-width: 420px) {
+@media (max-width: 320px) {
   .today-journal-preview__links {
     grid-template-columns: 1fr;
   }
