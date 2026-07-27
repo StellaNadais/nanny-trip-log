@@ -177,12 +177,43 @@ button.bring-along__card:focus-visible {
 }
 
 .bring-along-carousel {
+  position: relative;
   display: flex;
   flex-direction: column;
   min-height: 0;
   padding: 8px 10px;
   background: #fff;
   color: var(--ink);
+}
+
+.bring-along-carousel--unavailable .bring-along-carousel__content {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  flex-direction: column;
+  filter: blur(3px);
+  opacity: 0.45;
+  pointer-events: none;
+  user-select: none;
+}
+
+.bring-along-carousel__availability {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: 1;
+  margin: 0;
+  padding: 7px 12px;
+  border: 1px solid #d9d0c1;
+  border-radius: 999px;
+  background: rgb(255 255 255 / 92%);
+  color: var(--ink);
+  font-family: var(--font-ui);
+  font-size: 0.8125rem;
+  font-weight: 650;
+  letter-spacing: -0.01em;
+  transform: translate(-50%, -50%);
+  white-space: nowrap;
 }
 
 .bring-along-carousel__head {

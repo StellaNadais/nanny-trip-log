@@ -1038,7 +1038,7 @@
   white-space: nowrap;
 }
 
-/* A compact, in-flow family note directly below the play kit. */
+/* A compact, in-flow nanny note directly below the play kit. */
 .page--book-portal .book-appreciation-footer {
   padding: 2px 0 12px;
 }
@@ -1047,12 +1047,14 @@
   display: grid;
   gap: 4px;
   color: #315f9e;
-  font-size: 0.75rem;
-  font-weight: 650;
 }
 
 .page--book-portal .book-appreciation-footer__label {
+  font-family: var(--font-ui);
+  font-size: 0.9375rem;
+  font-weight: 650;
   line-height: 1.2;
+  letter-spacing: -0.02em;
 }
 
 .page--book-portal .book-appreciation-footer__field textarea {
