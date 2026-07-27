@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 120" role="img" aria-label="Animated sand bucket and shovel">
+  <style>
+    .sun { transform-origin: 128px 26px; animation: spin 5s linear infinite; }
+    .bucket { transform-origin: 70px 87px; animation: bounce 1.5s ease-in-out infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    @keyframes bounce { 50% { transform: translateY(-5px) rotate(-3deg); } }
+  </style>
+  <rect width="160" height="120" rx="18" fill="#fff7df"/>
+  <path d="M0 89c28-10 47 7 78-1s58 10 82-3v35H0z" fill="#f5d286"/>
+  <g class="sun" fill="#ffbf42"><circle cx="128" cy="26" r="11"/><path d="M128 6v8M128 38v8M108 26h8M140 26h8M114 12l6 6M136 34l6 6M142 12l-6 6M120 34l-6 6" stroke="#ffbf42" stroke-width="3" stroke-linecap="round"/></g>
+  <g class="bucket"><path d="M48 67h43l-5 30H53z" fill="#52b9e9"/><path d="M55 67c0-22 29-22 29 0" fill="none" stroke="#2588c3" stroke-width="5" stroke-linecap="round"/><path d="M48 67h43l-2 8H50z" fill="#f05d5e"/><circle cx="70" cy="83" r="7" fill="#ffdb55"/></g>
+  <g transform="rotate(20 111 79)"><path d="M108 49h8v43h-8z" fill="#f58d4f"/><path d="M101 86h22l-5 15h-12z" fill="#72c478"/></g>
+</svg>

@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 120" role="img" aria-label="Animated spinning tops">
+  <style>
+    .top { transform-origin: center; animation: spin .7s linear infinite; }
+    .top2 { transform-origin: center; animation: spin .9s linear infinite reverse; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
+  <rect width="160" height="120" rx="18" fill="#f0efff"/>
+  <ellipse cx="80" cy="92" rx="61" ry="17" fill="#d7d4f4"/>
+  <g class="top" transform-origin="59 63"><path d="M59 33l16 18-8 28-24 0-8-28z" fill="#378ed0"/><path d="M59 38l10 18-10 15-10-15z" fill="#f4d454"/><path d="M43 79h32l-16 14z" fill="#254f9b"/></g>
+  <g class="top2" transform-origin="105 70"><path d="M105 45l15 17-8 26H98l-8-26z" fill="#e95f75"/><path d="M105 49l9 17-9 14-9-14z" fill="#fff1a6"/><path d="M89 88h32l-16 13z" fill="#a33865"/></g>
+  <path d="M20 40c8-10 16-11 24-2M125 31c6-8 12-8 18 0" fill="none" stroke="#9f94e6" stroke-width="3" stroke-linecap="round"/>
+</svg>

@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 120" role="img" aria-label="Animated teddy bear">
+  <style>
+    .bear { transform-origin: 80px 76px; animation: wave 1.2s ease-in-out infinite; }
+    .arm { transform-origin: 109px 76px; animation: hello .6s ease-in-out infinite alternate; }
+    @keyframes wave { 50% { transform: translateY(-4px); } }
+    @keyframes hello { to { transform: rotate(-20deg); } }
+  </style>
+  <rect width="160" height="120" rx="18" fill="#fff0f3"/>
+  <path d="M0 99c25-7 47 4 76-1s48 5 84-2v24H0z" fill="#f4d3bb"/>
+  <g class="bear"><circle cx="57" cy="48" r="13" fill="#b97951"/><circle cx="103" cy="48" r="13" fill="#b97951"/><circle cx="80" cy="62" r="34" fill="#c9895b"/><ellipse cx="80" cy="78" rx="16" ry="12" fill="#f2c291"/><circle cx="68" cy="59" r="3" fill="#40322e"/><circle cx="92" cy="59" r="3" fill="#40322e"/><path d="M76 72h8l-4 5z" fill="#4a3932"/><path d="M80 77v5" stroke="#4a3932" stroke-width="2" stroke-linecap="round"/><circle cx="51" cy="91" r="12" fill="#c9895b"/><g class="arm"><circle cx="109" cy="75" r="12" fill="#c9895b"/></g><path d="M74 96h12l-6 9z" fill="#e85b6b"/></g>
+</svg>

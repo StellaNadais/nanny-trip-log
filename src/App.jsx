@@ -39,7 +39,8 @@ export default function App() {
           <ParentRemindersProvider>
           <Routes>
             <Route path="/book" element={<BookAccessPage />} />
-            <Route path="/book/:family" element={<BookPage />} />
+            <Route path="/book/i/:inviteToken" element={<BookPage />} />
+            <Route path="/book/:legacyFamily" element={<Navigate to="/book" replace />} />
             <Route element={<CaregiverShellLayout />}>
               <Route element={<CaregiverFlowLayout />}>
                 <Route path="/" element={<WelcomePage />} />

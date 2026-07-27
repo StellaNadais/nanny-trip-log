@@ -12,6 +12,7 @@ import TodayPanelModal from '../components/TodayPanelModal'
 import TodaySpaceTile from '../components/TodaySpaceTile'
 import WorkspaceTileBoard from '../components/WorkspaceTileBoard'
 import ScheduleBringAlongTile from '../components/ScheduleBringAlongTile'
+import BookInvitePanel from '../components/BookInvitePanel'
 import { upcomingCelebrationsInMonth } from '../utils/scheduleCelebrations'
 
 function todayISO() {
@@ -411,6 +412,18 @@ export default function SchedulePage() {
               span: 2,
               children: <ScheduleBringAlongTile bookings={rentedToyVisits} />,
             },
+            {
+              id: 'invites',
+              label: 'Invite families',
+              span: 2,
+              children: (
+                <TodaySpaceTile
+                  preview="Copy private booking links"
+                  hint="Share an invitation link with each family — tap to open."
+                  onClick={() => openSchedulePanel('invites')}
+                />
+              ),
+            },
           ]}
         />
       </div>
@@ -432,6 +445,15 @@ export default function SchedulePage() {
         monthIndex={m}
       />
 
+      <TodayPanelModal
+        open={openPanel === 'invites'}
+        onClose={closeSchedulePanel}
+        eyebrow="Parent booking"
+        title="Invite families"
+        dateLabel="Private booking links"
+      >
+        <BookInvitePanel />
+      </TodayPanelModal>
     </div>
   )
 }

@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 120" role="img" aria-label="Animated rolling blocks">
+  <style>
+    .block-one { animation: hop 1s ease-in-out infinite; }
+    .block-two { animation: hop 1s .2s ease-in-out infinite; }
+    .block-three { animation: hop 1s .4s ease-in-out infinite; }
+    @keyframes hop { 50% { transform: translateY(-12px) rotate(-8deg); } }
+  </style>
+  <rect width="160" height="120" rx="18" fill="#effcf5"/>
+  <path d="M0 100c36-9 64 8 98-1s37 4 62-2v23H0z" fill="#bfe2a5"/>
+  <g class="block-one"><rect x="31" y="59" width="36" height="36" rx="6" fill="#f3c84b"/><text x="49" y="84" text-anchor="middle" font-family="sans-serif" font-size="22" font-weight="700" fill="#e3624f">A</text></g>
+  <g class="block-two"><rect x="64" y="45" width="40" height="40" rx="6" fill="#62b9d5"/><circle cx="84" cy="65" r="11" fill="#f8e88e"/></g>
+  <g class="block-three"><rect x="101" y="63" width="31" height="31" rx="6" fill="#e87586"/><path d="M116 70l8 14h-16z" fill="#fff1a5"/></g>
+</svg>

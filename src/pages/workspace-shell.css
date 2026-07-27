@@ -591,6 +591,11 @@
   gap: 8px;
 }
 
+.page--workspace.page--kid-journal .journal__layout {
+  /* Match the workbook canvas inset between the tabs and the week picker. */
+  gap: 12px;
+}
+
 .page--workspace .schedule__calendar-panel {
   padding: 6px 10px 8px;
   box-shadow: none;
@@ -1804,7 +1809,7 @@
     overflow: hidden;
   }
 
-  .page--kid-journal .journal__layout {
+  .page--workspace.page--kid-journal .journal__layout {
     gap: 8px;
     overflow: hidden;
   }

@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 120" role="img" aria-label="Animated toy robot">
+  <style>
+    .robot { animation: bob 1s ease-in-out infinite; }
+    .antenna { transform-origin: 80px 35px; animation: wiggle .5s ease-in-out infinite alternate; }
+    @keyframes bob { 50% { transform: translateY(-5px); } }
+    @keyframes wiggle { to { transform: rotate(10deg); } }
+  </style>
+  <rect width="160" height="120" rx="18" fill="#fff9e8"/>
+  <path d="M0 98c23-7 44 5 72-1s58 5 88-4v27H0z" fill="#d9e8b7"/>
+  <g class="robot"><path class="antenna" d="M80 37V22" stroke="#687286" stroke-width="4" stroke-linecap="round"/><circle class="antenna" cx="80" cy="18" r="6" fill="#ef6a72"/><rect x="48" y="35" width="64" height="48" rx="12" fill="#8ca9d6"/><rect x="57" y="45" width="46" height="25" rx="7" fill="#e5f6f7"/><circle cx="68" cy="57" r="5" fill="#384a6b"/><circle cx="92" cy="57" r="5" fill="#384a6b"/><path d="M69 65h22" stroke="#ef6a72" stroke-width="3" stroke-linecap="round"/><rect x="59" y="83" width="42" height="20" rx="6" fill="#647fae"/><path d="M47 73l-13 13M113 73l13 13" stroke="#687286" stroke-width="7" stroke-linecap="round"/><path d="M67 103v7M93 103v7" stroke="#687286" stroke-width="7" stroke-linecap="round"/></g>
+</svg>

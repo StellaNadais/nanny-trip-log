@@ -219,46 +219,17 @@
 }
 
 /*
- * The post-booking tools share the calendar's column. The calendar takes the
- * remaining height while the play kit and pink note retain compact, visible
- * rows at the bottom of the workspace.
+ * Let the calendar retain its natural grid height, then use the remaining
+ * workspace for the play kit and its compact family note.
  */
-.page--book-portal .book-portal__post-booking-tools {
-  display: flex;
-  flex: 0 0 auto;
-  flex-direction: column;
-  gap: 6px;
-  min-height: 0;
+.page--book-portal .book-portal__panel:has(.bring-along-carousel) .schedule__calendar-panel {
+  flex: 0 1 auto;
 }
 
-.page--book-portal .book-portal__panel:has(.book-portal__post-booking-tools) .schedule__calendar-panel {
-  flex: 1 1 0;
-  min-height: 0;
-}
-
-/* Override the embedded calendar's natural-height rules in this compact portal. */
-.page--book-portal
-  .book-portal__panel:has(.book-portal__post-booking-tools)
-  .schedule__calendar-panel
-  .schedule-calendar-flip--embedded,
-.page--book-portal
-  .book-portal__panel:has(.book-portal__post-booking-tools)
-  .schedule__calendar-panel
-  .schedule-calendar-flip--embedded
-  .schedule-flip__scene {
-  min-height: 0;
-  height: 100%;
-}
-
-.page--book-portal .book-portal__post-booking-tools .bring-along-carousel {
-  flex: 0 0 clamp(7rem, 17svh, 9rem);
-  min-height: 0;
+.page--book-portal .book-portal__panel:has(.bring-along-carousel) .bring-along-carousel {
+  flex: 1 1 12rem;
+  min-height: 12rem;
   min-width: 0;
-}
-
-.page--book-portal .book-portal__post-booking-tools .bring-along-carousel__card,
-.page--book-portal .book-portal__post-booking-tools .bring-along-carousel__card .bring-along__art {
-  min-height: 0;
 }
 
 .page--book-portal .book-request-cta {
@@ -817,6 +788,22 @@
   background: color-mix(in srgb, #faf9f7 85%, #fff);
 }
 
+.book-access__message {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 0;
+  padding: 18px;
+  border: 1px solid var(--line-soft);
+  border-radius: 16px;
+  background: color-mix(in srgb, #faf9f7 85%, #fff);
+  line-height: 1.5;
+}
+
+.book-access__message p {
+  margin: 0;
+}
+
 .book-access__error {
   margin: 0;
   font-size: 0.8125rem;
@@ -1051,28 +1038,35 @@
   white-space: nowrap;
 }
 
-/* A quiet, in-flow note directly below the family's play kit. */
+/* A compact, in-flow family note directly below the play kit. */
 .page--book-portal .book-appreciation-footer {
-  flex: 0 0 auto;
-  padding: 0;
+  padding: 2px 0 12px;
 }
 
 .page--book-portal .book-appreciation-footer__field {
-  display: block;
+  display: grid;
+  gap: 4px;
+  color: #315f9e;
+  font-size: 0.75rem;
+  font-weight: 650;
+}
+
+.page--book-portal .book-appreciation-footer__label {
+  line-height: 1.2;
 }
 
 .page--book-portal .book-appreciation-footer__field textarea {
   display: block;
   width: 100%;
   box-sizing: border-box;
-  height: 2.5rem;
-  min-height: 2.5rem;
+  height: 2.25rem;
+  min-height: 2.25rem;
   resize: none;
   padding: 6px 9px;
   border: 1px solid #ded7cd;
   border-radius: 8px;
   outline: none;
-  background: #fff0f5;
+  background: #edf5ff;
   color: var(--ink);
   font: inherit;
   font-size: 0.8125rem;
@@ -1084,8 +1078,8 @@
 }
 
 .page--book-portal .book-appreciation-footer__field textarea:focus {
-  border-color: #e9a9bd;
-  box-shadow: 0 0 0 3px rgb(233 169 189 / 20%);
+  border-color: #82afe6;
+  box-shadow: 0 0 0 3px rgb(130 175 230 / 25%);
 }
 
 /*

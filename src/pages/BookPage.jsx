@@ -1,14 +1,13 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link, Navigate, useParams } from 'react-router-dom'
 import { EVENT_LOCATIONS, groupFamilyEventsByLocation } from '../data/familyEvents'
-import { getBookFamily } from '../data/bookFamilies'
+import { getBookFamilyByInviteToken } from '../data/bookFamilies'
 import { OVERNIGHT_RATE } from '../data/bookingRates'
 import { startOfWeekMonday, toISODateLocal } from '../utils/dates'
 import { addShoppingItems } from '../utils/journalShoppingStorage'
 import { monthGrid, isSameDay } from '../utils/calendarMonth'
 import { useBookings } from '../hooks/useBookings'
 import { useParentReminders } from '../hooks/useParentReminders'
-import BookFamilyGate from '../components/BookFamilyGate'
 import BookFollowUpModal from '../components/BookFollowUpModal'
 import BookSchedulingDock from '../components/BookSchedulingDock'
 import ScheduleCalendarFlip from '../components/ScheduleCalendarFlip'
@@ -24,7 +23,7 @@ import {
 } from '../utils/bookingRange'
 import { parseChildrenOnGig } from '../utils/bookingChildren'
 import { BOOK_THANKS_LEDE, BOOK_THANKS_SUPPORTERS } from '../data/bookThanks'
-import { isBookFamilyUnlocked } from '../utils/bookFamilyAccess'
+import { acceptBookInvite } from '../utils/bookInviteAccess'
 import { BRING_ALONG_TOYS } from '../data/bringAlongToys'
 import BringAlongCarousel from '../components/BringAlongCarousel'
 import BookAppreciationFooter from '../components/BookAppreciationFooter'
@@ -47,14 +46,14 @@ const DEFAULT_CARE_START = '09:00'
 const DEFAULT_CARE_END = '17:00'
 const APPRECIATION_NOTE_STORAGE_PREFIX = 'nanny-book-appreciation-note'
 
-function appreciationNoteStorageKey(familySlug) {
-  return `${APPRECIATION_NOTE_STORAGE_PREFIX}:${familySlug}`
+function appreciationNoteStorageKey(inviteToken) {
+  return `${APPRECIATION_NOTE_STORAGE_PREFIX}:${inviteToken}`
 }
 
-function loadAppreciationNote(familySlug) {
-  if (!familySlug) return ''
+function loadAppreciationNote(inviteToken) {
+  if (!inviteToken) return ''
   try {
-    return localStorage.getItem(appreciationNoteStorageKey(familySlug)) ?? ''
+    return localStorage.getItem(appreciationNoteStorageKey(inviteToken)) ?? ''
   } catch {
     return ''
   }
@@ -71,7 +70,7 @@ function bookingBelongsToFamily(booking, family) {
   return (
     name.includes(family.lastName.toLowerCase()) ||
     name.includes(family.nickname.toLowerCase()) ||
-    booking?.familySlug === family.slug
+    booking?.familyInviteToken === family.inviteToken
   )
 }
 
@@ -97,18 +96,15 @@ function cellBookingLabel(bookings, family) {
 }
 
 /**
- * Parent-only booking page for one family: /book/:family
+ * Parent-only booking page for one family: /book/i/:inviteToken
  */
 export default function BookPage() {
-  const { family: familySlug } = useParams()
-  const family = useMemo(() => getBookFamily(familySlug), [familySlug])
-  const [unlocked, setUnlocked] = useState(() =>
-    familySlug ? isBookFamilyUnlocked(familySlug) : false
-  )
+  const { inviteToken } = useParams()
+  const family = useMemo(() => getBookFamilyByInviteToken(inviteToken), [inviteToken])
 
   useEffect(() => {
-    setUnlocked(familySlug ? isBookFamilyUnlocked(familySlug) : false)
-  }, [familySlug])
+    if (family?.inviteToken) acceptBookInvite(family.inviteToken)
+  }, [family])
 
   const { bookings, addBooking } = useBookings()
   const { addRemindersForBooking } = useParentReminders()
@@ -132,27 +128,27 @@ export default function BookPage() {
   const [bookingExtras, setBookingExtras] = useState([])
   const [bringAlongIds, setBringAlongIds] = useState([])
   const [appreciationNotes, setAppreciationNotes] = useState(() => ({
-    [familySlug]: loadAppreciationNote(familySlug),
+    [inviteToken]: loadAppreciationNote(inviteToken),
   }))
   const [followUpBooking, setFollowUpBooking] = useState(null)
   const [bookToast, setBookToast] = useState('')
 
   const overnightRate = family?.overnightRate ?? OVERNIGHT_RATE
   const appreciationNote =
-    appreciationNotes[familySlug] ?? loadAppreciationNote(familySlug)
+    appreciationNotes[inviteToken] ?? loadAppreciationNote(inviteToken)
 
   useEffect(() => {
     if (family) setFamilyName(family.lastName)
   }, [family])
 
   useEffect(() => {
-    if (!familySlug) return
+    if (!inviteToken) return
     try {
-      localStorage.setItem(appreciationNoteStorageKey(familySlug), appreciationNote)
+      localStorage.setItem(appreciationNoteStorageKey(inviteToken), appreciationNote)
     } catch {
       /* The note remains usable for this session when storage is unavailable. */
     }
-  }, [familySlug, appreciationNote])
+  }, [inviteToken, appreciationNote])
 
   const y = cursor.getFullYear()
   const m = cursor.getMonth()
@@ -393,7 +389,7 @@ export default function BookPage() {
       dateISO: start,
       careEndDateISO: endDate,
       familyName: familyName.trim(),
-      familySlug: family?.slug,
+      familyInviteToken: family?.inviteToken,
       contact: phone.trim(),
       kidCount: childrenParsed.kidCount,
       childrenNames: childrenParsed.childrenNames,
@@ -478,20 +474,16 @@ export default function BookPage() {
     return <Navigate to="/book" replace />
   }
 
-  if (!unlocked) {
-    return <BookFamilyGate family={family} onUnlocked={() => setUnlocked(true)} />
-  }
-
   return (
     <div className="page page--calendar page--book page--book-portal page--schedule page--parents-only schedule-dashboard page--workspace work-ui">
       <div className="book-portal__shell">
         <header className="book-portal__head book-workspace-head">
           <p className="book-parents-banner" role="note">
-            {family.nickname} · parent portal
+            {family.lastNamePlural} · parent portal
           </p>
           <p className="book-workspace-head__eyebrow">Availability request</p>
           <h1 id="book-page-heading" className="sr-only">
-            Book a gig — {family.nickname}
+            Book a gig — {family.lastNamePlural}
           </h1>
           {family.availabilityNote ? (
             <p className="book-family-availability muted">{family.availabilityNote}</p>
@@ -500,7 +492,7 @@ export default function BookPage() {
             {selectionHint}
           </p>
           <Link to="/book" className="book-family-switch">
-            Switch family
+            Use another invitation link
           </Link>
         </header>
 
@@ -545,18 +537,18 @@ export default function BookPage() {
               </section>
 
               {hasBookingActivity ? (
-                <div className="book-portal__post-booking-tools">
+                <>
                   <BringAlongCarousel selectedIds={bringAlongIds} onToggle={toggleBringAlong} />
                   <BookAppreciationFooter
                     value={appreciationNote}
                     onChange={(nextNote) =>
                       setAppreciationNotes((current) => ({
                         ...current,
-                        [familySlug]: nextNote,
+                        [inviteToken]: nextNote,
                       }))
                     }
                   />
-                </div>
+                </>
               ) : null}
             </div>
           ) : null}

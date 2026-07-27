@@ -79,6 +79,81 @@
   z-index: 1;
 }
 
+.book-invites {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.book-invites__title,
+.book-invites__intro,
+.book-invites__error,
+.book-invites__family,
+.book-invites__link {
+  margin: 0;
+}
+
+.book-invites__title {
+  font-size: 1rem;
+}
+
+.book-invites__intro,
+.book-invites__link {
+  color: var(--peri-ink-muted);
+  font-size: 0.8125rem;
+  line-height: 1.45;
+}
+
+.book-invites__error {
+  color: #b91c1c;
+  font-size: 0.8125rem;
+}
+
+.book-invites__list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.book-invites__item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px;
+  border: 1px solid color-mix(in srgb, var(--peri-accent) 20%, var(--line));
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--peri-surface) 92%, var(--peri-light) 8%);
+}
+
+.book-invites__family {
+  font-size: 0.875rem;
+}
+
+.book-invites__link {
+  overflow-wrap: anywhere;
+}
+
+.book-invites__copy {
+  flex: 0 0 auto;
+  white-space: nowrap;
+}
+
+@media (max-width: 420px) {
+  .book-invites__item {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .book-invites__copy {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
 /* HUD stat strip */
 .schedule-dashboard__hud {
   flex-shrink: 0;

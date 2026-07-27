@@ -1,5 +1,24 @@
-import { useRef } from 'react'
+import { useRef, useState } from 'react'
 import { BRING_ALONG_TOYS } from '../data/bringAlongToys'
+
+function BringAlongArt({ toy }) {
+  const [hasImageError, setHasImageError] = useState(false)
+
+  return (
+    <span className={`bring-along__art bring-along__art--${toy.color}`}>
+      <img
+        className="bring-along__image"
+        src={toy.image}
+        alt={`Animated ${toy.name}`}
+        hidden={hasImageError}
+        onError={() => setHasImageError(true)}
+      />
+      <span className="bring-along__emoji-fallback" hidden={!hasImageError} aria-hidden="true">
+        {toy.icon}
+      </span>
+    </span>
+  )
+}
 
 export default function BringAlongCarousel({ selectedIds = [], onToggle }) {
   const trackRef = useRef(null)
@@ -48,9 +67,7 @@ export default function BringAlongCarousel({ selectedIds = [], onToggle }) {
                 aria-pressed={isSelected}
                 aria-label={`${isSelected ? 'Remove' : 'Add'} ${toy.name} ${isSelected ? 'from' : 'to'} your bring-along list`}
               >
-                <span className={`bring-along__art bring-along__art--${toy.color}`} aria-hidden="true">
-                  {toy.icon}
-                </span>
+                <BringAlongArt toy={toy} />
                 <span className="bring-along-carousel__card-name">{toy.name}</span>
                 <span className="bring-along-carousel__price">${toy.price}</span>
               </button>

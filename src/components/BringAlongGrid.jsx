@@ -1,4 +1,24 @@
+import { useState } from 'react'
 import { BRING_ALONG_TOYS } from '../data/bringAlongToys'
+
+function BringAlongArt({ toy }) {
+  const [hasImageError, setHasImageError] = useState(false)
+
+  return (
+    <span className={`bring-along__art bring-along__art--${toy.color}`}>
+      <img
+        className="bring-along__image"
+        src={toy.image}
+        alt={`Animated ${toy.name}`}
+        hidden={hasImageError}
+        onError={() => setHasImageError(true)}
+      />
+      <span className="bring-along__emoji-fallback" hidden={!hasImageError} aria-hidden="true">
+        {toy.icon}
+      </span>
+    </span>
+  )
+}
 
 export default function BringAlongGrid({
   heading,
@@ -34,9 +54,7 @@ export default function BringAlongGrid({
             : toy.name
           const content = (
             <>
-              <span className={`bring-along__art bring-along__art--${toy.color}`} aria-hidden="true">
-                {toy.icon}
-              </span>
+              <BringAlongArt toy={toy} />
               <span className="bring-along__card-name">{toy.name}</span>
               {selectable ? (
                 <span className="bring-along__card-action">{isSelected ? 'Packed' : 'Add to pack'}</span>

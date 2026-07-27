@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 120" role="img" aria-label="Animated monster truck">
+  <style>
+    .truck { animation: rumble .8s ease-in-out infinite alternate; }
+    .wheel { transform-origin: center; animation: roll .8s linear infinite; }
+    @keyframes rumble { to { transform: translateY(-4px); } }
+    @keyframes roll { to { transform: rotate(360deg); } }
+  </style>
+  <rect width="160" height="120" rx="18" fill="#e9f7ff"/>
+  <path d="M0 95c24-10 40 5 64-2s47 9 96-4v31H0z" fill="#9bd476"/>
+  <g class="truck"><path d="M31 56h67l19 19v17H31z" fill="#f05e44"/><path d="M55 42h36l12 33H43z" fill="#f47e45"/><path d="M59 48h27l7 20H52z" fill="#b6e3f5"/><path d="M98 60h12l10 15H98z" fill="#b6e3f5"/><path d="M28 74h94v10H28z" fill="#4e6173"/><g fill="#263746"><circle class="wheel" cx="49" cy="91" r="15"/><circle class="wheel" cx="103" cy="91" r="15"/></g><g fill="#f8d45e"><circle cx="49" cy="91" r="6"/><circle cx="103" cy="91" r="6"/></g></g>
+  <path d="M23 104h100" stroke="#6f9b55" stroke-width="3" stroke-linecap="round"/>
+</svg>
