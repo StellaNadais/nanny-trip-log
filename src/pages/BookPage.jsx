@@ -499,17 +499,7 @@ export default function BookPage() {
                 {upcoming.length === 0 ? (
                   <div className="book-portal__calendar-tracing-band" aria-hidden="true">
                     <img
-                      className="book-portal__calendar-tracing book-portal__calendar-tracing--one"
-                      src="/book/calendar-tracing.png"
-                      alt=""
-                    />
-                    <img
-                      className="book-portal__calendar-tracing book-portal__calendar-tracing--two"
-                      src="/book/calendar-tracing.png"
-                      alt=""
-                    />
-                    <img
-                      className="book-portal__calendar-tracing book-portal__calendar-tracing--three"
+                      className="book-portal__calendar-tracing"
                       src="/book/calendar-tracing.png"
                       alt=""
                     />
