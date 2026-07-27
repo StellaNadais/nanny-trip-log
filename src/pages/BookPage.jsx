@@ -466,34 +466,56 @@ export default function BookPage() {
                 </p>
               ) : null}
 
-              <section className="schedule__calendar-panel work-ui__panel" aria-label="Booking calendar">
-                <ScheduleCalendarFlip
-                  embedded
-                  title={title}
-                  cells={cells}
-                  y={y}
-                  m={m}
-                  today={today}
-                  calendarRowCount={calendarRowCount}
-                  bookingsByDate={bookingsByDate}
-                  upcoming={upcoming}
-                  dateISOFromParts={dateISOFromParts}
-                  todayISO={todayISO}
-                  isSameDay={isSameDay}
-                  cellBookingMod={cellBookingMod}
-                  cellBookingLabel={(dayBookings) => cellBookingLabel(dayBookings, family)}
-                  onPrevMonth={prevMonth}
-                  onNextMonth={nextMonth}
-                  onDateSelect={handleCalendarDateSelect}
-                  onDateHover={handleCalendarDateHover}
-                  dateSelectionRole={dateSelectionRole}
-                  showSelectionLegend
-                  listTitle="Your sent requests"
-                  listFlipLabel="Your sent requests"
-                  listEmptyMessage="No sent requests yet. Tap dates on the calendar to schedule."
-                  pendingStatusLabel="Request sent"
-                />
-              </section>
+              <div className="book-portal__calendar-request-stack">
+                <section className="schedule__calendar-panel work-ui__panel" aria-label="Booking calendar">
+                  <ScheduleCalendarFlip
+                    embedded
+                    title={title}
+                    cells={cells}
+                    y={y}
+                    m={m}
+                    today={today}
+                    calendarRowCount={calendarRowCount}
+                    bookingsByDate={bookingsByDate}
+                    upcoming={upcoming}
+                    dateISOFromParts={dateISOFromParts}
+                    todayISO={todayISO}
+                    isSameDay={isSameDay}
+                    cellBookingMod={cellBookingMod}
+                    cellBookingLabel={(dayBookings) => cellBookingLabel(dayBookings, family)}
+                    onPrevMonth={prevMonth}
+                    onNextMonth={nextMonth}
+                    onDateSelect={handleCalendarDateSelect}
+                    onDateHover={handleCalendarDateHover}
+                    dateSelectionRole={dateSelectionRole}
+                    showSelectionLegend
+                    showEmptyTracing={false}
+                    listTitle="Your sent requests"
+                    listFlipLabel="Your sent requests"
+                    listEmptyMessage="No sent requests yet. Tap dates on the calendar to schedule."
+                    pendingStatusLabel="Request sent"
+                  />
+                </section>
+                {upcoming.length === 0 ? (
+                  <div className="book-portal__calendar-tracing-band" aria-hidden="true">
+                    <img
+                      className="book-portal__calendar-tracing book-portal__calendar-tracing--one"
+                      src="/book/calendar-tracing.png"
+                      alt=""
+                    />
+                    <img
+                      className="book-portal__calendar-tracing book-portal__calendar-tracing--two"
+                      src="/book/calendar-tracing.png"
+                      alt=""
+                    />
+                    <img
+                      className="book-portal__calendar-tracing book-portal__calendar-tracing--three"
+                      src="/book/calendar-tracing.png"
+                      alt=""
+                    />
+                  </div>
+                ) : null}
+              </div>
 
               {SHOW_POST_BOOKING_OPTIONS && hasBookingActivity ? (
                 <>

@@ -40,6 +40,7 @@ export default function ScheduleCalendarFlip({
   onDateHover,
   dateSelectionRole,
   showSelectionLegend = false,
+  showEmptyTracing = true,
 }) {
   const [listFace, setListFace] = useState(false)
 
@@ -218,13 +219,19 @@ export default function ScheduleCalendarFlip({
             </div>
             <div className="schedule-flip__list-scroll">
               {upcoming.length === 0 ? (
-                <div className="schedule-flip__list-empty schedule-flip__list-empty--illustrated">
-                  <img
-                    className="schedule-flip__empty-tracing"
-                    src="/book/calendar-tracing.png"
-                    alt=""
-                    aria-hidden="true"
-                  />
+                <div
+                  className={`schedule-flip__list-empty${
+                    showEmptyTracing ? ' schedule-flip__list-empty--illustrated' : ''
+                  }`}
+                >
+                  {showEmptyTracing ? (
+                    <img
+                      className="schedule-flip__empty-tracing"
+                      src="/book/calendar-tracing.png"
+                      alt=""
+                      aria-hidden="true"
+                    />
+                  ) : null}
                   <p className="muted">{listEmptyMessage}</p>
                 </div>
               ) : (
