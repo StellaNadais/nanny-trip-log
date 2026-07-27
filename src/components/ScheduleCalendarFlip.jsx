@@ -218,7 +218,15 @@ export default function ScheduleCalendarFlip({
             </div>
             <div className="schedule-flip__list-scroll">
               {upcoming.length === 0 ? (
-                <p className="muted schedule-flip__list-empty">{listEmptyMessage}</p>
+                <div className="schedule-flip__list-empty schedule-flip__list-empty--illustrated">
+                  <img
+                    className="schedule-flip__empty-tracing"
+                    src="/book/calendar-tracing.png"
+                    alt=""
+                    aria-hidden="true"
+                  />
+                  <p className="muted">{listEmptyMessage}</p>
+                </div>
               ) : (
                 <ul className="schedule-accepted-gigs__list schedule-accepted-gigs__list--flip">
                   {upcoming.map((b) => {

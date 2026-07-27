@@ -275,6 +275,33 @@
   overscroll-behavior: contain;
 }
 
+.page--book-portal .schedule-calendar-flip--embedded .schedule-flip__list-empty--illustrated {
+  position: relative;
+  display: grid;
+  min-height: 100%;
+  margin: 0;
+  overflow: hidden;
+}
+
+.page--book-portal .schedule-calendar-flip--embedded .schedule-flip__empty-tracing {
+  position: absolute;
+  inset: 8px;
+  width: calc(100% - 16px);
+  height: calc(100% - 16px);
+  object-fit: contain;
+  pointer-events: none;
+  opacity: 0.82;
+}
+
+.page--book-portal .schedule-calendar-flip--embedded .schedule-flip__list-empty--illustrated p {
+  position: relative;
+  z-index: 1;
+  align-self: end;
+  margin: 0;
+  padding: 8px;
+  background: color-mix(in srgb, var(--paper) 72%, transparent);
+}
+
 /* Calendar date picking — range highlight on same grid as Schedule */
 .page--book-portal .schedule-calendar-flip button.calendar__cell {
   font: inherit;
@@ -446,12 +473,6 @@
   font-weight: 600;
   line-height: 1.35;
   color: var(--ink);
-}
-
-.book-scheduling-modal__repeat-hint {
-  margin: 2px 0 0;
-  font-size: 0.75rem;
-  line-height: 1.4;
 }
 
 .book-scheduling-modal__actions {
@@ -1144,8 +1165,7 @@
     margin-bottom: 6px;
   }
 
-  .book-scheduling-modal .book-modal__sub,
-  .book-scheduling-modal__repeat-hint {
+  .book-scheduling-modal .book-modal__sub {
     display: none;
   }
 
