@@ -1,4 +1,5 @@
 import { parseGroceryDraft } from './parseGroceryDraft'
+import { notifyCloudDataChanged } from './cloudSync'
 
 const KEY = 'nanny-journal-shopping-v1'
 
@@ -20,6 +21,7 @@ export function loadShoppingLists() {
 export function saveShoppingLists(lists) {
   try {
     localStorage.setItem(KEY, JSON.stringify(lists))
+    notifyCloudDataChanged(KEY)
   } catch {
     /* ignore */
   }

@@ -1,3 +1,5 @@
+import { notifyCloudDataChanged } from './cloudSync'
+
 const KEY = 'nanny-parent-reminders-v1'
 
 function newId() {
@@ -18,6 +20,7 @@ export function loadParentReminders() {
 export function saveParentReminders(reminders) {
   try {
     localStorage.setItem(KEY, JSON.stringify(reminders))
+    notifyCloudDataChanged(KEY)
   } catch {
     /* ignore */
   }

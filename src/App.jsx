@@ -3,6 +3,7 @@ import { ShiftPunctualityProvider } from './context/ShiftPunctualityProvider'
 import { KidJournalProvider } from './context/KidJournalProvider'
 import { BookingsProvider } from './context/BookingsProvider'
 import { ParentRemindersProvider } from './context/ParentRemindersProvider'
+import { CloudSyncProvider } from './context/CloudSyncProvider'
 import WelcomePage from './pages/WelcomePage'
 import CaretakerAccessPage from './pages/CaretakerAccessPage'
 import BookAccessPage from './pages/BookAccessPage'
@@ -33,10 +34,11 @@ import './tech-type.css'
 
 export default function App() {
   return (
-    <ShiftPunctualityProvider>
-      <KidJournalProvider>
-        <BookingsProvider>
-          <ParentRemindersProvider>
+    <CloudSyncProvider>
+      <ShiftPunctualityProvider>
+        <KidJournalProvider>
+          <BookingsProvider>
+            <ParentRemindersProvider>
           <Routes>
             <Route path="/book" element={<BookAccessPage />} />
             <Route path="/book/i/:inviteToken" element={<BookPage />} />
@@ -63,9 +65,10 @@ export default function App() {
               </Route>
             </Route>
           </Routes>
-          </ParentRemindersProvider>
-        </BookingsProvider>
-      </KidJournalProvider>
-    </ShiftPunctualityProvider>
+            </ParentRemindersProvider>
+          </BookingsProvider>
+        </KidJournalProvider>
+      </ShiftPunctualityProvider>
+    </CloudSyncProvider>
   )
 }

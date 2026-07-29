@@ -4,6 +4,7 @@ import {
   loadParentReminders,
   saveParentReminders,
 } from '../utils/parentRemindersStorage'
+import { CLOUD_DATA_APPLIED_EVENT } from '../utils/cloudSync'
 import { ParentRemindersContext } from './parentRemindersContext'
 
 export function ParentRemindersProvider({ children }) {
@@ -12,6 +13,12 @@ export function ParentRemindersProvider({ children }) {
   useEffect(() => {
     saveParentReminders(reminders)
   }, [reminders])
+
+  useEffect(() => {
+    const refreshReminders = () => setReminders(loadParentReminders())
+    window.addEventListener(CLOUD_DATA_APPLIED_EVENT, refreshReminders)
+    return () => window.removeEventListener(CLOUD_DATA_APPLIED_EVENT, refreshReminders)
+  }, [])
 
   const addReminder = useCallback((payload) => {
     const row = createParentReminder(payload)
