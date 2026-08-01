@@ -1466,6 +1466,10 @@
   letter-spacing: -0.025em;
 }
 
+.today-journal-preview__route + .today-journal-preview__opening {
+  margin-top: 15px;
+}
+
 .today-journal-preview__lead {
   margin-top: 20px;
 }
@@ -1550,18 +1554,20 @@
   white-space: pre-wrap;
 }
 
-.today-journal-preview__summary .today-journal-preview__meals {
+.today-journal-preview__summary .today-journal-preview__meals,
+.today-journal-preview__summary .today-journal-preview__wishes {
   color: #37453c;
 }
 
-.today-journal-preview__meals span {
+.today-journal-preview__meals span,
+.today-journal-preview__wishes span {
   color: #7a6b51;
   font-weight: 700;
 }
 
 .today-journal-preview__details {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 12px;
   margin: 19px 0 0;
   padding: 13px 0 0;

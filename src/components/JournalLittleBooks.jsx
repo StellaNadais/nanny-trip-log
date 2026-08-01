@@ -1,7 +1,7 @@
 import { useId } from 'react'
 
 /**
- * Nap, potty, and wishes + song requests — separate journal panels.
+ * Nap and potty — separate journal panels.
  */
 export default function JournalLittleBooks({
   nap,
@@ -10,8 +10,6 @@ export default function JournalLittleBooks({
   onPottyTimeChange,
   pottyNotes,
   onPottyNotesChange,
-  wishes,
-  onWishesChange,
 }) {
   const baseId = useId()
 
@@ -67,31 +65,6 @@ export default function JournalLittleBooks({
               value={pottyNotes}
               onChange={(e) => onPottyNotesChange(e.target.value)}
               placeholder="Dry, tried, accident, celebrated…"
-            />
-          </label>
-        </div>
-      </section>
-
-      <section
-        className="journal-mood-bar journal-panel journal-panel--wishes"
-        aria-label="Wishes and song requests"
-      >
-        <div className="journal-mood-bar__head">
-          <span className="journal-mood-bar__title" id={`${baseId}-wishes-label`}>
-            Wishes + song requests
-          </span>
-        </div>
-        <div className="journal-mood-bar__track journal-panel__body">
-          <label className="journal-panel-field" htmlFor={`${baseId}-wishes-input`}>
-            <span className="journal-panel-field__label">Today</span>
-            <textarea
-              id={`${baseId}-wishes-input`}
-              className="input journal-panel-field__textarea"
-              rows={4}
-              value={wishes}
-              onChange={(e) => onWishesChange(e.target.value)}
-              placeholder="Wishes, asks, or songs they wanted to hear…"
-              aria-labelledby={`${baseId}-wishes-label`}
             />
           </label>
         </div>

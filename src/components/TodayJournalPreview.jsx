@@ -68,8 +68,6 @@ export default function TodayJournalPreview({
       <button type="button" className="today-journal-preview__story" onClick={onOpen}>
         {hasJournal ? (
           <>
-            {post.title ? <h3 className="today-journal-preview__opening">{post.title}</h3> : null}
-
             <section className="today-journal-preview__route" aria-label="Today’s route">
               {route.length ? (
                 <ol className="today-journal-preview__route-list">
@@ -88,6 +86,8 @@ export default function TodayJournalPreview({
               )}
             </section>
 
+            {post.title ? <h3 className="today-journal-preview__opening">{post.title}</h3> : null}
+
             <section className="today-journal-preview__summary" aria-label="Rest of today’s journal">
               {summary ? <p>{summary}</p> : null}
               {meals ? (
@@ -95,10 +95,15 @@ export default function TodayJournalPreview({
                   <span>Meals:</span> {meals}
                 </p>
               ) : null}
-              {!summary && !meals ? <p>The journal details are recorded below.</p> : null}
+              {wishes ? (
+                <p className="today-journal-preview__wishes">
+                  <span>Wishes:</span> {wishes}
+                </p>
+              ) : null}
+              {!summary && !meals && !wishes ? <p>The journal details are recorded below.</p> : null}
             </section>
 
-            <dl className="today-journal-preview__details" aria-label="Poop, nap, wishes">
+            <dl className="today-journal-preview__details" aria-label="Potty and nap">
               <div>
                 <dt>Poop</dt>
                 <dd>{potty || 'Not noted'}</dd>
@@ -106,10 +111,6 @@ export default function TodayJournalPreview({
               <div>
                 <dt>Nap</dt>
                 <dd>{nap || 'Not noted'}</dd>
-              </div>
-              <div>
-                <dt>Wishes</dt>
-                <dd>{wishes || 'Not noted'}</dd>
               </div>
             </dl>
           </>

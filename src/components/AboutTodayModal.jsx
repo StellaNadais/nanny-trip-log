@@ -188,6 +188,17 @@ export default function AboutTodayModal({
                 suggestions={mealSuggestions}
                 className="meals-today-field--nested"
               />
+              <label className="journal-panel-field" htmlFor="about-today-wishes">
+                <span className="journal-panel-field__label">Wishes + song requests</span>
+                <textarea
+                  id="about-today-wishes"
+                  className="input journal-panel-field__textarea"
+                  rows={4}
+                  value={wishes}
+                  onChange={(event) => onWishesChange(event.target.value)}
+                  placeholder="Wishes, asks, or songs they wanted to hear…"
+                />
+              </label>
             </div>
           </section>
 
@@ -198,8 +209,6 @@ export default function AboutTodayModal({
             onPottyTimeChange={onPottyTimeChange}
             pottyNotes={pottyNotes}
             onPottyNotesChange={onPottyNotesChange}
-            wishes={wishes}
-            onWishesChange={onWishesChange}
           />
 
         </div>

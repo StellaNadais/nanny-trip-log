@@ -5,7 +5,6 @@ import { BookingsProvider } from './context/BookingsProvider'
 import { ParentRemindersProvider } from './context/ParentRemindersProvider'
 import { CloudSyncProvider } from './context/CloudSyncProvider'
 import WelcomePage from './pages/WelcomePage'
-import CaretakerAccessPage from './pages/CaretakerAccessPage'
 import BookPage from './pages/BookPage'
 import SchedulePage from './pages/SchedulePage'
 import WeeklyReceiptPage from './pages/WeeklyReceiptPage'
@@ -14,7 +13,6 @@ import EventsPage from './pages/EventsPage'
 import CaregiverFlowLayout from './layouts/CaregiverFlowLayout'
 import CaregiverShellLayout from './layouts/CaregiverShellLayout'
 import WorkbookLayout from './layouts/WorkbookLayout'
-import CaretakerGate from './components/CaretakerGate'
 import './App.css'
 import './pages/pages.css'
 import './pages/work-ui.css'
@@ -44,22 +42,20 @@ export default function App() {
             <Route element={<CaregiverShellLayout />}>
               <Route element={<CaregiverFlowLayout />}>
                 <Route path="/" element={<WelcomePage />} />
-                <Route path="/caretaker" element={<CaretakerAccessPage />} />
+                <Route path="/caretaker" element={<Navigate to="/schedule" replace />} />
               </Route>
               <Route element={<WorkbookLayout />}>
                 <Route path="/schedule" element={<SchedulePage />} />
                 <Route path="/hub" element={<Navigate to="/schedule" replace />} />
               </Route>
-              <Route element={<CaretakerGate />}>
-                <Route path="/trip-log" element={<Navigate to="/journal" replace />} />
-                <Route path="/receipt" element={<WeeklyReceiptPage />} />
-                <Route element={<WorkbookLayout />}>
-                  <Route path="/today" element={<Navigate to="/journal" replace />} />
-                  <Route path="/shift" element={<Navigate to="/journal" replace />} />
-                  <Route path="/journal" element={<KidJournalPage />} />
-                  <Route path="/outings" element={<Navigate to="/journal" replace />} />
-                  <Route path="/events" element={<EventsPage />} />
-                </Route>
+              <Route path="/trip-log" element={<Navigate to="/journal" replace />} />
+              <Route path="/receipt" element={<WeeklyReceiptPage />} />
+              <Route element={<WorkbookLayout />}>
+                <Route path="/today" element={<Navigate to="/journal" replace />} />
+                <Route path="/shift" element={<Navigate to="/journal" replace />} />
+                <Route path="/journal" element={<KidJournalPage />} />
+                <Route path="/outings" element={<Navigate to="/journal" replace />} />
+                <Route path="/events" element={<EventsPage />} />
               </Route>
             </Route>
           </Routes>
