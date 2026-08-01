@@ -1,7 +1,6 @@
-import { useEffect, useMemo, useState } from 'react'
-import { Link, Navigate, useParams } from 'react-router-dom'
+import { useMemo, useState } from 'react'
+import { Link } from 'react-router-dom'
 import { EVENT_LOCATIONS, groupFamilyEventsByLocation } from '../data/familyEvents'
-import { getBookFamilyByInviteToken } from '../data/bookFamilies'
 import { OVERNIGHT_RATE } from '../data/bookingRates'
 import { startOfWeekMonday, toISODateLocal } from '../utils/dates'
 import { addShoppingItems } from '../utils/journalShoppingStorage'
@@ -23,10 +22,6 @@ import {
 } from '../utils/bookingRange'
 import { parseChildrenOnGig } from '../utils/bookingChildren'
 import { BOOK_THANKS_LEDE, BOOK_THANKS_SUPPORTERS } from '../data/bookThanks'
-import { acceptBookInvite } from '../utils/bookInviteAccess'
-import { BRING_ALONG_TOYS } from '../data/bringAlongToys'
-import BringAlongCarousel from '../components/BringAlongCarousel'
-import BookAppreciationFooter from '../components/BookAppreciationFooter'
 
 function todayISO() {
   return toISODateLocal(new Date())
@@ -38,36 +33,10 @@ function dateISOFromParts(y, m, dayNum) {
 
 const DEFAULT_CARE_START = '09:00'
 const DEFAULT_CARE_END = '17:00'
-const APPRECIATION_NOTE_STORAGE_PREFIX = 'nanny-book-appreciation-note'
-// Keep these post-booking options ready to restore without showing them in the portal.
-const SHOW_POST_BOOKING_OPTIONS = false
-
-function appreciationNoteStorageKey(inviteToken) {
-  return `${APPRECIATION_NOTE_STORAGE_PREFIX}:${inviteToken}`
-}
-
-function loadAppreciationNote(inviteToken) {
-  if (!inviteToken) return ''
-  try {
-    return localStorage.getItem(appreciationNoteStorageKey(inviteToken)) ?? ''
-  } catch {
-    return ''
-  }
-}
 
 function phoneLooksReachable(value) {
   const digits = value.replace(/\D/g, '')
   return digits.length >= 7
-}
-
-function bookingBelongsToFamily(booking, family) {
-  if (!family) return false
-  const name = String(booking?.familyName || '').toLowerCase()
-  return (
-    name.includes(family.lastName.toLowerCase()) ||
-    name.includes(family.nickname.toLowerCase()) ||
-    booking?.familyInviteToken === family.inviteToken
-  )
 }
 
 function cellBookingMod(bookings) {
@@ -76,13 +45,7 @@ function cellBookingMod(bookings) {
   return 'pending'
 }
 
-function cellBookingLabel(bookings, family) {
-  if (family) {
-    const mine = bookings.filter((b) => bookingBelongsToFamily(b, family))
-    if (mine.length === 0) return 'Busy'
-    if (mine.length > 1) return `${family.nickname.slice(0, 5)}+`
-    return family.nickname.length > 7 ? `${family.nickname.slice(0, 6)}…` : family.nickname
-  }
+function cellBookingLabel(bookings) {
   const accepted = bookings.find((b) => b.responseStatus === 'accepted')
   const active = accepted || bookings.find((b) => b.responseStatus !== 'declined') || bookings[0]
   const raw = (active?.familyName || 'Gig').trim()
@@ -91,17 +54,8 @@ function cellBookingLabel(bookings, family) {
   return first.length > 7 ? `${first.slice(0, 6)}…` : first
 }
 
-/**
- * Parent-only booking page for one family: /book/i/:inviteToken
- */
+/** Open booking portal. */
 export default function BookPage() {
-  const { inviteToken } = useParams()
-  const family = useMemo(() => getBookFamilyByInviteToken(inviteToken), [inviteToken])
-
-  useEffect(() => {
-    if (family?.inviteToken) acceptBookInvite(family.inviteToken)
-  }, [family])
-
   const { bookings, addBooking } = useBookings()
   const { addRemindersForBooking } = useParentReminders()
   const today = new Date()
@@ -121,29 +75,10 @@ export default function BookPage() {
   const [phone, setPhone] = useState('')
   const [requestNotes, setRequestNotes] = useState('')
   const [bookingExtras, setBookingExtras] = useState([])
-  const [bringAlongIds, setBringAlongIds] = useState([])
-  const [appreciationNotes, setAppreciationNotes] = useState(() => ({
-    [inviteToken]: loadAppreciationNote(inviteToken),
-  }))
   const [followUpBooking, setFollowUpBooking] = useState(null)
   const [bookToast, setBookToast] = useState('')
 
-  const overnightRate = family?.overnightRate ?? OVERNIGHT_RATE
-  const appreciationNote =
-    appreciationNotes[inviteToken] ?? loadAppreciationNote(inviteToken)
-
-  useEffect(() => {
-    if (family) setFamilyName(family.lastName)
-  }, [family])
-
-  useEffect(() => {
-    if (!inviteToken) return
-    try {
-      localStorage.setItem(appreciationNoteStorageKey(inviteToken), appreciationNote)
-    } catch {
-      /* The note remains usable for this session when storage is unavailable. */
-    }
-  }, [inviteToken, appreciationNote])
+  const overnightRate = OVERNIGHT_RATE
 
   const y = cursor.getFullYear()
   const m = cursor.getMonth()
@@ -169,8 +104,7 @@ export default function BookPage() {
         (b) =>
           b.dateISO &&
           bookingOccupiesCalendarSlot(b) &&
-          bookingEndMs(b) >= now &&
-          (!family || bookingBelongsToFamily(b, family))
+          bookingEndMs(b) >= now
       )
       .sort((a, b) => {
         const a0 = new Date(`${a.dateISO}T${a.careStart || '00:00'}:00`).getTime()
@@ -178,12 +112,7 @@ export default function BookPage() {
         if (a0 !== b0) return a0 - b0
         return (a.createdAt ?? '').localeCompare(b.createdAt ?? '')
       })
-  }, [bookings, family])
-
-  const hasBookingActivity = useMemo(
-    () => bookings.some((booking) => bookingBelongsToFamily(booking, family)),
-    [bookings, family]
-  )
+  }, [bookings])
 
   const eventsByLocation = useMemo(() => groupFamilyEventsByLocation(), [])
 
@@ -264,11 +193,10 @@ export default function BookPage() {
     setCareStartDateISO('')
     setCareEndDateISO('')
     setChildrenOnGig('')
-    setFamilyName(family?.lastName || '')
+    setFamilyName('')
     setPhone('')
     setRequestNotes('')
     setBookingExtras([])
-    setBringAlongIds([])
     setSchedulingOpen(false)
     setAwaitingEndDate(false)
     setHoverDateISO(null)
@@ -292,12 +220,6 @@ export default function BookPage() {
 
   function clearScheduling() {
     resetBookingForm()
-  }
-
-  function toggleBringAlong(toyId) {
-    setBringAlongIds((current) =>
-      current.includes(toyId) ? current.filter((id) => id !== toyId) : [...current, toyId]
-    )
   }
 
   function handleCalendarDateSelect(iso) {
@@ -374,23 +296,17 @@ export default function BookPage() {
     const start = careStartDateISO
     const endDate = resolvedEndDateISO
     const extrasSnapshot = [...bookingExtras]
-    const bringAlongSnapshot = BRING_ALONG_TOYS.filter((toy) => bringAlongIds.includes(toy.id)).map(
-      (toy) => toy.name
-    )
     const details = {
       dateISO: start,
       careEndDateISO: endDate,
       familyName: familyName.trim(),
-      familyInviteToken: family?.inviteToken,
       contact: phone.trim(),
       kidCount: childrenParsed.kidCount,
       childrenNames: childrenParsed.childrenNames,
       careStart,
       careEnd,
       notes: requestNotes.trim(),
-      ...(appreciationNote.trim() ? { appreciationNote: appreciationNote.trim() } : {}),
       extras: extrasSnapshot,
-      bringAlong: bringAlongSnapshot,
     }
     const booking = addBooking(details)
     resetBookingForm()
@@ -429,30 +345,20 @@ export default function BookPage() {
     )
   }
 
-  if (!family) {
-    return <Navigate to="/book" replace />
-  }
-
   return (
     <div className="page page--calendar page--book page--book-portal page--schedule page--parents-only schedule-dashboard page--workspace work-ui">
       <div className="book-portal__shell">
         <header className="book-portal__head book-workspace-head">
           <p className="book-parents-banner" role="note">
-            {family.lastNamePlural} · parent portal
+            Parent & family portal
           </p>
           <p className="book-workspace-head__eyebrow">Availability request</p>
           <h1 id="book-page-heading" className="sr-only">
-            Book a gig — {family.lastNamePlural}
+            Book a gig
           </h1>
-          {family.availabilityNote ? (
-            <p className="book-family-availability muted">{family.availabilityNote}</p>
-          ) : null}
           <p className="book-workspace-head__sub muted" role="status" aria-live="polite">
             {selectionHint}
           </p>
-          <Link to="/book" className="book-family-switch">
-            Use another invitation link
-          </Link>
         </header>
 
         <BookTabBar activeTab={activeTab} onTabChange={setActiveTab} />
@@ -482,14 +388,13 @@ export default function BookPage() {
                     todayISO={todayISO}
                     isSameDay={isSameDay}
                     cellBookingMod={cellBookingMod}
-                    cellBookingLabel={(dayBookings) => cellBookingLabel(dayBookings, family)}
+                    cellBookingLabel={cellBookingLabel}
                     onPrevMonth={prevMonth}
                     onNextMonth={nextMonth}
                     onDateSelect={handleCalendarDateSelect}
                     onDateHover={handleCalendarDateHover}
                     dateSelectionRole={dateSelectionRole}
                     showSelectionLegend
-                    showEmptyTracing={false}
                     listTitle="Your sent requests"
                     listFlipLabel="Your sent requests"
                     listEmptyMessage="No sent requests yet. Tap dates on the calendar to schedule."
@@ -507,20 +412,6 @@ export default function BookPage() {
                 ) : null}
               </div>
 
-              {SHOW_POST_BOOKING_OPTIONS && hasBookingActivity ? (
-                <>
-                  <BringAlongCarousel selectedIds={bringAlongIds} onToggle={toggleBringAlong} />
-                  <BookAppreciationFooter
-                    value={appreciationNote}
-                    onChange={(nextNote) =>
-                      setAppreciationNotes((current) => ({
-                        ...current,
-                        [inviteToken]: nextNote,
-                      }))
-                    }
-                  />
-                </>
-              ) : null}
             </div>
           ) : null}
 
@@ -604,7 +495,6 @@ export default function BookPage() {
         canSubmit={!careStartIsPast && timeOk && kidsOk && nameOk && phoneOk}
         onSubmit={submitBooking}
         onClear={clearScheduling}
-        familyNameLocked
       />
 
       <BookFollowUpModal

@@ -262,20 +262,6 @@
   filter: none;
 }
 
-/*
- * Let the calendar retain its natural grid height, then use the remaining
- * workspace for the play kit and its compact family note.
- */
-.page--book-portal .book-portal__panel:has(.bring-along-carousel) .schedule__calendar-panel {
-  flex: 0 1 auto;
-}
-
-.page--book-portal .book-portal__panel:has(.bring-along-carousel) .bring-along-carousel {
-  flex: 1 1 12rem;
-  min-height: 12rem;
-  min-width: 0;
-}
-
 .page--book-portal .book-request-cta {
   margin: 10px 0 0;
   padding: 0 2px;

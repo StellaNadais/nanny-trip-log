@@ -6,7 +6,6 @@ import { ParentRemindersProvider } from './context/ParentRemindersProvider'
 import { CloudSyncProvider } from './context/CloudSyncProvider'
 import WelcomePage from './pages/WelcomePage'
 import CaretakerAccessPage from './pages/CaretakerAccessPage'
-import BookAccessPage from './pages/BookAccessPage'
 import BookPage from './pages/BookPage'
 import SchedulePage from './pages/SchedulePage'
 import WeeklyReceiptPage from './pages/WeeklyReceiptPage'
@@ -24,7 +23,6 @@ import './pages/schedule-journal.css'
 import './pages/schedule-handcrafted.css'
 import './pages/book-journal.css'
 import './pages/book-portal.css'
-import './pages/bring-along.css'
 import './pages/shift-setup.css'
 import './pages/shift-journal.css'
 import './pages/events-journal.css'
@@ -40,8 +38,8 @@ export default function App() {
           <BookingsProvider>
             <ParentRemindersProvider>
           <Routes>
-            <Route path="/book" element={<BookAccessPage />} />
-            <Route path="/book/i/:inviteToken" element={<BookPage />} />
+            <Route path="/book" element={<BookPage />} />
+            <Route path="/book/i/:inviteToken" element={<Navigate to="/book" replace />} />
             <Route path="/book/:legacyFamily" element={<Navigate to="/book" replace />} />
             <Route element={<CaregiverShellLayout />}>
               <Route element={<CaregiverFlowLayout />}>

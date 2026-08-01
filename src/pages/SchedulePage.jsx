@@ -8,11 +8,8 @@ import { formatBookingChildrenLabel } from '../utils/bookingChildren'
 import ScheduleCalendarFlip from '../components/ScheduleCalendarFlip'
 import ScheduleFunModal from '../components/ScheduleFunModal'
 import ScheduleOverviewModal from '../components/ScheduleOverviewModal'
-import TodayPanelModal from '../components/TodayPanelModal'
 import TodaySpaceTile from '../components/TodaySpaceTile'
 import WorkspaceTileBoard from '../components/WorkspaceTileBoard'
-import ScheduleBringAlongTile from '../components/ScheduleBringAlongTile'
-import BookInvitePanel from '../components/BookInvitePanel'
 import { upcomingCelebrationsInMonth } from '../utils/scheduleCelebrations'
 
 function todayISO() {
@@ -96,24 +93,6 @@ export default function SchedulePage() {
         const b0 = new Date(`${b.dateISO}T${b.careStart || '00:00'}:00`).getTime()
         if (a0 !== b0) return a0 - b0
         return (a.createdAt ?? '').localeCompare(b.createdAt ?? '')
-      })
-  }, [bookings])
-
-  const rentedToyVisits = useMemo(() => {
-    const now = Date.now()
-    return [...bookings]
-      .filter(
-        (booking) =>
-          booking.dateISO &&
-          bookingEndMs(booking) >= now &&
-          gigResponseStatus(booking) !== 'declined' &&
-          Array.isArray(booking.bringAlong) &&
-          booking.bringAlong.length > 0
-      )
-      .sort((a, b) => {
-        const a0 = new Date(`${a.dateISO}T${a.careStart || '00:00'}:00`).getTime()
-        const b0 = new Date(`${b.dateISO}T${b.careStart || '00:00'}:00`).getTime()
-        return a0 - b0
       })
   }, [bookings])
 
@@ -279,17 +258,6 @@ export default function SchedulePage() {
                       ))}
                     </ul>
                   ) : null}
-                  {currentGig.bringAlong?.length ? (
-                    <section className="schedule-upcoming-card__bring-along" aria-label="Family requested toys">
-                      <span>Family is bringing</span>
-                      <ul>
-                        {currentGig.bringAlong.map((toy) => (
-                          <li key={toy}>{toy}</li>
-                        ))}
-                      </ul>
-                    </section>
-                  ) : null}
-
                   <div className="schedule-upcoming-card__actions">
                     {gigStatus === 'pending' ? (
                       <>
@@ -406,24 +374,6 @@ export default function SchedulePage() {
                 />
               ),
             },
-            {
-              id: 'bring-along',
-              label: 'Bring with me',
-              span: 2,
-              children: <ScheduleBringAlongTile bookings={rentedToyVisits} />,
-            },
-            {
-              id: 'invites',
-              label: 'Invite families',
-              span: 2,
-              children: (
-                <TodaySpaceTile
-                  preview="Copy private booking links"
-                  hint="Share an invitation link with each family — tap to open."
-                  onClick={() => openSchedulePanel('invites')}
-                />
-              ),
-            },
           ]}
         />
       </div>
@@ -445,15 +395,6 @@ export default function SchedulePage() {
         monthIndex={m}
       />
 
-      <TodayPanelModal
-        open={openPanel === 'invites'}
-        onClose={closeSchedulePanel}
-        eyebrow="Parent booking"
-        title="Invite families"
-        dateLabel="Private booking links"
-      >
-        <BookInvitePanel />
-      </TodayPanelModal>
     </div>
   )
 }
