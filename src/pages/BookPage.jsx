@@ -401,15 +401,6 @@ export default function BookPage() {
                     pendingStatusLabel="Request sent"
                   />
                 </section>
-                {upcoming.length === 0 ? (
-                  <div className="book-portal__calendar-tracing-band" aria-hidden="true">
-                    <img
-                      className="book-portal__calendar-tracing"
-                      src="/book/calendar-tracing.png"
-                      alt=""
-                    />
-                  </div>
-                ) : null}
               </div>
 
             </div>

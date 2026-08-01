@@ -231,37 +231,6 @@
   flex: 0 0 auto;
 }
 
-.page--book-portal .book-portal__calendar-tracing-band {
-  /*
-   * The tracing art owns the rest of the workspace once the calendar and
-   * sent-requests control have taken their natural height.
-   */
-  flex: 1 1 0;
-  display: grid;
-  place-items: center;
-  min-height: clamp(5rem, 12vh, 10rem);
-  overflow: hidden;
-  position: relative;
-}
-
-.page--book-portal .book-portal__calendar-tracing {
-  display: block;
-  width: calc(100% - 16px);
-  height: calc(100% - 12px);
-  /*
-   * The available space is frequently much wider than this 4:3 drawing,
-   * especially in a landscape tablet viewport. Cover the tracing band so it
-   * reads as a usable drawing surface instead of a small centered thumbnail.
-   */
-  object-fit: cover;
-  object-position: center 45%;
-  pointer-events: none;
-  position: absolute;
-  inset: 6px 8px;
-  opacity: 1;
-  filter: none;
-}
-
 .page--book-portal .book-request-cta {
   margin: 10px 0 0;
   padding: 0 2px;
@@ -279,11 +248,7 @@
 
 .page--book-portal .schedule__calendar-panel .schedule-calendar-flip--embedded,
 .page--book-portal .schedule__calendar-panel .schedule-calendar-flip--embedded .schedule-flip__scene {
-  /*
-   * workspace-shell gives embedded calendars a row-based natural height.
-   * Do not stretch that grid to the panel height: any spare vertical space
-   * belongs to the tracing band below it.
-   */
+  /* Keep the embedded calendar at its month grid's natural height. */
   min-height: calc(10.5rem + var(--schedule-calendar-rows, 5) * 2.65rem);
   height: calc(10.5rem + var(--schedule-calendar-rows, 5) * 2.65rem);
 }
@@ -1120,11 +1085,6 @@
  * to fit within the visual viewport.
  */
 @media (max-width: 599px) {
-  /*
-   * On phones, reserve a full-width 4:3 canvas for the tracing image. The
-   * calendar can be taller in six-row months, so let this narrow workspace
-   * scroll rather than compressing the drawing into the few pixels left over.
-   */
   .page--book-portal .book-portal__canvas {
     overflow-y: auto;
   }
@@ -1136,19 +1096,6 @@
 
   .page--book-portal .book-portal__calendar-request-stack {
     flex: 0 0 auto;
-  }
-
-  .page--book-portal .book-portal__calendar-tracing-band {
-    flex: 0 0 auto;
-    min-height: 0;
-    aspect-ratio: 4 / 3;
-  }
-
-  .page--book-portal .book-portal__calendar-tracing {
-    width: 100%;
-    height: 100%;
-    inset: 0;
-    object-position: center;
   }
 
   .book-access__stage {
