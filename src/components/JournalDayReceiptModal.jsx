@@ -16,9 +16,6 @@ export default function JournalDayReceiptModal({
   wishes,
   mood,
   handwrittenPhotoDataUrl,
-  forwardSmsHref,
-  canForward = true,
-  onBeforeShareAction,
 }) {
   useEffect(() => {
     if (!open) return
@@ -53,16 +50,6 @@ export default function JournalDayReceiptModal({
           handwrittenPhotoDataUrl={handwrittenPhotoDataUrl}
         />
         <div className="journal-day-modal__actions">
-          {canForward ? (
-            <a
-              href={forwardSmsHref}
-              className="btn btn--primary journal-day-modal__text-parent"
-              onClick={() => onBeforeShareAction?.()}
-              aria-label="Open Messages with this day’s journal in the draft"
-            >
-              Text parent
-            </a>
-          ) : null}
           <button type="button" className="btn btn--ghost journal-day-modal__close" onClick={onClose}>
             Close
           </button>

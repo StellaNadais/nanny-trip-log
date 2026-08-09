@@ -60,9 +60,6 @@ export default function AboutTodayModal({
   onWishesChange,
   mood,
   onMoodChange,
-  forwardSmsHref,
-  canForward = true,
-  onBeforeShareAction,
 }) {
   const titleId = useId()
   const routePreview = routePreviewPlaces(routeText)
@@ -169,6 +166,40 @@ export default function AboutTodayModal({
             </div>
           </section>
 
+          <JournalLittleBooks
+            nap={nap}
+            onNapChange={onNapChange}
+            pottyTime={pottyTime}
+            onPottyTimeChange={onPottyTimeChange}
+            pottyNotes={pottyNotes}
+            onPottyNotesChange={onPottyNotesChange}
+          />
+
+          <section
+            className="journal-mood-bar journal-panel journal-panel--wishes about-today-modal__section"
+            aria-label="Wishes and song requests"
+          >
+            <div className="journal-mood-bar__head">
+              <span className="journal-mood-bar__title" id="about-today-wishes-label">
+                Wishes + song requests
+              </span>
+            </div>
+            <div className="journal-mood-bar__track journal-panel__body">
+              <label className="journal-panel-field" htmlFor="about-today-wishes">
+                <span className="journal-panel-field__label">What they wished for</span>
+                <textarea
+                  id="about-today-wishes"
+                  className="input journal-panel-field__textarea"
+                  rows={4}
+                  value={wishes}
+                  onChange={(event) => onWishesChange(event.target.value)}
+                  placeholder="Wishes, asks, or songs they wanted to hear…"
+                  aria-labelledby="about-today-wishes-label"
+                />
+              </label>
+            </div>
+          </section>
+
           <section
             className="journal-mood-bar journal-panel journal-panel--meals about-today-modal__section"
             aria-label="Meals"
@@ -188,28 +219,8 @@ export default function AboutTodayModal({
                 suggestions={mealSuggestions}
                 className="meals-today-field--nested"
               />
-              <label className="journal-panel-field" htmlFor="about-today-wishes">
-                <span className="journal-panel-field__label">Wishes + song requests</span>
-                <textarea
-                  id="about-today-wishes"
-                  className="input journal-panel-field__textarea"
-                  rows={4}
-                  value={wishes}
-                  onChange={(event) => onWishesChange(event.target.value)}
-                  placeholder="Wishes, asks, or songs they wanted to hear…"
-                />
-              </label>
             </div>
           </section>
-
-          <JournalLittleBooks
-            nap={nap}
-            onNapChange={onNapChange}
-            pottyTime={pottyTime}
-            onPottyTimeChange={onPottyTimeChange}
-            pottyNotes={pottyNotes}
-            onPottyNotesChange={onPottyNotesChange}
-          />
 
         </div>
 
@@ -217,16 +228,6 @@ export default function AboutTodayModal({
           <button type="button" className="btn btn--ghost" onClick={onClose}>
             Done
           </button>
-          {canForward ? (
-            <a
-              href={forwardSmsHref}
-              className="btn btn--primary"
-              onClick={() => onBeforeShareAction?.()}
-              aria-label="Open Messages with this day's journal in the draft"
-            >
-              Text parent
-            </a>
-          ) : null}
         </footer>
       </div>
     </div>

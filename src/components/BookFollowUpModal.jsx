@@ -10,7 +10,7 @@ import {
 } from '../utils/journalShoppingStorage'
 
 /**
- * After a gig is scheduled, parents can add grocery items and day reminders.
+ * After a gig is scheduled, parents can add grocery items plus booking notes and reminders.
  * @param {{
  *   open: boolean
  *   booking: { id: string, dateISO: string, careEndDateISO: string, familyName?: string } | null
@@ -91,12 +91,12 @@ export default function BookFollowUpModal({ open, booking, onClose, onDone }) {
           <div className="book-modal__head-text">
             <p className="book-modal__eyebrow">Request sent</p>
             <h2 id="book-follow-up-title" className="book-modal__title">
-              Grocery & reminders
+              Groceries, notes &amp; reminders
             </h2>
             <p className="book-modal__date">{dateLabel}</p>
             <p className="book-modal__sub muted">
-              Optional — add a grocery list and day notes for your caregiver. You can skip and
-              come back anytime.
+              Optional — add groceries and scheduling details your caregiver should have for this
+              booking. You can skip and come back anytime.
             </p>
           </div>
           <button
@@ -117,7 +117,7 @@ export default function BookFollowUpModal({ open, booking, onClose, onDone }) {
               onToggle={handleToggleGrocery}
               onRemove={handleRemoveGrocery}
               autoFocus
-              placeholder="Milk, fruit, diapers…"
+              placeholder="avocado, oatmilk, bread…"
             />
           </div>
 
@@ -127,7 +127,7 @@ export default function BookFollowUpModal({ open, booking, onClose, onDone }) {
             defaultDateISO={booking.dateISO}
             minDateISO={booking.dateISO}
             maxDateISO={booking.careEndDateISO}
-            lede="Day-specific notes for this gig — pickup times, meds, routines…"
+            lede="Add scheduling details for this booking — pickup times, medications, routines, or a day-specific reminder."
           />
         </div>
 

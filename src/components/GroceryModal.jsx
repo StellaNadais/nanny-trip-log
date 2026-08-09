@@ -24,7 +24,7 @@ export default function GroceryModal({
         onToggle={onToggle}
         onRemove={onRemove}
         autoFocus={open}
-        placeholder="Milk, bananas, diapers…"
+        placeholder="avocado, oatmilk, bread…"
       />
     </TodayPanelModal>
   )

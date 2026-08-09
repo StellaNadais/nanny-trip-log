@@ -5755,20 +5755,30 @@ button.calendar__cell:focus-visible {
 .book-reminders-field {
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  padding: 12px 0 4px;
+  gap: 12px;
+  padding: 16px 0 4px;
   border-top: 1px solid color-mix(in srgb, var(--line) 70%, transparent);
+}
+
+.book-reminders-field__head {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
 }
 
 .book-reminders-field__lede {
   margin: 4px 0 0;
   font-size: 0.8125rem;
-  line-height: 1.4;
+  line-height: 1.45;
 }
 
 .book-reminders-field__empty {
   margin: 0;
+  padding: 10px 12px;
+  border-radius: calc(var(--radius) - 2px);
+  background: color-mix(in srgb, var(--paper2, #f5f5f5) 55%, #fff);
   font-size: 0.8125rem;
+  line-height: 1.45;
 }
 
 .book-reminders-field__list {
@@ -5782,16 +5792,21 @@ button.calendar__cell:focus-visible {
 
 .book-reminders-field__row {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px;
-  padding: 10px;
+  grid-template-columns: minmax(0, 0.82fr) minmax(0, 1.18fr);
+  gap: 10px 12px;
+  padding: 14px;
   border-radius: var(--radius);
   border: 1px solid var(--line);
-  background: color-mix(in srgb, var(--paper2, #f5f5f5) 40%, #fff);
+  background: color-mix(in srgb, var(--paper2, #f5f5f5) 32%, #fff);
 }
 
-.book-reminders-field__text {
+.book-reminders-field__message {
   grid-column: 1 / -1;
+}
+
+.book-reminders-field__message textarea {
+  min-height: 82px;
+  resize: vertical;
 }
 
 .book-reminders-field__remove {
@@ -5804,6 +5819,13 @@ button.calendar__cell:focus-visible {
 .book-reminders-field__add {
   align-self: flex-start;
   min-height: 40px;
+}
+
+@media (max-width: 480px) {
+  .book-reminders-field__row {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
 }
 
 .page--kid-journal .journal__layout {

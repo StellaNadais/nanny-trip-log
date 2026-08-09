@@ -1,12 +1,14 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 
+const QUICK_ADD_ITEMS = ['Avocado', 'Oat milk', 'Bread', 'Bananas', 'Eggs', 'Diapers']
+
 export default function GroceryListPanel({
   items,
   onAddItems,
   onToggle,
   onRemove,
   autoFocus = false,
-  placeholder = 'Milk, bananas, diapers…',
+  placeholder = 'avocado, oatmilk, bread…',
 }) {
   const [draft, setDraft] = useState('')
   const inputRef = useRef(null)
@@ -53,6 +55,11 @@ export default function GroceryListPanel({
     setDraft('')
   }
 
+  function addQuickItem(item) {
+    onAddItems(item)
+    inputRef.current?.focus()
+  }
+
   return (
     <>
       <section
@@ -91,6 +98,23 @@ export default function GroceryListPanel({
               Add to list
             </button>
           </form>
+          {sorted.length === 0 ? (
+            <div className="grocery-list-panel__suggestions" aria-label="Quick-add grocery items">
+              <span className="grocery-list-panel__suggestions-label">Quick add</span>
+              <div className="grocery-list-panel__suggestions-options">
+                {QUICK_ADD_ITEMS.map((item) => (
+                  <button
+                    key={item}
+                    type="button"
+                    className="grocery-list-panel__suggestion"
+                    onClick={() => addQuickItem(item)}
+                  >
+                    + {item}
+                  </button>
+                ))}
+              </div>
+            </div>
+          ) : null}
         </div>
       </section>
 

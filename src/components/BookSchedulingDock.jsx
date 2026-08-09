@@ -193,12 +193,12 @@ export default function BookSchedulingDock({
 
           <div className="book-modal__block">
             <label className="field-block book-modal__field-grow">
-              <span className="field-block__label">Notes for caregiver (optional)</span>
+              <span className="field-block__label">Scheduling notes for your caregiver (optional)</span>
               <textarea
                 className="input input--area book-modal__notes"
                 value={requestNotes}
                 onChange={(e) => onRequestNotes(e.target.value)}
-                placeholder="Diet, routines, pickup plans, second parent contact…"
+                placeholder="Diet, routines, pickup plans, arrival details, or a second parent contact…"
                 rows={2}
                 maxLength={2000}
                 autoComplete="off"

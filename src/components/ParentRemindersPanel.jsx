@@ -1,5 +1,5 @@
 /**
- * Caregiver view: parent reminders for the selected journal day, grouped by family.
+ * Caregiver view: parent booking notes and reminders for the selected journal day, grouped by family.
  */
 export default function ParentRemindersPanel({ dateLabel, groups, emptyHint }) {
   if (!groups.length) {
@@ -33,7 +33,7 @@ export default function ParentRemindersPanel({ dateLabel, groups, emptyHint }) {
 
             {group.notes ? (
               <p className="parent-reminders-panel__notes">
-                <span className="parent-reminders-panel__notes-label">Notes</span>
+                <span className="parent-reminders-panel__notes-label">Booking notes</span>
                 {group.notes}
               </p>
             ) : null}

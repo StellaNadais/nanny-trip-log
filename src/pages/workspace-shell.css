@@ -1442,17 +1442,15 @@
   display: block;
   width: 100%;
   padding: clamp(19px, 4vw, 29px);
-  border: 2px solid #d5846a;
-  border-radius: 21px 17px 24px 15px / 17px 24px 15px 22px;
-  background:
-    linear-gradient(115deg, transparent 97%, rgba(213, 132, 106, 0.16) 97.4%, transparent 98%),
-    linear-gradient(180deg, #ffe9df, #ffdbcf);
+  border: none;
+  border-radius: 0;
+  background: var(--paper, #fff);
   color: inherit;
   text-align: left;
   font: inherit;
   cursor: pointer;
-  box-shadow: 3px 4px 0 rgba(213, 132, 106, 0.12);
-  transform: rotate(-0.15deg);
+  box-shadow: none;
+  transform: none;
 }
 
 .today-journal-preview__opening {
@@ -1571,7 +1569,7 @@
   gap: 12px;
   margin: 19px 0 0;
   padding: 13px 0 0;
-  border-top: 1px solid #e7ab97;
+  border-top: 1px solid var(--line-soft);
 }
 
 .today-journal-preview__details div {
@@ -1579,7 +1577,7 @@
 }
 
 .today-journal-preview__details dt {
-  color: #a4513c;
+  color: var(--ink-muted);
   font-size: 0.6875rem;
   font-weight: 700;
   letter-spacing: 0.06em;
@@ -1787,7 +1785,7 @@
 }
 
 .today-journal-preview__story:focus-visible {
-  outline: 2px solid #d5846a;
+  outline: 2px solid var(--accent);
   outline-offset: 3px;
 }
 

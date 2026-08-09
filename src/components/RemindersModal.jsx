@@ -16,19 +16,19 @@ export default function RemindersModal({
     <TodayPanelModal
       open={open}
       onClose={onClose}
-      eyebrow="Parents & weekly shopping"
-      title="Reminders"
+      eyebrow="Parent notes & weekly shopping"
+      title="Notes & reminders"
       dateLabel={dateLabel}
     >
       <div className="reminders-modal__sections">
         <section className="reminders-modal__section" aria-labelledby="parent-reminders-heading">
           <h3 id="parent-reminders-heading" className="reminders-modal__section-title">
-            From parents
+            Parent notes &amp; reminders
           </h3>
           <ParentRemindersPanel
             dateLabel={dateLabel}
             groups={groups}
-            emptyHint="No family scheduled this day, or no reminders yet."
+            emptyHint="No family is scheduled this day, or there are no parent notes or reminders yet."
           />
         </section>
 
@@ -37,7 +37,7 @@ export default function RemindersModal({
             <h3 id="grocery-reminders-heading" className="reminders-modal__section-title">
               Grocery list
             </h3>
-            <p className="reminders-modal__section-hint muted">Shared shopping reminders for this week.</p>
+            <p className="reminders-modal__section-hint muted">Shared shopping notes for this week.</p>
           </div>
           <GroceryListPanel
             items={shoppingItems}
@@ -45,7 +45,7 @@ export default function RemindersModal({
             onToggle={onToggleShopping}
             onRemove={onRemoveShopping}
             autoFocus={open}
-            placeholder="Milk, bananas, diapers…"
+            placeholder="avocado, oatmilk, bread…"
           />
         </section>
       </div>

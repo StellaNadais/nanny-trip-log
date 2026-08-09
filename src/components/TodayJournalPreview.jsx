@@ -124,10 +124,10 @@ export default function TodayJournalPreview({
 
       <footer className="today-journal-preview__links" aria-label="Today’s supporting tools">
         <button type="button" className="today-journal-preview__tool-card" onClick={onOpenReminders}>
-          <span>Reminders</span>
+          <span>Notes &amp; reminders</span>
           <small>
             {reminderCount || groceryCount
-              ? `${reminderCount} reminder${reminderCount === 1 ? '' : 's'}${groceryCount ? ` · ${groceryCount} grocery` : ''}`
+              ? `${reminderCount} note${reminderCount === 1 ? '' : 's'} / reminder${reminderCount === 1 ? '' : 's'}${groceryCount ? ` · ${groceryCount} grocery` : ''}`
               : 'Nothing pending'}
           </small>
         </button>

@@ -9,7 +9,7 @@ const KINDS = [
 const KIND_LABEL = Object.fromEntries(KINDS.map((k) => [k.id, k.label]))
 
 function placeholderFor(kind) {
-  if (kind === 'grocery') return 'Milk, fruit, diapers…'
+  if (kind === 'grocery') return 'avocado, oatmilk, bread…'
   if (kind === 'errand') return 'Drop off library books, pick up prescription…'
   return 'Early pickup at 4, nap after lunch…'
 }
