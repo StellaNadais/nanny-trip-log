@@ -11,6 +11,7 @@ import BookFollowUpModal from '../components/BookFollowUpModal'
 import BookSchedulingDock from '../components/BookSchedulingDock'
 import ScheduleCalendarFlip from '../components/ScheduleCalendarFlip'
 import BookTabBar from '../components/BookTabBar'
+import FamilyJournalReader from '../components/FamilyJournalReader'
 import { bookingOccupiesCalendarSlot } from '../utils/bookingCalendar'
 import {
   bookingEndMs,
@@ -403,6 +404,12 @@ export default function BookPage() {
                 </section>
               </div>
 
+            </div>
+          ) : null}
+
+          {activeTab === 'journal' ? (
+            <div className="book-portal__panel" role="tabpanel" aria-labelledby="book-tab-journal">
+              <FamilyJournalReader />
             </div>
           ) : null}
 

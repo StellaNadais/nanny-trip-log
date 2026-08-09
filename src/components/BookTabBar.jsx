@@ -1,5 +1,6 @@
 const BOOK_TABS = [
   { id: 'calendar', label: 'Calendar' },
+  { id: 'journal', label: 'Day reports' },
   // Events hidden for now — re-add { id: 'events', label: 'Events' } when ready
   { id: 'thanks', label: 'Thank you' },
 ]
@@ -13,6 +14,7 @@ export default function BookTabBar({ activeTab, onTabChange }) {
           return (
             <button
               key={tab.id}
+              id={`book-tab-${tab.id}`}
               type="button"
               role="tab"
               aria-selected={active}
