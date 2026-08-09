@@ -1,10 +1,13 @@
-import { addDays, startOfWeekMonday, toISODateLocal } from './dates'
-
 export const CLOUD_SYNC_KEYS = [
   'nanny-bookings-v1',
   'nanny-parent-reminders-v1',
   'nanny-journal-shopping-v1',
   'nanny-kid-journal-v1',
+  'nanny-shift-punctuality-v1',
+  'nanny-receipt-settings-v1',
+  'nanny-shift-contract-v2',
+  'nanny-trip-log-v1',
+  'nanny-outings-places-v3',
 ]
 
 export const CLOUD_DATA_CHANGED_EVENT = 'nanny-cloud-data-changed'
@@ -30,16 +33,4 @@ export function applyCloudSyncData(data) {
     }
   }
   if (changed) window.dispatchEvent(new Event(CLOUD_DATA_APPLIED_EVENT))
-}
-
-/** Current Monday–Sunday week; the API expires this record at local Sunday midnight. */
-export function currentWeekKey() {
-  return toISODateLocal(startOfWeekMonday(new Date()))
-}
-
-export function currentWeekExpiresAt() {
-  const monday = startOfWeekMonday(new Date())
-  const sundayEnd = addDays(monday, 7)
-  sundayEnd.setHours(0, 0, 0, 0)
-  return sundayEnd.toISOString()
 }

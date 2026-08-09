@@ -12,7 +12,7 @@ A mobile-first React app for caregivers to schedule gigs, log kid journals, and 
 - Caregiver workflow with schedule, shift logging, journaling, events, and weekly receipts.
 - Parent-facing booking flow on `/book`.
 - Mobile-first UI optimized for quick logging on the go.
-- Local-first storage with optional weekly cloud sync for bookings, parent reminders, shopping, and journals.
+- Local-first storage with persistent Supabase household sync for logged app data.
 - Legacy redirects for older routes like `/hub` and `/receipt`.
 
 ## Tech Stack
@@ -21,6 +21,7 @@ A mobile-first React app for caregivers to schedule gigs, log kid journals, and 
 - Vite
 - React Router
 - localStorage
+- Supabase
 - Vercel
 
 ## Getting Started
@@ -53,28 +54,44 @@ npm run preview
 
 ## Data Storage
 
-The app keeps an offline copy in `localStorage`. By default nothing leaves the device.
+The app keeps an offline copy in `localStorage` and, when configured, continuously syncs a
+shared household record to Supabase. This means the same logged data is available after opening
+the app in another browser or on another device.
 
-### Optional shared weekly sync
+### Supabase shared household sync
 
-The Vercel function in `api/week-sync.js` can sync the current Monday–Sunday week between
-devices. It covers bookings (including bring-along choices and appreciation notes), parent
-reminders, grocery lists, and kid-journal entries. The cloud record expires at the start of
-the following Monday; local browser copies are left untouched.
+Supabase stores a persistent JSON snapshot of:
 
-1. Create a free [Upstash Redis](https://upstash.com/) database.
-2. In Vercel, set `UPSTASH_REDIS_REST_URL` and `UPSTASH_REDIS_REST_TOKEN` from Upstash.
-3. Generate a long shared code and set it as `NANNY_SYNC_CODE` in Vercel and
-   `VITE_NANNY_SYNC_CODE` in the Vercel build environment. Redeploy after setting it.
-4. For local development, copy `.env.example` to `.env.local` and set
-   `VITE_NANNY_SYNC_CODE` to that same code.
+- bookings and booking requests
+- kid journal and About Today entries
+- parent reminders and grocery lists
+- shift/arrival logs
+- receipt hours, mileage, expenses, and settings
+- trip-log entries, custom outing locations, and shift-contract/leave data
 
-The code is a shared-family access code, not individual-user authentication: anybody who can
-inspect the deployed client can recover it. Do not use this v1 mechanism for sensitive personal
-information. A real authentication system is required before storing sensitive family data.
+To set it up:
 
-Changes sync shortly after they are saved and the app refreshes cloud data once per minute.
-Simultaneous edits to the same data set use last-write-wins behavior.
+1. Create a [Supabase project](https://supabase.com/dashboard).
+2. Open its SQL Editor and run
+   [`supabase/migrations/20260809113000_create_nanny_shared_data.sql`](supabase/migrations/20260809113000_create_nanny_shared_data.sql).
+3. In Supabase **Project Settings → API**, copy the Project URL and anon/publishable key.
+4. Generate a random household code of at least 24 characters. For example:
+   `openssl rand -hex 32`.
+5. Set these Vercel environment variables, then redeploy:
+   - `VITE_SUPABASE_URL`
+   - `VITE_SUPABASE_ANON_KEY`
+   - `VITE_NANNY_SYNC_CODE`
+6. For local development, copy `.env.example` to `.env.local` and use the same three values.
+
+No Supabase service-role key or Vercel API environment variable is needed. The app loads the
+shared document at startup, saves shortly after each change, and checks for changes once per
+minute. The cloud record does not expire. If two devices edit before either has downloaded the
+other's change, the last saved snapshot wins.
+
+This v1 design has no individual accounts: the household code is the shared access secret and is
+compiled into the client. The SQL migration prevents anonymous browsing of the table, but anyone
+who obtains that code can access the household data. Do not store highly sensitive personal
+information until the app has real user authentication and per-household access policies.
 
 ## Customization
 

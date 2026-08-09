@@ -11,6 +11,7 @@ import {
   notifyOutingsUpdated,
   OUTINGS_UPDATED_EVENT,
 } from '../utils/outingsStorage'
+import { CLOUD_DATA_APPLIED_EVENT } from '../utils/cloudSync'
 import { refreshAllTripMileageCache } from '../utils/refreshTripMileageCache'
 
 function uid() {
@@ -50,6 +51,15 @@ export function useOutingsWeekData(weekKey) {
     const sync = () => setCustomPlaces(loadOutingsPlaces())
     window.addEventListener(OUTINGS_UPDATED_EVENT, sync)
     return () => window.removeEventListener(OUTINGS_UPDATED_EVENT, sync)
+  }, [])
+
+  useEffect(() => {
+    const sync = () => {
+      setCustomPlaces(loadOutingsPlaces())
+      setMileageRev((r) => r + 1)
+    }
+    window.addEventListener(CLOUD_DATA_APPLIED_EVENT, sync)
+    return () => window.removeEventListener(CLOUD_DATA_APPLIED_EVENT, sync)
   }, [])
 
   const commitCustomPlaces = useCallback((next) => {

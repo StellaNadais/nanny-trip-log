@@ -1,4 +1,5 @@
 import { toISODateLocal } from './dates'
+import { notifyCloudDataChanged } from './cloudSync'
 
 /** Bumped when default season / leave balances change. */
 const KEY = 'nanny-shift-contract-v2'
@@ -62,6 +63,7 @@ export function loadShiftContract() {
 
 export function saveShiftContract(data) {
   localStorage.setItem(KEY, JSON.stringify(normalize(data)))
+  notifyCloudDataChanged(KEY)
 }
 
 export function countTimeOff(timeOff, kind) {

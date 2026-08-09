@@ -1,3 +1,5 @@
+import { notifyCloudDataChanged } from './cloudSync'
+
 const KEY = 'nanny-shift-punctuality-v1'
 
 export function loadShiftEntries() {
@@ -14,6 +16,7 @@ export function loadShiftEntries() {
 export function saveShiftEntries(entries) {
   try {
     localStorage.setItem(KEY, JSON.stringify(entries))
+    notifyCloudDataChanged(KEY)
   } catch {
     /* ignore */
   }
