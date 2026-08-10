@@ -46,7 +46,7 @@ export default function TodayReportModal({
         </button>
         <div className="today-report-modal__receipt">
           <header className="today-report-modal__header">
-            <p>Care day receipt</p>
+            <p>Care day report</p>
             <time>{dateLabel}</time>
             <h1 id="today-report-title">{title || 'A lovely day together'}</h1>
           </header>

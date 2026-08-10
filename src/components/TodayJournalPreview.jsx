@@ -133,7 +133,7 @@ export default function TodayJournalPreview({
               : 'Nothing pending'}
           </small>
         </button>
-        <button type="button" onClick={onOpenOutings}>
+        <button type="button" className="today-journal-preview__tool-card--outings" onClick={onOpenOutings}>
           <span>Outings</span>
           <small>$ expenses &amp; mileage</small>
         </button>

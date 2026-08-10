@@ -1817,6 +1817,16 @@
   transform: rotate(0.18deg);
 }
 
+.today-journal-preview__tool-card--outings span {
+  align-self: flex-end;
+  text-align: right;
+}
+
+.today-journal-preview__tool-card--outings small {
+  align-self: flex-start;
+  text-align: left;
+}
+
 .today-journal-preview__links button span,
 .today-journal-preview__links button small {
   display: block;
@@ -1973,6 +1983,10 @@
 
   .today-journal-preview__links button:nth-child(2) {
     transform: none;
+  }
+
+  .today-journal-preview__tool-card--outings {
+    flex-direction: row-reverse;
   }
 
   .today-journal-preview__links button small {
