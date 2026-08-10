@@ -97,7 +97,7 @@ export default function TodayReportModal({
           ) : null}
 
           <div className="today-report-modal__rule today-report-modal__rule--bottom" aria-hidden />
-          <footer className="today-report-modal__footer">carekidsmiles · care days, clearly shared</footer>
+          <footer className="today-report-modal__footer">nannytriplog care days clearly shared</footer>
         </div>
       </div>
     </div>

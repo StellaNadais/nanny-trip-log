@@ -155,8 +155,8 @@ export default function TodayJournalPreview({
       </section>
 
       <footer className="today-journal-preview__site-footer">
-        <span>carekidsmiles</span>
-        <small>Care days, clearly shared.</small>
+        <span>nannytriplog</span>
+        <small>care days clearly shared</small>
       </footer>
 
       <TodayReportModal
