@@ -2403,4 +2403,32 @@
   .today-report-modal__receipt {
     padding: 26px 20px 22px;
   }
+
+  /*
+   * Schedule is a normal, document-scrolling workspace on phones. Let the
+   * added handoff/footer remain below the calendar without being clipped by
+   * the page's desktop-sized viewport cap.
+   */
+  .page--schedule.page--workspace {
+    min-height: 100svh;
+    min-height: 100dvh;
+    max-height: none;
+    overflow-x: clip;
+    padding-bottom: max(24px, env(safe-area-inset-bottom, 0px));
+  }
+
+  .page--schedule.page--workspace .schedule__layout {
+    min-width: 0;
+  }
+
+  .page--schedule.page--workspace .schedule-care-handoff {
+    margin-bottom: 0;
+    overflow-wrap: anywhere;
+  }
+
+  .care-days-footer {
+    flex-wrap: wrap;
+    padding-bottom: max(4px, env(safe-area-inset-bottom, 0px));
+    text-align: center;
+  }
 }

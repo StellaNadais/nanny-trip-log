@@ -3,10 +3,16 @@
 .page--book-portal {
   display: flex;
   flex-direction: column;
-  /* Keep the booking workspace within the visible browser viewport. */
+  /*
+   * Use the dynamic viewport when it is available so iOS can keep the
+   * scrollable canvas aligned with browser chrome and the software keyboard.
+   * `svh` remains the stable fallback for older Safari versions.
+   */
   height: 100svh;
+  height: 100dvh;
   min-height: 0;
   max-height: 100svh;
+  max-height: 100dvh;
   min-width: 0;
   overflow: hidden;
   overflow-x: hidden;
@@ -1401,11 +1407,15 @@
 @media (max-width: 599px) {
   .page--book-portal .book-portal__canvas {
     overflow-y: auto;
+    overflow-x: clip;
+    padding-bottom: max(24px, env(safe-area-inset-bottom, 0px));
+    scroll-padding-bottom: max(24px, env(safe-area-inset-bottom, 0px));
   }
 
   .page--book-portal .book-portal__panel {
     height: auto;
     min-height: 100%;
+    min-width: 0;
   }
 
   .page--book-portal .book-portal__calendar-request-stack {
@@ -1415,6 +1425,10 @@
   .care-command-composer__head,
   .care-command-composer__bottom {
     align-items: flex-start;
+  }
+
+  .care-command-composer__head {
+    flex-wrap: wrap;
   }
 
   .care-command-composer__bottom {
@@ -1471,6 +1485,16 @@
 
   .book-scheduling-modal__form {
     overscroll-behavior-y: contain;
+  }
+
+  .page--book-portal .book-care-handoff,
+  .page--book-portal .care-days-footer {
+    flex-shrink: 0;
+  }
+
+  .page--book-portal .book-care-handoff {
+    margin-bottom: 0;
+    overflow-wrap: anywhere;
   }
 }
 
