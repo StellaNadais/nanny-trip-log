@@ -1,6 +1,7 @@
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import { splitTripLogForMirror } from '../utils/parseTripPlaces'
 import { journalPostFromEntry, stripLeadingRoutePlaces } from '../utils/journalPost'
+import TodayReportModal from './TodayReportModal'
 
 function compactValue(...values) {
   return values
@@ -49,6 +50,7 @@ export default function TodayJournalPreview({
   reminderCount,
   groceryCount,
 }) {
+  const [reportOpen, setReportOpen] = useState(false)
   const post = useMemo(
     () => journalPostFromEntry({ dayNotes, routeText, title, paragraph }),
     [dayNotes, routeText, title, paragraph]
@@ -139,16 +141,16 @@ export default function TodayJournalPreview({
 
       <section className="today-journal-preview__handoff" aria-labelledby="today-handoff-heading">
         <div>
-          <p className="today-journal-preview__handoff-eyebrow">Family handoff</p>
-          <h2 id="today-handoff-heading">Keep pickup easy</h2>
+          <p className="today-journal-preview__handoff-eyebrow">Daily report</p>
+          <h2 id="today-handoff-heading">Today&apos;s report is ready</h2>
           <p>
             {hasJournal
-              ? 'Today’s report is ready for the next conversation.'
-              : 'Add a few details now so pickup feels easy later.'}
+              ? 'A clean summary, ready to share at pickup.'
+              : 'Add a few details and a clean summary will be ready here.'}
           </p>
         </div>
-        <button type="button" onClick={onOpen}>
-          Open report
+        <button type="button" onClick={() => setReportOpen(true)}>
+          View report
         </button>
       </section>
 
@@ -156,6 +158,20 @@ export default function TodayJournalPreview({
         <span>carekidsmiles</span>
         <small>Care days, clearly shared.</small>
       </footer>
+
+      <TodayReportModal
+        open={reportOpen}
+        onClose={() => setReportOpen(false)}
+        dateLabel={dateLabel}
+        route={route}
+        title={post.title}
+        paragraph={post.paragraph}
+        mealsText={meals}
+        nap={nap}
+        pottyTime={pottyTime}
+        pottyNotes={pottyNotes}
+        wishes={wishes}
+      />
     </article>
   )
 }

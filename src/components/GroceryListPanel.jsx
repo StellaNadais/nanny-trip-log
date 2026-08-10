@@ -89,8 +89,8 @@ export default function GroceryListPanel({
           </button>
           {formOpen ? (
             <form id={formId} className="grocery-list-panel__composer" onSubmit={onSubmit}>
-              <label className="field-block" htmlFor={inputId}>
-                <span className="field-block__label">Items to add</span>
+              <label className="field-block grocery-list-panel__field" htmlFor={inputId}>
+                <span className="sr-only">Items to add</span>
                 <input
                   ref={inputRef}
                   id={inputId}
@@ -110,8 +110,9 @@ export default function GroceryListPanel({
                 type="submit"
                 className="btn btn--primary grocery-list-panel__add"
                 disabled={!draft.trim()}
+                aria-label="Add items to list"
               >
-                Add to list
+                Add
               </button>
             </form>
           ) : null}
