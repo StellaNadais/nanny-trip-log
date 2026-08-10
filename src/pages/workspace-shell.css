@@ -1948,6 +1948,40 @@
   font: inherit;
 }
 
+/*
+ * On phones, keep the supporting tools as readable handoff-style sections
+ * rather than two equal-height tiles. The cards retain their individual
+ * color cues while their copy and action remain easy to scan horizontally.
+ */
+@media (max-width: 700px) {
+  .today-journal-preview__links {
+    grid-template-columns: minmax(0, 1fr);
+    grid-auto-rows: auto;
+    width: 100%;
+  }
+
+  .today-journal-preview__links button {
+    aspect-ratio: auto;
+    min-height: 4.25rem;
+    padding: 10px 12px;
+    border-radius: 14px 16px 13px 15px / 15px 13px 16px 14px;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .today-journal-preview__links button:nth-child(2) {
+    transform: none;
+  }
+
+  .today-journal-preview__links button small {
+    max-width: 52%;
+    margin-top: 0;
+    text-align: right;
+  }
+}
+
 @media (max-width: 599px) {
   /*
    * The workbook tabs consume part of the browser viewport. Let Today use the
@@ -2028,27 +2062,17 @@
   }
 
   .today-journal-preview__links {
-    /*
-     * Keep the cards square and small enough for the story to retain the
-     * remaining canvas height, including short phone viewports.
-     */
-    --today-tool-size: clamp(5.75rem, min(24vw, 18svh), 7.75rem);
     flex: 0 0 auto;
-    align-self: center;
-    width: min(100%, calc(var(--today-tool-size) * 2 + 8px));
-    grid-template-columns: repeat(2, minmax(0, var(--today-tool-size)));
-    grid-auto-rows: var(--today-tool-size);
+    align-self: stretch;
+    width: 100%;
     gap: 8px;
     margin-top: 0;
   }
 
   .today-journal-preview__links button {
     width: 100%;
-    height: 100%;
-    max-width: var(--today-tool-size);
-    max-height: var(--today-tool-size);
-    min-height: 0;
-    padding: 10px;
+    max-width: none;
+    max-height: none;
   }
 
   .today-journal-preview__links button span {
@@ -2056,7 +2080,6 @@
   }
 
   .today-journal-preview__links button small {
-    margin-top: 4px;
     font-size: 0.6875rem;
   }
 
