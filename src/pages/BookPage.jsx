@@ -9,6 +9,7 @@ import { useBookings } from '../hooks/useBookings'
 import { useParentReminders } from '../hooks/useParentReminders'
 import BookFollowUpModal from '../components/BookFollowUpModal'
 import BookSchedulingDock from '../components/BookSchedulingDock'
+import CareCommandComposer from '../components/CareCommandComposer'
 import ScheduleCalendarFlip from '../components/ScheduleCalendarFlip'
 import BookTabBar from '../components/BookTabBar'
 import FamilyJournalReader from '../components/FamilyJournalReader'
@@ -58,7 +59,7 @@ function cellBookingLabel(bookings) {
 /** Open booking portal. */
 export default function BookPage() {
   const { bookings, addBooking } = useBookings()
-  const { addRemindersForBooking } = useParentReminders()
+  const { addReminder, addRemindersForBooking } = useParentReminders()
   const today = new Date()
   const [cursor, setCursor] = useState(
     () => new Date(today.getFullYear(), today.getMonth(), 1)
@@ -219,6 +220,32 @@ export default function BookPage() {
     if (reminderRows.length) addRemindersForBooking(bookingId, reminderRows)
   }
 
+  function sendCareCommand({ kind, text, booking }) {
+    if (kind === 'grocery') {
+      const targetDate = booking?.dateISO || todayISO()
+      const weekKey = toISODateLocal(startOfWeekMonday(new Date(`${targetDate}T12:00:00`)))
+      addShoppingItems(weekKey, text)
+      return { ok: true, message: 'Added to groceries for your caregiver.' }
+    }
+
+    if (!booking?.id || !booking.dateISO) {
+      return { ok: false, message: 'Choose a care day before sending a note or errand.' }
+    }
+
+    const reminder = addReminder({
+      bookingId: booking.id,
+      dateISO: booking.dateISO,
+      childName: kind === 'errand' ? 'Errand' : '',
+      text,
+    })
+    if (!reminder) return { ok: false }
+
+    return {
+      ok: true,
+      message: kind === 'errand' ? 'Added errand for your caregiver.' : 'Added reminder for your caregiver.',
+    }
+  }
+
   function clearScheduling() {
     resetBookingForm()
   }
@@ -374,6 +401,7 @@ export default function BookPage() {
               ) : null}
 
               <div className="book-portal__calendar-request-stack">
+                <CareCommandComposer bookings={upcoming} onSend={sendCareCommand} />
                 <section className="schedule__calendar-panel work-ui__panel" aria-label="Booking calendar">
                   <ScheduleCalendarFlip
                     embedded

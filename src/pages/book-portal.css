@@ -496,6 +496,130 @@
   color: var(--ink);
 }
 
+/* Lightweight command language for parent → caregiver tasks. */
+.page--book-portal .care-command-composer {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+  padding: 13px 14px;
+  border: 1px solid color-mix(in srgb, #7a6bb5 28%, var(--line-soft));
+  border-radius: 16px;
+  background:
+    linear-gradient(135deg, color-mix(in srgb, #ebe8f5 58%, #fff), #fff 62%);
+  box-shadow:
+    0 1px 0 rgb(255 255 255 / 75%) inset,
+    0 5px 16px color-mix(in srgb, #7a6bb5 10%, transparent);
+}
+
+.care-command-composer__head,
+.care-command-composer__bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.care-command-composer__head h2 {
+  margin: 2px 0 0;
+  color: var(--ink);
+  font-size: 1rem;
+  font-weight: 650;
+  letter-spacing: -0.02em;
+}
+
+.care-command-composer__eyebrow,
+.care-command-composer__booking > span {
+  display: block;
+  margin: 0;
+  color: #7a6bb5;
+  font-size: 0.625rem;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+
+.care-command-composer__route {
+  flex-shrink: 0;
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: color-mix(in srgb, #ebe8f5 68%, #fff);
+  color: #5f5197;
+  font-size: 0.6875rem;
+  font-weight: 650;
+}
+
+.care-command-composer__form {
+  display: grid;
+  gap: 8px;
+}
+
+.page--book-portal .care-command-composer__input {
+  width: 100%;
+  min-height: 3.65rem;
+  resize: vertical;
+  padding: 9px 10px;
+  border-color: color-mix(in srgb, #7a6bb5 30%, var(--line-soft));
+  background: rgb(255 255 255 / 82%);
+  font-size: 0.8125rem;
+  line-height: 1.4;
+}
+
+.care-command-composer__booking {
+  display: grid;
+  min-width: 0;
+  gap: 3px;
+}
+
+.care-command-composer__booking select {
+  min-width: 0;
+  max-width: 17rem;
+  height: 1.85rem;
+  padding: 2px 24px 2px 6px;
+  border: 1px solid var(--line-soft);
+  border-radius: 7px;
+  background: rgb(255 255 255 / 82%);
+  color: var(--ink);
+  font-size: 0.75rem;
+}
+
+.care-command-composer__no-booking,
+.care-command-composer__hint,
+.care-command-composer__feedback {
+  margin: 0;
+  font-size: 0.75rem;
+  line-height: 1.4;
+}
+
+.care-command-composer__no-booking,
+.care-command-composer__hint {
+  color: var(--ink-muted);
+}
+
+.care-command-composer__hint code {
+  padding: 1px 3px;
+  border-radius: 4px;
+  background: color-mix(in srgb, #ebe8f5 55%, #fff);
+  color: #5f5197;
+  font-family: var(--font-ui);
+  font-size: 0.6875rem;
+  font-weight: 650;
+}
+
+.care-command-composer__send {
+  flex-shrink: 0;
+  min-height: 2.15rem;
+  padding-inline: 14px;
+  font-size: 0.8125rem;
+}
+
+.care-command-composer__feedback {
+  padding: 7px 9px;
+  border-radius: 8px;
+  background: color-mix(in srgb, #ebe8f5 42%, #fff);
+  color: #514684;
+  font-weight: 600;
+}
+
 .page--book-portal .schedule__calendar-panel.work-ui__panel,
 .page--book-portal .book-events__panel,
 .page--book-portal .book-thanks {
@@ -1286,6 +1410,24 @@
 
   .page--book-portal .book-portal__calendar-request-stack {
     flex: 0 0 auto;
+  }
+
+  .care-command-composer__head,
+  .care-command-composer__bottom {
+    align-items: flex-start;
+  }
+
+  .care-command-composer__bottom {
+    flex-wrap: wrap;
+  }
+
+  .care-command-composer__booking {
+    flex: 1 1 12rem;
+  }
+
+  .care-command-composer__booking select {
+    width: 100%;
+    max-width: none;
   }
 
   .book-access__stage {

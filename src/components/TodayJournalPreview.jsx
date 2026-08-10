@@ -136,6 +136,26 @@ export default function TodayJournalPreview({
           <small>$ expenses &amp; mileage</small>
         </button>
       </footer>
+
+      <section className="today-journal-preview__handoff" aria-labelledby="today-handoff-heading">
+        <div>
+          <p className="today-journal-preview__handoff-eyebrow">Family handoff</p>
+          <h2 id="today-handoff-heading">Keep pickup easy</h2>
+          <p>
+            {hasJournal
+              ? 'Today’s report is ready for the next conversation.'
+              : 'Add a few details now so pickup feels easy later.'}
+          </p>
+        </div>
+        <button type="button" onClick={onOpen}>
+          Open report
+        </button>
+      </section>
+
+      <footer className="today-journal-preview__site-footer">
+        <span>carekidsmiles</span>
+        <small>Care days, clearly shared.</small>
+      </footer>
     </article>
   )
 }

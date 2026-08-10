@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useId, useMemo, useRef, useState } from 'react'
 
 const QUICK_ADD_ITEMS = ['Avocado', 'Oat milk', 'Bread', 'Bananas', 'Eggs', 'Diapers']
 
@@ -11,6 +11,9 @@ export default function GroceryListPanel({
   placeholder = 'avocado, oatmilk, bread…',
 }) {
   const [draft, setDraft] = useState('')
+  const [formOpen, setFormOpen] = useState(autoFocus)
+  const formId = useId()
+  const inputId = useId()
   const inputRef = useRef(null)
 
   const sorted = useMemo(() => {
@@ -72,32 +75,46 @@ export default function GroceryListPanel({
           </span>
         </div>
         <div className="journal-mood-bar__track journal-panel__body">
-          <form className="grocery-list-panel__composer" onSubmit={onSubmit}>
-            <label className="journal-panel-field" htmlFor="grocery-add-input">
-              <span className="journal-panel-field__label">Item</span>
-              <input
-                ref={inputRef}
-                id="grocery-add-input"
-                type="text"
-                className="input input--line journal-panel-field__input grocery-list-panel__input"
-                value={draft}
-                onChange={(e) => setDraft(e.target.value)}
-                onKeyDown={onKeyDown}
-                onPaste={onPaste}
-                placeholder={placeholder}
-                aria-labelledby="grocery-add-label"
-                enterKeyHint="done"
-                autoComplete="off"
-              />
-            </label>
-            <button
-              type="submit"
-              className="btn btn--ghost grocery-list-panel__add"
-              disabled={!draft.trim()}
-            >
-              Add to list
-            </button>
-          </form>
+          <button
+            type="button"
+            className={`grocery-list-panel__add-btn${formOpen ? ' grocery-list-panel__add-btn--open' : ''}`}
+            onClick={() => setFormOpen((open) => !open)}
+            aria-expanded={formOpen}
+            aria-controls={formId}
+          >
+            <span className="grocery-list-panel__add-btn-ico" aria-hidden>
+              {formOpen ? '−' : '+'}
+            </span>
+            {formOpen ? 'Close form' : 'Add grocery items…'}
+          </button>
+          {formOpen ? (
+            <form id={formId} className="grocery-list-panel__composer" onSubmit={onSubmit}>
+              <label className="field-block" htmlFor={inputId}>
+                <span className="field-block__label">Items to add</span>
+                <input
+                  ref={inputRef}
+                  id={inputId}
+                  type="text"
+                  className="input input--line grocery-list-panel__input"
+                  value={draft}
+                  onChange={(e) => setDraft(e.target.value)}
+                  onKeyDown={onKeyDown}
+                  onPaste={onPaste}
+                  placeholder={placeholder}
+                  aria-labelledby="grocery-add-label"
+                  enterKeyHint="done"
+                  autoComplete="off"
+                />
+              </label>
+              <button
+                type="submit"
+                className="btn btn--primary grocery-list-panel__add"
+                disabled={!draft.trim()}
+              >
+                Add to list
+              </button>
+            </form>
+          ) : null}
           {sorted.length === 0 ? (
             <div className="grocery-list-panel__suggestions" aria-label="Quick-add grocery items">
               <span className="grocery-list-panel__suggestions-label">Quick add</span>

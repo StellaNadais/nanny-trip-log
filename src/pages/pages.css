@@ -6205,9 +6205,59 @@ button.calendar__cell:focus-visible {
 
 .grocery-list-panel__composer {
   display: flex;
-  gap: 8px;
-  align-items: stretch;
-  margin-bottom: 4px;
+  flex-direction: column;
+  gap: 12px;
+  margin: 0;
+  padding: 14px;
+  border: 1px solid color-mix(in srgb, #d8d4ce 50%, var(--line));
+  border-radius: 14px;
+  background: color-mix(in srgb, #f6f4f0 80%, var(--surface));
+}
+
+.grocery-list-panel__add-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  margin: 0;
+  padding: 14px 16px;
+  border: 1px dashed color-mix(in srgb, #d8d4ce 55%, var(--line));
+  border-radius: 14px;
+  background: color-mix(in srgb, #f3f1ed 65%, var(--surface));
+  color: var(--ink);
+  font: inherit;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+}
+
+.grocery-list-panel__add-btn:hover,
+.grocery-list-panel__add-btn:focus-visible {
+  border-color: color-mix(in srgb, #cfcbc4 65%, var(--line));
+  background: color-mix(in srgb, #ebe8e3 75%, var(--surface));
+  color: var(--ink);
+  outline: none;
+}
+
+.grocery-list-panel__add-btn--open {
+  border-style: solid;
+  background: color-mix(in srgb, #efece7 70%, var(--surface));
+}
+
+.grocery-list-panel__add-btn-ico {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.65rem;
+  height: 1.65rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, #e5e2dc 55%, var(--paper2));
+  color: var(--ink-muted);
+  font-size: 1.15rem;
+  font-weight: 700;
+  line-height: 1;
 }
 
 .grocery-list-panel__input {
@@ -6218,10 +6268,11 @@ button.calendar__cell:focus-visible {
 }
 
 .grocery-list-panel__add {
-  flex-shrink: 0;
+  width: 100%;
   min-height: 44px;
   padding-left: 16px;
   padding-right: 16px;
+  justify-content: center;
 }
 
 .grocery-list-panel__hint {
