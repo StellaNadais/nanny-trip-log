@@ -13,6 +13,7 @@ import CareCommandComposer from '../components/CareCommandComposer'
 import ScheduleCalendarFlip from '../components/ScheduleCalendarFlip'
 import BookTabBar from '../components/BookTabBar'
 import FamilyJournalReader from '../components/FamilyJournalReader'
+import CareDaysFooter from '../components/CareDaysFooter'
 import { bookingOccupiesCalendarSlot } from '../utils/bookingCalendar'
 import {
   bookingEndMs,
@@ -489,6 +490,18 @@ export default function BookPage() {
               </section>
             </div>
           ) : null}
+
+          <section className="book-care-handoff" aria-labelledby="book-care-handoff-title">
+            <div>
+              <p className="book-care-handoff__eyebrow">Care day handoff</p>
+              <h2 id="book-care-handoff-title">Your care plan stays together</h2>
+              <p>
+                Pick the day, add the details that matter, and your caregiver will have a clear place to start.
+              </p>
+            </div>
+          </section>
+
+          <CareDaysFooter />
         </main>
       </div>
 

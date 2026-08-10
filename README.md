@@ -1,11 +1,11 @@
-# Nanny Trip Log
+# nannytriplog
 
 A mobile-first React app for caregivers to schedule gigs, log kid journals, and generate weekly receipts. Parents use the separate `/book` route to request care.
 
 ## Live Demo
 
-- [Caregiver Journal](https://nanny-trip-log-git-cursor-trip-route-bar-stella-nadais-projects.vercel.app/journal)
-- [Parent Booking](https://nanny-trip-log-git-cursor-trip-route-bar-stella-nadais-projects.vercel.app/book)
+- [Caregiver Journal](https://www.nannytriplog.com/journal)
+- [Parent Booking](https://www.nannytriplog.com/book)
 
 ## Features
 
