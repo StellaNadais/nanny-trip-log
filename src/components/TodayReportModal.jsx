@@ -41,24 +41,31 @@ export default function TodayReportModal({
     <div className="today-report-modal" role="dialog" aria-modal="true" aria-labelledby="today-report-title">
       <button type="button" className="today-report-modal__backdrop" aria-label="Close report" onClick={onClose} />
       <div className="today-report-modal__sheet">
-        <button type="button" className="today-report-modal__close" onClick={onClose}>
-          Close
+        <button type="button" className="today-report-modal__close" onClick={onClose} aria-label="Close report">
+          ×
         </button>
-        <header className="today-report-modal__header">
-          <p>Daily report</p>
-          <time>{dateLabel}</time>
-          <h1 id="today-report-title">{title || 'A lovely day together'}</h1>
-          {route.length ? (
-            <p className="today-report-modal__route">
-              {route.map((place) => place.label).join(' · ')}
-            </p>
-          ) : null}
-        </header>
+        <div className="today-report-modal__receipt">
+          <header className="today-report-modal__header">
+            <p>Care day receipt</p>
+            <time>{dateLabel}</time>
+            <h1 id="today-report-title">{title || 'A lovely day together'}</h1>
+          </header>
 
-        {paragraph ? <p className="today-report-modal__story">{paragraph}</p> : null}
+          <div className="today-report-modal__rule" aria-hidden />
 
-        {hasDetails ? (
           <div className="today-report-modal__details">
+            {route.length ? (
+              <section>
+                <h2>Route</h2>
+                <p>{route.map((place) => place.label).join(' · ')}</p>
+              </section>
+            ) : null}
+            {paragraph ? (
+              <section>
+                <h2>Day story</h2>
+                <p>{paragraph}</p>
+              </section>
+            ) : null}
             {mealsText ? (
               <section>
                 <h2>Meals</h2>
@@ -78,17 +85,20 @@ export default function TodayReportModal({
               </section>
             ) : null}
             {wishes ? (
-              <section className="today-report-modal__wishes">
+              <section>
                 <h2>For next time</h2>
                 <p>{wishes}</p>
               </section>
             ) : null}
           </div>
-        ) : (
-          <p className="today-report-modal__empty">Today’s details will appear here once they’re added.</p>
-        )}
 
-        <footer className="today-report-modal__footer">carekidsmiles · care days, clearly shared</footer>
+          {!hasDetails ? (
+            <p className="today-report-modal__empty">Today’s details will appear here once they’re added.</p>
+          ) : null}
+
+          <div className="today-report-modal__rule today-report-modal__rule--bottom" aria-hidden />
+          <footer className="today-report-modal__footer">carekidsmiles · care days, clearly shared</footer>
+        </div>
       </div>
     </div>
   )
