@@ -8,6 +8,7 @@ export const CLOUD_SYNC_KEYS = [
   'nanny-shift-contract-v2',
   'nanny-trip-log-v1',
   'nanny-outings-places-v3',
+  'nanny-summer-backpack-v1',
 ]
 
 export const CLOUD_DATA_CHANGED_EVENT = 'nanny-cloud-data-changed'
