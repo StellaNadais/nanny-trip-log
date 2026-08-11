@@ -231,6 +231,8 @@
   .calendar__cell--current-week:not(.calendar__cell--today):not(.calendar__cell--select-single):not(.calendar__cell--select-start):not(.calendar__cell--select-end):not(.calendar__cell--select-between) {
   border-style: solid;
   border-color: color-mix(in srgb, var(--journal-mint-deep, var(--peri-accent)) 52%, var(--line));
+  outline: 2px solid color-mix(in srgb, var(--journal-mint-deep, var(--peri-accent)) 72%, var(--line));
+  outline-offset: 1px;
   box-shadow: inset 0 0 0 1px
     color-mix(in srgb, var(--journal-mint-deep, var(--peri-accent)) 16%, transparent);
 }

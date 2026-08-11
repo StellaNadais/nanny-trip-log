@@ -2399,6 +2399,10 @@
 }
 
 @media (max-width: 599px) {
+  .page--schedule .workspace-tile-board {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
   .today-report-modal {
     padding: 16px;
   }

@@ -379,6 +379,7 @@ export default function SchedulePage() {
             {
               id: 'backpack',
               label: 'Summer backpack',
+              span: 1,
               square: true,
               children: (
                 <TodaySpaceTile
