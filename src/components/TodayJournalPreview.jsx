@@ -119,7 +119,7 @@ export default function TodayJournalPreview({
         ) : (
           <div className="today-journal-preview__empty">
             <p>Nothing has been recorded for this day yet.</p>
-            <span>Open the report and begin with a first sentence. It will become today&apos;s lead.</span>
+            <span>Open our time together and begin with a first sentence. It will become today&apos;s lead.</span>
           </div>
         )}
       </button>
@@ -141,8 +141,8 @@ export default function TodayJournalPreview({
 
       <section className="today-journal-preview__handoff" aria-labelledby="today-handoff-heading">
         <div>
-          <p className="today-journal-preview__handoff-eyebrow">Daily report</p>
-          <h2 id="today-handoff-heading">Today&apos;s report is ready</h2>
+          <p className="today-journal-preview__handoff-eyebrow">Our time together</p>
+          <h2 id="today-handoff-heading">Our time together is ready</h2>
           <p>
             {hasJournal
               ? 'A clean summary, ready to share at pickup.'
@@ -150,7 +150,7 @@ export default function TodayJournalPreview({
           </p>
         </div>
         <button type="button" onClick={() => setReportOpen(true)}>
-          View report
+          View our time together
         </button>
       </section>
 
