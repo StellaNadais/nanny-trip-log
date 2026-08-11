@@ -1,5 +1,4 @@
 import { useEffect, useMemo, useState } from 'react'
-import { Link } from 'react-router-dom'
 import { toISODateLocal } from '../utils/dates'
 import { monthGrid, isSameDay } from '../utils/calendarMonth'
 import { useBookings } from '../hooks/useBookings'
@@ -385,21 +384,6 @@ export default function SchedulePage() {
             },
           ]}
         />
-
-        <section className="schedule-care-handoff" aria-labelledby="schedule-care-handoff-title">
-          <div>
-            <p className="schedule-care-handoff__eyebrow">Care day handoff</p>
-            <h2 id="schedule-care-handoff-title">Keep today&apos;s report ready</h2>
-            <p>
-              {acceptedUpcoming.length
-                ? `${acceptedUpcoming.length} confirmed care day${acceptedUpcoming.length === 1 ? '' : 's'} ahead. Capture the day clearly for pickup.`
-                : 'Capture the day clearly, so a helpful summary is ready for pickup.'}
-            </p>
-          </div>
-          <Link to="/journal" className="schedule-care-handoff__action">
-            Open today&apos;s journal
-          </Link>
-        </section>
 
         <CareDaysFooter />
       </div>

@@ -2327,8 +2327,7 @@
   text-align: center;
 }
 
-/* Shared lower-page handoff and signature for Schedule and Book. */
-.schedule-care-handoff,
+/* Lower-page handoff for the Book portal. */
 .book-care-handoff {
   display: grid;
   gap: 12px;
@@ -2339,7 +2338,6 @@
   box-shadow: 0 5px 16px color-mix(in srgb, #7a6bb5 9%, transparent);
 }
 
-.schedule-care-handoff__eyebrow,
 .book-care-handoff__eyebrow {
   margin: 0 0 4px;
   color: #7a6bb5;
@@ -2349,7 +2347,6 @@
   text-transform: uppercase;
 }
 
-.schedule-care-handoff h2,
 .book-care-handoff h2 {
   margin: 0;
   color: var(--ink);
@@ -2359,31 +2356,11 @@
   line-height: 1.25;
 }
 
-.schedule-care-handoff p:not(.schedule-care-handoff__eyebrow),
 .book-care-handoff p:not(.book-care-handoff__eyebrow) {
   margin: 6px 0 0;
   color: var(--ink-muted);
   font-size: 0.8125rem;
   line-height: 1.45;
-}
-
-.schedule-care-handoff__action {
-  align-self: end;
-  justify-self: start;
-  padding: 8px 11px;
-  border: 1px solid color-mix(in srgb, #7a6bb5 42%, var(--line-soft));
-  border-radius: 999px;
-  color: #5f5197;
-  background: rgb(255 255 255 / 80%);
-  font-size: 0.8125rem;
-  font-weight: 650;
-  text-decoration: none;
-}
-
-.schedule-care-handoff__action:hover,
-.schedule-care-handoff__action:focus-visible {
-  background: #ebe8f5;
-  color: #514684;
 }
 
 .care-days-footer {
@@ -2406,10 +2383,6 @@
   font: inherit;
 }
 
-.page--schedule.page--workspace .schedule-care-handoff {
-  margin-top: 4px;
-}
-
 .page--book-portal .book-portal__canvas {
   overflow-y: auto;
 }
@@ -2419,7 +2392,6 @@
 }
 
 @media (min-width: 600px) {
-  .schedule-care-handoff,
   .book-care-handoff {
     grid-template-columns: minmax(0, 1fr) auto;
     align-items: center;
@@ -2441,11 +2413,7 @@
     padding: 26px 20px 22px;
   }
 
-  /*
-   * Schedule is a normal, document-scrolling workspace on phones. Let the
-   * added handoff/footer remain below the calendar without being clipped by
-   * the page's desktop-sized viewport cap.
-   */
+  /* Schedule is a normal, document-scrolling workspace on phones. */
   .page--schedule.page--workspace {
     min-height: 100svh;
     min-height: 100dvh;
@@ -2456,11 +2424,6 @@
 
   .page--schedule.page--workspace .schedule__layout {
     min-width: 0;
-  }
-
-  .page--schedule.page--workspace .schedule-care-handoff {
-    margin-bottom: 0;
-    overflow-wrap: anywhere;
   }
 
   .care-days-footer {

@@ -8,7 +8,8 @@ export const SUMMER_BACKPACK_ITEMS = [
   'Hat',
   'Sunglasses',
   'Change of clothes',
-  'Snacks',
+  'Light snack (4yo)',
+  'Snack box + ice pack (2.5yo)',
   'Wet wipes',
   'Towel',
   'Swimsuit',
@@ -20,6 +21,8 @@ export const SUMMER_BACKPACK_ITEMS = [
 export function loadSummerBackpack() {
   try {
     const saved = JSON.parse(localStorage.getItem(SUMMER_BACKPACK_STORAGE_KEY))
+    // "Snacks" was replaced by age-specific items. Discard retired values so
+    // a stale completed check never incorrectly marks either new snack packed.
     return Array.isArray(saved) ? saved.filter((item) => SUMMER_BACKPACK_ITEMS.includes(item)) : []
   } catch {
     return []
