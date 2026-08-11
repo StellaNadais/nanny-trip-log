@@ -6,7 +6,7 @@ import {
   SUMMER_BACKPACK_ITEMS,
 } from '../utils/summerBackpackStorage'
 
-export default function SummerBackpackChecklist() {
+export default function SummerBackpackChecklist({ showHeader = true }) {
   const [packedItems, setPackedItems] = useState(loadSummerBackpack)
   const packedCount = packedItems.length
   const progressLabel = useMemo(
@@ -34,16 +34,22 @@ export default function SummerBackpackChecklist() {
   }
 
   return (
-    <section className="summer-backpack" aria-labelledby="summer-backpack-title">
-      <div className="summer-backpack__head">
-        <div>
-          <h2 id="summer-backpack-title">Summer day pack</h2>
-          <p>Pack it before heading out.</p>
+    <section
+      className="summer-backpack"
+      aria-labelledby={showHeader ? 'summer-backpack-title' : undefined}
+      aria-label={showHeader ? undefined : 'Summer backpack checklist'}
+    >
+      {showHeader ? (
+        <div className="summer-backpack__head">
+          <div>
+            <h2 id="summer-backpack-title">Summer day pack</h2>
+            <p>Pack it before heading out.</p>
+          </div>
+          <span className="summer-backpack__count" aria-label={progressLabel}>
+            {progressLabel}
+          </span>
         </div>
-        <span className="summer-backpack__count" aria-label={progressLabel}>
-          {progressLabel}
-        </span>
-      </div>
+      ) : null}
       <ul className="summer-backpack__list">
         {SUMMER_BACKPACK_ITEMS.map((item) => {
           const packed = packedItems.includes(item)

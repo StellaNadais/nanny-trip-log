@@ -11,7 +11,7 @@ import ScheduleOverviewModal from '../components/ScheduleOverviewModal'
 import TodaySpaceTile from '../components/TodaySpaceTile'
 import WorkspaceTileBoard from '../components/WorkspaceTileBoard'
 import CareDaysFooter from '../components/CareDaysFooter'
-import SummerBackpackChecklist from '../components/SummerBackpackChecklist'
+import SummerBackpackModal from '../components/SummerBackpackModal'
 import { upcomingCelebrationsInMonth } from '../utils/scheduleCelebrations'
 
 function todayISO() {
@@ -378,9 +378,15 @@ export default function SchedulePage() {
             },
             {
               id: 'backpack',
-              label: 'Backpack',
-              span: 2,
-              children: <SummerBackpackChecklist />,
+              label: 'Summer backpack',
+              square: true,
+              children: (
+                <TodaySpaceTile
+                  preview="Six summer essentials"
+                  hint="Pack before heading out — tap to open."
+                  onClick={() => openSchedulePanel('backpack')}
+                />
+              ),
             },
           ]}
         />
@@ -404,6 +410,8 @@ export default function SchedulePage() {
         year={y}
         monthIndex={m}
       />
+
+      <SummerBackpackModal open={openPanel === 'backpack'} onClose={closeSchedulePanel} />
 
     </div>
   )
