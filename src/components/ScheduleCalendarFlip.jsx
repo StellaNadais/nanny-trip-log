@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { WEEKDAYS } from '../utils/calendarMonth'
+import { startOfWeekMonday } from '../utils/dates'
 import { formatCareBookingWindow } from '../utils/bookingRange'
 import { formatBookingChildrenLabel } from '../utils/bookingChildren'
 import { useUpcomingGigsThemePlayback } from '../hooks/useUpcomingGigsThemePlayback'
@@ -42,6 +43,7 @@ export default function ScheduleCalendarFlip({
   showSelectionLegend = false,
 }) {
   const [listFace, setListFace] = useState(false)
+  const currentWeekStart = startOfWeekMonday(today).getTime()
 
   useEffect(() => {
     setListFace(false)
@@ -123,13 +125,16 @@ export default function ScheduleCalendarFlip({
                     const dayBookings = bookingsByDate[iso] ?? []
                     const isBooked = dayBookings.length > 0
                     const bookingMod = isBooked ? cellBookingMod(dayBookings) : ''
-                    const isTodayCell = isSameDay(today, new Date(y, m, dayNum))
+                    const cellDate = new Date(y, m, dayNum)
+                    const isTodayCell = isSameDay(today, cellDate)
+                    const isCurrentWeek = startOfWeekMonday(cellDate).getTime() === currentWeekStart
                     const isPast = iso < todayISO()
                     const selectionRole = dateSelectionRole?.(iso) ?? null
                     const selectable = Boolean(onDateSelect) && !isPast
                     const cellClass = [
                       'calendar__cell',
                       isTodayCell ? 'calendar__cell--today' : '',
+                      isCurrentWeek ? 'calendar__cell--current-week' : '',
                       isBooked ? `calendar__cell--booked calendar__cell--booked-${bookingMod}` : '',
                       isPast ? 'calendar__cell--past' : '',
                       selectable ? 'calendar__cell--selectable' : '',
