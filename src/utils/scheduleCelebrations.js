@@ -1,4 +1,5 @@
 import { MONTHLY_CELEBRATIONS } from '../data/monthlyCelebrations'
+import { loadCustomCelebrations } from './customCelebrationsStorage'
 import { addDays, formatWeekRange, startOfWeekMonday, toISODateLocal } from './dates'
 
 /** Do fun activities target: one week before the important date. */
@@ -10,7 +11,20 @@ export const ACTIVITY_PREP_DAYS_BEFORE = 7
  */
 export function celebrationsInMonth(year, monthIndex) {
   const month = monthIndex + 1
-  return MONTHLY_CELEBRATIONS.filter((c) => c.month === month)
+  const builtIn = MONTHLY_CELEBRATIONS.filter((c) => c.month === month)
+  const custom = loadCustomCelebrations()
+    .filter((c) => c.year === year && c.month === month)
+    .map((c) => ({
+      id: c.id,
+      month: c.month,
+      day: c.day,
+      spanDays: c.spanDays ?? 1,
+      title: c.title,
+      theme: c.theme ?? '',
+      activities: c.activities ?? [],
+      custom: true,
+    }))
+  return [...builtIn, ...custom]
     .map((c) => {
       const start = new Date(year, monthIndex, c.day)
       const span = Math.max(1, c.spanDays ?? 1)

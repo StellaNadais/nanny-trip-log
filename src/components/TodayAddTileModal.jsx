@@ -1,30 +1,22 @@
 import { useState } from 'react'
 import { TODAY_TILE_TYPES, todayTileAccent } from '../data/todayTileTypes'
 import { addCustomTodayTile, loadCustomTodayTiles } from '../utils/todayCustomTilesStorage'
-import { softCardIcon, softCardTone } from './SoftCardPanel'
 import TodayPanelModal from './TodayPanelModal'
 import { TodaySoftPanel } from './TodaySoftPanel'
 
 function TypePicker({ onPick }) {
   return (
-    <ul className="soft-panel__grid today-add-tile__type-grid">
-      {TODAY_TILE_TYPES.map((type, index) => (
-        <li key={type.id}>
-          <button
-            type="button"
-            className={`soft-panel__card soft-panel__card--${softCardTone(index)} soft-panel__card--pick today-add-tile__type-card`}
-            onClick={() => onPick(type.id)}
-          >
-            <span className="soft-panel__card-head">
-              <span className="soft-panel__card-num" aria-hidden>
-                {String(index + 1).padStart(2, '0')}
+    <ul className="thanks__list thanks__list--flush today-add-tile__type-list">
+      {TODAY_TILE_TYPES.map((type) => (
+        <li key={type.id} className="thanks__item">
+          <button type="button" className="today-add-tile__type-row" onClick={() => onPick(type.id)}>
+            <div className="thanks__item-head">
+              <span className="thanks__item-icon" aria-hidden>
+                {type.icon}
               </span>
-              <span className="soft-panel__card-icon" aria-hidden>
-                {type.icon || softCardIcon(index)}
-              </span>
-            </span>
-            <strong className="soft-panel__card-title">{type.label}</strong>
-            <span className="today-add-tile__type-hint muted">{type.hint}</span>
+              <strong className="thanks__item-title">{type.label}</strong>
+            </div>
+            <p className="thanks__item-note muted">{type.hint}</p>
           </button>
         </li>
       ))}

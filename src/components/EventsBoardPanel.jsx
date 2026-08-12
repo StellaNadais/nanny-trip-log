@@ -1,7 +1,6 @@
 import { useMemo, useState } from 'react'
 import { EVENT_LOCATIONS, groupFamilyEventsByLocation } from '../data/familyEvents'
 import { formatWorldCupMatch, upcomingWorldCupGames } from '../data/worldCup2026'
-import { todayTileAccent } from '../data/todayTileTypes'
 import { toISODateLocal } from '../utils/dates'
 import EventsPanelModal from './EventsPanelModal'
 
@@ -17,7 +16,7 @@ function locationPreview(events) {
   return events.length > 1 ? `${events.length} ideas · ${lead}` : lead
 }
 
-/** Events tab — clickable boxes per area; full list opens in popup. */
+/** Events tab — list of areas; full list opens in popup. */
 export default function EventsBoardPanel() {
   const [openPanel, setOpenPanel] = useState(null)
   const byLocation = useMemo(() => groupFamilyEventsByLocation(), [])
@@ -36,73 +35,73 @@ export default function EventsBoardPanel() {
             Local events
           </h2>
           <p className="events-board__lede muted">
-            Tap a box for ideas by area — confirm dates and hours with each place.
+            Tap an area for ideas — confirm dates and hours with each place.
           </p>
         </header>
 
-        <div className="events-board__grid events-board__grid--areas">
-          {EVENT_LOCATIONS.map(({ id, label }, index) => {
+        <ul className="events-board-list">
+          {EVENT_LOCATIONS.map(({ id, label }) => {
             const meta = LOCATION_META[id] ?? { eyebrow: 'East Bay', hint: 'Tap for the full list.' }
-            const accent = todayTileAccent(index)
             const count = byLocation[id]?.length ?? 0
             const preview = locationPreview(byLocation[id])
 
             return (
-              <button
-                key={id}
-                type="button"
-                className={`events-box-tile soft-panel soft-panel--events-box soft-panel--events-box--${accent}`}
-                onClick={() => setOpenPanel(id)}
-                aria-labelledby={`events-box-${id}`}
-              >
-                <div className="soft-panel__hero soft-panel__hero--compact">
-                  <p className="soft-panel__eyebrow">{meta.eyebrow}</p>
-                  <div className="events-box__head">
-                    <h3 id={`events-box-${id}`} className="soft-panel__title">
+              <li key={id} className="events-board-list__item">
+                <button
+                  type="button"
+                  className="events-board-list__row"
+                  onClick={() => setOpenPanel(id)}
+                  aria-labelledby={`events-area-${id}`}
+                >
+                  <div className="events-board-list__head">
+                    <span className="events-board-list__icon" aria-hidden>
+                      ◎
+                    </span>
+                    <strong id={`events-area-${id}`} className="events-board-list__title">
                       {label}
-                    </h3>
+                    </strong>
+                    <span className="events-board-list__eyebrow muted">{meta.eyebrow}</span>
                     {count > 0 ? (
-                      <span className="events-box__count" aria-hidden>
+                      <span className="events-board-list__count" aria-hidden>
                         {count}
                       </span>
                     ) : null}
                   </div>
-                </div>
-                <div className="events-box-tile__body">
-                  <p className="events-box-tile__preview">
-                    {preview || <span className="muted">{meta.hint}</span>}
+                  <p className="events-board-list__preview muted">
+                    {preview || meta.hint}
                   </p>
-                  <span className="events-box-tile__cta">Open list →</span>
-                </div>
-              </button>
+                  <span className="events-board-list__cta">Open list →</span>
+                </button>
+              </li>
             )
           })}
-        </div>
 
-        <button
-          type="button"
-          className="events-box-tile soft-panel soft-panel--events-box soft-panel--events-box--world-cup"
-          onClick={() => setOpenPanel('world-cup')}
-          aria-labelledby="events-box-world-cup"
-        >
-          <div className="soft-panel__hero soft-panel__hero--compact">
-            <p className="soft-panel__eyebrow">FIFA 2026</p>
-            <div className="events-box__head">
-              <h3 id="events-box-world-cup" className="soft-panel__title">
-                World Cup
-              </h3>
-              {worldCupGames.length > 0 ? (
-                <span className="events-box__count" aria-hidden>
-                  {worldCupGames.length}
+          <li className="events-board-list__item">
+            <button
+              type="button"
+              className="events-board-list__row events-board-list__row--world-cup"
+              onClick={() => setOpenPanel('world-cup')}
+              aria-labelledby="events-area-world-cup"
+            >
+              <div className="events-board-list__head">
+                <span className="events-board-list__icon" aria-hidden>
+                  ★
                 </span>
-              ) : null}
-            </div>
-          </div>
-          <div className="events-box-tile__body">
-            <p className="events-box-tile__preview">{worldCupPreview}</p>
-            <span className="events-box-tile__cta">Open list →</span>
-          </div>
-        </button>
+                <strong id="events-area-world-cup" className="events-board-list__title">
+                  World Cup
+                </strong>
+                <span className="events-board-list__eyebrow muted">FIFA 2026</span>
+                {worldCupGames.length > 0 ? (
+                  <span className="events-board-list__count" aria-hidden>
+                    {worldCupGames.length}
+                  </span>
+                ) : null}
+              </div>
+              <p className="events-board-list__preview muted">{worldCupPreview}</p>
+              <span className="events-board-list__cta">Open list →</span>
+            </button>
+          </li>
+        </ul>
 
         <p className="events-board__footnote muted">
           Venue details can change — double-check before you go.

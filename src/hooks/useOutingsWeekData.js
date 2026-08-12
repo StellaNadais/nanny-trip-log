@@ -24,6 +24,7 @@ function emptyExtras() {
 export function useOutingsWeekData(weekKey) {
   const [extras, setExtras] = useState(emptyExtras)
   const [manualOpen, setManualOpen] = useState(false)
+  const [locationsOpen, setLocationsOpen] = useState(false)
   const [manualCat, setManualCat] = useState('parking_ticket')
   const [manualAmt, setManualAmt] = useState('')
   const [manualNote, setManualNote] = useState('')
@@ -164,6 +165,7 @@ export function useOutingsWeekData(weekKey) {
     ])
     setPlaceNickname('')
     setPlaceRoundTrip('')
+    setLocationsOpen(false)
   }
 
   function removeCustomPlace(id) {
@@ -172,12 +174,15 @@ export function useOutingsWeekData(weekKey) {
 
   const resetOutingsForm = useCallback(() => {
     setManualOpen(false)
+    setLocationsOpen(false)
   }, [])
 
   return {
     extras,
     manualOpen,
     setManualOpen,
+    locationsOpen,
+    setLocationsOpen,
     manualCat,
     setManualCat,
     manualAmt,

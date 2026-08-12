@@ -1,4 +1,4 @@
-/* Events page — thank-you list board */
+/* Events page — list board (popups keep thank-you soft panel) */
 
 .page--events.work-ui {
   background: #fff;
@@ -22,7 +22,7 @@
   text-shadow: none;
 }
 
-/* Events board — intro + one soft box per area */
+/* Events board — intro + area list */
 .events-board {
   display: flex;
   flex-direction: column;
@@ -59,20 +59,107 @@
   max-width: 32rem;
 }
 
-.events-board__grid {
-  display: grid;
-  gap: 12px;
+/* Area list — plain dashboard rows */
+.events-board-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--line-soft);
+  border-radius: var(--radius);
+  background: var(--paper);
+  overflow: hidden;
 }
 
-.events-board__grid--areas {
-  grid-template-columns: 1fr;
+.events-board-list__item + .events-board-list__item {
+  border-top: 1px solid var(--line-soft);
 }
 
-@media (min-width: 640px) {
-  .events-board__grid--areas {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 10px;
-  }
+.events-board-list__row {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 4px;
+  width: 100%;
+  margin: 0;
+  padding: 12px 14px;
+  border: none;
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+  font: inherit;
+  color: inherit;
+  appearance: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.events-board-list__row:hover,
+.events-board-list__row:focus-visible {
+  background: color-mix(in srgb, var(--paper2) 45%, var(--paper));
+  outline: none;
+}
+
+.events-board-list__head {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 4px 8px;
+}
+
+.events-board-list__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.25rem;
+  height: 1.25rem;
+  flex-shrink: 0;
+  font-size: 0.6875rem;
+  color: var(--ink-muted);
+}
+
+.events-board-list__title {
+  flex: 1;
+  min-width: 0;
+  font-size: 0.875rem;
+  font-weight: 600;
+  line-height: 1.35;
+  color: var(--ink);
+}
+
+.events-board-list__eyebrow {
+  font-family: var(--font-mono, var(--font));
+  font-size: 0.625rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.events-board-list__count {
+  flex-shrink: 0;
+  min-width: 1.25rem;
+  padding: 0 0.35rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--accent) 82%, var(--ink));
+  color: var(--paper);
+  font-family: var(--font-ui);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  line-height: 1.35;
+  text-align: center;
+}
+
+.events-board-list__preview {
+  margin: 0 0 0 1.6rem;
+  font-size: 0.8125rem;
+  line-height: 1.45;
+}
+
+.events-board-list__cta {
+  margin: 2px 0 0 1.6rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--journal-mint-deep, var(--accent));
 }
 
 .events-board__footnote {
@@ -82,276 +169,6 @@
   font-weight: 600;
   letter-spacing: 0.02em;
   text-align: center;
-}
-
-.page--events .soft-panel--events-box,
-.page--book-portal .soft-panel--events-box {
-  border: 1px solid var(--line-soft);
-  border-radius: var(--radius);
-  box-shadow:
-    inset 0 1px 0 color-mix(in srgb, #fff 85%, transparent),
-    0 4px 18px color-mix(in srgb, var(--accent) 6%, transparent);
-  min-width: 0;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-}
-
-.soft-panel--events-box--peach {
-  --box-accent: #e8b4a0;
-}
-
-.soft-panel--events-box--mint {
-  --box-accent: #7ec4b0;
-}
-
-.soft-panel--events-box--lavender {
-  --box-accent: #b8aed8;
-}
-
-.soft-panel--events-box--sky,
-.soft-panel--events-box--world-cup {
-  --box-accent: #8eb8d8;
-}
-
-.soft-panel--events-box .soft-panel__hero--compact {
-  padding: 12px 14px 10px;
-  border-bottom: 1px solid color-mix(in srgb, var(--box-accent, var(--line-soft)) 22%, var(--line-soft));
-}
-
-.soft-panel--events-box .soft-panel__eyebrow {
-  color: color-mix(in srgb, var(--box-accent, var(--accent)) 72%, var(--ink-muted));
-}
-
-.soft-panel--events-box .soft-panel__title {
-  margin: 0;
-  font-size: 1rem;
-}
-
-.events-box__head {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 8px;
-}
-
-.events-box__count {
-  flex-shrink: 0;
-  min-width: 1.25rem;
-  padding: 0 0.35rem;
-  border-radius: 999px;
-  background: color-mix(in srgb, var(--box-accent, var(--accent)) 82%, var(--ink));
-  color: var(--paper);
-  font-family: var(--font-ui);
-  font-size: 0.6875rem;
-  font-weight: 700;
-  line-height: 1.35;
-  text-align: center;
-}
-
-.events-box-tile {
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-  width: 100%;
-  min-width: 0;
-  margin: 0;
-  padding: 0;
-  border: none;
-  text-align: left;
-  cursor: pointer;
-  font: inherit;
-  color: inherit;
-  appearance: none;
-  -webkit-tap-highlight-color: transparent;
-}
-
-.events-box-tile:hover,
-.events-box-tile:focus-visible {
-  outline: none;
-  filter: brightness(1.01);
-}
-
-.events-box-tile:focus-visible {
-  box-shadow:
-    inset 0 1px 0 color-mix(in srgb, #fff 85%, transparent),
-    0 0 0 2px color-mix(in srgb, var(--box-accent, var(--accent)) 45%, transparent),
-    0 4px 18px color-mix(in srgb, var(--accent) 8%, transparent);
-}
-
-.events-box-tile__body {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  gap: 8px;
-  padding: 10px 14px 14px;
-  min-height: 5.5rem;
-}
-
-.events-box-tile__preview {
-  flex: 1;
-  margin: 0;
-  font-size: 0.8125rem;
-  line-height: 1.45;
-  color: var(--ink);
-  overflow: hidden;
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
-}
-
-.events-box-tile__cta {
-  font-size: 0.75rem;
-  font-weight: 600;
-  color: color-mix(in srgb, var(--box-accent, var(--accent)) 75%, var(--ink));
-}
-
-.soft-panel--events-box .events__section--board,
-.soft-panel--events-box .world-cup-panel--board {
-  flex: 1;
-  padding: 8px 14px 12px;
-}
-
-.page--events .events__section--modal {
-  margin: 0;
-}
-
-.page--events .events__empty {
-  margin: 0;
-  font-size: 0.8125rem;
-  line-height: 1.45;
-}
-
-.soft-panel--events-box .events__section--board,
-.soft-panel--events-box .world-cup-panel--board {
-  margin: 0;
-  background: transparent;
-  border: none;
-  box-shadow: none;
-}
-
-/* Events — shared list styles (boxes + modal) */
-.soft-panel--events-box,
-.soft-panel--events-list {
-  --events-list-pad-x: 14px;
-}
-
-.soft-panel--events-box .events__list,
-.soft-panel--events-list .events__list,
-.soft-panel--events-box .world-cup-panel .events__list,
-.soft-panel--events-list .world-cup-panel .events__list {
-  gap: 0;
-  margin: 0;
-  list-style: none;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-}
-
-.soft-panel--events-box .events__item,
-.soft-panel--events-list .events__item {
-  margin: 0;
-  padding: 0;
-  border: none;
-  background: transparent;
-  box-shadow: none;
-}
-
-.soft-panel--events-box .events__item:last-child,
-.soft-panel--events-list .events__item:last-child {
-  padding-bottom: 0;
-}
-
-.soft-panel--events-box .events__item:first-child,
-.soft-panel--events-list .events__item:first-child {
-  padding-top: 0;
-}
-
-.soft-panel--events-box .events__item-title,
-.soft-panel--events-list .events__item-title,
-.about-today-modal .events__item-title {
-  margin: 0 0 4px;
-  color: var(--ink);
-  font-weight: 600;
-  font-size: 0.875rem;
-  line-height: 1.35;
-}
-
-.soft-panel--events-box .events__place,
-.soft-panel--events-box .events__blurb,
-.soft-panel--events-box .events__when,
-.soft-panel--events-list .events__place,
-.soft-panel--events-list .events__blurb,
-.soft-panel--events-list .events__when,
-.about-today-modal .events__place,
-.about-today-modal .events__blurb,
-.about-today-modal .events__when {
-  margin: 0 0 4px;
-  font-size: 0.8125rem;
-  line-height: 1.45;
-  color: var(--ink-muted);
-}
-
-.soft-panel--events-box .events__when,
-.soft-panel--events-list .events__when,
-.about-today-modal .events__when {
-  font-weight: 600;
-  color: var(--ink);
-}
-
-.soft-panel--events-box .events__blurb:last-child,
-.soft-panel--events-list .events__blurb:last-child,
-.about-today-modal .events__blurb:last-child {
-  margin-bottom: 0;
-}
-
-.soft-panel--events-box .world-cup-panel__meta,
-.soft-panel--events-list .world-cup-panel__meta,
-.about-today-modal .world-cup-panel__meta {
-  margin: 0 0 4px;
-  font-size: 0.6875rem;
-  font-weight: 600;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  color: var(--ink-muted);
-}
-
-.soft-panel--events-box .world-cup-panel__item--brazil .events__item-title,
-.soft-panel--events-list .world-cup-panel__item--brazil .events__item-title,
-.about-today-modal .world-cup-panel__item--brazil .events__item-title {
-  color: #006b2d;
-}
-
-.soft-panel--events-box .world-cup-panel__item--argentina .events__item-title,
-.soft-panel--events-list .world-cup-panel__item--argentina .events__item-title,
-.about-today-modal .world-cup-panel__item--argentina .events__item-title {
-  color: #4a7ab0;
-}
-
-.soft-panel--events-box .world-cup-panel__item--brazil,
-.soft-panel--events-box .world-cup-panel__item--argentina,
-.soft-panel--events-list .world-cup-panel__item--brazil,
-.soft-panel--events-list .world-cup-panel__item--argentina,
-.about-today-modal .world-cup-panel__item--brazil,
-.about-today-modal .world-cup-panel__item--argentina {
-  margin-left: -2px;
-  margin-right: -2px;
-  padding-left: 2px;
-  padding-right: 2px;
-  border-left: 2px solid transparent;
-}
-
-.soft-panel--events-box .world-cup-panel__item--brazil,
-.soft-panel--events-list .world-cup-panel__item--brazil,
-.about-today-modal .world-cup-panel__item--brazil {
-  border-left-color: #009c3b;
-}
-
-.soft-panel--events-box .world-cup-panel__item--argentina,
-.soft-panel--events-list .world-cup-panel__item--argentina,
-.about-today-modal .world-cup-panel__item--argentina {
-  border-left-color: #6cace4;
 }
 
 /* Events popup — list with line dividers on soft-panel background */

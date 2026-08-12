@@ -498,7 +498,8 @@ export default function KidJournalPage() {
     const addTile = {
       id: 'today-add-tile',
       label: 'Add box',
-      square: true,
+      span: 2,
+      hideHead: true,
       pinned: true,
       noDrag: true,
       children: <TodayAddTileButton onClick={() => setAddTileOpen(true)} />,

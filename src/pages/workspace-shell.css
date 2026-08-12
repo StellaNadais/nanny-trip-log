@@ -813,6 +813,192 @@
   color: color-mix(in srgb, var(--card-accent, var(--accent)) 75%, var(--ink));
 }
 
+.today-add-tile-row {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 4px;
+  width: 100%;
+  min-height: 0;
+  margin: 0;
+  padding: 12px 14px;
+  border: 1px dashed color-mix(in srgb, #c4bfd6 40%, var(--line-soft));
+  border-radius: var(--radius);
+  background: color-mix(in srgb, var(--paper2) 35%, var(--paper));
+  text-align: left;
+  cursor: pointer;
+  font: inherit;
+  color: inherit;
+  box-sizing: border-box;
+}
+
+.today-add-tile-row:hover,
+.today-add-tile-row:focus-visible {
+  border-color: color-mix(in srgb, var(--accent) 35%, #c4bfd6);
+  background: color-mix(in srgb, var(--paper2) 55%, var(--paper));
+  outline: none;
+}
+
+.today-add-tile-row__head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.today-add-tile-row__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.35rem;
+  height: 1.35rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, #ddd8eb 30%, var(--paper2));
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--ink);
+}
+
+.today-add-tile-row__title {
+  font-size: 0.875rem;
+  font-weight: 600;
+  line-height: 1.35;
+  color: var(--ink);
+}
+
+.today-add-tile-row__hint {
+  margin: 0 0 0 2rem;
+  font-size: 0.8125rem;
+  line-height: 1.4;
+}
+
+.today-add-tile-row__cta {
+  margin: 2px 0 0 2rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--journal-mint-deep, var(--accent));
+}
+
+.page--kid-journal .workspace-tile--wide:has(.today-add-tile-row) .workspace-tile__body {
+  padding: 8px 10px 10px;
+}
+
+/* Box fields — dashed shell (matches Add box row; Salesforce-style stacked boxes) */
+.box-field,
+.today-soft-field,
+.soft-panel--book-popup .field-block,
+.soft-panel--book-popup .book-modal__hotel-time-label,
+.page--book-portal .soft-panel .field-block,
+.about-today-modal--soft-popup .field-block,
+.book-reminders-field .field-block {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 0;
+  padding: 10px 12px;
+  border: 1px dashed color-mix(in srgb, #c4bfd6 40%, var(--line-soft));
+  border-radius: var(--radius);
+  background: color-mix(in srgb, var(--paper2) 35%, var(--paper));
+  box-sizing: border-box;
+  min-width: 0;
+}
+
+.box-field:focus-within,
+.today-soft-field:focus-within,
+.soft-panel--book-popup .field-block:focus-within,
+.soft-panel--book-popup .book-modal__hotel-time-label:focus-within,
+.page--book-portal .soft-panel .field-block:focus-within,
+.about-today-modal--soft-popup .field-block:focus-within,
+.book-reminders-field .field-block:focus-within {
+  border-color: color-mix(in srgb, var(--accent) 35%, #c4bfd6);
+  background: color-mix(in srgb, var(--paper2) 55%, var(--paper));
+}
+
+.box-field__label,
+.today-soft-field__label,
+.soft-panel--book-popup .field-block__label,
+.page--book-portal .soft-panel .field-block__label,
+.about-today-modal--soft-popup .field-block__label,
+.book-reminders-field .field-block__label,
+.soft-panel--book-popup .book-modal__hotel-time-label > span {
+  font-family: var(--font-ui);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+}
+
+.box-field .input,
+.today-soft-field .input,
+.box-field textarea,
+.today-soft-field textarea,
+.box-field select,
+.today-soft-field select,
+.soft-panel--book-popup .field-block .input,
+.soft-panel--book-popup .field-block textarea,
+.soft-panel--book-popup .book-modal__hotel-time-label .input,
+.page--book-portal .soft-panel .field-block .input,
+.about-today-modal--soft-popup .field-block .input,
+.book-reminders-field .field-block .input {
+  width: 100%;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: none;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  font-weight: 500;
+  min-height: 2.25rem;
+}
+
+.box-field .input:focus,
+.today-soft-field .input:focus,
+.box-field textarea:focus,
+.today-soft-field textarea:focus,
+.box-field select:focus,
+.today-soft-field select:focus,
+.soft-panel--book-popup .field-block .input:focus,
+.soft-panel--book-popup .book-modal__hotel-time-label .input:focus,
+.page--book-portal .soft-panel .field-block .input:focus,
+.about-today-modal--soft-popup .field-block .input:focus,
+.book-reminders-field .field-block .input:focus {
+  outline: none;
+}
+
+.today-soft-field__textarea,
+.box-field__textarea {
+  min-height: 5rem;
+  resize: vertical;
+  line-height: 1.45;
+}
+
+.today-soft-field--compact {
+  max-width: 6rem;
+}
+
+.today-add-tile__form .box-field + .box-field,
+.today-add-tile__form .today-soft-field + .today-soft-field,
+.today-custom-panel .box-field + .box-field,
+.today-custom-panel .today-soft-field + .today-soft-field,
+.do-fun-add-form .box-field + .box-field,
+.do-fun-add-form .today-soft-field + .today-soft-field {
+  margin-top: 0;
+}
+
+.soft-panel--book-popup .book-modal__block,
+.page--book-portal .soft-panel .book-modal__block {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.soft-panel--book-popup .book-modal__hotel-dates {
+  gap: 10px;
+}
+
+/* Legacy dashed square add tile (unused) */
 .today-add-tile {
   display: flex;
   flex: 1;

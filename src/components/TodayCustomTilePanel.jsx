@@ -148,11 +148,9 @@ export default function TodayCustomTilePanel({ tile, onChange, onDelete, embedde
 
   const showGif = tile.type === 'gif' && url && isLikelyImageUrl(url)
 
-  const fieldClass = embedded ? 'today-soft-field' : 'today-add-tile-modal__field'
-  const fieldLabelClass = embedded ? 'today-soft-field__label' : 'today-add-tile-modal__label'
-  const textareaClass = embedded
-    ? 'input input--line today-soft-field__textarea today-custom-panel__note'
-    : 'input input--line today-add-tile-modal__textarea today-custom-panel__note'
+  const fieldClass = 'today-soft-field'
+  const fieldLabelClass = 'today-soft-field__label'
+  const textareaClass = 'input input--line today-soft-field__textarea today-custom-panel__note'
 
   return (
     <div className={`today-custom-panel today-custom-panel--${tile.type}${embedded ? ' today-custom-panel--embedded' : ''}`}>
@@ -224,7 +222,7 @@ export default function TodayCustomTilePanel({ tile, onChange, onDelete, embedde
           <label className={fieldClass}>
             <span className={fieldLabelClass}>Note</span>
             <textarea
-              className={embedded ? 'input input--line today-soft-field__textarea' : 'input input--line today-add-tile-modal__textarea'}
+              className="input input--line today-soft-field__textarea"
               value={body}
               onChange={(e) => setBody(e.target.value)}
               onBlur={handleBodyBlur}

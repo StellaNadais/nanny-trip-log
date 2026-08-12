@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import OutingsLocationsPanel from './OutingsLocationsPanel'
 import TodayPanelModal from './TodayPanelModal'
 
@@ -13,10 +14,14 @@ export default function OutingsLocationsModal({
   onAddCustomPlace,
   onRemoveCustomPlace,
 }) {
+  const [locationsOpen, setLocationsOpen] = useState(false)
+
   return (
     <TodayPanelModal open={open} onClose={onClose} eyebrow="Saved nicknames" title="Locations">
       <OutingsLocationsPanel
         customPlaces={customPlaces}
+        locationsOpen={locationsOpen}
+        onToggleLocationsOpen={() => setLocationsOpen((o) => !o)}
         placeNickname={placeNickname}
         onPlaceNicknameChange={onPlaceNicknameChange}
         placeRoundTrip={placeRoundTrip}

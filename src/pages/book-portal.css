@@ -378,10 +378,6 @@
     0 4px 18px color-mix(in srgb, var(--accent) 7%, transparent);
 }
 
-.page--book-portal .soft-panel--events-box {
-  padding: 0;
-}
-
 .page--book-portal .events-board__title,
 .page--book-portal .soft-panel__title {
   margin: 0 0 8px;

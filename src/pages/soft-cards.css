@@ -465,6 +465,47 @@
   border-top-color: color-mix(in srgb, var(--line-soft) 80%, transparent);
 }
 
+.soft-panel--events-popup .world-cup-panel__meta,
+.soft-panel--events-list .world-cup-panel__meta {
+  margin: 0 0 4px;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+}
+
+.soft-panel--events-popup .world-cup-panel__item--brazil .events__item-title,
+.soft-panel--events-list .world-cup-panel__item--brazil .events__item-title {
+  color: #006b2d;
+}
+
+.soft-panel--events-popup .world-cup-panel__item--argentina .events__item-title,
+.soft-panel--events-list .world-cup-panel__item--argentina .events__item-title {
+  color: #4a7ab0;
+}
+
+.soft-panel--events-popup .world-cup-panel__item--brazil,
+.soft-panel--events-popup .world-cup-panel__item--argentina,
+.soft-panel--events-list .world-cup-panel__item--brazil,
+.soft-panel--events-list .world-cup-panel__item--argentina {
+  margin-left: -2px;
+  margin-right: -2px;
+  padding-left: 2px;
+  padding-right: 2px;
+  border-left: 2px solid transparent;
+}
+
+.soft-panel--events-popup .world-cup-panel__item--brazil,
+.soft-panel--events-list .world-cup-panel__item--brazil {
+  border-left-color: #009c3b;
+}
+
+.soft-panel--events-popup .world-cup-panel__item--argentina,
+.soft-panel--events-list .world-cup-panel__item--argentina {
+  border-left-color: #6cace4;
+}
+
 /* Overview — thank-you gradient + flush list (no stat boxes) */
 .soft-panel--overview .soft-panel__hero .soft-panel__lede {
   margin: 0;
@@ -1066,30 +1107,6 @@
   flex-direction: column;
   gap: 10px;
   padding: 4px 0 8px;
-}
-
-.do-fun-add-form__field {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  margin: 0;
-}
-
-.do-fun-add-form__field--day {
-  max-width: 6rem;
-}
-
-.do-fun-add-form__label {
-  font-size: 0.625rem;
-  font-weight: 600;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  color: var(--ink-muted);
-}
-
-.do-fun-add-form__input {
-  width: 100%;
-  box-sizing: border-box;
 }
 
 .do-fun-add-form__actions {
@@ -1760,26 +1777,6 @@
   padding-bottom: 12px;
 }
 
-.about-today-modal--soft-popup .today-soft-field {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.about-today-modal--soft-popup .today-soft-field__label {
-  font-family: var(--font-ui);
-  font-size: 0.6875rem;
-  font-weight: 600;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--ink-muted);
-}
-
-.about-today-modal--soft-popup .today-soft-field__textarea {
-  min-height: 5rem;
-  resize: vertical;
-}
-
 .about-today-modal--soft-popup .grocery-list-panel__composer {
   display: flex;
   flex-wrap: wrap;
@@ -1790,6 +1787,63 @@
 .about-today-modal--soft-popup .grocery-list-panel__input {
   flex: 1;
   min-width: 10rem;
+}
+
+.about-today-modal--soft-popup .thanks__list {
+  position: relative;
+  z-index: 1;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+}
+
+.about-today-modal--soft-popup .thanks__list--flush {
+  gap: 0;
+}
+
+.about-today-modal--soft-popup .thanks__item {
+  margin: 0;
+  padding: 0;
+}
+
+.about-today-modal--soft-popup .thanks__list--flush .thanks__item + .thanks__item .thanks__item-head {
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid color-mix(in srgb, var(--line-soft) 80%, transparent);
+}
+
+.about-today-modal--soft-popup .thanks__item-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 2px;
+}
+
+.about-today-modal--soft-popup .thanks__item-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.35rem;
+  height: 1.35rem;
+  flex-shrink: 0;
+  font-size: 0.75rem;
+  line-height: 1;
+  color: color-mix(in srgb, var(--accent) 72%, var(--ink-muted));
+}
+
+.about-today-modal--soft-popup .thanks__item-title {
+  font-size: 0.875rem;
+  font-weight: 600;
+  line-height: 1.35;
+  color: var(--ink);
+}
+
+.about-today-modal--soft-popup .thanks__item-note {
+  margin: 0 0 0 1.75rem;
+  font-size: 0.8125rem;
+  line-height: 1.45;
 }
 
 .about-today-modal--soft-popup .parent-reminders-panel--flush .parent-reminders-panel__notes,
@@ -1807,23 +1861,26 @@
   min-width: 0;
 }
 
-.about-today-modal--soft-popup .today-add-tile__type-grid {
+.about-today-modal--soft-popup .today-add-tile__type-list {
   padding: 0;
 }
 
-.about-today-modal--soft-popup .today-add-tile__type-card {
+.about-today-modal--soft-popup .today-add-tile__type-row {
+  display: block;
   width: 100%;
   margin: 0;
+  padding: 0;
   border: none;
+  background: transparent;
   text-align: left;
   cursor: pointer;
   font: inherit;
   color: inherit;
 }
 
-.about-today-modal--soft-popup .today-add-tile__type-hint {
-  font-size: 0.75rem;
-  line-height: 1.35;
+.about-today-modal--soft-popup .today-add-tile__type-row:hover .thanks__item-title,
+.about-today-modal--soft-popup .today-add-tile__type-row:focus-visible .thanks__item-title {
+  color: var(--accent);
 }
 
 .about-today-modal--soft-popup .today-add-tile__form {
