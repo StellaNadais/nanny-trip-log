@@ -8,9 +8,15 @@ export default function GroceryListPanel({
   autoFocus = false,
   placeholder = 'Milk, bananas, diapers…',
   flush = false,
+  addTitle = 'Add items',
+  listTitle = 'To get',
+  idPrefix = 'grocery',
 }) {
   const [draft, setDraft] = useState('')
   const inputRef = useRef(null)
+  const addLabelId = `${idPrefix}-add-label`
+  const listLabelId = `${idPrefix}-list-label`
+  const inputId = `${idPrefix}-add-input`
 
   const sorted = useMemo(() => {
     const open = items.filter((t) => !t.done)
@@ -68,20 +74,20 @@ export default function GroceryListPanel({
     <>
       <section
         className={`${sectionClass}${flush ? ' journal-panel--meals' : ' journal-panel journal-panel--meals'}`}
-        aria-labelledby="grocery-add-label"
+        aria-labelledby={addLabelId}
       >
         <div className={headClass}>
-          <span className={titleClass} id="grocery-add-label">
-            Add items
+          <span className={titleClass} id={addLabelId}>
+            {addTitle}
           </span>
         </div>
         <div className={bodyClass}>
           <form className="grocery-list-panel__composer" onSubmit={onSubmit}>
-            <label className={fieldClass} htmlFor="grocery-add-input">
+            <label className={fieldClass} htmlFor={inputId}>
               <span className={fieldLabelClass}>Item</span>
               <input
                 ref={inputRef}
-                id="grocery-add-input"
+                id={inputId}
                 type="text"
                 className={inputClass}
                 value={draft}
@@ -89,7 +95,7 @@ export default function GroceryListPanel({
                 onKeyDown={onKeyDown}
                 onPaste={onPaste}
                 placeholder={placeholder}
-                aria-labelledby="grocery-add-label"
+                aria-labelledby={addLabelId}
                 enterKeyHint="done"
                 autoComplete="off"
               />
@@ -107,11 +113,11 @@ export default function GroceryListPanel({
 
       <section
         className={`${sectionClass}${flush ? '' : ' journal-panel journal-panel--about'}`}
-        aria-labelledby="grocery-list-label"
+        aria-labelledby={listLabelId}
       >
         <div className={headClass}>
-          <span className={titleClass} id="grocery-list-label">
-            To get
+          <span className={titleClass} id={listLabelId}>
+            {listTitle}
             {openCount > 0 ? (
               <span className="grocery-list-panel__open-count muted"> · {openCount}</span>
             ) : null}

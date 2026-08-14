@@ -1,3 +1,5 @@
+import { notifyCloudDataChanged } from './cloudSync'
+
 const KEY = 'nanny-receipt-settings-v1'
 
 const DEFAULT_VENMO_HANDLE = '@stella-nadais'
@@ -54,6 +56,7 @@ export function saveReceiptSettings(settings) {
   }
   try {
     localStorage.setItem(KEY, JSON.stringify(next))
+    notifyCloudDataChanged(KEY)
   } catch {
     /* ignore quota */
   }

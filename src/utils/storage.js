@@ -1,3 +1,5 @@
+import { notifyCloudDataChanged } from './cloudSync'
+
 const KEY = 'nanny-trip-log-v1'
 
 export function loadState() {
@@ -13,6 +15,7 @@ export function loadState() {
 export function saveState(state) {
   try {
     localStorage.setItem(KEY, JSON.stringify(state))
+    notifyCloudDataChanged(KEY)
   } catch {
     /* ignore quota */
   }

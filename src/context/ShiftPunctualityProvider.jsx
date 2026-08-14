@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
 import { loadShiftEntries, saveShiftEntries } from '../utils/shiftStorage'
+import { CLOUD_DATA_APPLIED_EVENT } from '../utils/cloudSync'
 import { ShiftPunctualityContext } from './shiftPunctualityContext'
 
 function newId() {
@@ -12,6 +13,12 @@ export function ShiftPunctualityProvider({ children }) {
   useEffect(() => {
     saveShiftEntries(entries)
   }, [entries])
+
+  useEffect(() => {
+    const refreshEntries = () => setEntries(loadShiftEntries())
+    window.addEventListener(CLOUD_DATA_APPLIED_EVENT, refreshEntries)
+    return () => window.removeEventListener(CLOUD_DATA_APPLIED_EVENT, refreshEntries)
+  }, [])
 
   const addEntry = useCallback((payload) => {
     setEntries((prev) => [

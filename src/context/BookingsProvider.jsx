@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
 import { loadBookings, saveBookings } from '../utils/bookingsStorage'
+import { CLOUD_DATA_APPLIED_EVENT } from '../utils/cloudSync'
 import { BookingsContext } from './bookingsContext'
 
 function newId() {
@@ -12,6 +13,12 @@ export function BookingsProvider({ children }) {
   useEffect(() => {
     saveBookings(bookings)
   }, [bookings])
+
+  useEffect(() => {
+    const refreshBookings = () => setBookings(loadBookings())
+    window.addEventListener(CLOUD_DATA_APPLIED_EVENT, refreshBookings)
+    return () => window.removeEventListener(CLOUD_DATA_APPLIED_EVENT, refreshBookings)
+  }, [])
 
   const addBooking = useCallback((payload) => {
     const booking = {

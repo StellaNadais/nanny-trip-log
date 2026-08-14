@@ -34,9 +34,6 @@ export default function ScheduleOverviewModal({
         <ul className="thanks__list thanks__list--flush schedule-overview-stats">
           <li className="thanks__item">
             <div className="thanks__item-head">
-              <span className="thanks__item-icon" aria-hidden>
-                ◎
-              </span>
               <strong className="thanks__item-title">In queue</strong>
               <span className="schedule-overview-stats__value">{queueCount}</span>
             </div>
@@ -44,9 +41,6 @@ export default function ScheduleOverviewModal({
           </li>
           <li className="thanks__item">
             <div className="thanks__item-head">
-              <span className="thanks__item-icon" aria-hidden>
-                ✦
-              </span>
               <strong className="thanks__item-title">Confirmed</strong>
               <span className="schedule-overview-stats__value">{confirmedCount}</span>
             </div>

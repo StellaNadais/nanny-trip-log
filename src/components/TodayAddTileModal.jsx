@@ -11,9 +11,6 @@ function TypePicker({ onPick }) {
         <li key={type.id} className="thanks__item">
           <button type="button" className="today-add-tile__type-row" onClick={() => onPick(type.id)}>
             <div className="thanks__item-head">
-              <span className="thanks__item-icon" aria-hidden>
-                {type.icon}
-              </span>
               <strong className="thanks__item-title">{type.label}</strong>
             </div>
             <p className="thanks__item-note muted">{type.hint}</p>
@@ -64,9 +61,7 @@ function CreateForm({ typeId, onBack, onCreated, onClose }) {
       <button type="button" className="btn btn--ghost today-add-tile__back" onClick={onBack}>
         ← Types
       </button>
-      <p className="today-add-tile__type-label">
-        <span aria-hidden>{typeMeta?.icon}</span> {typeMeta?.label}
-      </p>
+      <p className="today-add-tile__type-label">{typeMeta?.label}</p>
 
       <label className="today-soft-field">
         <span className="today-soft-field__label">Box title</span>

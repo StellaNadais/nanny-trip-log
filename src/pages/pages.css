@@ -5705,9 +5705,12 @@
   transform: translateY(-1px);
 }
 
-.journal-mood-bar__emoji {
-  font-size: 1.35rem;
-  line-height: 1;
+.journal-mood-bar__emoji,
+.journal-mood-bar__label {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: 0.01em;
 }
 
 /* About today + meals today — same panel shell as mood bar */

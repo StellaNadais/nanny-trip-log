@@ -565,7 +565,7 @@
 }
 
 .soft-panel--overview .thanks__item-note {
-  margin: 0 0 0 1.75rem;
+  margin: 0;
   font-size: 0.8125rem;
   line-height: 1.45;
 }
@@ -658,6 +658,48 @@
   font-size: 0.8125rem;
 }
 
+/* Backpack — thank-you gradient + flush pack list */
+.soft-panel--backpack .soft-panel__hero .soft-panel__lede {
+  margin: 0;
+  padding: 0;
+}
+
+.soft-panel--backpack .summer-backpack {
+  position: relative;
+  z-index: 1;
+}
+
+.soft-panel--backpack .summer-backpack__progress {
+  margin: 0 0 10px;
+  font-size: 0.8125rem;
+  line-height: 1.4;
+}
+
+.soft-panel--backpack .summer-backpack__list {
+  margin: 0;
+  padding: 0;
+}
+
+.soft-panel--backpack .summer-backpack__label {
+  width: 100%;
+  cursor: pointer;
+}
+
+.soft-panel--backpack .summer-backpack__label input {
+  flex: 0 0 auto;
+  width: 1rem;
+  height: 1rem;
+  margin: 0;
+  accent-color: color-mix(in srgb, var(--accent) 78%, #5c2d6e);
+}
+
+.soft-panel--backpack .summer-backpack__item--packed .thanks__item-title {
+  color: var(--ink-muted);
+  font-weight: 500;
+  text-decoration: line-through;
+  text-decoration-color: color-mix(in srgb, var(--accent) 42%, transparent);
+}
+
 /* Do fun — thank-you gradient + flush list (no celebration cards) */
 .soft-panel--do-fun .soft-panel__hero .soft-panel__lede {
   margin: 0;
@@ -717,7 +759,7 @@
 }
 
 .soft-panel--do-fun .thanks__item-note {
-  margin: 0 0 0 1.75rem;
+  margin: 0;
   font-size: 0.8125rem;
   line-height: 1.45;
 }
@@ -804,7 +846,7 @@
 }
 
 .schedule-do-fun-prep-item__todos {
-  margin: 4px 0 0 1.75rem;
+  margin: 4px 0 0;
   padding-left: 1rem;
   color: var(--ink-muted);
   font-size: 0.8125rem;
@@ -1735,14 +1777,14 @@
   min-height: 0;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
-  padding: 0 14px 12px;
+  padding: 4px 16px 16px;
   display: flex;
   flex-direction: column;
-  gap: 0;
+  gap: 4px;
 }
 
 .about-today-modal--soft-popup .today-soft-section {
-  padding: 12px 0 0;
+  padding: 14px 0 0;
   margin: 0;
   border: none;
   border-top: 1px solid color-mix(in srgb, var(--line-soft) 80%, transparent);
@@ -1753,6 +1795,11 @@
 .about-today-modal--soft-popup .today-soft-section:first-child {
   border-top: none;
   padding-top: 0;
+}
+
+.about-today-modal--soft-popup .today-soft-section .soft-panel__empty,
+.about-today-modal--soft-popup .today-soft-section .parent-reminders-panel--flush {
+  padding: 0;
 }
 
 .about-today-modal--soft-popup .today-soft-section__head {
@@ -1841,14 +1888,14 @@
 }
 
 .about-today-modal--soft-popup .thanks__item-note {
-  margin: 0 0 0 1.75rem;
+  margin: 0;
   font-size: 0.8125rem;
   line-height: 1.45;
 }
 
 .about-today-modal--soft-popup .parent-reminders-panel--flush .parent-reminders-panel__notes,
 .about-today-modal--soft-popup .parent-reminders-panel--flush .parent-reminders-panel__list {
-  margin-left: 1.75rem;
+  margin-left: 0;
 }
 
 .about-today-modal--soft-popup .parent-reminders-panel__head--flush {

@@ -1,7 +1,7 @@
 import { TODAY_TILE_TYPE_MAP } from '../data/todayTileTypes'
 import { isLikelyImageUrl, todayTileCount, todayTilePreviewText } from '../utils/todayCustomTilesStorage'
 
-/** Square tile preview for a user-created Today board box. */
+/** Square box preview for a user-created Today board box. */
 export default function TodayCustomTilePreview({ tile, onClick }) {
   const typeMeta = TODAY_TILE_TYPE_MAP[tile.type]
   const preview = todayTilePreviewText(tile)
@@ -18,16 +18,13 @@ export default function TodayCustomTilePreview({ tile, onClick }) {
         <span className="today-custom-tile__media" aria-hidden>
           <img src={tile.url} alt="" loading="lazy" />
         </span>
-      ) : (
-        <span className="today-custom-tile__icon" aria-hidden>
-          {typeMeta?.icon ?? '✦'}
-        </span>
-      )}
+      ) : null}
       {count > 0 ? (
         <span className="today-custom-tile__count" aria-hidden>
           {count > 99 ? '99+' : count}
         </span>
       ) : null}
+      <p className="today-custom-tile__type muted">{typeMeta?.label ?? 'Box'}</p>
       <p className="today-custom-tile__preview">
         {preview || (
           <span className="today-custom-tile__hint muted">
@@ -35,7 +32,7 @@ export default function TodayCustomTilePreview({ tile, onClick }) {
           </span>
         )}
       </p>
-      <span className="today-custom-tile__cta">Open →</span>
+      <span className="today-custom-tile__cta">Open</span>
     </button>
   )
 }

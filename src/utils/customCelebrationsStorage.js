@@ -1,3 +1,5 @@
+import { notifyCloudDataChanged } from './cloudSync'
+
 const KEY = 'nanny-custom-celebrations-v1'
 
 export const CUSTOM_CELEBRATIONS_UPDATED_EVENT = 'nanny-custom-celebrations-updated'
@@ -53,6 +55,7 @@ export function loadCustomCelebrations() {
 /** @param {CustomCelebration[]} items */
 export function saveCustomCelebrations(items) {
   localStorage.setItem(KEY, JSON.stringify(items.map(normalize).filter(Boolean)))
+  notifyCloudDataChanged(KEY)
   window.dispatchEvent(new CustomEvent(CUSTOM_CELEBRATIONS_UPDATED_EVENT))
 }
 

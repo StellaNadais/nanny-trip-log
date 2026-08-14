@@ -1,4 +1,5 @@
 import { PLACES, HOME_PLACE_ID } from '../data/tripPlaces'
+import { notifyCloudDataChanged } from './cloudSync'
 
 const KEY = 'nanny-outings-places-v3'
 const LEGACY_KEYS = ['nanny-outings-places-v2', 'nanny-outings-places-v1']
@@ -120,6 +121,7 @@ export function loadOutingsPlaces() {
     if (pruned.length !== list.length) {
       try {
         localStorage.setItem(KEY, JSON.stringify(pruned))
+        notifyCloudDataChanged(KEY)
       } catch {
         /* quota */
       }
@@ -138,6 +140,7 @@ export function saveOutingsPlaces(places) {
   const normalized = pruned.map(normalizeRow).filter(Boolean)
   try {
     localStorage.setItem(KEY, JSON.stringify(normalized))
+    notifyCloudDataChanged(KEY)
   } catch {
     /* quota */
   }

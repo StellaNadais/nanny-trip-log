@@ -8,7 +8,6 @@ import {
 } from '../utils/scheduleCelebrations'
 import { CUSTOM_CELEBRATIONS_UPDATED_EVENT } from '../utils/customCelebrationsStorage'
 import ScheduleFunCelebrationList from './ScheduleFunCelebrationList'
-import { softCardIcon } from './SoftCardPanel'
 
 function CelebrationsFlipFaces({
   showWeeks,
@@ -105,12 +104,9 @@ function CelebrationsFlipFaces({
                       Week of {week.weekLabel}
                     </h3>
                     <ul className="thanks__list thanks__list--flush schedule-do-fun-prep-list">
-                      {week.celebrations.map((celebration, index) => (
+                      {week.celebrations.map((celebration) => (
                         <li key={celebration.id} className="thanks__item schedule-do-fun-prep-item">
                           <div className="thanks__item-head">
-                            <span className="thanks__item-icon" aria-hidden>
-                              {softCardIcon(index)}
-                            </span>
                             <strong className="thanks__item-title">{celebration.title}</strong>
                           </div>
                           {celebration.activities.length > 0 ? (

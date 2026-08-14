@@ -5,7 +5,7 @@ import {
   removeCustomTodayTile,
   updateCustomTodayTile,
 } from '../utils/todayCustomTilesStorage'
-import { SoftCard, softCardIcon, softCardTone } from './SoftCardPanel'
+import { SoftCard, softCardTone } from './SoftCardPanel'
 
 function IdeaEditor({ items, onChange, fieldClass = 'today-soft-field', fieldLabelClass = 'today-soft-field__label' }) {
   const [text, setText] = useState('')
@@ -40,7 +40,6 @@ function IdeaEditor({ items, onChange, fieldClass = 'today-soft-field', fieldLab
             <SoftCard
               key={item.id}
               index={index}
-              icon={softCardIcon(index)}
               tone={softCardTone(index)}
               title={item.text}
               className="soft-panel__card--custom"
@@ -156,9 +155,7 @@ export default function TodayCustomTilePanel({ tile, onChange, onDelete, embedde
     <div className={`today-custom-panel today-custom-panel--${tile.type}${embedded ? ' today-custom-panel--embedded' : ''}`}>
       {!embedded ? (
         <div className="today-custom-panel__head">
-          <p className="today-custom-panel__eyebrow">
-            <span aria-hidden>{typeMeta?.icon}</span> {typeMeta?.eyebrow ?? typeMeta?.label}
-          </p>
+          <p className="today-custom-panel__eyebrow">{typeMeta?.eyebrow ?? typeMeta?.label}</p>
           <input
             type="text"
             className="today-custom-panel__title input input--line"

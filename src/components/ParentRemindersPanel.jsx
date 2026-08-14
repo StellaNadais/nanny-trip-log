@@ -28,7 +28,6 @@ export default function ParentRemindersPanel({ dateLabel, groups, emptyHint, flu
                 flush ? 'thanks__item-head parent-reminders-panel__head--flush' : 'parent-reminders-panel__group-head'
               }
             >
-              {flush ? <span className="thanks__item-icon" aria-hidden>◎</span> : null}
               <strong
                 className={flush ? 'thanks__item-title parent-reminders-panel__family' : 'parent-reminders-panel__family'}
               >

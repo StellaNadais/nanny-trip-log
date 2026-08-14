@@ -3,6 +3,7 @@ import { ShiftPunctualityProvider } from './context/ShiftPunctualityProvider'
 import { KidJournalProvider } from './context/KidJournalProvider'
 import { BookingsProvider } from './context/BookingsProvider'
 import { ParentRemindersProvider } from './context/ParentRemindersProvider'
+import { CloudSyncProvider } from './context/CloudSyncProvider'
 import WelcomePage from './pages/WelcomePage'
 import BookPage from './pages/BookPage'
 import SchedulePage from './pages/SchedulePage'
@@ -31,6 +32,7 @@ import './tech-type.css'
 
 export default function App() {
   return (
+    <CloudSyncProvider>
     <ShiftPunctualityProvider>
       <KidJournalProvider>
         <BookingsProvider>
@@ -58,5 +60,6 @@ export default function App() {
         </BookingsProvider>
       </KidJournalProvider>
     </ShiftPunctualityProvider>
+    </CloudSyncProvider>
   )
 }

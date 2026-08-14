@@ -3,7 +3,6 @@ export const TODAY_TILE_TYPES = [
   {
     id: 'note',
     label: 'Notes',
-    icon: '📝',
     hint: 'Quick thoughts, lists, or anything on your mind.',
     previewPlaceholder: 'Tap to write…',
     eyebrow: 'Your note',
@@ -11,7 +10,6 @@ export const TODAY_TILE_TYPES = [
   {
     id: 'link',
     label: 'Link',
-    icon: '🔗',
     hint: 'Save a URL — article, recipe, or reference.',
     previewPlaceholder: 'Tap to open…',
     eyebrow: 'Saved link',
@@ -19,7 +17,6 @@ export const TODAY_TILE_TYPES = [
   {
     id: 'gif',
     label: 'GIF',
-    icon: '✨',
     hint: 'Paste a GIF image URL for a little joy.',
     previewPlaceholder: 'Add a GIF URL…',
     eyebrow: 'GIF box',
@@ -27,7 +24,6 @@ export const TODAY_TILE_TYPES = [
   {
     id: 'ideas',
     label: 'Ideas board',
-    icon: '📌',
     hint: 'Pinterest-style pins — crafts, outings, inspo.',
     previewPlaceholder: 'Collect ideas…',
     eyebrow: 'Ideas board',

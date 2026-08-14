@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
 import { loadKidJournalEntries, saveKidJournalEntries } from '../utils/kidJournalStorage'
+import { CLOUD_DATA_APPLIED_EVENT } from '../utils/cloudSync'
 import { KidJournalContext } from './kidJournalContext'
 
 function newId() {
@@ -12,6 +13,12 @@ export function KidJournalProvider({ children }) {
   useEffect(() => {
     saveKidJournalEntries(entries)
   }, [entries])
+
+  useEffect(() => {
+    const refreshEntries = () => setEntries(loadKidJournalEntries())
+    window.addEventListener(CLOUD_DATA_APPLIED_EVENT, refreshEntries)
+    return () => window.removeEventListener(CLOUD_DATA_APPLIED_EVENT, refreshEntries)
+  }, [])
 
   const addEntry = useCallback((payload) => {
     setEntries((prev) => [

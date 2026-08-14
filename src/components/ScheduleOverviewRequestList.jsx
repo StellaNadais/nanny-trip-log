@@ -50,7 +50,6 @@ export default function ScheduleOverviewRequestList({
   const headClass = board
     ? 'workspace-board-list__head schedule-overview-request__head'
     : 'thanks__item-head schedule-overview-request__head'
-  const iconClass = board ? 'workspace-board-list__icon' : 'thanks__item-icon'
   const titleClass = board ? 'workspace-board-list__title' : 'thanks__item-title'
   const noteClass = board ? 'workspace-board-list__note muted' : 'thanks__item-note muted'
 
@@ -63,9 +62,6 @@ export default function ScheduleOverviewRequestList({
         return (
           <li key={gig.id} className={itemClass}>
             <div className={headClass}>
-              <span className={iconClass} aria-hidden>
-                ◎
-              </span>
               <strong className={titleClass}>{gig.familyName || 'Family'}</strong>
               <time className="schedule-overview-request__date muted" dateTime={gig.dateISO}>
                 {formatGigDate(gig.dateISO)}

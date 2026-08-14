@@ -13,9 +13,7 @@ export default function JournalMoodBar({ value, onChange }) {
       <div className="journal-mood-bar__head">
         <span className="journal-mood-bar__title">Mood</span>
         {picked ? (
-          <span className="journal-mood-bar__picked">
-            <span aria-hidden>{picked.emoji}</span> {picked.label}
-          </span>
+          <span className="journal-mood-bar__picked">{picked.label}</span>
         ) : (
           <span className="journal-mood-bar__picked journal-mood-bar__picked--empty muted">—</span>
         )}
@@ -27,7 +25,7 @@ export default function JournalMoodBar({ value, onChange }) {
         style={{ '--journal-mood-fill': activeIndex >= 0 ? `${((activeIndex + 1) / JOURNAL_MOODS.length) * 100}%` : '0%' }}
       >
         <div className="journal-mood-bar__fill" aria-hidden />
-        {JOURNAL_MOODS.map((m, i) => {
+        {JOURNAL_MOODS.map((m) => {
           const on = value === m.id
           return (
             <button
@@ -39,9 +37,7 @@ export default function JournalMoodBar({ value, onChange }) {
               title={m.label}
               onClick={() => onChange(on ? '' : m.id)}
             >
-              <span className="journal-mood-bar__emoji" aria-hidden>
-                {m.emoji}
-              </span>
+              <span className="journal-mood-bar__label">{m.label}</span>
             </button>
           )
         })}

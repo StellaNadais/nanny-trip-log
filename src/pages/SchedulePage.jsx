@@ -8,10 +8,13 @@ import { upcomingCelebrationsInMonth } from '../utils/scheduleCelebrations'
 import { CUSTOM_CELEBRATIONS_UPDATED_EVENT } from '../utils/customCelebrationsStorage'
 import ScheduleCalendarFlip from '../components/ScheduleCalendarFlip'
 import ScheduleFunModal from '../components/ScheduleFunModal'
+import ScheduleFunListTile from '../components/ScheduleFunListTile'
 import ScheduleOverviewModal from '../components/ScheduleOverviewModal'
+import ScheduleOverviewListTile from '../components/ScheduleOverviewListTile'
 import ScheduleOverviewRequestList from '../components/ScheduleOverviewRequestList'
-import TodaySpaceTile from '../components/TodaySpaceTile'
-import WorkspaceTileBoard from '../components/WorkspaceTileBoard'
+import ScheduleBackpackListTile from '../components/ScheduleBackpackListTile'
+import ScheduleTileStrip from '../components/ScheduleTileStrip'
+import SummerBackpackModal from '../components/SummerBackpackModal'
 
 function todayISO() {
   return toISODateLocal(new Date())
@@ -134,53 +137,6 @@ export default function SchedulePage() {
     return upcomingCelebrationsInMonth(y, m, todayISO())
   }, [y, m, customFunRev])
 
-  const overviewPreview = useMemo(() => {
-    const bits = [`${upcoming.length} in queue`, `${acceptedUpcoming.length} confirmed`]
-    if (upcoming[0]?.familyName) bits.push(upcoming[0].familyName)
-    return bits.join(' · ')
-  }, [upcoming.length, acceptedUpcoming.length, upcoming])
-
-  const funPreview = useMemo(() => {
-    if (!funCelebrations.length) return ''
-    return funCelebrations
-      .slice(0, 2)
-      .map((c) => c.title)
-      .join(', ')
-  }, [funCelebrations])
-
-  const overviewIcon = (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width="22"
-      height="22"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M3 3v18h18" />
-      <path d="M7 16l4-4 4 4 6-6" />
-    </svg>
-  )
-
-  const funIcon = (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width="22"
-      height="22"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
-    </svg>
-  )
-
   const requestsPanel = (
     <ScheduleOverviewRequestList
       upcoming={upcoming}
@@ -216,35 +172,33 @@ export default function SchedulePage() {
           />
         </section>
 
-        <WorkspaceTileBoard
-          workspaceId="schedule"
+        <ScheduleTileStrip
           tiles={[
             {
               id: 'overview',
-              label: 'Overview',
-              square: true,
               children: (
-                <TodaySpaceTile
-                  icon={overviewIcon}
-                  count={upcoming.length}
-                  preview={overviewPreview}
-                  hint="Queue and requests — tap to open."
+                <ScheduleOverviewListTile
+                  monthLabel={title}
+                  queueCount={upcoming.length}
+                  confirmedCount={acceptedUpcoming.length}
                   onClick={() => openSchedulePanel('overview')}
                 />
               ),
             },
             {
               id: 'fun',
-              label: 'Do fun',
-              square: true,
               children: (
-                <TodaySpaceTile
-                  icon={funIcon}
-                  count={funCelebrations.length}
-                  preview={funPreview}
-                  hint="Celebrations this month — tap to open."
+                <ScheduleFunListTile
+                  monthLabel={title}
+                  celebrations={funCelebrations}
                   onClick={() => openSchedulePanel('fun')}
                 />
+              ),
+            },
+            {
+              id: 'backpack',
+              children: (
+                <ScheduleBackpackListTile onClick={() => openSchedulePanel('backpack')} />
               ),
             },
           ]}
@@ -267,6 +221,8 @@ export default function SchedulePage() {
         year={y}
         monthIndex={m}
       />
+
+      <SummerBackpackModal open={openPanel === 'backpack'} onClose={closeSchedulePanel} />
     </div>
   )
 }

@@ -1,5 +1,4 @@
 import { removeCustomCelebration } from '../utils/customCelebrationsStorage'
-import { softCardIcon } from './SoftCardPanel'
 import DoFunAddForm from './DoFunAddForm'
 
 /** Flush celebration list — shared by Do fun modal and board tile. */
@@ -28,7 +27,6 @@ export default function ScheduleFunCelebrationList({
     : 'thanks__list thanks__list--flush schedule-do-fun-list'
   const itemClass = board ? 'workspace-board-list__item schedule-do-fun-item' : 'thanks__item schedule-do-fun-item'
   const headClass = board ? 'workspace-board-list__head schedule-do-fun-item__head' : 'thanks__item-head schedule-do-fun-item__head'
-  const iconClass = board ? 'workspace-board-list__icon' : 'thanks__item-icon'
   const titleClass = board ? 'workspace-board-list__title' : 'thanks__item-title'
   const noteClass = board ? 'workspace-board-list__note muted' : 'thanks__item-note muted'
 
@@ -38,12 +36,9 @@ export default function ScheduleFunCelebrationList({
         <p className="soft-panel__empty muted schedule-do-fun-list__empty">Nothing this month.</p>
       ) : (
         <ul className={listClass}>
-          {celebrations.map((celebration, index) => (
+          {celebrations.map((celebration) => (
             <li key={celebration.id} className={itemClass}>
               <div className={headClass}>
-                <span className={iconClass} aria-hidden>
-                  {softCardIcon(index)}
-                </span>
                 <strong className={titleClass}>{celebration.title}</strong>
                 <time className="schedule-do-fun-item__date muted" dateTime={celebration.dateISO}>
                   {celebration.dateLabel}
@@ -87,9 +82,6 @@ export default function ScheduleFunCelebrationList({
               onClick={() => onAddOpen?.()}
               aria-expanded={addOpen}
             >
-              <span className="schedule-do-fun-add__ico" aria-hidden>
-                +
-              </span>
               Add more fun
             </button>
           )}

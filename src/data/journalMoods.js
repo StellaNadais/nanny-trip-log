@@ -15,5 +15,5 @@ export function journalMoodLabel(id) {
 export function journalMoodDisplay(id) {
   const m = JOURNAL_MOODS.find((x) => x.id === id)
   if (!m) return ''
-  return `${m.emoji} ${m.label}`
+  return m.label
 }

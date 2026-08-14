@@ -5,14 +5,18 @@ import JournalMoodBar from './JournalMoodBar'
 import TodayPanelModal from './TodayPanelModal'
 
 /**
- * Popup for reporting the day with the child — soft-panel shell (matches Thank you).
+ * Popup for writing today's story — lead, body, and care notes in a soft panel.
  */
 export default function AboutTodayModal({
   open,
   onClose,
   dateLabel,
-  dayNotes,
-  onDayNotesChange,
+  routeText,
+  onRouteTextChange,
+  title,
+  onTitleChange,
+  paragraph,
+  onParagraphChange,
   mealsText,
   onMealsChange,
   mealSuggestions,
@@ -41,35 +45,59 @@ export default function AboutTodayModal({
     >
       <section className="soft-panel soft-panel--about-today soft-panel--book-popup" aria-labelledby="about-today-title">
         <div className="soft-panel__hero">
-          <p className="soft-panel__eyebrow">Report with child</p>
+          <p className="soft-panel__eyebrow">Today’s story</p>
           <h2 id="about-today-title" className="soft-panel__title">
             About today
           </h2>
           <p className="soft-panel__meta muted">{dateLabel}</p>
           <p className="soft-panel__lede">
-            Mood, outings, meals, nap, and notes — text parents when you&apos;re ready.
+            Begin with a first sentence. It will become today&apos;s lead.
           </p>
         </div>
 
         <div className="soft-panel__body soft-panel__body--about-today">
           <JournalMoodBar value={mood} onChange={onMoodChange} />
 
-          <section className="about-today__section journal-panel journal-panel--about" aria-label="Day notes">
+          <section className="about-today__section journal-panel journal-panel--about" aria-label="Today’s story">
             <div className="about-today__section-head">
-              <span className="about-today__section-title" id="about-today-notes-label">
-                What we did
+              <span className="about-today__section-title" id="about-today-route-label">
+                Route
               </span>
             </div>
             <div className="about-today__section-body">
               <TripPlacesField
-                id="about-today-day-notes"
-                value={dayNotes}
-                onChange={onDayNotesChange}
-                placeholder="e.g. H's drop off, music, Commons"
-                aria-labelledby="about-today-notes-label"
+                id="about-today-route"
+                value={routeText}
+                onChange={onRouteTextChange}
+                placeholder="e.g. Home, park, library"
+                aria-labelledby="about-today-route-label"
                 nestedInAbout
               />
             </div>
+          </section>
+
+          <section className="about-today__section" aria-label="Lead and story">
+            <label className="box-field about-today-modal__field" htmlFor="about-today-lead">
+              <span>Lead</span>
+              <input
+                id="about-today-lead"
+                className="input input--line"
+                value={title}
+                onChange={(event) => onTitleChange(event.target.value)}
+                placeholder="A sunny park morning"
+              />
+            </label>
+            <label className="box-field about-today-modal__field" htmlFor="about-today-story">
+              <span>Story</span>
+              <textarea
+                id="about-today-story"
+                className="input input--area"
+                value={paragraph}
+                onChange={(event) => onParagraphChange(event.target.value)}
+                placeholder="Write the rest of today’s little story…"
+                rows={5}
+              />
+            </label>
           </section>
 
           <section className="about-today__section journal-panel journal-panel--meals" aria-label="Meals">

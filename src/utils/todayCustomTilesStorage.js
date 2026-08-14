@@ -1,3 +1,5 @@
+import { notifyCloudDataChanged } from './cloudSync'
+
 const KEY = 'nanny-today-custom-tiles-v1'
 
 export const TODAY_CUSTOM_TILES_UPDATED_EVENT = 'nanny-today-custom-tiles-updated'
@@ -76,6 +78,7 @@ export function loadCustomTodayTiles() {
 /** @param {TodayCustomTile[]} items */
 export function saveCustomTodayTiles(items) {
   localStorage.setItem(KEY, JSON.stringify(items.map(normalize).filter(Boolean)))
+  notifyCloudDataChanged(KEY)
   window.dispatchEvent(new CustomEvent(TODAY_CUSTOM_TILES_UPDATED_EVENT))
 }
 

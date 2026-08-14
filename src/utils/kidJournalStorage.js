@@ -1,3 +1,5 @@
+import { notifyCloudDataChanged } from './cloudSync'
+
 const KEY = 'nanny-kid-journal-v1'
 
 export function loadKidJournalEntries() {
@@ -14,6 +16,7 @@ export function loadKidJournalEntries() {
 export function saveKidJournalEntries(entries) {
   try {
     localStorage.setItem(KEY, JSON.stringify(entries))
+    notifyCloudDataChanged(KEY)
   } catch {
     /* ignore */
   }
