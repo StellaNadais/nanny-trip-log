@@ -700,7 +700,7 @@
   text-decoration-color: color-mix(in srgb, var(--accent) 42%, transparent);
 }
 
-/* Do fun — thank-you gradient + flush list (no celebration cards) */
+/* Do fun — thank-you gradient + sectioned list (matches Overview / Backpack) */
 .soft-panel--do-fun .soft-panel__hero .soft-panel__lede {
   margin: 0;
   padding: 0;
@@ -726,29 +726,21 @@
 }
 
 .soft-panel--do-fun .thanks__list--flush .thanks__item + .thanks__item .thanks__item-head {
-  margin-top: 8px;
-  padding-top: 8px;
+  margin-top: 10px;
+  padding-top: 10px;
   border-top: 1px solid color-mix(in srgb, var(--line-soft) 80%, transparent);
 }
 
 .soft-panel--do-fun .thanks__item-head {
   display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 4px 8px;
-  margin: 0 0 2px;
+  align-items: baseline;
+  flex-wrap: nowrap;
+  gap: 8px 10px;
+  margin: 0;
 }
 
 .soft-panel--do-fun .thanks__item-icon {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 1.35rem;
-  height: 1.35rem;
-  flex-shrink: 0;
-  font-size: 0.75rem;
-  line-height: 1;
-  color: color-mix(in srgb, var(--accent) 72%, var(--ink-muted));
+  display: none;
 }
 
 .soft-panel--do-fun .thanks__item-title {
@@ -770,20 +762,26 @@
 }
 
 .schedule-do-fun-item__date {
+  flex-shrink: 0;
   font-family: var(--font-mono, var(--font));
   font-size: 0.6875rem;
   font-weight: 600;
   letter-spacing: 0.04em;
+  white-space: nowrap;
 }
 
 .schedule-do-fun-item__remove {
-  margin-left: auto;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   min-width: 1.5rem;
   min-height: 1.5rem;
+  margin: 0;
   padding: 0;
-  border: none;
-  border-radius: 999px;
-  background: color-mix(in srgb, var(--line-soft) 55%, transparent);
+  border: 1px solid color-mix(in srgb, var(--line-soft) 85%, transparent);
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--paper2) 40%, var(--paper));
   color: var(--ink-muted);
   font-size: 1rem;
   line-height: 1;
@@ -791,29 +789,40 @@
 }
 
 .schedule-do-fun-item__remove:hover {
-  background: color-mix(in srgb, var(--accent) 18%, var(--line-soft));
+  border-color: color-mix(in srgb, var(--accent) 28%, var(--line-soft));
+  background: color-mix(in srgb, #ebe8f2 22%, #fff);
   color: var(--ink);
+}
+
+.schedule-do-fun-item__note {
+  margin: 4px 0 0;
+  padding: 0;
+  max-width: 38rem;
 }
 
 .schedule-do-fun-list__empty {
   margin: 0;
-  padding: 8px 0;
+  padding: 4px 0 2px;
+  text-align: left;
 }
 
 .schedule-do-fun-add {
-  margin-top: 10px;
-  padding-top: 10px;
-  border-top: 1px solid color-mix(in srgb, var(--line-soft) 80%, transparent);
+  margin: 0;
+  padding: 0;
+  border: none;
+}
+
+.schedule-do-fun-add--open {
+  padding: 0;
 }
 
 .schedule-do-fun-add__btn {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
   width: 100%;
   margin: 0;
-  padding: 10px 12px;
+  padding: 11px 14px;
   border: 1px dashed color-mix(in srgb, #c4bfd6 40%, var(--line-soft));
   border-radius: 10px;
   background: color-mix(in srgb, #ebe8f2 15%, #fff);
@@ -832,25 +841,20 @@
   outline: none;
 }
 
-.schedule-do-fun-add__ico {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 1.35rem;
-  height: 1.35rem;
-  border-radius: 999px;
-  background: color-mix(in srgb, #ddd8eb 30%, var(--paper2));
-  font-size: 1rem;
-  font-weight: 700;
-  line-height: 1;
+.schedule-do-fun-prep-item__head {
+  margin: 0;
 }
 
 .schedule-do-fun-prep-item__todos {
   margin: 4px 0 0;
-  padding-left: 1rem;
+  padding-left: 1.1rem;
   color: var(--ink-muted);
   font-size: 0.8125rem;
   line-height: 1.45;
+}
+
+.schedule-do-fun-prep-item__empty {
+  margin: 4px 0 0;
 }
 
 .soft-panel--do-fun .schedule-celebrations-flip--soft {
@@ -864,11 +868,14 @@
   min-height: 0;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
 }
 
 .soft-panel--do-fun .soft-panel__empty {
-  padding: 8px 0 12px;
-  text-align: center;
+  padding: 4px 0 8px;
+  text-align: left;
 }
 
 .soft-panel--do-fun .schedule-flip__calendar-footer {
@@ -876,12 +883,17 @@
 }
 
 .soft-panel--do-fun .schedule-flip__gigs-flip-btn--soft {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  width: 100%;
   border: 1px dashed color-mix(in srgb, #c4bfd6 40%, var(--line-soft));
   border-radius: 10px;
   background: color-mix(in srgb, #ebe8f2 15%, #fff);
   font-weight: 600;
   font-size: 0.8125rem;
-  padding: 10px 12px;
+  padding: 11px 14px;
   color: var(--ink);
   box-shadow: none;
 }
@@ -895,16 +907,25 @@
 .soft-panel--do-fun .schedule-flip__gigs-flip-btn-hint {
   color: var(--accent);
   opacity: 1;
+  font-weight: 600;
 }
 
 .soft-panel--do-fun .schedule-flip__back-top {
+  display: flex;
+  align-items: center;
+  gap: 10px;
   flex-shrink: 0;
-  margin-bottom: 8px;
+  margin-bottom: 4px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid color-mix(in srgb, var(--line-soft) 80%, transparent);
 }
 
 .soft-panel--do-fun .schedule-flip__back-heading {
+  margin: 0;
   font-size: 0.875rem;
   font-weight: 600;
+  line-height: 1.35;
+  color: var(--ink);
 }
 
 .soft-panel--do-fun .schedule-celebrations-flip__week-list--soft {
@@ -915,17 +936,18 @@
 
 .soft-panel--do-fun .schedule-celebrations-flip__week-block {
   margin: 0;
-  padding: 0;
+  padding: 0 0 4px;
   border-bottom: 1px solid color-mix(in srgb, var(--line-soft) 85%, transparent);
 }
 
 .soft-panel--do-fun .schedule-celebrations-flip__week-block:last-child {
   border-bottom: none;
+  padding-bottom: 0;
 }
 
 .soft-panel--do-fun .schedule-celebrations-flip__week-label {
   margin: 0;
-  padding: 10px 0 6px;
+  padding: 12px 0 8px;
   font-family: var(--font-mono, var(--font));
   font-size: 0.625rem;
   font-weight: 700;
@@ -940,6 +962,12 @@
   margin: 0;
   border-bottom: none;
   font-size: 0.8125rem;
+}
+
+.soft-panel--do-fun .schedule-do-fun-prep-list .schedule-do-fun-prep-item + .schedule-do-fun-prep-item .schedule-do-fun-prep-item__head {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid color-mix(in srgb, var(--line-soft) 80%, transparent);
 }
 
 .soft-panel--do-fun .schedule-celebrations-flip__week-block .schedule-celebrations-flip__prep-item:last-child,
@@ -969,7 +997,7 @@
 .about-today-modal .soft-panel--do-fun {
   display: flex;
   flex-direction: column;
-  min-height: min(52dvh, 24rem);
+  min-height: 0;
 }
 
 .about-today-modal--soft-popup .soft-panel--do-fun .schedule-flip__scene,
@@ -977,9 +1005,9 @@
 .about-today-modal .soft-panel--do-fun .schedule-flip__scene,
 .about-today-modal .soft-panel--do-fun .schedule-celebrations-flip__scene {
   flex: 1;
-  min-height: 14rem;
-  height: min(36dvh, 18rem);
-  max-height: none;
+  min-height: 12rem;
+  height: auto;
+  max-height: min(46dvh, 22rem);
 }
 
 .about-today-modal--soft-popup .soft-panel--do-fun .schedule-celebrations-flip--embedded,
@@ -988,7 +1016,7 @@
   min-height: 0;
   display: flex;
   flex-direction: column;
-  padding: 0 14px 8px;
+  padding: 0;
   position: relative;
   z-index: 2;
 }
@@ -1000,6 +1028,7 @@
   display: flex;
   flex-direction: column;
   height: 100%;
+  gap: 4px;
 }
 
 .about-today-modal--soft-popup .soft-panel--do-fun .schedule-flip__face,
@@ -1033,8 +1062,9 @@
   position: relative;
   z-index: 2;
   flex-shrink: 0;
-  padding-top: 8px;
+  padding-top: 10px;
   margin-top: auto;
+  border-top: 1px solid color-mix(in srgb, var(--line-soft) 80%, transparent);
 }
 
 .about-today-modal--soft-popup .soft-panel--do-fun .schedule-celebrations-flip__back-top,
@@ -1047,6 +1077,8 @@
 .about-today-modal .soft-panel--do-fun .schedule-flip__back-btn {
   position: relative;
   z-index: 2;
+  margin: 0;
+  padding: 4px 8px;
 }
 
 .about-today-modal--soft-popup .soft-panel--do-fun .schedule-flip__face--back,
@@ -1062,100 +1094,40 @@
   cursor: pointer;
 }
 
-/* Do fun — custom add + cards */
-.soft-panel__card--custom {
-  position: relative;
+.about-today-modal--soft-popup .soft-panel--do-fun .today-soft-section__body {
+  padding-bottom: 4px;
 }
 
-.do-fun-card__remove {
-  position: absolute;
-  top: 8px;
-  right: 8px;
-  z-index: 2;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 1.5rem;
-  height: 1.5rem;
-  margin: 0;
-  padding: 0;
-  border: 1px solid var(--line-soft);
-  border-radius: 999px;
-  background: var(--paper);
-  color: var(--ink-muted);
-  font-size: 1rem;
-  line-height: 1;
-  cursor: pointer;
-}
-
-.do-fun-card__remove:hover {
-  color: var(--ink);
-  border-color: color-mix(in srgb, var(--accent) 35%, var(--line));
-}
-
-.do-fun-add-cell {
-  list-style: none;
-  margin: 0;
-  min-height: 100%;
-}
-
-.do-fun-add-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  width: 100%;
-  min-height: 100%;
-  margin: 0;
-  padding: 14px 12px;
-  border: 1px dashed color-mix(in srgb, #c4bfd6 40%, var(--line-soft));
-  border-radius: 12px;
-  background: color-mix(in srgb, #ebe8f2 12%, #fff);
-  color: var(--ink);
-  font: inherit;
-  font-size: 0.8125rem;
-  font-weight: 600;
-  cursor: pointer;
-  box-sizing: border-box;
-  transition:
-    background 0.15s ease,
-    border-color 0.15s ease,
-    color 0.15s ease;
-}
-
-.do-fun-add-btn:hover,
-.do-fun-add-btn:focus-visible {
-  border-color: color-mix(in srgb, #c4bfd6 55%, var(--line));
-  background: color-mix(in srgb, #ebe8f2 22%, #fff);
-  color: var(--ink);
-  outline: none;
-}
-
-.do-fun-add-btn__ico {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 1.5rem;
-  height: 1.5rem;
-  border-radius: 999px;
-  background: color-mix(in srgb, #ddd8eb 30%, var(--paper2));
-  font-size: 1.1rem;
-  font-weight: 700;
-  line-height: 1;
-}
-
+/* Do fun — custom add form */
 .do-fun-add-form {
   display: flex;
   flex-direction: column;
   gap: 10px;
-  padding: 4px 0 8px;
+  padding: 0;
+}
+
+.do-fun-add-form__row {
+  display: flex;
+  align-items: stretch;
+  gap: 10px;
+  min-width: 0;
+}
+
+.do-fun-add-form__title {
+  flex: 1;
+  min-width: 0;
+}
+
+.do-fun-add-form__day {
+  flex: 0 0 5.5rem;
+  max-width: 5.5rem;
 }
 
 .do-fun-add-form__actions {
   display: flex;
   gap: 8px;
   justify-content: flex-end;
-  padding-top: 4px;
+  padding-top: 2px;
 }
 
 .about-today-modal .do-fun-add-form__submit {
@@ -1171,13 +1143,14 @@
   border-color: color-mix(in srgb, var(--ink-muted) 28%, var(--line-soft));
 }
 
-.soft-panel--do-fun .schedule-celebrations-flip__card-grid {
-  grid-template-columns: 1fr;
-}
+@media (max-width: 380px) {
+  .do-fun-add-form__row {
+    flex-direction: column;
+  }
 
-@media (min-width: 420px) {
-  .soft-panel--do-fun .schedule-celebrations-flip__card-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+  .do-fun-add-form__day {
+    flex-basis: auto;
+    max-width: 6rem;
   }
 }
 

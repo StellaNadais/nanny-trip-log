@@ -420,3 +420,229 @@
   color: var(--accent) !important;
   background: linear-gradient(168deg, #f3f1fa 0%, #f0f7fd 48%, #f7f4fb 100%) !important;
 }
+
+/* —— Shared Book / Schedule portal calendar chrome ——
+   White panel is the frame; embedded flip is borderless; quiet dashed grid. */
+.page--schedule.page--workspace .schedule__calendar-panel .schedule-calendar-flip--embedded,
+.page--book-portal.page--workspace .schedule__calendar-panel .schedule-calendar-flip--embedded,
+.page--schedule.page--kid-journal.schedule-dashboard
+  .schedule__calendar-panel
+  .schedule-calendar-flip--embedded,
+.page--schedule.schedule-dashboard .schedule__calendar-panel .schedule-calendar-flip--embedded {
+  border: none !important;
+  border-radius: 0;
+  background: transparent !important;
+  box-shadow: none !important;
+  min-height: 0;
+}
+
+.page--schedule.page--workspace .schedule__calendar-panel .schedule-calendar-flip--embedded .calendar__panel--book,
+.page--book-portal.page--workspace .schedule__calendar-panel .schedule-calendar-flip--embedded .calendar__panel--book,
+.page--schedule.page--kid-journal.schedule-dashboard
+  .schedule__calendar-panel
+  .schedule-calendar-flip--embedded
+  .calendar__panel--book {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+.page--schedule.page--workspace .schedule__calendar-panel .calendar__nav,
+.page--book-portal.page--workspace .schedule__calendar-panel .calendar__nav,
+.page--schedule.page--kid-journal.schedule-dashboard .schedule__calendar-panel .calendar__nav,
+.page--schedule.page--workspace .schedule__calendar-panel .schedule-flip__back-top,
+.page--book-portal.page--workspace .schedule__calendar-panel .schedule-flip__back-top,
+.page--schedule.page--kid-journal.schedule-dashboard .schedule__calendar-panel .schedule-flip__back-top {
+  background: color-mix(in srgb, var(--paper2) 40%, var(--paper)) !important;
+  border: 1px solid var(--line-soft) !important;
+  border-radius: 10px;
+  box-shadow: none !important;
+}
+
+.page--schedule.page--kid-journal.schedule-dashboard .schedule__calendar-panel .calendar__nav .btn--ghost,
+.page--schedule.page--kid-journal.schedule-dashboard .schedule__calendar-panel .schedule-flip__back-top .btn--ghost {
+  border: 1px solid transparent !important;
+  border-radius: 8px;
+  background: transparent !important;
+  box-shadow: none !important;
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.page--schedule .schedule__calendar-panel .schedule-calendar-flip .calendar__month,
+.page--book-portal .schedule__calendar-panel .schedule-calendar-flip .calendar__month {
+  font-family: var(--font-ui);
+  font-size: 0.9375rem;
+  font-weight: 700;
+  letter-spacing: 0;
+  color: var(--ink);
+}
+
+.page--schedule .schedule__calendar-panel .schedule-calendar-flip .calendar__wd,
+.page--book-portal .schedule__calendar-panel .schedule-calendar-flip .calendar__wd {
+  font-family: var(--font-ui);
+  font-size: 0.625rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+}
+
+.page--schedule .schedule__calendar-panel .schedule-calendar-flip .calendar__cell-num,
+.page--book-portal .schedule__calendar-panel .schedule-calendar-flip .calendar__cell-num {
+  font-family: var(--font-ui);
+  font-size: 0.875rem;
+  font-weight: 700;
+}
+
+.page--schedule .schedule__calendar-panel .schedule-calendar-flip .calendar__cell,
+.page--book-portal .schedule__calendar-panel .schedule-calendar-flip .calendar__cell {
+  border-style: dashed !important;
+  border-width: 1px !important;
+  border-color: color-mix(in srgb, var(--line) 28%, transparent) !important;
+  border-radius: 6px;
+  background: transparent !important;
+  box-shadow: none !important;
+  color: var(--ink);
+}
+
+.page--schedule .schedule__calendar-panel .schedule-calendar-flip .calendar__cell--empty,
+.page--book-portal .schedule__calendar-panel .schedule-calendar-flip .calendar__cell--empty {
+  border: none !important;
+  background: color-mix(in srgb, var(--accent-soft) 10%, transparent) !important;
+}
+
+.page--schedule .schedule__calendar-panel .schedule-calendar-flip .calendar__cell--past:not(.calendar__cell--booked):not(.calendar__cell--today),
+.page--book-portal .schedule__calendar-panel .schedule-calendar-flip .calendar__cell--past:not(.calendar__cell--booked):not(.calendar__cell--today) {
+  color: var(--ink-muted);
+  opacity: 0.55;
+  border-style: dotted !important;
+  border-color: color-mix(in srgb, var(--line) 16%, transparent) !important;
+}
+
+.page--schedule .schedule__calendar-panel .schedule-calendar-flip .calendar__cell--today,
+.page--book-portal .schedule__calendar-panel .schedule-calendar-flip .calendar__cell--today {
+  border-style: solid !important;
+  border-width: 1.5px !important;
+  border-color: var(--accent) !important;
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--accent-soft) 35%, var(--paper)) !important;
+  box-shadow: none !important;
+  color: var(--accent);
+  font-weight: 700;
+}
+
+.page--schedule .schedule__calendar-panel .schedule-calendar-flip .calendar__cell--booked,
+.page--book-portal .schedule__calendar-panel .schedule-calendar-flip .calendar__cell--booked {
+  border-style: solid !important;
+  border-width: 1px !important;
+  border-color: color-mix(in srgb, var(--accent) 28%, var(--line)) !important;
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--accent-soft) 42%, var(--paper)) !important;
+  box-shadow: none !important;
+  color: var(--ink);
+}
+
+.page--schedule .schedule__calendar-panel .schedule-calendar-flip .calendar__cell--booked-pending,
+.page--book-portal .schedule__calendar-panel .schedule-calendar-flip .calendar__cell--booked-pending {
+  border-style: dashed !important;
+  border-color: color-mix(in srgb, var(--journal-gold, #feca57) 55%, transparent) !important;
+  background: color-mix(in srgb, var(--journal-gold, #feca57) 16%, var(--paper)) !important;
+}
+
+.schedule-calendar-flip__selection-hint {
+  margin: 0 0 8px;
+  padding: 0 2px;
+  font-family: var(--font-ui);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  line-height: 1.4;
+  color: var(--ink-muted);
+}
+
+.schedule-calendar-flip button.calendar__cell {
+  font: inherit;
+  color: inherit;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  padding: 2px 1px 3px;
+  margin: 0;
+  cursor: pointer;
+  text-align: center;
+  appearance: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.schedule-calendar-flip button.calendar__cell:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
+/* Selected range — lavender fill, purple border + number (Book picking; shared for any consumer) */
+.schedule-calendar-flip .calendar__cell--select-start,
+.schedule-calendar-flip .calendar__cell--select-end,
+.schedule-calendar-flip .calendar__cell--select-single {
+  border-style: solid !important;
+  border-width: 1.5px !important;
+  border-color: var(--accent) !important;
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--accent-soft) 65%, var(--paper)) !important;
+  box-shadow: 0 2px 8px color-mix(in srgb, var(--accent) 14%, transparent);
+  color: var(--accent) !important;
+  font-weight: 700;
+}
+
+.schedule-calendar-flip .calendar__cell--select-start .calendar__cell-num,
+.schedule-calendar-flip .calendar__cell--select-end .calendar__cell-num,
+.schedule-calendar-flip .calendar__cell--select-single .calendar__cell-num {
+  color: var(--accent);
+}
+
+.schedule-calendar-flip .calendar__cell--select-between {
+  border-style: solid !important;
+  border-width: 1px !important;
+  border-color: color-mix(in srgb, var(--accent) 35%, var(--line)) !important;
+  background: color-mix(in srgb, var(--accent-soft) 45%, var(--paper)) !important;
+  color: var(--accent);
+}
+
+.caregiver-shell--workbook .schedule__calendar-panel.work-ui__panel {
+  border: 1px solid var(--line-soft) !important;
+  border-radius: var(--radius);
+  background: var(--paper) !important;
+  box-shadow: none !important;
+}
+
+.caregiver-shell--workbook .schedule__calendar-panel .schedule-calendar-flip--embedded .calendar__cell,
+.caregiver-shell--workbook .schedule__calendar-panel .schedule-calendar-flip--embedded .calendar__cell--empty {
+  border: 1px dashed color-mix(in srgb, var(--line) 28%, transparent) !important;
+}
+
+.caregiver-shell--workbook .schedule__calendar-panel .schedule-calendar-flip--embedded .calendar__cell--empty {
+  border: none !important;
+}
+
+.caregiver-shell--workbook .schedule__calendar-panel .schedule-calendar-flip--embedded .calendar__cell--today {
+  border: 1.5px solid var(--accent) !important;
+  background: color-mix(in srgb, var(--accent-soft) 35%, var(--paper)) !important;
+}
+
+.caregiver-shell--workbook .schedule__calendar-panel .schedule-calendar-flip--embedded .calendar__cell--booked-accepted {
+  background: color-mix(in srgb, var(--accent-soft) 42%, var(--paper)) !important;
+}
+
+.caregiver-shell--workbook .schedule__calendar-panel .schedule-calendar-flip--embedded .calendar__cell--booked-pending {
+  border-style: dashed !important;
+  background: color-mix(in srgb, var(--journal-gold, #feca57) 16%, var(--paper)) !important;
+}
+
+.caregiver-shell--workbook .schedule__calendar-panel .calendar__nav,
+.caregiver-shell--workbook .schedule__calendar-panel .schedule-flip__back-top {
+  border: 1px solid var(--line-soft) !important;
+}
+
+.caregiver-shell--workbook .schedule__calendar-panel .calendar__nav .btn--ghost,
+.caregiver-shell--workbook .schedule__calendar-panel .schedule-flip__back-top .btn--ghost {
+  border: 1px solid transparent !important;
+}

@@ -340,6 +340,21 @@
   text-overflow: ellipsis;
 }
 
+.schedule-click-box__meta,
+.schedule-click-box__next {
+  display: block;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.schedule-click-box__next {
+  margin-top: 2px;
+  font-weight: 500;
+  opacity: 0.88;
+}
+
 .schedule-click-box--fun {
   border-color: #9caee8 !important;
   background: color-mix(in srgb, #e0e7ff 70%, #fff);
@@ -348,6 +363,10 @@
 
 .schedule-click-box--fun small {
   color: #566585;
+  display: flex;
+  flex-direction: column;
+  -webkit-line-clamp: unset;
+  line-clamp: unset;
 }
 
 .schedule-click-box--backpack {
@@ -1950,6 +1969,36 @@
 .caregiver-shell--workbook .hub-card {
   border: none !important;
   outline: none;
+}
+
+/* Keep Book-matched white calendar frame on Schedule */
+.caregiver-shell--workbook .schedule__calendar-panel.work-ui__panel {
+  border: 1px solid var(--line-soft) !important;
+  border-radius: var(--radius);
+  background: var(--paper) !important;
+  box-shadow: none !important;
+}
+
+.caregiver-shell--workbook .schedule__calendar-panel .calendar__nav,
+.caregiver-shell--workbook .schedule__calendar-panel .schedule-flip__back-top {
+  border: 1px solid var(--line-soft) !important;
+}
+
+.caregiver-shell--workbook .schedule__calendar-panel .calendar__nav .btn--ghost,
+.caregiver-shell--workbook .schedule__calendar-panel .schedule-flip__back-top .btn--ghost {
+  border: 1px solid transparent !important;
+}
+
+.caregiver-shell--workbook .schedule__calendar-panel .schedule-calendar-flip--embedded .calendar__cell:not(.calendar__cell--empty) {
+  border: 1px dashed color-mix(in srgb, var(--line) 28%, transparent) !important;
+}
+
+.caregiver-shell--workbook .schedule__calendar-panel .schedule-calendar-flip--embedded .calendar__cell--today {
+  border: 1.5px solid var(--accent) !important;
+}
+
+.caregiver-shell--workbook .schedule__calendar-panel .schedule-calendar-flip--embedded .calendar__cell--booked:not(.calendar__cell--booked-pending) {
+  border-style: solid !important;
 }
 
 .caregiver-shell--workbook .btn,

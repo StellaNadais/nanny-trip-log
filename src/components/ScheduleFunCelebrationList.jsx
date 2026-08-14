@@ -28,7 +28,9 @@ export default function ScheduleFunCelebrationList({
   const itemClass = board ? 'workspace-board-list__item schedule-do-fun-item' : 'thanks__item schedule-do-fun-item'
   const headClass = board ? 'workspace-board-list__head schedule-do-fun-item__head' : 'thanks__item-head schedule-do-fun-item__head'
   const titleClass = board ? 'workspace-board-list__title' : 'thanks__item-title'
-  const noteClass = board ? 'workspace-board-list__note muted' : 'thanks__item-note muted'
+  const noteClass = board
+    ? 'workspace-board-list__note muted schedule-do-fun-item__note'
+    : 'thanks__item-note muted schedule-do-fun-item__note'
 
   return (
     <>
@@ -64,7 +66,7 @@ export default function ScheduleFunCelebrationList({
       )}
 
       {!compact && showAdd ? (
-        <div className="schedule-do-fun-add">
+        <div className={`schedule-do-fun-add${addOpen ? ' schedule-do-fun-add--open' : ''}`}>
           {addOpen ? (
             <DoFunAddForm
               year={year}

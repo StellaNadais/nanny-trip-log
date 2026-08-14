@@ -30,31 +30,33 @@ export default function DoFunAddForm({ year, monthIndex, onAdded, onCancel }) {
 
   return (
     <form className="do-fun-add-form" onSubmit={handleSubmit}>
-      <label className="today-soft-field">
-        <span className="today-soft-field__label">Title</span>
-        <input
-          type="text"
-          className="input input--line"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          placeholder="e.g. Cousin visit"
-          required
-          autoFocus
-        />
-      </label>
-      <label className="today-soft-field today-soft-field--compact">
-        <span className="today-soft-field__label">Day</span>
-        <input
-          type="number"
-          min={1}
-          max={daysInMonth}
-          className="input input--line"
-          value={day}
-          onChange={(e) => setDay(e.target.value)}
-          placeholder="1"
-          required
-        />
-      </label>
+      <div className="do-fun-add-form__row">
+        <label className="today-soft-field do-fun-add-form__title">
+          <span className="today-soft-field__label">Title</span>
+          <input
+            type="text"
+            className="input input--line"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            placeholder="e.g. Cousin visit"
+            required
+            autoFocus
+          />
+        </label>
+        <label className="today-soft-field today-soft-field--compact do-fun-add-form__day">
+          <span className="today-soft-field__label">Day</span>
+          <input
+            type="number"
+            min={1}
+            max={daysInMonth}
+            className="input input--line"
+            value={day}
+            onChange={(e) => setDay(e.target.value)}
+            placeholder="1"
+            required
+          />
+        </label>
+      </div>
       <label className="today-soft-field">
         <span className="today-soft-field__label">Idea (optional)</span>
         <input

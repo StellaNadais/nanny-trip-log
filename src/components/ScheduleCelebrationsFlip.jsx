@@ -7,7 +7,9 @@ import {
   upcomingCelebrationsInMonth,
 } from '../utils/scheduleCelebrations'
 import { CUSTOM_CELEBRATIONS_UPDATED_EVENT } from '../utils/customCelebrationsStorage'
+import DoFunAddForm from './DoFunAddForm'
 import ScheduleFunCelebrationList from './ScheduleFunCelebrationList'
+import { TodaySoftSection } from './TodaySoftPanel'
 
 function CelebrationsFlipFaces({
   showWeeks,
@@ -43,16 +45,40 @@ function CelebrationsFlipFaces({
             )}
             <div className="schedule-celebrations-flip__scroll">
               {embedded ? (
-                <ScheduleFunCelebrationList
-                  celebrations={celebrations}
-                  addOpen={addOpen}
-                  onAddOpen={() => setAddOpen(true)}
-                  onAddClose={() => setAddOpen(false)}
-                  onCustomChange={onCustomChange}
-                  year={year}
-                  monthIndex={monthIndex}
-                  showAdd
-                />
+                <>
+                  <TodaySoftSection title="This month" titleId="schedule-do-fun-list-title">
+                    <ScheduleFunCelebrationList
+                      celebrations={celebrations}
+                      onCustomChange={onCustomChange}
+                      year={year}
+                      monthIndex={monthIndex}
+                    />
+                  </TodaySoftSection>
+                  <TodaySoftSection title="Add yours" titleId="schedule-do-fun-add-title">
+                    <div className={`schedule-do-fun-add${addOpen ? ' schedule-do-fun-add--open' : ''}`}>
+                      {addOpen ? (
+                        <DoFunAddForm
+                          year={year}
+                          monthIndex={monthIndex}
+                          onAdded={() => {
+                            setAddOpen(false)
+                            onCustomChange?.()
+                          }}
+                          onCancel={() => setAddOpen(false)}
+                        />
+                      ) : (
+                        <button
+                          type="button"
+                          className="schedule-do-fun-add__btn"
+                          onClick={() => setAddOpen(true)}
+                          aria-expanded={addOpen}
+                        >
+                          Add celebration
+                        </button>
+                      )}
+                    </div>
+                  </TodaySoftSection>
+                </>
               ) : celebrations.length === 0 ? (
                 <p className="muted schedule-celebrations-flip__empty soft-panel__empty">
                   Nothing this month.
@@ -106,7 +132,7 @@ function CelebrationsFlipFaces({
                     <ul className="thanks__list thanks__list--flush schedule-do-fun-prep-list">
                       {week.celebrations.map((celebration) => (
                         <li key={celebration.id} className="thanks__item schedule-do-fun-prep-item">
-                          <div className="thanks__item-head">
+                          <div className="thanks__item-head schedule-do-fun-prep-item__head">
                             <strong className="thanks__item-title">{celebration.title}</strong>
                           </div>
                           {celebration.activities.length > 0 ? (
@@ -115,7 +141,11 @@ function CelebrationsFlipFaces({
                                 <li key={act}>{act}</li>
                               ))}
                             </ul>
-                          ) : null}
+                          ) : (
+                            <p className="thanks__item-note muted schedule-do-fun-prep-item__empty">
+                              No prep notes yet.
+                            </p>
+                          )}
                         </li>
                       ))}
                     </ul>

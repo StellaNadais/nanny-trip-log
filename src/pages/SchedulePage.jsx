@@ -169,6 +169,9 @@ export default function SchedulePage() {
             cellBookingLabel={cellBookingLabel}
             onPrevMonth={prevMonth}
             onNextMonth={nextMonth}
+            selectionHint="Booked days show the family name — open Upcoming gigs for the full list"
+            listTitle="Upcoming gigs"
+            listFlipLabel="Upcoming gigs"
           />
         </section>
 
