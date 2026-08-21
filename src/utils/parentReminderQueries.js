@@ -29,11 +29,9 @@ function bookingStatusLabel(booking) {
 export function careDayReminderGroups(reminders, bookings, dateISO) {
   const careBookings = bookingsForCareDate(bookings, dateISO)
   const bookingIds = new Set(careBookings.map((b) => b.id))
-  const dayReminders = reminders.filter(
-    (r) => r.dateISO === dateISO && bookingIds.has(r.bookingId)
-  )
+  const dayReminders = reminders.filter((r) => r.dateISO === dateISO)
 
-  return careBookings
+  const groups = careBookings
     .map((booking) => {
       const groupReminders = dayReminders
         .filter((r) => r.bookingId === booking.id)
@@ -49,10 +47,26 @@ export function careDayReminderGroups(reminders, bookings, dateISO) {
       }
     })
     .filter((g) => g.reminders.length > 0 || g.notes)
+
+  const unmatched = dayReminders
+    .filter((r) => !r.bookingId || !bookingIds.has(r.bookingId))
+    .sort((a, b) => (a.createdAt || '').localeCompare(b.createdAt || ''))
+
+  if (unmatched.length) {
+    groups.push({
+      booking: { id: '__parent-notes__', familyName: 'Family notes', responseStatus: '' },
+      kidsLabel: '',
+      statusLabel: '',
+      careWindow: null,
+      notes: '',
+      reminders: unmatched,
+    })
+  }
+
+  return groups
 }
 
-export function countRemindersForCareDate(reminders, bookings, dateISO) {
-  const careBookings = bookingsForCareDate(bookings, dateISO)
-  const bookingIds = new Set(careBookings.map((b) => b.id))
-  return reminders.filter((r) => r.dateISO === dateISO && bookingIds.has(r.bookingId)).length
+export function countRemindersForCareDate(reminders, _bookings, dateISO) {
+  if (!dateISO) return 0
+  return reminders.filter((r) => r.dateISO === dateISO).length
 }

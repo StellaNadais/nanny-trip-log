@@ -15,6 +15,11 @@ function gigStatusLabel(status) {
   return 'Request'
 }
 
+/** Mouse/pen only — skip touch so sticky hover does not fight tap selection. */
+function isPointerHover(e) {
+  return e.pointerType === 'mouse' || e.pointerType === 'pen'
+}
+
 export default function ScheduleCalendarFlip({
   title,
   cells,
@@ -41,6 +46,7 @@ export default function ScheduleCalendarFlip({
   dateSelectionRole,
   selectionHint,
   showSelectionLegend = false,
+  rangeHoverActive = false,
 }) {
   const [listFace, setListFace] = useState(false)
 
@@ -49,6 +55,18 @@ export default function ScheduleCalendarFlip({
   }, [y, m])
 
   useUpcomingGigsThemePlayback(listFace)
+
+  function handleDatePointerEnter(e, iso) {
+    if (!onDateHover || !isPointerHover(e)) return
+    onDateHover(iso)
+  }
+
+  function handleGridPointerLeave(e) {
+    if (!onDateHoverEnd || !isPointerHover(e)) return
+    const next = e.relatedTarget
+    if (next && e.currentTarget.contains(next)) return
+    onDateHoverEnd()
+  }
 
   return (
     <div
@@ -113,7 +131,18 @@ export default function ScheduleCalendarFlip({
                     </span>
                   ))}
                 </div>
-                <div className="calendar__grid calendar__grid--book" role="grid" aria-label="Gig schedule">
+                <div
+                  className={[
+                    'calendar__grid',
+                    'calendar__grid--book',
+                    rangeHoverActive ? 'calendar__grid--range-hover' : '',
+                  ]
+                    .filter(Boolean)
+                    .join(' ')}
+                  role="grid"
+                  aria-label="Gig schedule"
+                  onPointerLeave={onDateHoverEnd ? handleGridPointerLeave : undefined}
+                >
                   {cells.map((dayNum, i) => {
                     if (dayNum == null) {
                       return (
@@ -165,8 +194,9 @@ export default function ScheduleCalendarFlip({
                           aria-pressed={selectionRole != null}
                           className={cellClass}
                           onClick={() => onDateSelect(iso)}
-                          onMouseEnter={onDateHover ? () => onDateHover(iso) : undefined}
-                          onMouseLeave={onDateHoverEnd || undefined}
+                          onPointerEnter={
+                            onDateHover ? (e) => handleDatePointerEnter(e, iso) : undefined
+                          }
                           onFocus={onDateHover ? () => onDateHover(iso) : undefined}
                           onBlur={onDateHoverEnd || undefined}
                         >

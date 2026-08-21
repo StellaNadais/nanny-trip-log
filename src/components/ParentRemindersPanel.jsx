@@ -33,12 +33,16 @@ export default function ParentRemindersPanel({ dateLabel, groups, emptyHint, flu
               >
                 {group.booking.familyName || 'Family'}
               </strong>
-              <span className="parent-reminders-panel__kids muted">{group.kidsLabel}</span>
-              <span
-                className={`parent-reminders-panel__status parent-reminders-panel__status--${group.booking.responseStatus || 'pending'}`}
-              >
-                {group.statusLabel}
-              </span>
+              {group.kidsLabel ? (
+                <span className="parent-reminders-panel__kids muted">{group.kidsLabel}</span>
+              ) : null}
+              {group.statusLabel ? (
+                <span
+                  className={`parent-reminders-panel__status parent-reminders-panel__status--${group.booking.responseStatus || 'pending'}`}
+                >
+                  {group.statusLabel}
+                </span>
+              ) : null}
               {group.careWindow ? (
                 <span className="parent-reminders-panel__window muted">{group.careWindow}</span>
               ) : null}

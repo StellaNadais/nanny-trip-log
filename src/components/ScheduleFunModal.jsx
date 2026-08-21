@@ -20,8 +20,8 @@ export default function ScheduleFunModal({ open, onClose, year, monthIndex }) {
         eyebrow="Holidays & ideas"
         title="Do fun"
         meta={monthLabel}
-        lede="Celebrations still ahead this month — flip for prep ideas a week out."
-        footer="Add your own dates anytime. Prep weeks look one week ahead."
+        lede="Celebrations still ahead this month, plus when to start looking for classes and camps. Flip for prep ideas a week out."
+        footer="Enrollment windows follow a typical US school year. Add your own celebration dates anytime."
         className="soft-panel--do-fun"
       >
         <ScheduleCelebrationsFlip year={year} monthIndex={monthIndex} embedded />

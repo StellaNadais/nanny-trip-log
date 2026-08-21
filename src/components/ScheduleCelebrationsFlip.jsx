@@ -8,6 +8,7 @@ import {
 } from '../utils/scheduleCelebrations'
 import { CUSTOM_CELEBRATIONS_UPDATED_EVENT } from '../utils/customCelebrationsStorage'
 import DoFunAddForm from './DoFunAddForm'
+import ScheduleEnrollmentRemindersList from './ScheduleEnrollmentRemindersList'
 import ScheduleFunCelebrationList from './ScheduleFunCelebrationList'
 import { TodaySoftSection } from './TodaySoftPanel'
 
@@ -53,6 +54,12 @@ function CelebrationsFlipFaces({
                       year={year}
                       monthIndex={monthIndex}
                     />
+                  </TodaySoftSection>
+                  <TodaySoftSection
+                    title="Looking ahead — enroll"
+                    titleId="schedule-do-fun-enroll-title"
+                  >
+                    <ScheduleEnrollmentRemindersList monthIndex={monthIndex} />
                   </TodaySoftSection>
                   <TodaySoftSection title="Add yours" titleId="schedule-do-fun-add-title">
                     <div className={`schedule-do-fun-add${addOpen ? ' schedule-do-fun-add--open' : ''}`}>

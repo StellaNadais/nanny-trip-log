@@ -8,8 +8,8 @@ import BookFollowUpModal from '../components/BookFollowUpModal'
 import BookSchedulingDock from '../components/BookSchedulingDock'
 import ScheduleCalendarFlip from '../components/ScheduleCalendarFlip'
 import BookTabBar from '../components/BookTabBar'
-import EventsTilesSection from '../components/EventsTilesSection'
 import BookThanksPanel from '../components/BookThanksPanel'
+import BookTasksPanel from '../components/BookTasksPanel'
 import { bookingOccupiesCalendarSlot } from '../utils/bookingCalendar'
 import {
   bookingEndMs,
@@ -178,6 +178,7 @@ export default function BookPage() {
   }
 
   function changeDatesOnCalendar() {
+    setHoverEndDateISO('')
     setAwaitingEndDate(true)
   }
 
@@ -210,7 +211,10 @@ export default function BookPage() {
   }
 
   function handleCalendarDateHover(iso) {
-    if (!awaitingEndDate || !careStartDateISO) return
+    if (!awaitingEndDate || !careStartDateISO) {
+      setHoverEndDateISO('')
+      return
+    }
     if (!iso || iso < todayISO()) {
       setHoverEndDateISO('')
       return
@@ -222,6 +226,16 @@ export default function BookPage() {
     setHoverEndDateISO('')
   }
 
+  function prevMonth() {
+    setHoverEndDateISO('')
+    setCursor(new Date(y, m - 1, 1))
+  }
+
+  function nextMonth() {
+    setHoverEndDateISO('')
+    setCursor(new Date(y, m + 1, 1))
+  }
+
   const showBookingForm = Boolean(careStartDateISO) && !awaitingEndDate
 
   const selectionHint = useMemo(() => {
@@ -231,10 +245,12 @@ export default function BookPage() {
     if (awaitingEndDate) {
       return 'No overnight? Tap the same date again. Otherwise tap your check-out day'
     }
-    return 'Your dates are set — complete the form below'
+    return 'Your dates are set — finish your request in the popup'
   }, [careStartDateISO, awaitingEndDate])
 
   const dateSelectionRole = useMemo(() => {
+    // While picking check-out, preview start → hovered end (incl. same day).
+    // Dates before check-in stay unfilled; CSS :hover still marks the cell.
     const previewEnd =
       awaitingEndDate && hoverEndDateISO && hoverEndDateISO >= careStartDateISO
         ? hoverEndDateISO
@@ -244,6 +260,10 @@ export default function BookPage() {
     return (iso) =>
       careStartDateISO ? calendarSelectionRole(iso, careStartDateISO, previewEnd) : null
   }, [careStartDateISO, careEndDateISO, awaitingEndDate, hoverEndDateISO])
+
+  const rangeHoverActive = Boolean(
+    awaitingEndDate && hoverEndDateISO && hoverEndDateISO >= careStartDateISO
+  )
 
   const checkInLabel = useMemo(() => {
     if (!careStartDateISO) return ''
@@ -257,14 +277,6 @@ export default function BookPage() {
   function showBookToast(message) {
     setBookToast(message)
     window.setTimeout(() => setBookToast(''), 5000)
-  }
-
-  function prevMonth() {
-    setCursor(new Date(y, m - 1, 1))
-  }
-
-  function nextMonth() {
-    setCursor(new Date(y, m + 1, 1))
   }
 
   function submitBooking(e) {
@@ -310,7 +322,7 @@ export default function BookPage() {
     const hasExtras = reminderRows.length > 0
     showBookToast(
       hasExtras
-        ? 'Request sent with grocery and reminders!'
+        ? 'Request sent with lists and notes!'
         : 'Request sent! Your caregiver will follow up.'
     )
   }
@@ -365,6 +377,7 @@ export default function BookPage() {
                     onDateHover={awaitingEndDate ? handleCalendarDateHover : undefined}
                     onDateHoverEnd={awaitingEndDate ? clearCalendarDateHover : undefined}
                     dateSelectionRole={dateSelectionRole}
+                    rangeHoverActive={rangeHoverActive}
                     selectionHint={selectionHint}
                     showSelectionLegend
                     listTitle="Your requests"
@@ -393,44 +406,13 @@ export default function BookPage() {
                   </div>
                 ) : null}
 
-                <BookSchedulingDock
-                  open={showBookingForm}
-                  onClose={clearScheduling}
-                  onChangeDates={changeDatesOnCalendar}
-                  careDateHeadline={careDateHeadline}
-                  overnightNights={overnightNights}
-                  overnightTotal={overnightTotal}
-                  careStart={careStart}
-                  careEnd={careEnd}
-                  onCareStartTime={applyCareStartTime}
-                  onCareEndTime={applyCareEndTime}
-                  timeOk={timeOk}
-                  childrenOnGig={childrenOnGig}
-                  familyName={familyName}
-                  phone={phone}
-                  phoneOk={phoneOk}
-                  requestNotes={requestNotes}
-                  onChildrenOnGig={setChildrenOnGig}
-                  onFamilyName={setFamilyName}
-                  onPhone={setPhone}
-                  onRequestNotes={setRequestNotes}
-                  selectedBookingsCount={selectedBookings.length}
-                  careStartIsPast={careStartIsPast}
-                  canSubmit={!careStartIsPast && timeOk && kidsOk && nameOk && phoneOk}
-                  onSubmit={submitBooking}
-                  onClear={clearScheduling}
-                />
               </div>
             </div>
           ) : null}
 
-          {activeTab === 'events' ? (
-            <div
-              className="journal__layout events__layout book-portal__panel book-portal__panel--events"
-              role="tabpanel"
-              aria-labelledby="book-tab-events"
-            >
-              <EventsTilesSection />
+          {activeTab === 'tasks' ? (
+            <div className="book-portal__panel" role="tabpanel" aria-labelledby="book-tab-tasks">
+              <BookTasksPanel />
             </div>
           ) : null}
 
@@ -441,6 +423,34 @@ export default function BookPage() {
           ) : null}
         </main>
       </div>
+
+      <BookSchedulingDock
+        open={showBookingForm}
+        onClose={clearScheduling}
+        onChangeDates={changeDatesOnCalendar}
+        careDateHeadline={careDateHeadline}
+        overnightNights={overnightNights}
+        overnightTotal={overnightTotal}
+        careStart={careStart}
+        careEnd={careEnd}
+        onCareStartTime={applyCareStartTime}
+        onCareEndTime={applyCareEndTime}
+        timeOk={timeOk}
+        childrenOnGig={childrenOnGig}
+        familyName={familyName}
+        phone={phone}
+        phoneOk={phoneOk}
+        requestNotes={requestNotes}
+        onChildrenOnGig={setChildrenOnGig}
+        onFamilyName={setFamilyName}
+        onPhone={setPhone}
+        onRequestNotes={setRequestNotes}
+        selectedBookingsCount={selectedBookings.length}
+        careStartIsPast={careStartIsPast}
+        canSubmit={!careStartIsPast && timeOk && kidsOk && nameOk && phoneOk}
+        onSubmit={submitBooking}
+        onClear={clearScheduling}
+      />
 
       <BookFollowUpModal
         open={Boolean(followUpBooking)}

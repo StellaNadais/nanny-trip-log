@@ -1,6 +1,6 @@
 const BOOK_TABS = [
   { id: 'calendar', label: 'Calendar' },
-  { id: 'events', label: 'Events' },
+  { id: 'tasks', label: 'Errands' },
   { id: 'thanks', label: 'Thank you' },
 ]
 

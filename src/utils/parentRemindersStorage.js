@@ -27,15 +27,15 @@ export function saveParentReminders(reminders) {
 }
 
 /**
- * @param {{ bookingId: string, dateISO: string, text: string, childName?: string }} payload
+ * @param {{ bookingId?: string, dateISO: string, text: string, childName?: string }} payload
  */
 export function createParentReminder(payload) {
   const text = String(payload.text || '').trim()
-  if (!text || !payload.bookingId || !payload.dateISO) return null
+  if (!text || !payload.dateISO) return null
   return {
     id: newId(),
     createdAt: new Date().toISOString(),
-    bookingId: payload.bookingId,
+    bookingId: String(payload.bookingId || ''),
     dateISO: payload.dateISO,
     text,
     childName: String(payload.childName || '').trim(),
