@@ -39,8 +39,8 @@ export default function CareCommandComposer({ bookings, onSend }) {
       setFeedback(parsed.error)
       return
     }
-    if (parsed.kind !== 'grocery' && !selectedBooking) {
-      setFeedback('Choose a care day before sending a note or errand.')
+    if (parsed.kind !== 'grocery' && parsed.kind !== 'errand' && !selectedBooking) {
+      setFeedback('Choose a care day before sending a note.')
       return
     }
 
@@ -87,7 +87,7 @@ export default function CareCommandComposer({ bookings, onSend }) {
         <div className="care-command-composer__bottom">
           {availableBookings.length ? (
             <label className="care-command-composer__booking">
-              <span>Care day for note or errand</span>
+              <span>Care day for notes</span>
               <select value={selectedBooking?.id || ''} onChange={(event) => setBookingId(event.target.value)}>
                 {availableBookings.map((booking) => (
                   <option key={booking.id} value={booking.id}>
@@ -98,7 +98,7 @@ export default function CareCommandComposer({ bookings, onSend }) {
             </label>
           ) : (
             <p className="care-command-composer__no-booking">
-              Grocery items can be sent now. Add a care day first to send notes or errands.
+              Grocery and errands can be sent now. Add a care day first to send notes.
             </p>
           )}
           <button className="btn btn--primary care-command-composer__send" type="submit" disabled={!draft.trim()}>

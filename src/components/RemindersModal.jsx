@@ -11,12 +11,16 @@ export default function RemindersModal({
   onAddShoppingItems,
   onToggleShopping,
   onRemoveShopping,
+  errandItems = [],
+  onAddErrandItems,
+  onToggleErrand,
+  onRemoveErrand,
 }) {
   return (
     <TodayPanelModal
       open={open}
       onClose={onClose}
-      eyebrow="Parent notes & weekly shopping"
+      eyebrow="Parent notes, errands & shopping"
       title="Notes & reminders"
       dateLabel={dateLabel}
     >
@@ -29,6 +33,26 @@ export default function RemindersModal({
             dateLabel={dateLabel}
             groups={groups}
             emptyHint="No family is scheduled this day, or there are no parent notes or reminders yet."
+          />
+        </section>
+
+        <section className="reminders-modal__section" aria-labelledby="errand-reminders-heading">
+          <div>
+            <h3 id="errand-reminders-heading" className="reminders-modal__section-title">
+              Errands
+            </h3>
+            <p className="reminders-modal__section-hint muted">
+              Live list from parents — ice cream at Lords, dry cleaning, returns.
+            </p>
+          </div>
+          <GroceryListPanel
+            items={errandItems}
+            onAddItems={onAddErrandItems}
+            onToggle={onToggleErrand}
+            onRemove={onRemoveErrand}
+            placeholder="Ice cream at Lords, dry cleaning…"
+            addButtonClosedLabel="Add errand…"
+            quickAddItems={[]}
           />
         </section>
 

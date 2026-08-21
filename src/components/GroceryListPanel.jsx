@@ -9,6 +9,8 @@ export default function GroceryListPanel({
   onRemove,
   autoFocus = false,
   placeholder = 'avocado, oatmilk, bread…',
+  addButtonClosedLabel = 'Add grocery items…',
+  quickAddItems = QUICK_ADD_ITEMS,
 }) {
   const [draft, setDraft] = useState('')
   const [formOpen, setFormOpen] = useState(autoFocus)
@@ -85,7 +87,7 @@ export default function GroceryListPanel({
             <span className="grocery-list-panel__add-btn-ico" aria-hidden>
               {formOpen ? '−' : '+'}
             </span>
-            {formOpen ? 'Close form' : 'Add grocery items…'}
+            {formOpen ? 'Close form' : addButtonClosedLabel}
           </button>
           {formOpen ? (
             <form id={formId} className="grocery-list-panel__composer" onSubmit={onSubmit}>
@@ -116,11 +118,11 @@ export default function GroceryListPanel({
               </button>
             </form>
           ) : null}
-          {sorted.length === 0 ? (
-            <div className="grocery-list-panel__suggestions" aria-label="Quick-add grocery items">
+          {sorted.length === 0 && quickAddItems.length > 0 ? (
+            <div className="grocery-list-panel__suggestions" aria-label="Quick-add items">
               <span className="grocery-list-panel__suggestions-label">Quick add</span>
               <div className="grocery-list-panel__suggestions-options">
-                {QUICK_ADD_ITEMS.map((item) => (
+                {quickAddItems.map((item) => (
                   <button
                     key={item}
                     type="button"

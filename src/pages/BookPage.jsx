@@ -4,6 +4,7 @@ import { EVENT_LOCATIONS, groupFamilyEventsByLocation } from '../data/familyEven
 import { OVERNIGHT_RATE } from '../data/bookingRates'
 import { startOfWeekMonday, toISODateLocal } from '../utils/dates'
 import { addShoppingItems } from '../utils/journalShoppingStorage'
+import { addErrandItems } from '../utils/errandsStorage'
 import { monthGrid, isSameDay } from '../utils/calendarMonth'
 import { useBookings } from '../hooks/useBookings'
 import { useParentReminders } from '../hooks/useParentReminders'
@@ -211,39 +212,46 @@ export default function BookPage() {
     const groceryBits = extras.filter((x) => x.kind === 'grocery').map((x) => x.text)
     if (groceryBits.length) addShoppingItems(weekKey, groceryBits.join(', '))
 
+    const errandBits = extras.filter((x) => x.kind === 'errand').map((x) => x.text)
+    if (errandBits.length) addErrandItems(weekKey, errandBits.join(', '))
+
     const reminderRows = extras
-      .filter((x) => x.kind === 'reminder' || x.kind === 'errand')
+      .filter((x) => x.kind === 'reminder')
       .map((x) => ({
         dateISO: startISO,
-        childName: x.kind === 'errand' ? 'Errand' : '',
+        childName: '',
         text: x.text,
       }))
     if (reminderRows.length) addRemindersForBooking(bookingId, reminderRows)
   }
 
   function sendCareCommand({ kind, text, booking }) {
-    if (kind === 'grocery') {
+    if (kind === 'grocery' || kind === 'errand') {
       const targetDate = booking?.dateISO || todayISO()
       const weekKey = toISODateLocal(startOfWeekMonday(new Date(`${targetDate}T12:00:00`)))
-      addShoppingItems(weekKey, text)
-      return { ok: true, message: 'Added to groceries for your caregiver.' }
+      if (kind === 'grocery') {
+        addShoppingItems(weekKey, text)
+        return { ok: true, message: 'Added to groceries for your caregiver.' }
+      }
+      addErrandItems(weekKey, text)
+      return { ok: true, message: 'Added errand for your caregiver.' }
     }
 
     if (!booking?.id || !booking.dateISO) {
-      return { ok: false, message: 'Choose a care day before sending a note or errand.' }
+      return { ok: false, message: 'Choose a care day before sending a note.' }
     }
 
     const reminder = addReminder({
       bookingId: booking.id,
       dateISO: booking.dateISO,
-      childName: kind === 'errand' ? 'Errand' : '',
+      childName: '',
       text,
     })
     if (!reminder) return { ok: false }
 
     return {
       ok: true,
-      message: kind === 'errand' ? 'Added errand for your caregiver.' : 'Added reminder for your caregiver.',
+      message: 'Added reminder for your caregiver.',
     }
   }
 

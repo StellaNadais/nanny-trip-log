@@ -13,14 +13,45 @@ export const HOME_PLACE = {
 export const MILE_RATE = 0.54
 
 /**
- * Portfolio-safe place nicknames only — no real client or venue names.
- * region: highlight color in trip/journal mirror only (internal key)
+ * Saved place nicknames only — no addresses or coordinates in code.
+ * region: highlight color in trip/journal mirror only
  */
 export const PLACES = [
   {
     id: 'drop-off',
-    label: 'School run',
-    aliases: ['school run', 'pickup', 'pick-up', 'morning pickup'],
+    label: 'Camino Pablo Elementary',
+    aliases: [
+      "H's drop off",
+      "H\u2019s drop off",
+      "h's drop off",
+      'Hs drop off',
+      'drop off',
+      'drop-off',
+      'school run',
+      'Camino Pablo',
+      'Camino Pablo Elementary',
+      'Camino Pablo Elementary School',
+    ],
+    region: 'moraga',
+  },
+  {
+    id: 'p-drop-off',
+    label: 'Growing Tree / Learn and Play',
+    aliases: [
+      "P's drop off",
+      "P\u2019s drop off",
+      "p's drop off",
+      'Ps drop off',
+      'Growing Tree',
+      'Learn and Play',
+      'Learn & Play',
+    ],
+    region: 'moraga',
+  },
+  {
+    id: 'lords',
+    label: 'Lords',
+    aliases: ["Lord's", 'lords', "lord's", 'ice cream', 'ice-cream'],
     region: 'moraga',
   },
   {

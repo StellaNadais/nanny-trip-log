@@ -26,6 +26,12 @@ import {
   removeShoppingItem,
   toggleShoppingItem,
 } from '../utils/journalShoppingStorage'
+import {
+  addErrandItems,
+  loadErrandsForWeek,
+  removeErrandItem,
+  toggleErrandItem,
+} from '../utils/errandsStorage'
 import { napFromJournalEntry } from '../utils/journalNap'
 import { pottyFromJournalEntry } from '../utils/journalLittleBooks'
 import { combineJournalPost, journalPostFromEntry } from '../utils/journalPost'
@@ -124,12 +130,14 @@ export default function KidJournalPage() {
   const [journalShareGateNow, setJournalShareGateNow] = useState(() => Date.now())
   const [outingsRev, setOutingsRev] = useState(0)
   const [shoppingItems, setShoppingItems] = useState([])
+  const [errandItems, setErrandItems] = useState([])
   const [outingsOpen, setOutingsOpen] = useState(false)
   const [remindersOpen, setRemindersOpen] = useState(false)
   const [aboutTodayOpen, setAboutTodayOpen] = useState(false)
 
   useEffect(() => {
     setShoppingItems(loadShoppingForWeek(weekKey))
+    setErrandItems(loadErrandsForWeek(weekKey))
   }, [weekKey])
 
   useEffect(() => {
@@ -228,6 +236,18 @@ export default function KidJournalPage() {
 
   function handleRemoveShopping(id) {
     setShoppingItems(removeShoppingItem(weekKey, id))
+  }
+
+  function handleAddErrand(raw) {
+    setErrandItems(addErrandItems(weekKey, raw))
+  }
+
+  function handleToggleErrand(id) {
+    setErrandItems(toggleErrandItem(weekKey, id))
+  }
+
+  function handleRemoveErrand(id) {
+    setErrandItems(removeErrandItem(weekKey, id))
   }
 
   function persistJournalIfChanged() {
@@ -422,6 +442,10 @@ export default function KidJournalPage() {
         onAddShoppingItems={handleAddGrocery}
         onToggleShopping={handleToggleShopping}
         onRemoveShopping={handleRemoveShopping}
+        errandItems={errandItems}
+        onAddErrandItems={handleAddErrand}
+        onToggleErrand={handleToggleErrand}
+        onRemoveErrand={handleRemoveErrand}
       />
 
       <OutingsModal

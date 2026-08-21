@@ -2,6 +2,7 @@ export const CLOUD_SYNC_KEYS = [
   'nanny-bookings-v1',
   'nanny-parent-reminders-v1',
   'nanny-journal-shopping-v1',
+  'nanny-errands-v1',
   'nanny-kid-journal-v1',
   'nanny-shift-punctuality-v1',
   'nanny-receipt-settings-v1',

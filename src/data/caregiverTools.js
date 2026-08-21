@@ -1,6 +1,12 @@
 /** Tools linked from Schedule — each opens its own page with Press to start. */
 export const CAREGIVER_TOOLS = [
   {
+    to: '/shift',
+    code: 'A',
+    label: 'Shift',
+    hint: 'Clock in and out with the hour and minute you arrived.',
+  },
+  {
     to: '/journal',
     code: 'B',
     label: 'Today',

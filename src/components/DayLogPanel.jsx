@@ -32,7 +32,7 @@ export function DayLogPanel({ iso, day, onChange, ensureDay }) {
             value={displayValue}
             onChange={(v) => onChange(iso, { tripLog: '', notes: v })}
             aria-labelledby={labelId}
-            placeholder="e.g. school run, then music…"
+            placeholder="e.g. H's drop off then Growing Tree, Lords for ice cream…"
           />
         </div>
       </div>
