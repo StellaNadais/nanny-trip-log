@@ -4,7 +4,7 @@ export const CAREGIVER_TOOLS = [
     to: '/shift',
     code: 'A',
     label: 'Shift',
-    hint: 'Log arrival and end times in their ±5 minute windows.',
+    hint: 'Clock in and out with the hour and minute you arrived.',
   },
   {
     to: '/journal',

@@ -19,7 +19,7 @@ export const MILE_RATE = 0.54
 export const PLACES = [
   {
     id: 'drop-off',
-    label: "H's drop off",
+    label: 'Camino Pablo Elementary',
     aliases: [
       "H's drop off",
       "H\u2019s drop off",
@@ -27,6 +27,35 @@ export const PLACES = [
       'Hs drop off',
       'drop off',
       'drop-off',
+      'Camino Pablo',
+      'Camino Pablo Elementary',
+      'Camino Pablo Elementary School',
+    ],
+    region: 'moraga',
+  },
+  {
+    id: 'p-drop-off',
+    label: 'Growing Tree / Learn and Play',
+    aliases: [
+      "P's drop off",
+      "P\u2019s drop off",
+      "p's drop off",
+      'Ps drop off',
+      'Growing Tree',
+      'Learn and Play',
+      'Learn & Play',
+    ],
+    region: 'moraga',
+  },
+  {
+    id: 'lords',
+    label: 'Lords',
+    aliases: [
+      "Lord's",
+      'lords',
+      "lord's",
+      'ice cream',
+      'ice-cream',
     ],
     region: 'moraga',
   },

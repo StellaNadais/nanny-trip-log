@@ -50,6 +50,20 @@
   text-transform: none;
 }
 
+.page--shift.page--kid-journal .shift-clock-pick__field-label {
+  color: var(--journal-ink-muted-front);
+}
+
+.page--shift.page--kid-journal .shift-clock-pick__select {
+  background: var(--journal-surface-bright);
+  border-color: var(--journal-card-border);
+  color: var(--journal-ink-front);
+}
+
+.page--shift.page--kid-journal .shift__clocked {
+  color: var(--journal-mint-deep);
+}
+
 .page--shift.page--kid-journal .shift__time-circle {
   border: 2px solid var(--journal-card-border);
   background: var(--journal-surface-bright);

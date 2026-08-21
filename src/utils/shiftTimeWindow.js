@@ -70,6 +70,50 @@ export function hmToShiftLabel(hm) {
   })
 }
 
+const HOURS_12 = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+const MINUTES_60 = Array.from({ length: 60 }, (_, i) => i)
+
+export function shiftHourOptions() {
+  return HOURS_12
+}
+
+export function shiftMinuteOptions() {
+  return MINUTES_60
+}
+
+/**
+ * Split a label like "8:05 AM" into picker parts.
+ * @returns {{ hour: number, minute: number, ap: 'AM' | 'PM' } | null}
+ */
+export function shiftLabelParts(timeLabel) {
+  const target = parseShiftDateTime('2000-01-01', timeLabel)
+  if (!target) return null
+  const h24 = target.getHours()
+  return {
+    hour: h24 % 12 || 12,
+    minute: target.getMinutes(),
+    ap: h24 >= 12 ? 'PM' : 'AM',
+  }
+}
+
+export function defaultShiftParts(kind) {
+  return kind === 'end' ? { hour: 5, minute: 0, ap: 'PM' } : { hour: 8, minute: 0, ap: 'AM' }
+}
+
+/** Build "8:05 AM" from hour (1–12), minute (0–59), and AM/PM. */
+export function composeShiftLabel(hour, minute, ap) {
+  const h = Number(hour)
+  const m = Number(minute)
+  const mer = String(ap).toUpperCase() === 'PM' ? 'PM' : 'AM'
+  if (!Number.isFinite(h) || h < 1 || h > 12) return ''
+  if (!Number.isFinite(m) || m < 0 || m > 59) return ''
+  return `${h}:${String(m).padStart(2, '0')} ${mer}`
+}
+
+export function partsFromShiftLabel(timeLabel, kind = 'arrival') {
+  return shiftLabelParts(timeLabel) ?? defaultShiftParts(kind)
+}
+
 /** ±5 minute picker options around a requested HH:MM time. */
 export function shiftPickerOptionsFromHm(hm) {
   if (!hm || typeof hm !== 'string') return []

@@ -3,7 +3,7 @@ import { receiptNavLabel } from '../utils/receiptHref'
 
 export const WORKBOOK_TABS = [
   { to: '/schedule', label: 'Schedule', end: true },
-  // Shift hidden for now — re-add { to: '/shift', label: 'Shift' } when ready
+  { to: '/shift', label: 'Shift' },
   { to: '/journal', label: 'Today' },
   // Events hidden for now — re-add { to: '/events', label: 'Events' } when ready
 ]

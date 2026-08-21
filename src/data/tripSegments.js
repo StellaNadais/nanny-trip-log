@@ -8,6 +8,10 @@ import { HOME_PLACE_ID } from './tripPlaces'
  */
 export const TRIP_SEGMENTS = [
   { from: HOME_PLACE_ID, to: 'drop-off', miles: 1.2 },
+  { from: HOME_PLACE_ID, to: 'p-drop-off', miles: 2.0 },
+  { from: HOME_PLACE_ID, to: 'lords', miles: 3.0 },
+  { from: 'drop-off', to: 'p-drop-off', miles: 1.0 },
+  { from: 'drop-off', to: 'lords', miles: 2.0 },
   { from: 'drop-off', to: 'music', miles: 6.7 },
   { from: 'drop-off', to: 'laf-library', miles: 6.8 },
   { from: 'drop-off', to: 'swim', miles: 6.8 },
@@ -22,7 +26,9 @@ export const TRIP_SEGMENTS = [
 function placeShort(id) {
   if (id === HOME_PLACE_ID) return 'Home'
   const labels = {
-    'drop-off': "H's drop off",
+    'drop-off': 'Camino Pablo',
+    'p-drop-off': 'Growing Tree',
+    lords: 'Lords',
     music: 'music',
     'laf-library': 'Laf library',
     swim: 'swim',
